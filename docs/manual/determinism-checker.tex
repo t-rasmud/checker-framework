@@ -33,11 +33,8 @@ Another common cause of nondeterminism is the operating system scheduler,
 for concurrent programs.  The Determinism Checker does not address this
 cause of nondeterminism.  Also, the Determinism Checker does not warn
 about the possibility that the file system contains different files or
-contents on different runs of a program or that certain values may vary
-across different machines. Thus, certain operating system specific properties,
-such as the line and path separators, are still considered deterministic even
-though separate runs could produce different results when run on different
-systems.
+contents on different runs of a program, or that system properties (such as
+line and path separators) vary across different machines.
 
 To run the Determinism Checker, supply the
 \code{-processor DeterminismChecker}
