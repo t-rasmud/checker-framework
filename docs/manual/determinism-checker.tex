@@ -1,0 +1,402 @@
+\htmlhr
+\chapter{Determinism Checker\label{determinism-checker}}
+
+A nondeterministic program is one that may produce different output when
+it is run twice with the same input on the same machine.
+It is desirable for programs to be deterministic.
+It is easier to test a deterministic program, because nondeterminism can
+lead to flaky tests that sometimes succeed and sometimes fail.
+It is easier to reproduce a bug in a deterministic program.
+It is easier for a user or programmer to compare two
+deterministic executions than two nondeterministic executions.
+
+The Determinism Checker helps you make your programs deterministic or
+recognize when they are not.
+The Determinism Checker enables a programmer to indicate which
+computations should be the same across runs of a single-threaded program,
+and then the Determinism Checker verifies that property.
+
+Even single-threaded programs are frequently nondeterministic.
+One cause is use of the \<Random>, \<Date>, and \<Time> classes.
+Another cause is use of hash tables (including \<HashSet>s and
+\<HashMap>s), whose iteration order is nondeterministic across runs.
+For example, even if the set contains the same values, the following code
+may produce output in different orders:
+
+\begin{Verbatim}
+  for (Object x : mySet) {
+    System.out.println(x);
+  }
+\end{Verbatim}
+
+Another common cause of nondeterminism is the operating system scheduler,
+for concurrent programs.  The Determinism Checker does not address this
+cause of nondeterminism.  Also, the Determinism Checker does not warn
+about the possibility that the file system contains different files or
+contents on different runs of a program, or that system properties (such as
+line and path separators) vary across different machines.
+
+To run the Determinism Checker, supply the
+\code{-processor DeterminismChecker}
+command-line option to javac.
+For example:
+
+\begin{alltt}
+  javac -processor DeterminismChecker InputFile.java
+\end{alltt}
+
+%./bin/javac -cp NonDetTypeChecker/jsr308/checker-framework/checker/build -processor org.checkerframework.checker.determinism.DeterminismChecker NDCheckerTest/src/TestListUnsafe2.java
+
+
+\section{Determinism qualifiers\label{determinism-qualifiers}}
+
+The Determinism type system uses the following type qualifiers (see Figure~\ref{fig-determinism-hierarchy}):
+\begin{description}
+\item[\refqualclass{checker/determinism/qual}{NonDet}] indicates
+  that the expression might have different values in two different executions on the same machine.
+\item[\refqualclass{checker/determinism/qual}{OrderNonDet}] indicates that
+  a collection (i.e any class that is a subtype of java.util.Collection or java.util.Iterator) or an array will have the same elements in every execution, but in a
+  possibly different order.  \<@OrderNonDet> may only be written on
+  collections and arrays.
+\item[\refqualclass{checker/determinism/qual}{Det}] indicates that
+  the expression evaluates to the same value (with respect to \<.equals()>) in all
+  executions on the same machine; for a collection, iteration also yields the values in the same
+  order.
+  This is the default qualifier.
+\end{description}
+
+Section~\ref{determinism-polymorphism} explains polymorphic qualifiers.
+
+\begin{figure}
+  \begin{center}
+    \includeimage{determinism}{4cm}
+  \end{center}
+\caption{Determinism type hierarchy}
+\label{fig-determinism-hierarchy}
+\end{figure}
+
+
+\section{Valid collection and array types\label{determinism-collection-types}}
+
+The (determinism) type of a Collection or Iterator must be a supertype or equal to
+the type of the type parameter (see Figure~\ref{fig-determinism-collections}).
+
+For example, these types are valid:
+\begin{itemize}
+    \item \code{@NonDet\ \ \ \ \ \ List<@NonDet\ \ \ \ \ \ Integer>}
+    \item \code{@NonDet\ \ \ \ \ \ List<@OrderNonDet Set<...>\relax >}
+    \item \code{@NonDet\ \ \ \ \ \ List<@Det\ \ \ \ \ \ \ \ \ Integer>}
+    \item \code{@Det\ \ \ \ \ \ \ \ \ List<@Det\ \ \ \ \ \ \ \ \ Integer>}
+    \item \code{@OrderNonDet Set <@OrderNonDet Set<...>\relax >}
+    \item \code{@OrderNonDet Set <@Det String>}
+    \item \code{@NonDet Set \ <T extends @NonDet Object>}
+    \item \code{@NonDet Set \ <T extends @Det Object>}
+\end{itemize}
+
+These types are invalid:
+  \begin{itemize}
+    \item \code{@OrderNonDet Set <@NonDet\ \ \ \ \ \ Integer>}
+    \item \code{@Det\ \ \ \ \ \ \ \ \ List<@NonDet\ \ \ \ \ \ Integer>}
+    \item \code{@Det\ \ \ \ \ \ \ \ \ List<@OrderNonDet Set<...>\relax >}
+    \item \code{@Det\ \ \ \ \ \ \ \ \ List<T extends @NonDet Object>}
+  \end{itemize}
+
+Similarly, the (determinism) type of an array must be a supertype or equal to
+the type of the component type (see Figure~\ref{fig-determinism-collections}).
+
+For example, these types are valid:
+\begin{itemize}
+    \item \code{@NonDet int @NonDet \ \ \ \ []}
+    \item \code{@NonDet int @OrderNonDet[]}
+    \item \code{@Det \ \ \ int @NonDet \ \ \ \ []}
+    \item \code{@Det \ \ \ int @Det \ \ \ \ \ \ \ []}
+    \item \code{@Det \ \ \ int @OrderNonDet[] @OrderNonDet[]}
+\end{itemize}
+
+These types are invalid:
+\begin{itemize}
+    \item \code{@NonDet int @OrderNonDet[]}
+    \item \code{@NonDet int @Det \ \ \ \ \ \ \ []}
+\end{itemize}
+
+\begin{figure}
+  \centering
+  \begin{tabular}{|l|l|l|l|l|}
+    \cline{3-5}
+    \multicolumn{2}{c|}{~}  &  \multicolumn{3}{c|}{Type Argument (or array component type)} \\ \cline{3-5}
+    \multicolumn{2}{c|}{~}  & NonDet     & OrderNonDet & Det \\ \hline
+              & NonDet      &   valid    &  valid      & valid  \\ \cline{2-5}
+Collection (or array)   & OrderNonDet &   invalid  &  valid      & valid  \\ \cline{2-5}
+              & Det         &   invalid  &  invalid    & invalid      \\ \hline
+  \end{tabular}
+  \caption{Valid Collection (and array) declarations.  The Collection's (or array's) type qualifier
+    must be a supertype or equal to the type argument (or array component type).}
+  \label{fig-determinism-collections}
+\end{figure}
+
+\subsection{Valid user defined types\label{determinism-valid-user-types}}
+A user defined type may be annotated as \<@OrderNonDet> if and only if it
+is a subtype of Collection or Iterator.
+For example, if a user defines a type as
+\begin{Verbatim}
+    public class TestUserCollection<E> extends ArrayList<E> {...}
+\end{Verbatim}
+Writing \code{@OrderNonDet TestUserCollection<@Det Integer>} is valid.\\
+Writing \code{@OrderNonDet TestUserCollection<@NonDet Integer>} is invalid
+because the type of the type parameter (\code{@NonDet}) is not a subtype
+of the user defined Collection type (\code{@OrderNonDet}).
+
+User defined types that are not a subtype of Collection or Iterator
+may not be annotated as \code{@OrderNonDet}.
+%Formally, the type validity rule is stated as follows:
+
+%\begin{prooftree}
+%  \AxiomC{is\_Collection\_Type(tc)}
+%  \AxiomC{outer\_type(tx) <= tc}
+%  \BinaryInfC{|- : tc<tx> }
+%\end{prooftree}
+
+% \begin{verbatim}
+% Type outer_type( Type tx )
+% {
+%     if ( ! is_Generic_type(tx) )
+%         return tx
+%     Assert (tx == ty<tz>)
+%         return ty
+% }
+% \end{verbatim}
+
+
+\section{Controlling polymorphism\label{determinism-polymorphism}}
+
+\begin{description}
+\item[\refqualclass{checker/determinism/qual}{PolyDet}] is a
+  polymorphic qualifier over nondeterminism (see Section~\ref{qualifier-polymorphism}).
+\end{description}
+
+The Determinism Checker makes
+several enhancements to standard polymorphic qualifiers.
+
+
+\subsection{Avoiding @OrderNonDet\label{determinism-polymorphism-ordernondet}}
+
+\begin{description}
+\item[\refqualclass{checker/determinism/qual}{PolyDet}\<("down")>]
+  Acts like \<@Det> when the polymorphic qualifier is instantiated as
+  \<@OrderNonDet>.
+  ``\<down>'' refers to the direction in the qualifier hierarchy:
+  \<@OrderNonDet> is changed to a lower qualifier that is a subtype of it.
+\item[\refqualclass{checker/determinism/qual}{PolyDet}\<("up")>]
+  Acts like \<@NonDet> when the polymorphic qualifier is instantiated as
+  \<@OrderNonDet>.
+  ``\<up>'' refers to the direction in the qualifier hierarchy:
+  \<@OrderNonDet> is changed to a higher qualifier that is a supertype of it.
+\end{description}
+
+Ordinarily, every occurrence of \<@PolyDet> is instantiated to the same
+type.  Sometimes this does not capture the desired behavior.  For instance,
+there should be three versions of the \<List.add> and \<List.hashCode> routines:
+
+\begin{Verbatim}
+         @NonDet boolean add(      @NonDet List<E> this, E e)
+            @Det boolean add( @OrderNonDet List<E> this, E e)
+            @Det boolean add(         @Det List<E> this, E e)
+
+         @NonDet int hashCode(     @NonDet List<E> this)
+         @NonDet int hashCode(@OrderNonDet List<E> this)
+            @Det int hashCode(        @Det List<E> this)
+\end{Verbatim}
+
+A standard polymorphic annotation
+
+\begin{Verbatim}
+        @PolyDet boolean add(     @PolyDet List<E> this, E e)
+        @PolyDet int hashCode(    @PolyDet List<E> this)
+\end{Verbatim}
+
+\noindent
+can express the first and third versions of each routine, but not the
+second one.  The \refqualclass{checker/determinism/qual}{PolyDet}\<("down")> and
+\refqualclass{checker/determinism/qual}{PolyDet}\<("up")> annotations enable
+expressing the method behavior:
+
+\begin{Verbatim}
+@PolyDet("down") boolean add(     @PolyDet List<E> this, E e)
+  @PolyDet("up") int hashCode(    @PolyDet List<E> this)
+\end{Verbatim}
+
+See the annotated JDK for more example uses of the annotations.
+
+Since the type \<@OrderNonDet> is invalid for non-collections,
+if \<@PolyDet> is applied to a collection somewhere in the method signature
+and if the return type isn't a collection, then the return type should be
+annotated as \<@PolyDet("up")> or \<@PolyDet("down")>.
+
+\subsubsection{Special handling of Set.equals()\label{determinism-improved-precision-set-equals}}
+
+In the JDK, the \<equals()> method of \<Set> is annotated as
+\begin{Verbatim}
+@PolyDet("up") boolean equals(@PolyDet Set<E> this, @PolyDet Object o);
+\end{Verbatim}
+While this is sound, it is imprecise.
+For example, consider the code below:
+
+\begin{Verbatim}
+    @OrderNonDet Set<@Det Integer> a;
+    @OrderNonDet Set<@Det Integer> b;
+    a.equals(b);
+\end{Verbatim}
+
+Here, the return type of \<equals()> gets the annotation \<@NonDet>.
+But it would be more precise to annotate it as \<@Det>.
+To achieve this precision, the checker annotates the return type
+of \<equals()> called on a receiver of type \<Set> as \<@Det> if the
+following conditions are true:
+\begin{itemize}
+    \item the receiver does not have {@code List} or its subtype as a type parameter,
+    \item the argument to equals() is also an {@code @OrderNonDet Set}, and
+    \item the argument to equals() also does not have {@code List} or its subtype as a
+    type parameter
+\end{itemize}
+
+\subsection{Distinguishing bindings and uses\label{determinism-polymorphism-binding}}
+
+\begin{description}
+\item[\refqualclass{checker/determinism/qual}{PolyDet}\<("use")>]
+  Has the same type as any \<@PolyDet> annotations in the method
+  declaration, but does not affect their instantiation.
+\end{description}
+
+As explained in Section~\ref{qualifier-polymorphism},
+all of the \<@PolyDet> annotations in a method declaration are given the same
+instantiation, which is one that works for all of the actual arguments
+(their least upper bound).
+
+The \<@PolyDet("use")> annotation is given the same instantiation as all of the
+\<@PolyDet> annotations, but does not affect the instantiation. This is especially
+useful in preventing methods from non-deterministically modifying the
+state of a deterministic receiver.
+
+As an example of the need for the \<@PolyDet("use")> annotation, consider the
+\<List.set> method.  There should be two versions of it (\<@OrderNonDet
+int> is not a valid type, so no \<@OrderNonDet> instantiation is created):
+
+\begin{Verbatim}
+E set(@NonDet List<E> this, @NonDet int index, E element)
+E set(   @Det List<E> this,    @Det int index, E element)
+\end{Verbatim}
+
+\noindent
+However, it should \emph{not} be legal for a client to make a call such as
+the following:
+
+\begin{Verbatim}
+@Det List<...> myDetList;
+@NonDet int random;
+myDetList.set(random, ...);
+\end{Verbatim}
+
+\noindent
+The type system must forbid this call, because it modifies a
+\<@Det> list in a nondeterministic way.
+However, the arguments are legal for the first instantiation:
+each argument type is a subtype of the corresponding declared type.
+
+To solve this problem, the instantiation is chosen based only on the first
+argument (the \<List> argument).  To have this effect, the library method
+is annotated as:
+
+\begin{Verbatim}
+E set(@PolyDet List<E> this, @PolyDet("use") int index, E element)
+\end{Verbatim}
+
+
+
+\section{How to customize the Determinism Checker\label{determinism-customization}}
+
+In the JDK, printing methods such as \<println> are annotated as taking a
+deterministic result.  This guarantees that a program's output will be
+deterministic.  If it is be too restrictive for your program:
+\begin{itemize}
+\item
+  You can define your own printing methods, some of which can take
+  nondeterministic inputs.
+\item
+  You can override the JDK annotations by providing a stub file
+  (Section~\ref{stub}).
+\end{itemize}
+
+
+\section{Default annotations\label{determinism-defaults}}
+
+The default annotation for most unannotated types is \<@Det>.
+
+\subsection{Method signatures\label{determinism-method-defaults}}
+\begin{itemize}
+\item
+  Formal parameter and return types default to \<@PolyDet>.
+\item
+  If a formal parameter/return type is an array, its component type defaults to
+  \<@PolyDet>.
+\item
+  As an exception, the return type of a method with no unannotated or
+  \<@PolyDet> formal parameters (including the receiver) defaults to
+  \<@Det>.
+\end{itemize}
+
+These choices permit all possible arguments to an unannotated method.
+
+\subsection{Constructor signatures\label{determinism-constructor-defaults}}
+The default annotation on constructor parameters and return types is also \<@PolyDet>.
+As a result, one can construct Objects whose type
+is dependent on the types of constructor arguments without any explicit
+annotations. This causes the checker
+to report errors in situations where the constructor modifies the fields of its class
+using these arguments. The reason for this is that the fields default to \<@Det>.
+As an illustration, consider the example below:
+
+\begin{Verbatim}
+    public class StringHolder {
+        public String data;
+        public StringHolder(String data) {
+            this.data = data;
+        }
+    }
+\end{Verbatim}
+
+In this example, the checker reports an error "assignment type incompatible"
+at the line \<this.data = data> because the field \<data> is annotated as
+\<@Det> by default, whereas the constructor argument has \<@PolyDet>
+as its default annotation. In such cases, you could do either of the following:
+\begin{itemize}
+    \item Suppress the warning in the constructor (at line \<this.data = data> in the above example)
+    to allow construction of \<@PolyDet> objects.
+    \item Explicitly annotate the constructor arguments and return types. For example, to allow
+    the construction of only deterministic \<StringHolder> objects, annotate the above code as
+    \begin{Verbatim}
+        public class StringHolder {
+            public String data;
+            public @Det StringHolder(@Det String data) {
+            this.data = data;
+            }
+        }
+    \end{Verbatim}
+\end{itemize}
+
+\subsection{Local array and generic types\label{determinism-array-defaults}}
+As with all type systems, defaulting is different for the array and
+component types in a locally-declared array or generic type without explicit type
+annotations.
+The array type defaulting follows the CLIMB to top rule (see Section~\ref{climb-to-top}) and
+the component type defaulting uses the default type qualifier (\<@Det>, for
+the Determinism Checker).
+For example, the local array declaration \<int[] a;> is defaulted to \<@Det int @NonDet [] a;>.
+The local declaration \code{MyClass<MyType> x;} is defaulted to
+\code{@NonDet MyClass<@Det MyType> x;}.
+
+\section{Implicit annotations\label{determinism-implicits}}
+The parameter type of the \code{main} method has an implicit annotation
+\<@Det String @Det[]>.
+
+%%  LocalWords:  DeterminismChecker HashSet InputFile NonDet Det MyClass
+%%  LocalWords:  OrderNonDet PolyDet UsePolyDet println MyType

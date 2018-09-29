@@ -9,10 +9,12 @@ class AssignmentContext {
         String[] s = b ? new String[] {""} : null;
     }
 
+    @SuppressWarnings("determinism")
     void t2(boolean b) {
         foo(b ? new String[] {""} : null);
     }
 
+    @SuppressWarnings("determinism")
     String[] t3(boolean b) {
         return b ? new String[] {""} : null;
     }
@@ -22,6 +24,7 @@ class AssignmentContext {
         s = b ? new String[] {""} : null;
     }
 
+    @SuppressWarnings("determinism")
     void assignToCast(String @MinLen(4) [] @MinLen(5) [] currentSample) {
         // This statement used to cause a null pointer exception.
         ((String @MinLen(5) []) currentSample[3])[4] = currentSample[3][4];
