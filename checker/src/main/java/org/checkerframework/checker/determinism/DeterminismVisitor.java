@@ -45,11 +45,23 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     public static final @CompilerMessageKey String INVALID_UPPER_BOUND_TYPE_ARGUMENT =
             "invalid.upper.bound.on.type.argument";
     /**
+     * Error message key for collections that are {@code @NonDet} but whose type arguments are
+     * either {@code @Det} or {@code @OrderNonDet}.
+     */
+    public static final @CompilerMessageKey String INVALID_NONDET_COLLECTION_TYPE_ARGUMENT =
+            "invalid.nondet.collection.type.argument";
+    /**
      * Error message key for arrays whose type is a subtype of the upper bound of their type
      * arguments.
      */
     public static final @CompilerMessageKey String INVALID_UPPER_BOUND_TYPE_ARGUMENT_ARRAY =
             "invalid.upper.bound.on.type.argument.of.array";
+    /**
+     * Error message key for arrays that are {@code @NonDet} but whose component type is either
+     * {@code @Det} or {@code @OrderNonDet}.
+     */
+    public static final @CompilerMessageKey String INVALID_NONDET_TYPE_ARGUMENT_ARRAY =
+            "invalid.nondet.array.type.argument";
     /**
      * The lower bound for exception parameters is {@code @Det}.
      *
