@@ -30,9 +30,15 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     /** Error message key for use of {@code @OrderNonDet} on non-collections and non-arrays. */
     private static final @CompilerMessageKey String ORDERNONDET_ON_NONCOLLECTION =
             "ordernondet.on.noncollection.and.nonarray";
-    /** Error message key for collections whose type is a subtype of their element types. */
+    /**
+     * Error message key for collections whose type is a subtype of their element types, or whose
+     * type is {@code @NonDet} with element type {@code @Det} or {@code @OrderNonDet}.
+     */
     private static final @CompilerMessageKey String INVALID_ELEMENT_TYPE = "invalid.element.type";
-    /** Error message key for arrays whose type is a subtype of their component types. */
+    /**
+     * Error message key for arrays whose type is a subtype of their component types, or whose type
+     * is {@code @NonDet} with element type {@code @Det} or {@code @OrderNonDet}.
+     */
     private static final @CompilerMessageKey String INVALID_ARRAY_COMPONENT_TYPE =
             "invalid.array.component.type";
     /** Error message key for assignment to a deterministic array at a non-deterministic index. */
@@ -40,28 +46,18 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             "invalid.array.assignment";
     /**
      * Error message key for collections whose type is a subtype of the upper bound of their type
-     * arguments.
+     * arguments, or whose type is {@code @NonDet} with element type {@code @Det} or
+     * {@code @OrderNonDet}.
      */
     public static final @CompilerMessageKey String INVALID_UPPER_BOUND_TYPE_ARGUMENT =
             "invalid.upper.bound.on.type.argument";
     /**
-     * Error message key for collections that are {@code @NonDet} but whose type arguments are
-     * either {@code @Det} or {@code @OrderNonDet}.
-     */
-    public static final @CompilerMessageKey String INVALID_NONDET_COLLECTION_TYPE_ARGUMENT =
-            "invalid.nondet.collection.type.argument";
-    /**
      * Error message key for arrays whose type is a subtype of the upper bound of their type
-     * arguments.
+     * arguments, or whose type is {@code @NonDet} with element type {@code @Det} or
+     * {@code @OrderNonDet}.
      */
     public static final @CompilerMessageKey String INVALID_UPPER_BOUND_TYPE_ARGUMENT_ARRAY =
             "invalid.upper.bound.on.type.argument.of.array";
-    /**
-     * Error message key for arrays that are {@code @NonDet} but whose component type is either
-     * {@code @Det} or {@code @OrderNonDet}.
-     */
-    public static final @CompilerMessageKey String INVALID_NONDET_TYPE_ARGUMENT_ARRAY =
-            "invalid.nondet.array.type.argument";
     /**
      * The lower bound for exception parameters is {@code @Det}.
      *
@@ -108,7 +104,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 if (!argType.getAnnotations().isEmpty()) {
                     AnnotationMirror argAnnotation =
                             argType.getAnnotationInHierarchy(atypeFactory.NONDET);
-                    if (!isSubtype(argAnnotation, baseAnnotation, tree, INVALID_ELEMENT_TYPE)) {
+                    if (!isValidElementType(
+                            argAnnotation, baseAnnotation, tree, INVALID_ELEMENT_TYPE)) {
                         return false;
                     }
                 }
@@ -116,7 +113,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                     AnnotatedTypeMirror argTypeUpperBound =
                             ((AnnotatedTypeVariable) argType).getUpperBound();
                     AnnotationMirror typevarAnnotation = getUpperBound(argTypeUpperBound);
-                    if (!isSubtype(
+                    if (!isValidElementType(
                             typevarAnnotation,
                             baseAnnotation,
                             tree,
@@ -128,7 +125,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                     AnnotatedTypeMirror argTypeExtendsBound =
                             ((AnnotatedTypeMirror.AnnotatedWildcardType) argType).getExtendsBound();
                     AnnotationMirror typevarAnnotation = getUpperBound(argTypeExtendsBound);
-                    if (!isSubtype(
+                    if (!isValidElementType(
                             typevarAnnotation,
                             baseAnnotation,
                             tree,
@@ -180,7 +177,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             if (!componentType.getAnnotations().isEmpty()) {
                 AnnotationMirror componentAnno =
                         componentType.getAnnotationInHierarchy(atypeFactory.NONDET);
-                if (!isSubtype(componentAnno, arrayType, tree, INVALID_ARRAY_COMPONENT_TYPE)) {
+                if (!isValidElementType(
+                        componentAnno, arrayType, tree, INVALID_ARRAY_COMPONENT_TYPE)) {
                     return false;
                 }
                 if (componentType.getKind() == TypeKind.TYPEVAR) {
@@ -188,7 +186,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                             ((AnnotatedTypeVariable) componentType)
                                     .getUpperBound()
                                     .getAnnotationInHierarchy(atypeFactory.NONDET);
-                    if (!isSubtype(
+                    if (!isValidElementType(
                             componentUpperBoundAnnotation,
                             arrayType,
                             tree,
@@ -451,6 +449,36 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         }
         checker.report(Result.failure(errorMessage, subAnnotation, superAnnotation), tree);
         return false;
+    }
+
+    /**
+     * Reports the given {@code errorMessage} if {@code subAnnotation} is not a valid element type
+     * of a collection or array with {@code collectionAnno}.
+     *
+     * @param elementAnno the annotation of the element type of an array or collection
+     * @param collectionAnno the annotation of an array or collection
+     * @param tree the tree to report errors on
+     * @param errorMessage the error message to report
+     * @return true if {@code elementAnno} is a subtype of {@code supperAnnotation} and it's not the
+     *     case that {@code collectionAnno} is {@code @NonDet} and {@code elementAnno} is
+     *     {@code @Det} or {@code @OrderNonDet}, false otherwise
+     */
+    private boolean isValidElementType(
+            AnnotationMirror elementAnno,
+            AnnotationMirror collectionAnno,
+            Tree tree,
+            @CompilerMessageKey String errorMessage) {
+        if (!atypeFactory.getQualifierHierarchy().isSubtype(elementAnno, collectionAnno)) {
+            checker.report(Result.failure(errorMessage, elementAnno, collectionAnno), tree);
+            return false;
+        }
+        if (AnnotationUtils.areSame(collectionAnno, atypeFactory.NONDET)
+                && (AnnotationUtils.areSame(elementAnno, atypeFactory.DET)
+                        || AnnotationUtils.areSame(elementAnno, atypeFactory.ORDERNONDET))) {
+            checker.report(Result.failure(errorMessage, elementAnno, collectionAnno), tree);
+            return false;
+        }
+        return true;
     }
 
     @Override
