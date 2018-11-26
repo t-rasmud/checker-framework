@@ -20,10 +20,6 @@ public class TestClearHashCode {
         @NonDet int code = lst.hashCode();
     }
 
-    void testClearNd(@NonDet List<@Det Integer> lst) {
-        lst.clear();
-    }
-
     void testHashNd(@NonDet List<@NonDet Integer> lst) {
         @NonDet int code = lst.hashCode();
     }

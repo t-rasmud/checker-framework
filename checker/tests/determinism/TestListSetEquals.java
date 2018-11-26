@@ -11,12 +11,7 @@ public class TestListSetEquals {
         @Det boolean ret = aList.equals(bList);
     }
 
-    void testListEquals3(@Det List<@Det Integer> aList, @NonDet List<@Det Integer> bList) {
-        // :: error: (assignment.type.incompatible)
-        @Det boolean ret = aList.equals(bList);
-    }
-
-    void testListEquals31(@Det List<@Det Integer> aList, @NonDet List<@NonDet Integer> bList) {
+    void testListEquals3(@Det List<@Det Integer> aList, @NonDet List<@NonDet Integer> bList) {
         // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
@@ -32,23 +27,18 @@ public class TestListSetEquals {
         @Det boolean ret = aList.equals(bList);
     }
 
-    void testListEquals6(@OrderNonDet List<@Det Integer> aList, @NonDet List<@Det Integer> bList) {
+    void testListEquals6(@NonDet List<@NonDet Integer> aList, @Det List<@Det Integer> bList) {
         // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
 
-    void testListEquals7(@NonDet List<@NonDet Integer> aList, @Det List<@Det Integer> bList) {
-        // :: error: (assignment.type.incompatible)
-        @Det boolean ret = aList.equals(bList);
-    }
-
-    void testListEquals8(
+    void testListEquals7(
             @NonDet List<@NonDet Integer> aList, @OrderNonDet List<@Det Integer> bList) {
         // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
 
-    void testListEquals9(@NonDet List<@NonDet Integer> aList, @NonDet List<@NonDet Integer> bList) {
+    void testListEquals8(@NonDet List<@NonDet Integer> aList, @NonDet List<@NonDet Integer> bList) {
         // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
@@ -63,40 +53,29 @@ public class TestListSetEquals {
         @Det boolean ret = aList.equals(bList);
     }
 
-    void testListSetEquals3(@Det List<@Det Integer> aList, @NonDet Set<@Det Integer> bList) {
+    void testListSetEquals3(@OrderNonDet List<@Det Integer> aList, @Det Set<@Det Integer> bList) {
         // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
 
-    void testListSetEquals4(@OrderNonDet List<@Det Integer> aList, @Det Set<@Det Integer> bList) {
-        // :: error: (assignment.type.incompatible)
-        @Det boolean ret = aList.equals(bList);
-    }
-
-    void testListSetEquals5(
+    void testListSetEquals4(
             @OrderNonDet List<@Det Integer> aList, @OrderNonDet Set<@Det Integer> bList) {
         // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
 
+    void testListSetEquals5(@NonDet List<@NonDet Integer> aList, @Det Set<@Det Integer> bList) {
+        // :: error: (assignment.type.incompatible)
+        @Det boolean ret = aList.equals(bList);
+    }
+
     void testListSetEquals6(
-            @OrderNonDet List<@Det Integer> aList, @NonDet Set<@Det Integer> bList) {
-        // :: error: (assignment.type.incompatible)
-        @Det boolean ret = aList.equals(bList);
-    }
-
-    void testListSetEquals7(@NonDet List<@NonDet Integer> aList, @Det Set<@Det Integer> bList) {
-        // :: error: (assignment.type.incompatible)
-        @Det boolean ret = aList.equals(bList);
-    }
-
-    void testListSetEquals8(
             @NonDet List<@NonDet Integer> aList, @OrderNonDet Set<@Det Integer> bList) {
         // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
 
-    void testListSetEquals9(
+    void testListSetEquals7(
             @NonDet List<@NonDet Integer> aList, @NonDet Set<@NonDet Integer> bList) {
         // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
@@ -112,37 +91,27 @@ public class TestListSetEquals {
         @Det boolean ret = aList.equals(bList);
     }
 
-    void testSetEquals3(@Det Set<@Det Integer> aList, @NonDet Set<@Det Integer> bList) {
+    void testSetEquals3(@OrderNonDet Set<@Det Integer> aList, @Det Set<@Det Integer> bList) {
         // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
 
-    void testSetEquals4(@OrderNonDet Set<@Det Integer> aList, @Det Set<@Det Integer> bList) {
-        // :: error: (assignment.type.incompatible)
-        @Det boolean ret = aList.equals(bList);
-    }
-
-    void testSetEquals5(
+    void testSetEquals4(
             @OrderNonDet Set<@Det Integer> aList, @OrderNonDet Set<@Det Integer> bList) {
         @Det boolean ret = aList.equals(bList);
     }
 
-    void testSetEquals6(@OrderNonDet Set<@Det Integer> aList, @NonDet Set<@Det Integer> bList) {
+    void testSetEquals5(@NonDet Set<@NonDet Integer> aList, @Det Set<@Det Integer> bList) {
         // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
 
-    void testSetEquals7(@NonDet Set<@NonDet Integer> aList, @Det Set<@Det Integer> bList) {
+    void testSetEquals6(@NonDet Set<@NonDet Integer> aList, @OrderNonDet Set<@Det Integer> bList) {
         // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
 
-    void testSetEquals8(@NonDet Set<@NonDet Integer> aList, @OrderNonDet Set<@Det Integer> bList) {
-        // :: error: (assignment.type.incompatible)
-        @Det boolean ret = aList.equals(bList);
-    }
-
-    void testSetEquals9(@NonDet Set<@NonDet Integer> aList, @NonDet Set<@NonDet Integer> bList) {
+    void testSetEquals7(@NonDet Set<@NonDet Integer> aList, @NonDet Set<@NonDet Integer> bList) {
         // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
@@ -157,39 +126,29 @@ public class TestListSetEquals {
         @Det boolean ret = aList.equals(bList);
     }
 
-    void testSetListEqual3(@NonDet Set<@Det Integer> aList, @Det List<@Det Integer> bList) {
+    void testSetListEqual3(@Det Set<@Det Integer> aList, @OrderNonDet List<@Det Integer> bList) {
         // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
 
-    void testSetListEqual4(@Det Set<@Det Integer> aList, @OrderNonDet List<@Det Integer> bList) {
-        // :: error: (assignment.type.incompatible)
-        @Det boolean ret = aList.equals(bList);
-    }
-
-    void testSetListEqual5(
+    void testSetListEqual4(
             @OrderNonDet Set<@Det Integer> aList, @OrderNonDet List<@Det Integer> bList) {
         // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
 
-    void testSetListEqual6(@NonDet Set<@Det Integer> aList, @OrderNonDet List<@Det Integer> bList) {
+    void testSetListEqual5(@Det Set<@Det Integer> aList, @NonDet List<@NonDet Integer> bList) {
         // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
 
-    void testSetListEqual7(@Det Set<@Det Integer> aList, @NonDet List<@NonDet Integer> bList) {
-        // :: error: (assignment.type.incompatible)
-        @Det boolean ret = aList.equals(bList);
-    }
-
-    void testSetListEqual8(
+    void testSetListEqual6(
             @OrderNonDet Set<@Det Integer> aList, @NonDet List<@NonDet Integer> bList) {
         // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
 
-    void testSetListEqual9(
+    void testSetListEqual7(
             @NonDet Set<@NonDet Integer> aList, @NonDet List<@NonDet Integer> bList) {
         // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);

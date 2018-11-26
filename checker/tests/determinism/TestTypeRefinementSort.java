@@ -20,15 +20,6 @@ public class TestTypeRefinementSort {
     }
 
     void testSort2(
-            @NonDet List<@Det Integer> ndetList,
-            @NonDet Comparator<@Det Integer> cmp,
-            @Det List<@Det Integer> check) {
-        ndetList.sort(cmp);
-        // ::error: argument.type.incompatible
-        System.out.println(ndetList.equals(check));
-    }
-
-    void testSort3(
             @OrderNonDet List<@Det Integer> ondetList,
             @Det Comparator<@Det Integer> cmp,
             @Det List<@Det Integer> check) {

@@ -28,7 +28,7 @@ class Child extends TestOverride {
     @Override
     protected @Det ArrayList<@Det Integer> newList(@NonDet int a) {
         // :: error: (return.type.incompatible)
-        return new ArrayList<Integer>(a);
+        return new @Det ArrayList<Integer>(a);
     }
 
     @Override

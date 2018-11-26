@@ -33,11 +33,6 @@ public class TestArraysSort {
         // :: error: (argument.type.incompatible)
         System.out.println(a[0]);
     }
-
-    void testSort5(@Det Integer @NonDet [] a) {
-        @NonDet IntComparator c = new @NonDet IntComparator();
-        Arrays.sort(a, c);
-    }
 }
 
 class IntComparator implements Comparator<@NonDet Integer> {
