@@ -1,6 +1,8 @@
 import java.util.*;
 import org.checkerframework.checker.determinism.qual.*;
 
+// @skip-test until https://github.com/t-rasmud/checker-framework/issues/68 is fixed. Causes an
+// issue in newList.
 public class TestOverride {
     protected @PolyDet int mult(@PolyDet int a) {
         return a * a;
