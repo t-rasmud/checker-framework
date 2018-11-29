@@ -18,9 +18,4 @@ public class TestPolyReplace {
     @PolyDet("up") List<List<Integer>> polyList(@PolyDet List<List<Integer>> list) {
         return list;
     }
-
-    void callPolyList(@OrderNonDet List<List<Integer>> list) {
-        // :: error: (assignment.type.incompatible)
-        @Det List<@Det List<@Det Integer>> local = polyList(list);
-    }
 }
