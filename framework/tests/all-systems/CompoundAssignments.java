@@ -12,6 +12,7 @@ class CompoundAssignments {
 
     // There used to be a bug computing the Receiver for a widening
     // conversion, such as widening sum to a double below.
+    @SuppressWarnings("determinism") // temporarily incorrect defaults for local variables
     static int sum_with_widening() {
         double[] freq = new double[SIZE];
         int sum = 0;

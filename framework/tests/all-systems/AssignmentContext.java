@@ -5,7 +5,10 @@ class AssignmentContext {
 
     void foo(String[] a) {}
 
-    @SuppressWarnings("determinism:invalid.type.on.conditional")
+    @SuppressWarnings({
+        "determinism:invalid.type.on.conditional",
+        "determinism:invalid.array.component.type"
+    }) // temporarily incorrect defaults for local variables
     void t1(boolean b) {
         String[] s = b ? new String[] {""} : null;
     }
@@ -20,7 +23,10 @@ class AssignmentContext {
         return b ? new String[] {""} : null;
     }
 
-    @SuppressWarnings("determinism:invalid.type.on.conditional")
+    @SuppressWarnings({
+        "determinism:invalid.type.on.conditional",
+        "determinism:invalid.array.component.type"
+    }) // temporarily incorrect defaults for local variables
     void t4(boolean b) {
         String[] s = null;
         s = b ? new String[] {""} : null;

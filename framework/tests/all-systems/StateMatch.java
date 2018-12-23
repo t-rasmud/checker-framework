@@ -6,9 +6,11 @@ public class StateMatch {
 
     @SuppressWarnings({
         "Interning",
-        "index"
+        "index",
+        "determinism"
     }) // This code is inherently unsafe for the index checker, but adding index annotations
-    // produces warnings for other checkers (fenum)
+    // produces warnings for other checkers (fenum). Also, temporarily incorrect defaults for local
+    // variables.
     public boolean state_match(Object state) {
         if (!(state instanceof double[][])) {
             System.out.println("");
