@@ -112,8 +112,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 if (argType.getKind() == TypeKind.TYPEVAR) {
                     AnnotatedTypeMirror argTypeUpperBound =
                             ((AnnotatedTypeVariable) argType).getUpperBound();
-                    AnnotationMirror typevarAnnotation = getUpperBound(argTypeUpperBound);
-                    if (!isValidElementType(
+                    AnnotationMirror typevarAnnotation =
+                            getUpperBound(atypeFactory, argTypeUpperBound);
+                    if (!isSubtype(
                             typevarAnnotation,
                             baseAnnotation,
                             tree,
@@ -124,8 +125,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 if (argType.getKind() == TypeKind.WILDCARD) {
                     AnnotatedTypeMirror argTypeExtendsBound =
                             ((AnnotatedTypeMirror.AnnotatedWildcardType) argType).getExtendsBound();
-                    AnnotationMirror typevarAnnotation = getUpperBound(argTypeExtendsBound);
-                    if (!isValidElementType(
+                    AnnotationMirror typevarAnnotation =
+                            getUpperBound(atypeFactory, argTypeExtendsBound);
+                    if (!isSubtype(
                             typevarAnnotation,
                             baseAnnotation,
                             tree,
@@ -208,14 +210,15 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      * <p>Example 2: If this method is called with {@code argTypeUpperBound} as {@code @Det Z}, it
      * returns {@code Det}.
      */
-    private AnnotationMirror getUpperBound(AnnotatedTypeMirror argTypeUpperBound) {
+    public static AnnotationMirror getUpperBound(
+            DeterminismAnnotatedTypeFactory factory, AnnotatedTypeMirror argTypeUpperBound) {
         AnnotationMirror typevarAnnotation =
-                argTypeUpperBound.getAnnotationInHierarchy(atypeFactory.NONDET);
+                argTypeUpperBound.getAnnotationInHierarchy(factory.NONDET);
         // typevarAnnotation is null for "<Z>  List<? extends Z>", "<Z,T>  List<T extends Z>"
         while (typevarAnnotation == null) {
             argTypeUpperBound =
                     ((AnnotatedTypeMirror.AnnotatedTypeVariable) argTypeUpperBound).getUpperBound();
-            typevarAnnotation = argTypeUpperBound.getAnnotationInHierarchy(atypeFactory.NONDET);
+            typevarAnnotation = argTypeUpperBound.getAnnotationInHierarchy(factory.NONDET);
         }
         return typevarAnnotation;
     }
