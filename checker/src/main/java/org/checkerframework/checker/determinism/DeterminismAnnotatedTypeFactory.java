@@ -333,7 +333,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         public Void visitExecutable(final AnnotatedExecutableType executableType, final Void p) {
             if (!isMainMethod(executableType.getElement())) {
                 for (AnnotatedTypeMirror paramType : executableType.getParameterTypes()) {
-                    defaultArrayComponentTypeAsPolyDet(paramType);
+                    defaultArrayComponentType(paramType, POLYDET);
                 }
 
                 // t.getReceiverType() is null for both "Object <init>()"
@@ -355,15 +355,18 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                             executableType.getReturnType().replaceAnnotation(DET);
                         }
                     }
-                    defaultArrayComponentTypeAsPolyDet(executableType.getReturnType());
+                    defaultArrayComponentType(executableType.getReturnType(), POLYDET);
                 }
             }
             return super.visitExecutable(executableType, p);
         }
     }
 
-    /** If {@code type} is an array type, defaults all its nested component types as @PolyDet. */
-    private void defaultArrayComponentTypeAsPolyDet(AnnotatedTypeMirror type) {
+    /**
+     * If {@code type} is an array type, defaults all its nested component types as {@code
+     * annotation}.
+     */
+    private void defaultArrayComponentType(AnnotatedTypeMirror type, AnnotationMirror annotation) {
         if (type.getKind() == TypeKind.ARRAY) {
             AnnotatedArrayType annoArrType = (AnnotatedArrayType) type;
             // The following code uses "annoArrType.getAnnotations().isEmpty()"
@@ -374,30 +377,66 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             // "arrParamType.getExplicitAnnotations().size()" returns 0,
             // "arrParamType.getAnnotations().size()" returns 1.
             if (annoArrType.getAnnotations().isEmpty()) {
-                recursiveDefaultArrayComponentTypeAsPolyDet(annoArrType);
+                recursiveDefaultArrayComponentType(annoArrType, annotation);
             }
         }
     }
 
     /**
-     * Defaults all the nested component types of the array type {@code annoArrType} as
-     * {@code @PolyDet}.
+     * Defaults all the nested component types of the array type {@code annoArrType} as {@code
+     * annotation}.
      *
-     * <p>Example: If this method is called with {@code annoArrType} as {@code int[][]}, the
-     * resulting {@code annoArrType} will be {@code @PolyDet int @PolyDet[][]}
+     * <p>Example: If this method is called with {@code annoArrType} as {@code int[][]} and {@code
+     * annotation} as {@code @PolyDet}, the resulting {@code annoArrType} will be {@code @PolyDet
+     * int @PolyDet[][]}
      */
-    void recursiveDefaultArrayComponentTypeAsPolyDet(AnnotatedArrayType annoArrType) {
+    void recursiveDefaultArrayComponentType(
+            AnnotatedArrayType annoArrType, AnnotationMirror annotation) {
         AnnotatedTypeMirror componentType = annoArrType.getComponentType();
         if (!componentType.getAnnotations().isEmpty()) {
             return;
         }
         if (componentType.getUnderlyingType().getKind() != TypeKind.TYPEVAR) {
-            componentType.replaceAnnotation(POLYDET);
+            componentType.replaceAnnotation(annotation);
         }
         if (componentType.getKind() != TypeKind.ARRAY) {
             return;
         }
-        recursiveDefaultArrayComponentTypeAsPolyDet((AnnotatedArrayType) componentType);
+        recursiveDefaultArrayComponentType((AnnotatedArrayType) componentType, annotation);
+    }
+
+    /**
+     * If {@code type} is a collection type, defaults all its nested component types as {@code
+     * annotation}.
+     */
+    void defaultCollectionComponentType(AnnotatedTypeMirror type, AnnotationMirror annotation) {
+        if (isCollection(type)) {
+            AnnotatedDeclaredType annoCollectionType = (AnnotatedDeclaredType) type;
+            recursiveDefaultCollectionComponentType(annoCollectionType, annotation);
+        }
+    }
+
+    /**
+     * Defaults all the nested component types of the collection type {@code type} as {@code
+     * annotation}.
+     *
+     * <p>Example: If this method is called with {@code annoArrType} as {@code List<List<Integer>>}
+     * and {@code annotation} as {@code @PolyDet}, the resulting {@code type} will be {@code
+     * List<@PolyDet List<@PolyDet Integer>>}
+     */
+    private void recursiveDefaultCollectionComponentType(
+            AnnotatedDeclaredType type, AnnotationMirror annotation) {
+        for (AnnotatedTypeMirror argType : type.getTypeArguments()) {
+            if (argType.getKind() != TypeKind.TYPEVAR
+                    && argType.getKind() != TypeKind.WILDCARD
+                    && argType.getAnnotations().isEmpty()) {
+                argType.replaceAnnotation(annotation);
+                if (isCollection(argType)) {
+                    recursiveDefaultCollectionComponentType(
+                            (AnnotatedDeclaredType) argType, annotation);
+                }
+            }
+        }
     }
 
     /** @return true if {@code method} is equals */
@@ -461,11 +500,24 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     }
                     type.addMissingAnnotations(Collections.singleton(DET));
                 } else {
-                    defaultArrayComponentTypeAsPolyDet(type);
+                    defaultArrayComponentType(type, POLYDET);
                 }
             }
         }
         super.addComputedTypeAnnotations(elt, type);
+    }
+
+    @Override
+    protected void addComputedTypeAnnotations(
+            Tree tree, AnnotatedTypeMirror type, boolean iUseFlow) {
+        Element elt = TreeUtils.elementFromTree(tree);
+        if (elt != null
+                && elt.getKind() == ElementKind.LOCAL_VARIABLE
+                && tree.getKind() == Tree.Kind.VARIABLE) {
+            defaultArrayComponentType(type, NONDET);
+            defaultCollectionComponentType(type, NONDET);
+        }
+        super.addComputedTypeAnnotations(tree, type, iUseFlow);
     }
 
     /** @return true if {@code subClass} is a subtype of {@code superClass} */
