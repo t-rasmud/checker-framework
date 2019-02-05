@@ -504,9 +504,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 }
             }
         }
-        if (elt != null
-                && elt.getKind() == ElementKind.LOCAL_VARIABLE
-                && tree.getKind() == Tree.Kind.VARIABLE) {
+        if (elt.getKind() == ElementKind.LOCAL_VARIABLE) {
             defaultArrayComponentType(type, NONDET);
             defaultCollectionComponentType(type, NONDET);
         }
@@ -517,7 +515,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     protected void addComputedTypeAnnotations(
             Tree tree, AnnotatedTypeMirror type, boolean iUseFlow) {
         Element elt = TreeUtils.elementFromTree(tree);
-        if (elt.getKind() == ElementKind.LOCAL_VARIABLE) {
+        if (elt != null
+                && elt.getKind() == ElementKind.LOCAL_VARIABLE
+                && tree.getKind() == Tree.Kind.VARIABLE) {
             defaultArrayComponentType(type, NONDET);
             defaultCollectionComponentType(type, NONDET);
         }
