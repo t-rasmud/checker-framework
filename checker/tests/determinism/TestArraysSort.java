@@ -34,12 +34,7 @@ public class TestArraysSort {
         System.out.println(a[0]);
     }
 
-    void testSort5(@Det Integer @NonDet [] a) {
-        @NonDet IntComparator c = new @NonDet IntComparator();
-        Arrays.sort(a, c);
-    }
-
-    void testSort6(
+    void testSort5(
             @OrderNonDet List<@Det Integer> @OrderNonDet [] a,
             @Det Comparator<@OrderNonDet List<@Det Integer>> c) {
         Arrays.sort(a, c);
@@ -47,23 +42,23 @@ public class TestArraysSort {
         System.out.println(a[0]);
     }
 
-    void testSort7(@Det int @PolyDet [] a) {
+    void testSort6(@Det int @PolyDet [] a) {
         Arrays.sort(a);
         @Det int @PolyDet("down") [] tmp = a;
     }
 
-    void testSort8(@PolyDet int @PolyDet [] a) {
+    void testSort7(@PolyDet int @PolyDet [] a) {
         Arrays.sort(a);
         // ::error: assignment.type.incompatible
         @PolyDet("down") int @PolyDet("down") [] tmp = a;
     }
 
-    <T> void testSort9(@Det T @OrderNonDet [] a) {
+    <T> void testSort8(@Det T @OrderNonDet [] a) {
         Arrays.sort(a);
         System.out.println(a);
     }
 
-    <T extends @Det Object> void testSort10(T @OrderNonDet [] a) {
+    <T extends @Det Object> void testSort9(T @OrderNonDet [] a) {
         Arrays.sort(a);
         System.out.println(a);
     }
