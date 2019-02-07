@@ -275,9 +275,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
         /**
          * Reports an error if {@code node} represents explicitly constructing a {@code @Det} or
-         * {@code @PolyDet} {@code HashSet}. If one these annotation wasn't explicitly written, but
-         * the constructor would resolve to {@code @Det}, inserts {@code @OrderNonDet} instead. If
-         * it would resolve to any variant of {@code @PolyDet}, replaces it with {@code @NonDet}
+         * {@code HashSet}. If {@code Det} wasn't explicitly written, but the constructor would
+         * resolve to {@code @Det}, inserts {@code @OrderNonDet} instead. Also reports an error if
+         * the result of the constructor would resolve to any variant of {@code @PolyDet}.
          *
          * @param node a tree representing instantiating a class
          * @param annotatedTypeMirror the type to modify if it represents an invalid constructor
@@ -288,8 +288,14 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         public Void visitNewClass(NewClassTree node, AnnotatedTypeMirror annotatedTypeMirror) {
             if (isHashSet(annotatedTypeMirror)) {
                 AnnotationMirror explicitAnno = getNewClassAnnotation(node);
+                // There are two checks for @PolyDet. The first catches "new @PolyDet HashSet()"
+                // because in that case the annotation on annotatedTypeMirror is @OrderNonDet. The
+                // second catches instances where a @PolyDet collection was passed to the
+                // constructor.
                 if (AnnotationUtils.areSame(explicitAnno, DET)
-                        || AnnotationUtils.areSameByName(explicitAnno, POLYDET)) {
+                        || AnnotationUtils.areSameByName(explicitAnno, POLYDET)
+                        || AnnotationUtils.areSameByName(
+                                annotatedTypeMirror.getAnnotationInHierarchy(NONDET), POLYDET)) {
                     checker.report(
                             Result.failure(
                                     DeterminismVisitor.INVALID_HASH_SET_CONSTRUCTOR_INVOCATION),
@@ -298,9 +304,6 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 }
                 if (annotatedTypeMirror.hasAnnotation(DET)) {
                     annotatedTypeMirror.replaceAnnotation(ORDERNONDET);
-                } else if (AnnotationUtils.areSameByName(
-                        annotatedTypeMirror.getAnnotationInHierarchy(NONDET), POLYDET)) {
-                    annotatedTypeMirror.replaceAnnotation(NONDET);
                 }
             }
             return super.visitNewClass(node, annotatedTypeMirror);
