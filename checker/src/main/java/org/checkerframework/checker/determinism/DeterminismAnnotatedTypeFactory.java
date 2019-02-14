@@ -402,8 +402,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
-     * If {@code type} is an array type, defaults all its nested component types as {@code
-     * annotation}.
+     * If {@code type} is an array type that is not explicitly annotated, defaults all its nested
+     * component types as {@code annotation}.
      */
     private void defaultArrayComponentType(AnnotatedTypeMirror type, AnnotationMirror annotation) {
         if (type.getKind() == TypeKind.ARRAY) {
@@ -445,11 +445,11 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
-     * If {@code type} is a collection type, defaults all its nested component types as {@code
-     * annotation}.
+     * If {@code type} is a collection type that is not explicitly annotated, defaults all its
+     * nested component types as {@code annotation}.
      */
     void defaultCollectionComponentType(AnnotatedTypeMirror type, AnnotationMirror annotation) {
-        if (isCollection(type)) {
+        if (isCollection(type) && type.getAnnotations().isEmpty()) {
             AnnotatedDeclaredType annoCollectionType = (AnnotatedDeclaredType) type;
             recursiveDefaultCollectionComponentType(annoCollectionType, annotation);
         }
