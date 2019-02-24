@@ -23,7 +23,7 @@ class Usage {
         // TODO: false negative. See #635.
         //// :: error: (argument.type.incompatible)
         // :: warning: [unchecked] unchecked call to id(T) as a member of the raw type C
-        // :.constructor.invocation: warning: (cast.unsafe)
+        // :: warning: (cast.unsafe.constructor.invocation)
         c.id(new @Even Object());
     }
 }

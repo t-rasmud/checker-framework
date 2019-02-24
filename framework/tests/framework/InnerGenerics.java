@@ -8,7 +8,7 @@ public class InnerGenerics {
     void testInner1() {
         // :: warning: (cast.unsafe.constructor.invocation)
         @Odd ListOuter<String> o = new @Odd ListOuter<String>();
-        // :.constructor.invocation: warning: (cast.unsafe)
+        // :: warning: (cast.unsafe.constructor.invocation)
         @Odd ListInner<String> i = new @Odd ListInner<String>();
     }
 

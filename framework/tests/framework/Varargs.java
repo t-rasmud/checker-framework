@@ -16,7 +16,7 @@ public class Varargs {
         // :: warning: (cast.unsafe.constructor.invocation)
         moreVarargs(new @Odd String(), new @Odd String());
         // :: error: (argument.type.incompatible)
-        // :.constructor.invocation: warning: (cast.unsafe)
+        // :: warning: (cast.unsafe.constructor.invocation)
         moreVarargs(new String(), new @Odd String());
         moreVarargs(
                 // :: error: (argument.type.incompatible)
