@@ -64,11 +64,11 @@ class Defaulting {
         void call() {
             // :: warning: (cast.unsafe.constructor.invocation)
             m(new @H1S1 Object());
-            // :: error: (argument.type.incompatible) :.constructor.invocation: warning:
-            // (cast.unsafe)
+            // :: error: (argument.type.incompatible) :: warning:
+            // (cast.unsafe.constructor.invocation)
             m(new @H1S2 Object());
-            // :: error: (argume.constructor.invocationnt.type.incompatible) :: warning:
-            // (cast.unsafe)
+            // :: error: (argument.type.incompatible) :: warning:
+            // (cast.unsafe.constructor.invocation)
             m(new Object());
         }
     }
@@ -96,11 +96,11 @@ class Defaulting {
         void call() {
             // :: warning: (cast.unsafe.constructor.invocation)
             new TestConstructorParameter(new @H1S1 Object());
-            // :: error: (argument.type.incompatible) :.constructor.invocation: warning:
-            // (cast.unsafe)
+            // :: error: (argument.type.incompatible) :: warning:
+            // (cast.unsafe.constructor.invocation)
             new TestConstructorParameter(new @H1S2 Object());
-            // :: error: (argume.constructor.invocationnt.type.incompatible) :: warning:
-            // (cast.unsafe)
+            // :: error: (argument.type.incompatible) :: warning:
+            // (cast.unsafe.constructor.invocation)
             new TestConstructorParameter(new Object());
         }
     }
@@ -135,7 +135,7 @@ class Defaulting {
         }
 
         Object res3() {
-            // :: error: (return.type.incompatible) :.constructor.invocation: warning: (cast.unsafe)
+            // :: error: (return.type.incompatible) :: warning: (cast.unsafe.constructor.invocation)
             return new Object();
         }
     }
@@ -164,7 +164,7 @@ class Defaulting {
         void call() {
             // :: warning: (cast.unsafe.constructor.invocation)
             @H1S1 ReceiverDefaulting r2 = new @H1S1 ReceiverDefaulting();
-            // :.constructor.invocation: warning: (cast.unsafe)
+            // :: warning: (cast.unsafe.constructor.invocation)
             @H1S2 ReceiverDefaulting r3 = new @H1S2 ReceiverDefaulting();
             ReceiverDefaulting r = new ReceiverDefaulting();
 
