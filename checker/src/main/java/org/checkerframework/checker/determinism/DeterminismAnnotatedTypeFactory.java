@@ -421,7 +421,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             // For example: if 'annoannoArrType' is "@Det int @Det[]",
             // "arrParamType.getExplicitAnnotations().size()" returns 0,
             // "arrParamType.getAnnotations().size()" returns 1.
-            if (annoArrType.getAnnotations().isEmpty()) {
+            if (annoArrType.getAnnotations().isEmpty() || annoArrType.hasAnnotation(NONDET)) {
                 recursiveDefaultArrayComponentType(annoArrType, annotation);
             }
         }
@@ -455,7 +455,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
      * nested component types as {@code annotation}.
      */
     void defaultCollectionComponentType(AnnotatedTypeMirror type, AnnotationMirror annotation) {
-        if (isCollection(type) && type.getAnnotations().isEmpty()) {
+        if (isCollection(type)
+                && (type.getAnnotations().isEmpty() || type.hasExplicitAnnotation(NONDET))) {
             AnnotatedDeclaredType annoCollectionType = (AnnotatedDeclaredType) type;
             recursiveDefaultCollectionComponentType(annoCollectionType, annotation);
         }

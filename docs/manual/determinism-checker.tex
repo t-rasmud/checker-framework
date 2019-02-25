@@ -80,35 +80,51 @@ Section~\ref{determinism-polymorphism} explains polymorphic qualifiers.
 
 The (determinism) type of a Collection or Iterator must be a supertype or equal to
 the type of the type parameter (see Figure~\ref{fig-determinism-collections}).
+If the Collection is \code{@NonDet}, then the type parameter may not be
+\code{@Det} or \code{@OrderNonDet}. Although such types could exist, they are
+disallowed to prevent the following bug:
 
-For example, these types are valid:
+\begin{Verbatim}
+    public static void add(@NonDet List<@Det String> list, @NonDet int index, @Det String s) {
+        list.add(index, s);
+    }
+
+    public static void f(@Det List<@Det String> list, @NonDet int index, @Det String s) {
+        add(list, index, s);
+    }
+\end{Verbatim}
+
+The possibility of mutation allows us to add to the \code{@Det List} at a
+\code{@NonDet} index, which is unsound.
+
+Some examples of valid types are:
 \begin{itemize}
     \item \code{@NonDet\ \ \ \ \ \ List<@NonDet\ \ \ \ \ \ Integer>}
-    \item \code{@NonDet\ \ \ \ \ \ List<@OrderNonDet Set<...>\relax >}
-    \item \code{@NonDet\ \ \ \ \ \ List<@Det\ \ \ \ \ \ \ \ \ Integer>}
     \item \code{@Det\ \ \ \ \ \ \ \ \ List<@Det\ \ \ \ \ \ \ \ \ Integer>}
     \item \code{@OrderNonDet Set <@OrderNonDet Set<...>\relax >}
     \item \code{@OrderNonDet Set <@Det String>}
-    \item \code{@NonDet Set \ <T extends @NonDet Object>}
-    \item \code{@NonDet Set \ <T extends @Det Object>}
+    \item \code{@NonDet\ \ \ \ \ \ Set <T extends @NonDet Object>}
 \end{itemize}
 
 These types are invalid:
   \begin{itemize}
     \item \code{@OrderNonDet Set <@NonDet\ \ \ \ \ \ Integer>}
+    \item \code{@NonDet\ \ \ \ \ \ List<@Det\ \ \ \ \ \ \ \ \ Integer>}
+    \item \code{@NonDet\ \ \ \ \ \ List<@OrderNonDet Set<...>\relax >}
     \item \code{@Det\ \ \ \ \ \ \ \ \ List<@NonDet\ \ \ \ \ \ Integer>}
     \item \code{@Det\ \ \ \ \ \ \ \ \ List<@OrderNonDet Set<...>\relax >}
     \item \code{@Det\ \ \ \ \ \ \ \ \ List<T extends @NonDet Object>}
+    \item \code{@NonDet\ \ \ \ \ \ Set\ <T extends @Det Object>}
   \end{itemize}
 
 Similarly, the (determinism) type of an array must be a supertype or equal to
 the type of the component type (see Figure~\ref{fig-determinism-collections}).
+As with collections, \code{@NonDet} arrays of \code{@Det} or \code{@OrderNonDet}
+elements are not allowed.
 
 For example, these types are valid:
 \begin{itemize}
     \item \code{@NonDet int @NonDet \ \ \ \ []}
-    \item \code{@NonDet int @OrderNonDet[]}
-    \item \code{@Det \ \ \ int @NonDet \ \ \ \ []}
     \item \code{@Det \ \ \ int @Det \ \ \ \ \ \ \ []}
     \item \code{@Det \ \ \ int @OrderNonDet[] @OrderNonDet[]}
 \end{itemize}
@@ -117,6 +133,7 @@ These types are invalid:
 \begin{itemize}
     \item \code{@NonDet int @OrderNonDet[]}
     \item \code{@NonDet int @Det \ \ \ \ \ \ \ []}
+    \item \code{@Det \ \ \ int @NonDet \ \ \ \ []}
 \end{itemize}
 
 \begin{figure}
@@ -125,9 +142,9 @@ These types are invalid:
     \cline{3-5}
     \multicolumn{2}{c|}{~}  &  \multicolumn{3}{c|}{Type Argument (or array component type)} \\ \cline{3-5}
     \multicolumn{2}{c|}{~}  & NonDet     & OrderNonDet & Det \\ \hline
-              & NonDet      &   valid    &  valid      & valid  \\ \cline{2-5}
+              & NonDet      &   valid    &  invalid    & invalid  \\ \cline{2-5}
 Collection (or array)   & OrderNonDet &   invalid  &  valid      & valid  \\ \cline{2-5}
-              & Det         &   invalid  &  invalid    & invalid      \\ \hline
+              & Det         &   invalid  &  invalid    & valid      \\ \hline
   \end{tabular}
   \caption{Valid Collection (and array) declarations.  The Collection's (or array's) type qualifier
     must be a supertype or equal to the type argument (or array component type).}
@@ -188,6 +205,21 @@ For example, the following code type checks as expected:
         return list.get(0);
     }
 \end{Verbatim}
+
+\subsection{HashSet\label{determinism-hash-set}}
+The class \code{HashSet} is special. Because iteration order is
+non-deterministic, it is impossible to construct a \code{@Det HashSet}.
+Accordingly, the checker has rules that give expressions of the form \code{new
+HashSet<T>(collection)} the correct type. The result of this expression will
+have the same determinism type as the collection. Except, if collection is
+\code{@Det} the result is \code{@OrderNonDet}.
+
+Because it impossible to construct a \code{@Det HashSet}, it is not allowed to
+explicitly write \code{new @Det HashSet} or \code{new @PolyDet HashSet}. There
+are only three valid instantiations of \code{HashSet}, and the desired type
+should be written explicitly. These are \code{@OrderNonDet HashSet<@Det T>},
+\code{@OrderNonDet HashSet<@OrderNonDet T>}, and \code{@NonDet HashSet<@NonDet
+T>}.
 
 
 \section{Controlling polymorphism\label{determinism-polymorphism}}
@@ -407,15 +439,34 @@ as its default annotation. In such cases, you could do either of the following:
 \end{itemize}
 
 \subsection{Local array and generic types\label{determinism-array-defaults}}
-As with all type systems, defaulting is different for the array and
-component types in a locally-declared array or generic type without explicit type
-annotations.
-The array type defaulting follows the CLIMB to top rule (see Section~\ref{climb-to-top}) and
-the component type defaulting uses the default type qualifier (\<@Det>, for
-the Determinism Checker).
-For example, the local array declaration \<int[] a;> is defaulted to \<@Det int @NonDet [] a;>.
-The local declaration \code{MyClass<MyType> x;} is defaulted to
-\code{@NonDet MyClass<@Det MyType> x;}.
+According to the CLIMB to top rule (see Section~\ref{climb-to-top}), the default
+for a local collection or array would be a \code{@NonDet} collection or array
+with \code{@Det} elements. For example, in the following local declarations
+\begin{Verbatim}
+    List<String> list;
+    String[] arr;
+\end{Verbatim}
+the type of \code{list} would be \code{@NonDet List<@Det String>} and
+\code{arr} would be \code{@Det String @NonDet []}. These types are invalid (see
+Section~\ref{determinism-hash-set}). To prevent this, the Determinism Checker
+adds an extra rule: if the local collection or array is unannotated or
+explicitly annotated with \code{@NonDet}, and the component type is
+unannotated, then then the component type and all unannotated nested component
+types are defaulted to \code{@NonDet}. Otherwise, the explicitly written type or
+default type \code{@Det} is used. This allows the user to spend less time
+annotating collection types. It also means that existing local collection and
+array declarations are valid by default.
+
+With the Determinism Checker's Rules, the type of \code{list} above is actually
+\code{@NonDet List<@NonDet String>} and the type of \code{arr} is \code{@NonDet
+String @NonDet []}, which are valid types. In the following declarations
+\begin{Verbatim}
+    @NonDet List<String> list1;
+    @Det List<String> list2;
+\end{Verbatim}
+the type of \code{list1} is \code{@NonDet List<@NonDet String>} and the type of
+\code{list2} is \code{@Det List<@Det String>}. Notice, in both instances the
+default type was the correct choice.
 
 \section{Implicit annotations\label{determinism-implicits}}
 The parameter type of the \code{main} method has an implicit annotation

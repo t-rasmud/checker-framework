@@ -20,7 +20,6 @@ class TestLocalCollections {
     }
 
     void testList4() {
-        // :: error: (invalid.element.type)
         @NonDet List<String> a;
     }
 
@@ -54,7 +53,6 @@ class TestLocalCollections {
     }
 
     void testArray4() {
-        // :: error: (invalid.array.component.type)
         String @NonDet [] a;
     }
 
@@ -66,7 +64,11 @@ class TestLocalCollections {
         String[][] a;
     }
 
-    void testNestedArray2(@NonDet String @NonDet [] @NonDet [] a) {
+    void testNestedArray2() {
+        String @Det [][] a;
+    }
+
+    void testNestedArray3(@NonDet String @NonDet [] @NonDet [] a) {
         String[][] b = a;
     }
 }
