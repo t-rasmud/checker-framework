@@ -96,6 +96,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** The java.util.HashSet class. */
     private final TypeMirror hashSetTypeMirror =
             TypesUtils.typeFromClass(HashSet.class, types, processingEnv.getElementUtils());
+    /** The java.util.LinkedHashSet class. */
+    private final TypeMirror linkedHashSetTypeMirror =
+            TypesUtils.typeFromClass(LinkedHashSet.class, types, processingEnv.getElementUtils());
     /** The java.util.Enumeration interface. */
     private final TypeMirror enumerationTypeMirror =
             TypesUtils.typeFromClass(Enumeration.class, types, processingEnv.getElementUtils());
@@ -286,7 +289,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          */
         @Override
         public Void visitNewClass(NewClassTree node, AnnotatedTypeMirror annotatedTypeMirror) {
-            if (isHashSet(annotatedTypeMirror)) {
+            if (isHashSet(annotatedTypeMirror) && !isLinkedHashSet(annotatedTypeMirror)) {
                 AnnotationMirror explicitAnno = getNewClassAnnotation(node);
                 if (AnnotationUtils.areSame(explicitAnno, DET)
                         || AnnotationUtils.areSameByName(explicitAnno, POLYDET)) {
@@ -533,6 +536,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     public boolean isHashSet(AnnotatedTypeMirror tm) {
         return types.isSubtype(
                 types.erasure(tm.getUnderlyingType()), types.erasure(hashSetTypeMirror));
+    }
+
+    /** @return true if {@code tm} is a LinkedHashSet or a subtype of LinkedHashSet */
+    public boolean isLinkedHashSet(AnnotatedTypeMirror tm) {
+        return types.isSubtype(
+                types.erasure(tm.getUnderlyingType()), types.erasure(linkedHashSetTypeMirror));
     }
 
     /** @return true if {@code tm} is a List or a subtype of List */
