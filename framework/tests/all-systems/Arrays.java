@@ -13,8 +13,8 @@ class Arrays {
 
     @SuppressWarnings({
         "nullness",
-        "determinism"
-    }) // Don't want to depend on @Nullable, temporarily incorrect defaults for local variables
+        "determinism:invalid.array.component.type"
+    }) // Don't want to depend on @Nullable
     void m() {
         class VarInfo {}
         VarInfo v1 = null;

@@ -419,10 +419,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             // annotations.
             // It doesn't check for "annoArrType.getExplicitAnnotations().isEmpty()" or
             // "annoArrType.hasExplicitAnnotation(NONDET) because "getExplicitAnnotations()" works
-            // only with type use locations?
-            // For example: if 'annoannoArrType' is "@Det int @Det[]",
+            // only with type use locations.
+            // For example: if 'annoArrType' is "@Det int @Det[]",
             // "arrParamType.getExplicitAnnotations().size()" returns 0,
             // "arrParamType.getAnnotations().size()" returns 1.
+            // TODO: replace with getExplicitAnnotations() when Issue #2324 is fixed.
+            // See https://github.com/typetools/checker-framework/issues/2324.
             if (annoArrType.getAnnotations().isEmpty() || annoArrType.hasAnnotation(NONDET)) {
                 recursiveDefaultArrayComponentType(annoArrType, annotation);
             }
