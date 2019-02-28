@@ -8,7 +8,9 @@ class AssignmentContext {
     @SuppressWarnings({
         "determinism:invalid.type.on.conditional",
         "determinism:invalid.array.component.type"
-    }) // temporarily incorrect defaults for local variables
+    })
+    // Because the left hand side has component type @NonDet, the right hand side will have this
+    // component type as well, but the array itself is @Det, so we get an invalid component type.
     void t1(boolean b) {
         String[] s = b ? new String[] {""} : null;
     }
@@ -26,7 +28,9 @@ class AssignmentContext {
     @SuppressWarnings({
         "determinism:invalid.type.on.conditional",
         "determinism:invalid.array.component.type"
-    }) // temporarily incorrect defaults for local variables
+    })
+    // Because the left hand side has component type @NonDet, the right hand side will have this
+    // component type as well, but the array itself is @Det, so we get an invalid component type.
     void t4(boolean b) {
         String[] s = null;
         s = b ? new String[] {""} : null;

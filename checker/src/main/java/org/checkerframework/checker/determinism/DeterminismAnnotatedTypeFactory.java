@@ -274,10 +274,10 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
 
         /**
-         * Reports an error if {@code node} represents explicitly constructing a {@code @Det} or
-         * {@code HashSet}. If {@code Det} wasn't explicitly written, but the constructor would
-         * resolve to {@code @Det}, inserts {@code @OrderNonDet} instead. Also reports an error if
-         * the result of the constructor would resolve to any variant of {@code @PolyDet}.
+         * Reports an error if {@code node} represents explicitly constructing a {@code @Det
+         * HashSet}. If {@code Det} wasn't explicitly written, but the constructor would resolve to
+         * {@code @Det}, inserts {@code @OrderNonDet} instead. Also reports an error if the result
+         * of the constructor would resolve to any variant of {@code @PolyDet}.
          *
          * @param node a tree representing instantiating a class
          * @param annotatedTypeMirror the type to modify if it represents an invalid constructor
@@ -414,10 +414,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     private void defaultArrayComponentType(AnnotatedTypeMirror type, AnnotationMirror annotation) {
         if (type.getKind() == TypeKind.ARRAY) {
             AnnotatedArrayType annoArrType = (AnnotatedArrayType) type;
-            // The following code uses "annoArrType.getAnnotations().isEmpty()"
-            // to check if 'annoArrType' has explicit annotations.
-            // It doesn't check for "annoArrType.getExplicitAnnotations().isEmpty()"
-            // because "getExplicitAnnotations()" works only with type use locations?
+            // The following code uses "annoArrType.getAnnotations().isEmpty()" and
+            // "annoArrType.hasAnnotation(NONDET)" to check if 'annoArrType' has explicit
+            // annotations.
+            // It doesn't check for "annoArrType.getExplicitAnnotations().isEmpty()" or
+            // "annoArrType.hasExplicitAnnotation(NONDET) because "getExplicitAnnotations()" works
+            // only with type use locations?
             // For example: if 'annoannoArrType' is "@Det int @Det[]",
             // "arrParamType.getExplicitAnnotations().size()" returns 0,
             // "arrParamType.getAnnotations().size()" returns 1.
