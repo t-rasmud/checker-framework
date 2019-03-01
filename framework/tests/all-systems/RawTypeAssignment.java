@@ -15,7 +15,6 @@ public class RawTypeAssignment {
         return new Components();
     }
 
-    @SuppressWarnings("determinism") // temporarily incorrect defaults for local variables
     static void addTimes(Calendar calendar) {
         // Type systems may issue an error below because of a mismatch between the type arguments.
         @SuppressWarnings("assignment.type.incompatible")
