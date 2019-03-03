@@ -29,8 +29,9 @@ class TestHashSet {
     }
 
     void testExplicitDet() {
-        // :: error: (invalid.hash.set.constructor.invocation)
-        @OrderNonDet Set<@Det String> s = new @Det HashSet<String>();
+        // :: error: (invalid.hash.set.constructor.invocation) :: warning:
+        // (cast.unsafe.constructor.invocation)
+        @OrderNonDet Set<String> s = new @Det HashSet<String>();
     }
 
     void testExplicitPoly() {
