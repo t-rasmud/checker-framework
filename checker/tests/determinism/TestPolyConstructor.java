@@ -8,7 +8,7 @@ public class TestPolyConstructor {
     }
 
     void createArrayList1(@NonDet ArrayList<@NonDet Integer> c) {
-        // :: error: (argument.type.incompatible)
+        // :: error: (argument.type.incompatible) :: warning: (cast.unsafe.constructor.invocation)
         new @Det ArrayList<Integer>(c);
     }
 
