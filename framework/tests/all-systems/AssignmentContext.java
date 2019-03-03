@@ -5,7 +5,12 @@ class AssignmentContext {
 
     void foo(String[] a) {}
 
-    @SuppressWarnings("determinism:invalid.type.on.conditional")
+    @SuppressWarnings({
+        "determinism:invalid.type.on.conditional",
+        "determinism:invalid.array.component.type"
+    })
+    // Because the left hand side has component type @NonDet, the right hand side will have this
+    // component type as well, but the array itself is @Det, so we get an invalid component type.
     void t1(boolean b) {
         String[] s = b ? new String[] {""} : null;
     }
@@ -20,7 +25,12 @@ class AssignmentContext {
         return b ? new String[] {""} : null;
     }
 
-    @SuppressWarnings("determinism:invalid.type.on.conditional")
+    @SuppressWarnings({
+        "determinism:invalid.type.on.conditional",
+        "determinism:invalid.array.component.type"
+    })
+    // Because the left hand side has component type @NonDet, the right hand side will have this
+    // component type as well, but the array itself is @Det, so we get an invalid component type.
     void t4(boolean b) {
         String[] s = null;
         s = b ? new String[] {""} : null;

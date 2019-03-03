@@ -6,6 +6,6 @@ import org.checkerframework.checker.index.qual.*;
 
 class TestStringLiteral {
     void testStr() {
-        /*@SameLen("a")*/ int[] a;
+        /*@SameLen("a")*/ int @Det [] a;
     }
 }

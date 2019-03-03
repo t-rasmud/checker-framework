@@ -20,15 +20,6 @@ public class TestTypeRefinementSort {
     }
 
     void testSort2(
-            @NonDet List<@Det Integer> ndetList,
-            @NonDet Comparator<@Det Integer> cmp,
-            @Det List<@Det Integer> check) {
-        ndetList.sort(cmp);
-        // ::error: argument.type.incompatible
-        System.out.println(ndetList.equals(check));
-    }
-
-    void testSort3(
             @OrderNonDet List<@Det Integer> ondetList,
             @Det Comparator<@Det Integer> cmp,
             @Det List<@Det Integer> check) {
@@ -61,18 +52,12 @@ public class TestTypeRefinementSort {
         System.out.println(detList.equals(check));
     }
 
-    void testSort8(@NonDet List<@Det Integer> ndetList, @Det List<@Det Integer> check) {
-        Collections.sort(ndetList);
-        // ::error: argument.type.incompatible
-        System.out.println(ndetList.equals(check));
-    }
-
-    void testSort9(@OrderNonDet List<@Det Integer> ondetList, @Det List<@Det Integer> check) {
+    void testSort8(@OrderNonDet List<@Det Integer> ondetList, @Det List<@Det Integer> check) {
         Collections.sort(ondetList);
         System.out.println(ondetList);
     }
 
-    void testSort10(
+    void testSort9(
             @OrderNonDet List<@OrderNonDet List<@Det Integer>> ondetList,
             @Det Comparator<@OrderNonDet List<@Det Integer>> cmp) {
         Collections.sort(ondetList, cmp);
@@ -80,7 +65,7 @@ public class TestTypeRefinementSort {
         System.out.println(ondetList);
     }
 
-    void testSort11(@PolyDet List<@Det Integer> polyList) {
+    void testSort10(@PolyDet List<@Det Integer> polyList) {
         Collections.sort(polyList);
         @PolyDet("down") List<@Det Integer> tmp = polyList;
     }
@@ -101,18 +86,12 @@ public class TestTypeRefinementSort {
         System.out.println(list.equals(check));
     }
 
-    <T> void sortGeneric2(@NonDet List<@Det T> list, @Det Comparator<@Det T> cmp) {
-        list.sort(cmp);
-        // ::error: argument.type.incompatible
-        System.out.println(list);
-    }
-
-    <T> void sortGeneric3(@PolyDet List<@Det T> list, @Det Comparator<@Det T> cmp) {
+    <T> void sortGeneric2(@PolyDet List<@Det T> list, @Det Comparator<@Det T> cmp) {
         list.sort(cmp);
         @PolyDet("down") List<@Det T> tmp = list;
     }
 
-    <T extends @Det Object> void sortGeneric4(@OrderNonDet List<T> list, @Det Comparator<T> cmp) {
+    <T extends @Det Object> void sortGeneric3(@OrderNonDet List<T> list, @Det Comparator<T> cmp) {
         list.sort(cmp);
         System.out.println(list);
     }
