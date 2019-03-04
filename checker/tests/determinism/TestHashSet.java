@@ -6,7 +6,7 @@ import org.checkerframework.checker.determinism.qual.*;
 class TestHashSet {
     void testConstructDefault() {
         // :: error: (assignment.type.incompatible)
-        @Det Set<String> s = new HashSet<String>();
+        @Det Set<@Det String> s = new HashSet<String>();
     }
 
     void testConstructCollection1(@Det List<@Det String> c) {
@@ -15,7 +15,7 @@ class TestHashSet {
     }
 
     void testConstructCollection2(@PolyDet List<@Det String> c) {
-        // :: error: (assignment.type.incompatible)
+        // :: error: (invalid.hash.set.constructor.invocation)
         @PolyDet Set<@Det String> s = new HashSet<@Det String>(c);
     }
 
@@ -23,38 +23,29 @@ class TestHashSet {
         @OrderNonDet Set<@Det String> s = new HashSet<@Det String>(c);
     }
 
-    void testConstructCollection4(@PolyDet List<@Det String> c) {
-        // :: error: (assignment.type.incompatible)
-        @OrderNonDet Set<@Det String> s = new HashSet<@Det String>(c);
-    }
-
-    void testConstructCollection5(@PolyDet List<@Det String> c) {
-        // :: error: (assignment.type.incompatible)
-        @PolyDet Set<@Det String> s = new HashSet<@Det String>(c);
-    }
-
     void testConstructCollection6(@PolyDet("up") List<@Det String> c) {
-        // :: error: (assignment.type.incompatible)
+        // :: error: (invalid.hash.set.constructor.invocation)
         @PolyDet("up") Set<@Det String> s = new HashSet<@Det String>(c);
     }
 
     void testExplicitDet() {
-        // :: error: (invalid.hash.set.constructor.invocation)
+        // :: error: (invalid.hash.set.constructor.invocation) :: warning:
+        // (cast.unsafe.constructor.invocation)
         @OrderNonDet Set<String> s = new @Det HashSet<String>();
     }
 
     void testExplicitPoly() {
         // :: error: (invalid.hash.set.constructor.invocation)
-        @NonDet Set<String> s = new @PolyDet HashSet<String>();
+        new @PolyDet HashSet<String>();
     }
 
     void testExplicitPolyUp() {
         // :: error: (invalid.hash.set.constructor.invocation)
-        @NonDet Set<String> s = new @PolyDet("up") HashSet<String>();
+        new @PolyDet("up") HashSet<String>();
     }
 
     void testIteration() {
-        Set<String> s = new HashSet<String>();
+        @OrderNonDet Set<@Det String> s = new HashSet<String>();
         for (String str : s) {
             // :: error: (argument.type.incompatible)
             System.out.println(str);

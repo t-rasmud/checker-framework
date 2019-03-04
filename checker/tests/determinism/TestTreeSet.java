@@ -9,15 +9,6 @@ public class TestTreeSet {
         }
     }
 
-    void testNewTreeSet1(@NonDet TreeSet<@Det Integer> treeSet) {
-        @NonDet Iterator<@Det Integer> it = treeSet.iterator();
-        // :: error: (invalid.type.on.conditional)
-        while (it.hasNext()) {
-            // :: error: (argument.type.incompatible)
-            System.out.println(it.next());
-        }
-    }
-
     // :: error: (invalid.upper.bound.on.type.argument)
     void testTreeIterator(@OrderNonDet TreeSet<@OrderNonDet TreeSet> treeSet) {
         // :: error: (invalid.upper.bound.on.type.argument)
