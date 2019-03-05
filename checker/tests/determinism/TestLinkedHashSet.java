@@ -5,17 +5,17 @@ import org.checkerframework.checker.determinism.qual.*;
 
 class TestLinkedHashSet {
     void testEmptyConstructor() {
-        LinkedHashSet<String> s = new LinkedHashSet<>();
+        @Det LinkedHashSet<String> s = new LinkedHashSet<>();
         System.out.println(s);
     }
 
     void testCollectionConstructor(@Det List<String> list) {
-        LinkedHashSet<String> s = new LinkedHashSet<>(list);
+        @Det LinkedHashSet<String> s = new LinkedHashSet<>(list);
         System.out.println(s);
     }
 
     void testIteration(@Det List<String> list) {
-        LinkedHashSet<String> s = new LinkedHashSet<>(list);
+        @Det LinkedHashSet<String> s = new LinkedHashSet<>(list);
         for (String str : s) {
             System.out.println(str);
         }
