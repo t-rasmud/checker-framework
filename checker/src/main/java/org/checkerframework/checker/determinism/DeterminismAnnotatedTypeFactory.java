@@ -74,6 +74,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** The java.util.HashSet class. */
     private final TypeMirror hashSetTypeMirror =
             TypesUtils.typeFromClass(HashSet.class, types, processingEnv.getElementUtils());
+    /** The java.util.LinkedHashSet class. */
+    private final TypeMirror linkedHashSetTypeMirror =
+            TypesUtils.typeFromClass(LinkedHashSet.class, types, processingEnv.getElementUtils());
 
     /** Creates {@code @PolyDet} annotation mirror constants. */
     public DeterminismAnnotatedTypeFactory(BaseTypeChecker checker) {
@@ -249,10 +252,10 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
 
         /**
-         * Reports an error if {@code node} represents explicitly constructing a {@code @Det} or
-         * {@code @PolyDet} {@code HashSet}. If one these annotation wasn't explicitly written, but
-         * the constructor would resolve to {@code @Det}, inserts {@code @OrderNonDet} instead. If
-         * it would resolve to any variant of {@code @PolyDet}, replaces it with {@code @NonDet}
+         * Reports an error if {@code node} represents explicitly constructing a {@code @Det
+         * HashSet}. If {@code Det} wasn't explicitly written, but the constructor would resolve to
+         * {@code @Det}, inserts {@code @OrderNonDet} instead. Also reports an error if the result
+         * of the constructor would resolve to any variant of {@code @PolyDet}.
          *
          * @param node a tree representing instantiating a class
          * @param annotatedTypeMirror the type to modify if it represents an invalid constructor
@@ -261,10 +264,16 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          */
         @Override
         public Void visitNewClass(NewClassTree node, AnnotatedTypeMirror annotatedTypeMirror) {
-            if (isHashSet(annotatedTypeMirror)) {
+            if (isHashSet(annotatedTypeMirror) && !isLinkedHashSet(annotatedTypeMirror)) {
                 AnnotationMirror explicitAnno = getNewClassAnnotation(node);
+                // There are two checks for @PolyDet. The first catches "new @PolyDet HashSet()"
+                // because in that case the annotation on annotatedTypeMirror is @OrderNonDet. The
+                // second catches instances where a @PolyDet collection was passed to the
+                // constructor.
                 if (AnnotationUtils.areSame(explicitAnno, DET)
-                        || AnnotationUtils.areSameByName(explicitAnno, POLYDET)) {
+                        || AnnotationUtils.areSameByName(explicitAnno, POLYDET)
+                        || AnnotationUtils.areSameByName(
+                                annotatedTypeMirror.getAnnotationInHierarchy(NONDET), POLYDET)) {
                     checker.report(
                             Result.failure(
                                     DeterminismVisitor.INVALID_HASH_SET_CONSTRUCTOR_INVOCATION),
@@ -273,9 +282,6 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 }
                 if (annotatedTypeMirror.hasAnnotation(DET)) {
                     annotatedTypeMirror.replaceAnnotation(ORDERNONDET);
-                } else if (AnnotationUtils.areSameByName(
-                        annotatedTypeMirror.getAnnotationInHierarchy(NONDET), POLYDET)) {
-                    annotatedTypeMirror.replaceAnnotation(NONDET);
                 }
             }
             return super.visitNewClass(node, annotatedTypeMirror);
@@ -344,7 +350,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         public Void visitExecutable(final AnnotatedExecutableType executableType, final Void p) {
             if (!isMainMethod(executableType.getElement())) {
                 for (AnnotatedTypeMirror paramType : executableType.getParameterTypes()) {
-                    defaultArrayComponentTypeAsPolyDet(paramType);
+                    defaultArrayComponentType(paramType, POLYDET);
                 }
 
                 if (executableType.getReturnType().getAnnotations().isEmpty()) {
@@ -372,49 +378,93 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                             executableType.getReturnType().replaceAnnotation(DET);
                         }
                     }
-                    defaultArrayComponentTypeAsPolyDet(executableType.getReturnType());
+                    defaultArrayComponentType(executableType.getReturnType(), POLYDET);
                 }
             }
             return super.visitExecutable(executableType, p);
         }
     }
 
-    /** If {@code type} is an array type, defaults all its nested component types as @PolyDet. */
-    private void defaultArrayComponentTypeAsPolyDet(AnnotatedTypeMirror type) {
+    /**
+     * If {@code type} is an array type that is not explicitly annotated, defaults all its nested
+     * component types as {@code annotation}.
+     */
+    private void defaultArrayComponentType(AnnotatedTypeMirror type, AnnotationMirror annotation) {
         if (type.getKind() == TypeKind.ARRAY) {
             AnnotatedArrayType annoArrType = (AnnotatedArrayType) type;
-            // The following code uses "annoArrType.getAnnotations().isEmpty()"
-            // to check if 'annoArrType' has explicit annotations.
-            // It doesn't check for "annoArrType.getExplicitAnnotations().isEmpty()"
-            // because "getExplicitAnnotations()" works only with type use locations?
-            // For example: if 'annoannoArrType' is "@Det int @Det[]",
+            // The following code uses "annoArrType.getAnnotations().isEmpty()" and
+            // "annoArrType.hasAnnotation(NONDET)" to check if 'annoArrType' has explicit
+            // annotations.
+            // It doesn't check for "annoArrType.getExplicitAnnotations().isEmpty()" or
+            // "annoArrType.hasExplicitAnnotation(NONDET) because "getExplicitAnnotations()" works
+            // only with type use locations.
+            // For example: if 'annoArrType' is "@Det int @Det[]",
             // "arrParamType.getExplicitAnnotations().size()" returns 0,
             // "arrParamType.getAnnotations().size()" returns 1.
-            if (annoArrType.getAnnotations().isEmpty()) {
-                recursiveDefaultArrayComponentTypeAsPolyDet(annoArrType);
+            // TODO: replace with getExplicitAnnotations() when Issue #2324 is fixed.
+            // See https://github.com/typetools/checker-framework/issues/2324.
+            if (annoArrType.getAnnotations().isEmpty() || annoArrType.hasAnnotation(NONDET)) {
+                recursiveDefaultArrayComponentType(annoArrType, annotation);
             }
         }
     }
 
     /**
-     * Defaults all the nested component types of the array type {@code annoArrType} as
-     * {@code @PolyDet}.
+     * Defaults all the nested component types of the array type {@code annoArrType} as {@code
+     * annotation}.
      *
-     * <p>Example: If this method is called with {@code annoArrType} as {@code int[][]}, the
-     * resulting {@code annoArrType} will be {@code @PolyDet int @PolyDet[][]}
+     * <p>Example: If this method is called with {@code annoArrType} as {@code int[][]} and {@code
+     * annotation} as {@code @PolyDet}, the resulting {@code annoArrType} will be {@code @PolyDet
+     * int @PolyDet[][]}
      */
-    void recursiveDefaultArrayComponentTypeAsPolyDet(AnnotatedArrayType annoArrType) {
+    void recursiveDefaultArrayComponentType(
+            AnnotatedArrayType annoArrType, AnnotationMirror annotation) {
         AnnotatedTypeMirror componentType = annoArrType.getComponentType();
         if (!componentType.getAnnotations().isEmpty()) {
             return;
         }
         if (componentType.getUnderlyingType().getKind() != TypeKind.TYPEVAR) {
-            componentType.replaceAnnotation(POLYDET);
+            componentType.replaceAnnotation(annotation);
         }
         if (componentType.getKind() != TypeKind.ARRAY) {
             return;
         }
-        recursiveDefaultArrayComponentTypeAsPolyDet((AnnotatedArrayType) componentType);
+        recursiveDefaultArrayComponentType((AnnotatedArrayType) componentType, annotation);
+    }
+
+    /**
+     * If {@code type} is a collection type that is not explicitly annotated, defaults all its
+     * nested component types as {@code annotation}.
+     */
+    void defaultCollectionComponentType(AnnotatedTypeMirror type, AnnotationMirror annotation) {
+        if (isCollection(type)
+                && (type.getAnnotations().isEmpty() || type.hasExplicitAnnotation(NONDET))) {
+            AnnotatedDeclaredType annoCollectionType = (AnnotatedDeclaredType) type;
+            recursiveDefaultCollectionComponentType(annoCollectionType, annotation);
+        }
+    }
+
+    /**
+     * Defaults all the nested component types of the collection type {@code type} as {@code
+     * annotation}.
+     *
+     * <p>Example: If this method is called with {@code annoArrType} as {@code List<List<Integer>>}
+     * and {@code annotation} as {@code @PolyDet}, the resulting {@code type} will be {@code
+     * List<@PolyDet List<@PolyDet Integer>>}
+     */
+    private void recursiveDefaultCollectionComponentType(
+            AnnotatedDeclaredType type, AnnotationMirror annotation) {
+        for (AnnotatedTypeMirror argType : type.getTypeArguments()) {
+            if (argType.getKind() != TypeKind.TYPEVAR
+                    && argType.getKind() != TypeKind.WILDCARD
+                    && argType.getAnnotations().isEmpty()) {
+                argType.replaceAnnotation(annotation);
+                if (isCollection(argType)) {
+                    recursiveDefaultCollectionComponentType(
+                            (AnnotatedDeclaredType) argType, annotation);
+                }
+            }
+        }
     }
 
     /** @return true if {@code method} is equals */
@@ -478,11 +528,28 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     }
                     type.addMissingAnnotations(Collections.singleton(DET));
                 } else {
-                    defaultArrayComponentTypeAsPolyDet(type);
+                    defaultArrayComponentType(type, POLYDET);
                 }
             }
         }
+        if (elt.getKind() == ElementKind.LOCAL_VARIABLE) {
+            defaultArrayComponentType(type, NONDET);
+            defaultCollectionComponentType(type, NONDET);
+        }
         super.addComputedTypeAnnotations(elt, type);
+    }
+
+    @Override
+    protected void addComputedTypeAnnotations(
+            Tree tree, AnnotatedTypeMirror type, boolean iUseFlow) {
+        Element elt = TreeUtils.elementFromTree(tree);
+        if (elt != null
+                && elt.getKind() == ElementKind.LOCAL_VARIABLE
+                && tree.getKind() == Tree.Kind.VARIABLE) {
+            defaultArrayComponentType(type, NONDET);
+            defaultCollectionComponentType(type, NONDET);
+        }
+        super.addComputedTypeAnnotations(tree, type, iUseFlow);
     }
 
     /** @return true if {@code subClass} is a subtype of {@code superClass} */
@@ -508,6 +575,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     public boolean isHashSet(AnnotatedTypeMirror tm) {
         return types.isSubtype(
                 types.erasure(tm.getUnderlyingType()), types.erasure(hashSetTypeMirror));
+    }
+
+    /** @return true if {@code tm} is a LinkedHashSet or a subtype of LinkedHashSet */
+    public boolean isLinkedHashSet(AnnotatedTypeMirror tm) {
+        return types.isSubtype(
+                types.erasure(tm.getUnderlyingType()), types.erasure(linkedHashSetTypeMirror));
     }
 
     /** @return true if {@code tm} is a List or a subtype of List */

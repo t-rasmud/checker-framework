@@ -67,24 +67,9 @@ public class TestLocalArrays<T> {
         @Det int x = a[0][4];
     }
 
-    void assignRhs2(@Det int @NonDet [] a) {
-        // :: error: (assignment.type.incompatible)
-        @Det int x = a[0];
-    }
-
-    void assignRhs2_2D(@Det int @NonDet [] @NonDet [] a) {
-        // :: error: (assignment.type.incompatible)
-        @Det int x = a[0][0];
-    }
-
     void accessLength(@NonDet int @NonDet [] a) {
         // :: error: (assignment.type.incompatible)
         @Det int l = a.length;
-    }
-
-    void methInv(@Det int @NonDet [] a, @Det int index) {
-        // :: error: (argument.type.incompatible)
-        arrMethod(a[index]);
     }
 
     void arrMethod(@Det int x) {}

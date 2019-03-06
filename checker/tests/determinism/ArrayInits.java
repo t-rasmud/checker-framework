@@ -6,6 +6,6 @@ import org.checkerframework.checker.determinism.qual.*;
 public class ArrayInits {
     void method() {
         // :: error: (invalid.upper.bound.on.type.argument)
-        Object[] objects = new Object[] {Arrays.asList(1, 2, 3)};
+        @Det Object @Det [] objects = new @Det Object @Det [] {Arrays.asList(1, 2, 3)};
     }
 }

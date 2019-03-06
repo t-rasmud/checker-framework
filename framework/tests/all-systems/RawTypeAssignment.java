@@ -3,7 +3,7 @@ import java.util.Calendar;
 
 class Component {}
 
-@SuppressWarnings("determinism")
+@SuppressWarnings("determinism:invalid.upper.bound.on.type.argument")
 class Components extends ArrayList {}
 
 // If we include a type parameter in the superclass, then there

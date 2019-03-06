@@ -13,12 +13,6 @@ public class TestArrayListWildcard {
     }
 
     void testAddAll2(
-            @NonDet ArrayList<@Det Object> arList, @NonDet ArrayList<@NonDet Integer> elems) {
-        // :: error: (argument.type.incompatible)
-        arList.addAll(elems);
-    }
-
-    void testAddAll3(
             @NonDet ArrayList<@NonDet Object> arList, @NonDet ArrayList<@NonDet Integer> elems) {
         arList.addAll(elems);
     }
@@ -29,17 +23,8 @@ public class TestArrayListWildcard {
         @Det ArrayList<@Det String> newList = new ArrayList<String>(coll);
     }
 
-    void testConstructor1(@NonDet ArrayList<@Det String> arList) {
-        @NonDet Collection<@Det String> coll = arList;
-        new ArrayList<String>(coll);
-    }
-
     void testConstructor2(@Det ArrayList<@Det String> arList) {
         @Det Collection<@Det String> coll = arList;
         new ArrayList<String>(coll);
-    }
-
-    void testConstructor1(@NonDet int c) {
-        new ArrayList<String>(c);
     }
 }

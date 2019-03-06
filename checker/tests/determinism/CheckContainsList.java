@@ -12,12 +12,6 @@ public class CheckContainsList {
         System.out.println(lst.contains(o));
     }
 
-    void CheckContains1(
-            @OrderNonDet ArrayList<@Det Integer> lst1, @NonDet ArrayList<@Det Integer> o) {
-        // :: error: (argument.type.incompatible)
-        System.out.println(lst1.contains(o));
-    }
-
     void CheckContains2(@OrderNonDet ArrayList<@Det Integer> lst1, @Det ArrayList<@Det Integer> o) {
         System.out.println(lst1.contains(o));
     }
