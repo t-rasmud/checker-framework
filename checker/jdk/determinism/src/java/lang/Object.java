@@ -234,7 +234,7 @@ public class Object {
      *
      * @return  a string representation of the object.
      */
-    public @PolyDet("up") String toString(@PolyDet Object this) {
+    public @NonDet String toString(@PolyDet Object this) {
         return getClass().getName() + "@" + Integer.toHexString(hashCode());
     }
 
