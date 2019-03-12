@@ -140,7 +140,7 @@ public final class Objects {
      * @see Object#toString
      * @see String#valueOf(Object)
      */
-    public static @PolyDet("up") String toString(@PolyDet Object o) {
+    public static @NonDet String toString(@PolyDet Object o) {
         return String.valueOf(o);
     }
 

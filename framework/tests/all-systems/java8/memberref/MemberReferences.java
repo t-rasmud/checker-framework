@@ -184,6 +184,7 @@ class ArrayType {
         @SuppressWarnings({"signedness"})
         FunctionMR<Integer, String[]> string = String[]::new;
         FunctionMR<String[], String[]> clone = String[]::clone;
+        @SuppressWarnings({"determinism:methodref.return.invalid"})
         FunctionMR<String[], String> toString = String[]::toString;
     }
 }
