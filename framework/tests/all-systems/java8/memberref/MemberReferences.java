@@ -52,7 +52,7 @@ class SuperWithArg<U> {
     }
 }
 
-/** Type # instMethod */
+/** Type # instMethod. */
 // UNBOUNDED(ReferenceMode.INVOKE, true),
 class Unbound {
     <T> T func1(T o) {
@@ -82,7 +82,7 @@ abstract class UnboundWithArg<U> {
     }
 }
 
-/** Type # staticMethod */
+/** Type # staticMethod. */
 // STATIC(ReferenceMode.INVOKE, false),
 class Static {
     static <T> T func1(T o) {
@@ -96,7 +96,7 @@ class Static {
     }
 }
 
-/** Expr # instMethod */
+/** Expr # instMethod. */
 // BOUND(ReferenceMode.INVOKE, false),
 class Bound {
     <T> T func1(T o) {
@@ -122,7 +122,7 @@ class BoundWithArg<U> {
     }
 }
 
-/** Inner # new */
+/** Inner # new. */
 // IMPLICIT_INNER(ReferenceMode.NEW, false),
 @SuppressWarnings("determinism")
 class Outer {
@@ -145,7 +145,7 @@ class OuterWithArg {
     class Inner<T> extends OuterWithArg {}
 }
 
-/** Toplevel # new */
+/** Toplevel # new. */
 // TOPLEVEL(ReferenceMode.NEW, false),
 class TopLevel {
     TopLevel() {}
@@ -173,7 +173,7 @@ class TopLevelWithArg<T> {
     }
 }
 
-/** ArrayType # new */
+/** ArrayType # new. */
 // ARRAY_CTOR(ReferenceMode.NEW, false);
 
 class ArrayType {
