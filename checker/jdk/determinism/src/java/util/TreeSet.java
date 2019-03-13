@@ -122,7 +122,7 @@ public class TreeSet<E> extends AbstractSet<E>
      * integers), the {@code add} call will throw a
      * {@code ClassCastException}.
      */
-    public TreeSet() {
+    public @Det TreeSet() {
         this(new TreeMap<E,Object>());
     }
 

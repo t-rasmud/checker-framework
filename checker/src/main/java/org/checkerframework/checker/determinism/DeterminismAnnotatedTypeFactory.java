@@ -62,6 +62,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** The java.util.Collection class. */
     private final TypeMirror collectionInterfaceTypeMirror =
             TypesUtils.typeFromClass(Collection.class, types, processingEnv.getElementUtils());
+    /** The java.util.Map class. */
+    private final TypeMirror mapInterfaceTypeMirror =
+            TypesUtils.typeFromClass(Map.class, types, processingEnv.getElementUtils());
     /** The java.util.Iterator class. */
     private final TypeMirror iteratorTypeMirror =
             TypesUtils.typeFromClass(Iterator.class, types, processingEnv.getElementUtils());
@@ -77,6 +80,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** The java.util.LinkedHashSet class. */
     private final TypeMirror linkedHashSetTypeMirror =
             TypesUtils.typeFromClass(LinkedHashSet.class, types, processingEnv.getElementUtils());
+    /** The java.util.HashMap class. */
+    private final TypeMirror hashMapTypeMirror =
+            TypesUtils.typeFromClass(HashMap.class, types, processingEnv.getElementUtils());
+    /** The java.util.LinkedHashMap class. */
+    private final TypeMirror linkedHashMapTypeMirror =
+            TypesUtils.typeFromClass(LinkedHashMap.class, types, processingEnv.getElementUtils());
 
     /** Creates {@code @PolyDet} annotation mirror constants. */
     public DeterminismAnnotatedTypeFactory(BaseTypeChecker checker) {
@@ -264,7 +273,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          */
         @Override
         public Void visitNewClass(NewClassTree node, AnnotatedTypeMirror annotatedTypeMirror) {
-            if (isHashSet(annotatedTypeMirror) && !isLinkedHashSet(annotatedTypeMirror)) {
+            if ((isHashSet(annotatedTypeMirror) && !isLinkedHashSet(annotatedTypeMirror))
+                    || (isHashMap(annotatedTypeMirror) && !isLinkedHashMap(annotatedTypeMirror))) {
                 AnnotationMirror explicitAnno = getNewClassAnnotation(node);
                 // There are two checks for @PolyDet. The first catches "new @PolyDet HashSet()"
                 // because in that case the annotation on annotatedTypeMirror is @OrderNonDet. The
@@ -313,7 +323,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     public boolean mayBeOrderNonDet(AnnotatedTypeMirror javaType) {
         return (javaType.getKind() == TypeKind.ARRAY
                 || isCollection(javaType)
-                || isIterator(javaType));
+                || isIterator(javaType)
+                || isMap(javaType));
     }
 
     /**
@@ -433,11 +444,11 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
-     * If {@code type} is a collection type that is not explicitly annotated, defaults all its
+     * If {@code type} is a Collection type that is not explicitly annotated, defaults all its
      * nested component types as {@code annotation}.
      */
     void defaultCollectionComponentType(AnnotatedTypeMirror type, AnnotationMirror annotation) {
-        if (isCollection(type)
+        if ((isCollection(type) || isMap(type))
                 && (type.getAnnotations().isEmpty() || type.hasExplicitAnnotation(NONDET))) {
             AnnotatedDeclaredType annoCollectionType = (AnnotatedDeclaredType) type;
             recursiveDefaultCollectionComponentType(annoCollectionType, annotation);
@@ -459,7 +470,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     && argType.getKind() != TypeKind.WILDCARD
                     && argType.getAnnotations().isEmpty()) {
                 argType.replaceAnnotation(annotation);
-                if (isCollection(argType)) {
+                if (isCollection(argType) || isMap(argType)) {
                     recursiveDefaultCollectionComponentType(
                             (AnnotatedDeclaredType) argType, annotation);
                 }
@@ -565,6 +576,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 types.erasure(collectionInterfaceTypeMirror));
     }
 
+    /** @return true if {@code tm} is Map or a subtype of Map */
+    public boolean isMap(AnnotatedTypeMirror tm) {
+        return types.isSubtype(
+                types.erasure(tm.getUnderlyingType()), types.erasure(mapInterfaceTypeMirror));
+    }
+
     /** @return true if {@code tm} is Iterator or a subtype of Iterator */
     public boolean isIterator(AnnotatedTypeMirror tm) {
         return types.isSubtype(
@@ -586,6 +603,18 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** @return true if {@code tm} is a List or a subtype of List */
     public boolean isList(TypeMirror tm) {
         return types.isSubtype(types.erasure(tm), types.erasure(listInterfaceTypeMirror));
+    }
+
+    /** @return true if {@code tm} is a HashMap or a subtype of HashMap */
+    public boolean isHashMap(AnnotatedTypeMirror tm) {
+        return types.isSubtype(
+                types.erasure(tm.getUnderlyingType()), types.erasure(hashMapTypeMirror));
+    }
+
+    /** @return true if {@code tm} is a LinkedHashMap or a subtype of LinkedHashMap */
+    public boolean isLinkedHashMap(AnnotatedTypeMirror tm) {
+        return types.isSubtype(
+                types.erasure(tm.getUnderlyingType()), types.erasure(linkedHashMapTypeMirror));
     }
 
     /** @return true if {@code tm} is the Arrays class */

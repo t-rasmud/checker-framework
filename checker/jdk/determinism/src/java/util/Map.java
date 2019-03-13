@@ -138,14 +138,14 @@ public interface Map<K,V> {
      *
      * @return the number of key-value mappings in this map
      */
-    @PolyDet int size(@PolyDet Map<K,V> this);
+    @PolyDet("down") int size(@PolyDet Map<K,V> this);
 
     /**
      * Returns <tt>true</tt> if this map contains no key-value mappings.
      *
      * @return <tt>true</tt> if this map contains no key-value mappings
      */
-    @PolyDet boolean isEmpty(@PolyDet Map<K,V> this);
+    @PolyDet("down") boolean isEmpty(@PolyDet Map<K,V> this);
 
     /**
      * Returns <tt>true</tt> if this map contains a mapping for the specified
@@ -164,7 +164,7 @@ public interface Map<K,V> {
      *         does not permit null keys
      * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      */
-    @PolyDet boolean containsKey(@PolyDet Map<K,V> this, @PolyDet Object key);
+    @PolyDet("down") boolean containsKey(@PolyDet Map<K,V> this, @PolyDet Object key);
 
     /**
      * Returns <tt>true</tt> if this map maps one or more keys to the
@@ -184,7 +184,7 @@ public interface Map<K,V> {
      *         map does not permit null values
      * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      */
-    @PolyDet boolean containsValue(@PolyDet Map<K,V> this, @PolyDet Object value);
+    @PolyDet("down") boolean containsValue(@PolyDet Map<K,V> this, @PolyDet Object value);
 
     /**
      * Returns the value to which the specified key is mapped,
@@ -211,7 +211,7 @@ public interface Map<K,V> {
      *         does not permit null keys
      * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      */
-    @PolyDet V get(@PolyDet Map<K,V> this, @PolyDet Object key);
+    @PolyDet("down") V get(@PolyDet Map<K,V> this, @PolyDet Object key);
 
     // Modification Operations
 
@@ -239,7 +239,7 @@ public interface Map<K,V> {
      * @throws IllegalArgumentException if some property of the specified key
      *         or value prevents it from being stored in this map
      */
-    @PolyDet V put(@PolyDet Map<K,V> this, @PolyDet("use") K key, @PolyDet("use") V value);
+    @PolyDet("down") V put(@PolyDet Map<K,V> this, @PolyDet("use") K key, @PolyDet("use") V value);
 
     /**
      * Removes the mapping for a key from this map if it is present
@@ -271,7 +271,7 @@ public interface Map<K,V> {
      *         map does not permit null keys
      * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      */
-    @PolyDet V remove(@PolyDet Map<K,V> this, @PolyDet Object key);
+    @PolyDet("down") V remove(@PolyDet Map<K,V> this, @PolyDet Object key);
 
 
     // Bulk Operations
@@ -437,7 +437,7 @@ public interface Map<K,V> {
          * @return <tt>true</tt> if the specified object is equal to this map
          *         entry
          */
-        @PolyDet boolean equals(@PolyDet Entry<K,V> this, @PolyDet Object o);
+        @PolyDet("up") boolean equals(@PolyDet Entry<K,V> this, @PolyDet Object o);
 
         /**
          * Returns the hash code value for this map entry.  The hash code
@@ -544,7 +544,7 @@ public interface Map<K,V> {
      * @param o object to be compared for equality with this map
      * @return <tt>true</tt> if the specified object is equal to this map
      */
-    @PolyDet boolean equals(@PolyDet Map<K,V> this, @PolyDet Object o);
+    @PolyDet("up") boolean equals(@PolyDet Map<K,V> this, @PolyDet Object o);
 
     /**
      * Returns the hash code value for this map.  The hash code of a map is
@@ -585,7 +585,7 @@ public interface Map<K,V> {
      * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      * @since 1.8
      */
-    default @PolyDet V getOrDefault(@PolyDet Map<K,V> this, @PolyDet Object key, V defaultValue) {
+    default @PolyDet("down") V getOrDefault(@PolyDet Map<K,V> this, @PolyDet Object key, V defaultValue) {
         V v;
         return (((v = get(key)) != null) || containsKey(key))
                 ? v
@@ -740,7 +740,7 @@ public interface Map<K,V> {
      *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      * @since 1.8
      */
-    default @PolyDet V putIfAbsent(@PolyDet Map<K,V> this, K key, V value) {
+    default @PolyDet("down") V putIfAbsent(@PolyDet Map<K,V> this, K key, V value) {
         V v = get(key);
         if (v == null) {
             v = put(key, value);
@@ -783,7 +783,7 @@ public interface Map<K,V> {
      *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      * @since 1.8
      */
-    default @PolyDet boolean remove(@PolyDet Map<K,V> this, @PolyDet Object key, @PolyDet Object value) {
+    default @PolyDet("down") boolean remove(@PolyDet Map<K,V> this, @PolyDet Object key, @PolyDet Object value) {
         Object curValue = get(key);
         if (!Objects.equals(curValue, value) ||
                 (curValue == null && !containsKey(key))) {
@@ -835,7 +835,7 @@ public interface Map<K,V> {
      *         or value prevents it from being stored in this map
      * @since 1.8
      */
-    default @PolyDet boolean replace(@PolyDet Map<K,V> this, K key, V oldValue, V newValue) {
+    default @PolyDet("down") boolean replace(@PolyDet Map<K,V> this, K key, V oldValue, V newValue) {
         Object curValue = get(key);
         if (!Objects.equals(curValue, oldValue) ||
                 (curValue == null && !containsKey(key))) {
@@ -883,7 +883,7 @@ public interface Map<K,V> {
      *         or value prevents it from being stored in this map
      * @since 1.8
      */
-    default @PolyDet V replace(@PolyDet Map<K,V> this, K key, V value) {
+    default @PolyDet("down") V replace(@PolyDet Map<K,V> this, K key, V value) {
         V curValue;
         if (((curValue = get(key)) != null) || containsKey(key)) {
             curValue = put(key, value);
@@ -950,7 +950,7 @@ public interface Map<K,V> {
      *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      * @since 1.8
      */
-    default @PolyDet V computeIfAbsent(@PolyDet Map<K,V> this, K key,
+    default @PolyDet("down") V computeIfAbsent(@PolyDet Map<K,V> this, K key,
                                        @PolyDet("use") Function<? super K, ? extends V> mappingFunction) {
         Objects.requireNonNull(mappingFunction);
         V v;
@@ -1011,7 +1011,7 @@ public interface Map<K,V> {
      *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      * @since 1.8
      */
-    default @PolyDet V computeIfPresent(@PolyDet Map<K,V> this, K key,
+    default @PolyDet("down") V computeIfPresent(@PolyDet Map<K,V> this, K key,
                                         @PolyDet("use") BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
         V oldValue;
@@ -1087,7 +1087,7 @@ public interface Map<K,V> {
      *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      * @since 1.8
      */
-    default @PolyDet V compute(@PolyDet Map<K,V> this, K key,
+    default @PolyDet("down") V compute(@PolyDet Map<K,V> this, K key,
                                @PolyDet("use") BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
         V oldValue = get(key);
@@ -1168,7 +1168,7 @@ public interface Map<K,V> {
      *         null
      * @since 1.8
      */
-    default @PolyDet V merge(@PolyDet Map<K,V> this, K key, V value,
+    default @PolyDet("down") V merge(@PolyDet Map<K,V> this, K key, V value,
                              @PolyDet("use") BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
         Objects.requireNonNull(value);
