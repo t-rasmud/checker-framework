@@ -83,7 +83,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * @implSpec
      * This implementation returns <tt>entrySet().size()</tt>.
      */
-    public @PolyDet int size(@PolyDet AbstractMap<K,V> this) {
+    public @PolyDet("down") int size(@PolyDet AbstractMap<K,V> this) {
         return entrySet().size();
     }
 
@@ -93,7 +93,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * @implSpec
      * This implementation returns <tt>size() == 0</tt>.
      */
-    public @PolyDet boolean isEmpty(@PolyDet AbstractMap<K,V> this) {
+    public @PolyDet("down") boolean isEmpty(@PolyDet AbstractMap<K,V> this) {
         return size() == 0;
     }
 
@@ -110,7 +110,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * @throws ClassCastException   {@inheritDoc}
      * @throws NullPointerException {@inheritDoc}
      */
-    public @PolyDet boolean containsValue(@PolyDet AbstractMap<K,V> this, @PolyDet Object value) {
+    public @PolyDet("down") boolean containsValue(@PolyDet AbstractMap<K,V> this, @PolyDet Object value) {
         Iterator<Entry<K,V>> i = entrySet().iterator();
         if (value==null) {
             while (i.hasNext()) {
@@ -142,7 +142,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * @throws ClassCastException   {@inheritDoc}
      * @throws NullPointerException {@inheritDoc}
      */
-    public @PolyDet boolean containsKey(@PolyDet AbstractMap<K,V> this, @PolyDet Object key) {
+    public @PolyDet("down") boolean containsKey(@PolyDet AbstractMap<K,V> this, @PolyDet Object key) {
         Iterator<Map.Entry<K,V>> i = entrySet().iterator();
         if (key==null) {
             while (i.hasNext()) {
@@ -174,7 +174,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * @throws ClassCastException            {@inheritDoc}
      * @throws NullPointerException          {@inheritDoc}
      */
-    public @PolyDet V get(@PolyDet AbstractMap<K,V> this, @PolyDet Object key) {
+    public @PolyDet("down") V get(@PolyDet AbstractMap<K,V> this, @PolyDet Object key) {
         Iterator<Entry<K,V>> i = entrySet().iterator();
         if (key==null) {
             while (i.hasNext()) {
@@ -207,7 +207,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * @throws NullPointerException          {@inheritDoc}
      * @throws IllegalArgumentException      {@inheritDoc}
      */
-    public @PolyDet V put(@PolyDet AbstractMap<K,V> this, K key, V value) {
+    public @PolyDet("down") V put(@PolyDet AbstractMap<K,V> this, K key, V value) {
         throw new UnsupportedOperationException();
     }
 
@@ -233,7 +233,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * @throws ClassCastException            {@inheritDoc}
      * @throws NullPointerException          {@inheritDoc}
      */
-    public @PolyDet V remove(@PolyDet AbstractMap<K,V> this, @PolyDet("use") Object key) {
+    public @PolyDet("down") V remove(@PolyDet AbstractMap<K,V> this, @PolyDet("use") Object key) {
         Iterator<Entry<K,V>> i = entrySet().iterator();
         Entry<K,V> correctEntry = null;
         if (key==null) {
@@ -474,7 +474,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * @param o object to be compared for equality with this map
      * @return <tt>true</tt> if the specified object is equal to this map
      */
-    public @PolyDet boolean equals(@PolyDet AbstractMap<K,V> this, @PolyDet Object o) {
+    public @PolyDet("down") boolean equals(@PolyDet AbstractMap<K,V> this, @PolyDet Object o) {
         if (o == this)
             return true;
 
@@ -545,7 +545,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      *
      * @return a string representation of this map
      */
-    public @PolyDet String toString(@PolyDet AbstractMap<K,V> this) {
+    public @NonDet String toString(@PolyDet AbstractMap<K,V> this) {
         Iterator<Entry<K,V>> i = entrySet().iterator();
         if (! i.hasNext())
             return "{}";
@@ -722,7 +722,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
          *
          * @return a String representation of this map entry
          */
-        public @PolyDet String toString(@PolyDet SimpleEntry<K,V> this) {
+        public @NonDet String toString(@PolyDet SimpleEntry<K,V> this) {
             return key + "=" + value;
         }
 
@@ -853,7 +853,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
          *
          * @return a String representation of this map entry
          */
-        public @PolyDet String toString(@PolyDet SimpleImmutableEntry<K,V> this) {
+        public @NonDet String toString(@PolyDet SimpleImmutableEntry<K,V> this) {
             return key + "=" + value;
         }
 
