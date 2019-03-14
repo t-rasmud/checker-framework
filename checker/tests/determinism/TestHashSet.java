@@ -35,12 +35,14 @@ class TestHashSet {
     }
 
     void testExplicitPoly() {
-        // :: error: (invalid.hash.set.constructor.invocation)
+        // :: error: (invalid.hash.set.constructor.invocation) :: warning:
+        // (cast.unsafe.constructor.invocation)
         new @PolyDet HashSet<String>();
     }
 
     void testExplicitPolyUp() {
-        // :: error: (invalid.hash.set.constructor.invocation)
+        // :: error: (invalid.hash.set.constructor.invocation) :: warning:
+        // (cast.unsafe.constructor.invocation)
         new @PolyDet("up") HashSet<String>();
     }
 

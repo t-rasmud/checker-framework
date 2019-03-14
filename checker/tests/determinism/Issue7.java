@@ -10,7 +10,7 @@ class Issue7 {
     }
 
     // Tests whether super.method is treated correctly.
-    @PolyDet("up") String testDotSuper() {
+    @NonDet String testDotSuper() {
         return super.toString();
     }
 
