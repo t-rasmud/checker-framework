@@ -57,7 +57,7 @@ public final class Objects {
      * and {@code false} otherwise
      * @see Object#equals(Object)
      */
-    public static @PolyDet boolean equals(@PolyDet Object a, @PolyDet Object b) {
+    public static @PolyDet("up") boolean equals(@PolyDet Object a, @PolyDet Object b) {
         return (a == b) || (a != null && a.equals(b));
     }
 
@@ -78,7 +78,7 @@ public final class Objects {
      * @see Arrays#deepEquals(Object[], Object[])
      * @see Objects#equals(Object, Object)
      */
-    public static @PolyDet boolean deepEquals(@PolyDet Object a, @PolyDet Object b) {
+    public static @PolyDet("up") boolean deepEquals(@PolyDet Object a, @PolyDet Object b) {
         if (a == b)
             return true;
         else if (a == null || b == null)
@@ -140,7 +140,7 @@ public final class Objects {
      * @see Object#toString
      * @see String#valueOf(Object)
      */
-    public static @PolyDet String toString(@PolyDet Object o) {
+    public static @NonDet String toString(@PolyDet Object o) {
         return String.valueOf(o);
     }
 
@@ -157,7 +157,7 @@ public final class Objects {
      * otherwise.
      * @see Objects#toString(Object)
      */
-    public static @PolyDet String toString(@PolyDet Object o, @PolyDet String nullDefault) {
+    public static @PolyDet("up") String toString(@PolyDet Object o, @PolyDet String nullDefault) {
         return (o != null) ? o.toString() : nullDefault;
     }
 
@@ -181,7 +181,7 @@ public final class Objects {
      * @see Comparable
      * @see Comparator
      */
-    public static <T> @PolyDet int compare(@PolyDet T a, @PolyDet T b, @PolyDet Comparator<? super T> c) {
+    public static <T> @PolyDet("up") int compare(@PolyDet T a, @PolyDet T b, @PolyDet Comparator<? super T> c) {
         return (a == b) ? 0 :  c.compare(a, b);
     }
 
@@ -245,7 +245,7 @@ public final class Objects {
      * @see java.util.function.Predicate
      * @since 1.8
      */
-    public static @PolyDet boolean isNull(@PolyDet Object obj) {
+    public static @PolyDet("down") boolean isNull(@PolyDet Object obj) {
         return obj == null;
     }
 
@@ -263,7 +263,7 @@ public final class Objects {
      * @see java.util.function.Predicate
      * @since 1.8
      */
-    public static @PolyDet boolean nonNull(@PolyDet Object obj) {
+    public static @PolyDet("down") boolean nonNull(@PolyDet Object obj) {
         return obj != null;
     }
 
