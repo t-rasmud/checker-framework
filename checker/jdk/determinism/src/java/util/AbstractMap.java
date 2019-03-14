@@ -621,7 +621,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
          * @param key the key represented by this entry
          * @param value the value represented by this entry
          */
-        public @PolyDet SimpleEntry(@PolyDet K key, @PolyDet V value) {
+        public @PolyDet("up") SimpleEntry(@PolyDet K key, @PolyDet V value) {
             this.key   = key;
             this.value = value;
         }
@@ -662,7 +662,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
          * @param value new value to be stored in this entry
          * @return the old value corresponding to the entry
          */
-        public @PolyDet V setValue(@PolyDet SimpleEntry<K,V> this, V value) {
+        public V setValue(@PolyDet SimpleEntry<K,V> this, V value) {
             V oldValue = this.value;
             this.value = value;
             return oldValue;
@@ -689,7 +689,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
          *         entry
          * @see    #hashCode
          */
-        public @PolyDet boolean equals(@PolyDet SimpleEntry<K,V> this, @PolyDet Object o) {
+        public @PolyDet("up") boolean equals(@PolyDet SimpleEntry<K,V> this, @PolyDet Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
             Map.Entry<?,?> e = (Map.Entry<?,?>)o;
@@ -751,7 +751,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
          * @param key the key represented by this entry
          * @param value the value represented by this entry
          */
-        public @PolyDet SimpleImmutableEntry(@PolyDet K key, @PolyDet V value) {
+        public @PolyDet("up") SimpleImmutableEntry(@PolyDet K key, @PolyDet V value) {
             this.key   = key;
             this.value = value;
         }
@@ -781,7 +781,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
          *
          * @return the value corresponding to this entry
          */
-        public @PolyDet V getValue(@PolyDet SimpleImmutableEntry<K,V> this) {
+        public V getValue(@PolyDet SimpleImmutableEntry<K,V> this) {
             return value;
         }
 
@@ -795,7 +795,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
          * @return (Does not return)
          * @throws UnsupportedOperationException always
          */
-        public @PolyDet V setValue(@PolyDet SimpleImmutableEntry<K,V> this, V value) {
+        public V setValue(@PolyDet SimpleImmutableEntry<K,V> this, V value) {
             throw new UnsupportedOperationException();
         }
 
@@ -820,7 +820,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
          *         entry
          * @see    #hashCode
          */
-        public @PolyDet boolean equals(@PolyDet SimpleImmutableEntry<K,V> this, @PolyDet Object o) {
+        public @PolyDet("up") boolean equals(@PolyDet SimpleImmutableEntry<K,V> this, @PolyDet Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
             Map.Entry<?,?> e = (Map.Entry<?,?>)o;
