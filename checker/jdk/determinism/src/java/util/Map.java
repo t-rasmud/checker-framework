@@ -417,7 +417,7 @@ public interface Map<K,V> {
          *         required to, throw this exception if the entry has been
          *         removed from the backing map.
          */
-        @PolyDet V setValue(@PolyDet Entry<K,V> this, @PolyDet V value);
+        @PolyDet("up") V setValue(@PolyDet Entry<K,V> this, @PolyDet V value);
 
         /**
          * Compares the specified object with this entry for equality.
