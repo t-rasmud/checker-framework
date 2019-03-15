@@ -152,7 +152,7 @@ public class LinkedHashSet<E>
      * Constructs a new, empty linked hash set with the default initial
      * capacity (16) and load factor (0.75).
      */
-    public LinkedHashSet() {
+    public @Det LinkedHashSet() {
         super(16, .75f, true);
     }
 
