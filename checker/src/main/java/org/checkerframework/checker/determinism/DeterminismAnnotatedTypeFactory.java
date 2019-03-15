@@ -306,7 +306,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                                 annotatedTypeMirror.getAnnotationInHierarchy(NONDET), POLYDET)) {
                     checker.report(
                             Result.failure(
-                                    DeterminismVisitor.INVALID_HASH_SET_CONSTRUCTOR_INVOCATION),
+                                    DeterminismVisitor.INVALID_COLLECTION_CONSTRUCTOR_INVOCATION,
+                                    annotatedTypeMirror),
                             node);
                     return super.visitNewClass(node, annotatedTypeMirror);
                 }
@@ -323,7 +324,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                                 annotatedTypeMirror.getAnnotationInHierarchy(NONDET), POLYDET)) {
                     checker.report(
                             Result.failure(
-                                    DeterminismVisitor.INVALID_HASH_SET_CONSTRUCTOR_INVOCATION),
+                                    DeterminismVisitor.INVALID_COLLECTION_CONSTRUCTOR_INVOCATION,
+                                    annotatedTypeMirror),
                             node);
                     return super.visitNewClass(node, annotatedTypeMirror);
                 }

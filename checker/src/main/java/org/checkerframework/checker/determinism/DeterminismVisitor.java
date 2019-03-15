@@ -59,8 +59,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     public static final @CompilerMessageKey String INVALID_UPPER_BOUND_TYPE_ARGUMENT_ARRAY =
             "invalid.upper.bound.on.type.argument.of.array";
     /** Error message for expressions of the form "new @Det HashSet" */
-    public static final @CompilerMessageKey String INVALID_HASH_SET_CONSTRUCTOR_INVOCATION =
-            "invalid.hash.set.constructor.invocation";
+    public static final @CompilerMessageKey String INVALID_COLLECTION_CONSTRUCTOR_INVOCATION =
+            "invalid.collection.constructor.invocation";
     /**
      * The lower bound for exception parameters is {@code @Det}.
      *
