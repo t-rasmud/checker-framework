@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+@SuppressWarnings("determinism")
 class Issue810 {
     Map<String, String> m = new HashMap<>();
     Set<String> n = m.keySet();
