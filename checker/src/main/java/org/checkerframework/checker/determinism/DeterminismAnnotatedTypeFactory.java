@@ -80,12 +80,18 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** The java.util.LinkedHashSet class. */
     private final TypeMirror linkedHashSetTypeMirror =
             TypesUtils.typeFromClass(LinkedHashSet.class, types, processingEnv.getElementUtils());
+    /** The java.util.HashSet class. */
+    private final TypeMirror treeSetTypeMirror =
+            TypesUtils.typeFromClass(TreeSet.class, types, processingEnv.getElementUtils());
     /** The java.util.HashMap class. */
     private final TypeMirror hashMapTypeMirror =
             TypesUtils.typeFromClass(HashMap.class, types, processingEnv.getElementUtils());
     /** The java.util.LinkedHashMap class. */
     private final TypeMirror linkedHashMapTypeMirror =
             TypesUtils.typeFromClass(LinkedHashMap.class, types, processingEnv.getElementUtils());
+    /** The java.util.TreeMap class. */
+    private final TypeMirror treeMapTypeMirror =
+            TypesUtils.typeFromClass(TreeMap.class, types, processingEnv.getElementUtils());
 
     /** Creates {@code @PolyDet} annotation mirror constants. */
     public DeterminismAnnotatedTypeFactory(BaseTypeChecker checker) {
@@ -261,10 +267,24 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
 
         /**
-         * Reports an error if {@code node} represents explicitly constructing a {@code @Det
-         * HashSet}. If {@code Det} wasn't explicitly written, but the constructor would resolve to
-         * {@code @Det}, inserts {@code @OrderNonDet} instead. Also reports an error if the result
-         * of the constructor would resolve to any variant of {@code @PolyDet}.
+         * Reports an error if {@code node} represents explicitly constructing a
+         *
+         * <ol>
+         *   <li>{@code @Det HashSet}
+         *   <li>{@code @Det HashMap}
+         *   <li>{@code @OrderNonDet TreeSet}
+         *   <li>{@code @OrderNonDet TreeMap}
+         * </ol>
+         *
+         * If {@code @Det} wasn't explicitly written on a {@code HashSet} or a {@code HashMap}, but
+         * the constructor would resolve to {@code @Det}, inserts {@code @OrderNonDet} instead.
+         *
+         * <p>If {@code @OrderNonDet} wasn't explicitly written on a {@code TreeSet} or a {@code
+         * TreeMap}, but the constructor would resolve to {@code @OrderNonDet}, inserts {@code @Det}
+         * instead.
+         *
+         * <p>Also reports an error if the result of the constructor would resolve to any variant of
+         * {@code @PolyDet}.
          *
          * @param node a tree representing instantiating a class
          * @param annotatedTypeMirror the type to modify if it represents an invalid constructor
@@ -292,6 +312,23 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 }
                 if (annotatedTypeMirror.hasAnnotation(DET)) {
                     annotatedTypeMirror.replaceAnnotation(ORDERNONDET);
+                }
+            }
+
+            if (isTreeSet(annotatedTypeMirror) || isTreeMap(annotatedTypeMirror)) {
+                AnnotationMirror explicitAnno = getNewClassAnnotation(node);
+                if (AnnotationUtils.areSame(explicitAnno, ORDERNONDET)
+                        || AnnotationUtils.areSameByName(explicitAnno, POLYDET)
+                        || AnnotationUtils.areSameByName(
+                                annotatedTypeMirror.getAnnotationInHierarchy(NONDET), POLYDET)) {
+                    checker.report(
+                            Result.failure(
+                                    DeterminismVisitor.INVALID_HASH_SET_CONSTRUCTOR_INVOCATION),
+                            node);
+                    return super.visitNewClass(node, annotatedTypeMirror);
+                }
+                if (annotatedTypeMirror.hasAnnotation(ORDERNONDET)) {
+                    annotatedTypeMirror.replaceAnnotation(DET);
                 }
             }
             return super.visitNewClass(node, annotatedTypeMirror);
@@ -600,6 +637,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 types.erasure(tm.getUnderlyingType()), types.erasure(linkedHashSetTypeMirror));
     }
 
+    /** @return true if {@code tm} is a TreeSet or a subtype of TreeSet */
+    public boolean isTreeSet(AnnotatedTypeMirror tm) {
+        return types.isSubtype(
+                types.erasure(tm.getUnderlyingType()), types.erasure(treeSetTypeMirror));
+    }
+
     /** @return true if {@code tm} is a List or a subtype of List */
     public boolean isList(TypeMirror tm) {
         return types.isSubtype(types.erasure(tm), types.erasure(listInterfaceTypeMirror));
@@ -615,6 +658,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     public boolean isLinkedHashMap(AnnotatedTypeMirror tm) {
         return types.isSubtype(
                 types.erasure(tm.getUnderlyingType()), types.erasure(linkedHashMapTypeMirror));
+    }
+
+    /** @return true if {@code tm} is a TreeMap or a subtype of TreeMap */
+    public boolean isTreeMap(AnnotatedTypeMirror tm) {
+        return types.isSubtype(
+                types.erasure(tm.getUnderlyingType()), types.erasure(treeMapTypeMirror));
     }
 
     /** @return true if {@code tm} is the Arrays class */
