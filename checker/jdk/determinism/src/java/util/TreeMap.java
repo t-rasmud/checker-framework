@@ -281,7 +281,7 @@ public class TreeMap<K,V>
         return (p==null ? null : p.value);
     }
 
-    public @PolyDet("down") Comparator<? super K> comparator(@PolyDet TreeMap<K, V> this) {
+    public @PolyDet Comparator<? super K> comparator(@PolyDet TreeMap<K, V> this) {
         return comparator;
     }
 
@@ -627,7 +627,7 @@ public class TreeMap<K,V>
      *
      * @return a shallow copy of this map
      */
-    public Object clone(@PolyDet TreeMap<K, V> this) {
+    public @PolyDet Object clone(@PolyDet TreeMap<K, V> this) {
         TreeMap<?,?> clone;
         try {
             clone = (TreeMap<?,?>) super.clone();
@@ -1000,7 +1000,7 @@ public class TreeMap<K,V>
     }
 
     @Override
-    public void forEach(@PolyDet TreeMap<K, V> this, @PolyDet("use") BiConsumer<? super K, ? super V> action) {
+    public void forEach(@PolyDet TreeMap<K, V> this, @PolyDet("use") BiConsumer<? super @NonDet K, ? super @NonDet V> action) {
         Objects.requireNonNull(action);
         int expectedModCount = modCount;
         for (Entry<K, V> e = getFirstEntry(); e != null; e = successor(e)) {
