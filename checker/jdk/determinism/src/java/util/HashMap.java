@@ -795,7 +795,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      *         (A <tt>null</tt> return can also indicate that the map
      *         previously associated <tt>null</tt> with <tt>key</tt>.)
      */
-    public @PolyDet("down") V remove(@PolyDet HashMap<K, V> this, @PolyDet Object key) {
+    public @PolyDet("down") V remove(@PolyDet HashMap<K, V> this, @PolyDet("use") Object key) {
         Node<K,V> e;
         return (e = removeNode(hash(key), key, null, false, true)) == null ?
                 null : e.value;
@@ -1279,7 +1279,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     }
 
     @Override
-    public void forEach(@PolyDet HashMap<K, V> this, @PolyDet("use") BiConsumer<? super K, ? super V> action) {
+    public void forEach(@PolyDet HashMap<K, V> this, @PolyDet("use") BiConsumer<? super @NonDet K, ? super @NonDet V> action) {
         Node<K,V>[] tab;
         if (action == null)
             throw new NullPointerException();
