@@ -469,7 +469,7 @@ public interface Map<K,V> {
          * @see Comparable
          * @since 1.8
          */
-        public static <K extends Comparable<? super K>, V> Comparator<Map.Entry<K,V>> comparingByKey() {
+        public static <K extends @NonDet Comparable<? super K>, V> @Det Comparator<Map.Entry<K,V>> comparingByKey() {
             return (Comparator<Map.Entry<K, V>> & Serializable)
                     (c1, c2) -> c1.getKey().compareTo(c2.getKey());
         }
@@ -486,7 +486,7 @@ public interface Map<K,V> {
          * @see Comparable
          * @since 1.8
          */
-        public static <K, V extends Comparable<? super V>> Comparator<Map.Entry<K,V>> comparingByValue() {
+        public static <K, V extends @NonDet Comparable<? super V>> @Det Comparator<Map.Entry<K,V>> comparingByValue() {
             return (Comparator<Map.Entry<K, V>> & Serializable)
                     (c1, c2) -> c1.getValue().compareTo(c2.getValue());
         }
@@ -617,7 +617,7 @@ public interface Map<K,V> {
      * removed during iteration
      * @since 1.8
      */
-    default void forEach(@PolyDet Map<K,V> this, @PolyDet("use") BiConsumer<? super K, ? super V> action) {
+    default void forEach(@PolyDet Map<K,V> this, @PolyDet("use") BiConsumer<? super @PolyDet("up") K, ? super @PolyDet("up") V> action) {
         Objects.requireNonNull(action);
         for (Map.Entry<K, V> entry : entrySet()) {
             K k;
