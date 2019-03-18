@@ -678,7 +678,7 @@ public class LinkedHashMap<K,V>
 
     // Map overrides
 
-    public void forEach(@PolyDet LinkedHashMap<K, V> this, @PolyDet("use") BiConsumer<? super K, ? super V> action) {
+    public void forEach(@PolyDet LinkedHashMap<K, V> this, @PolyDet("use") BiConsumer<? super @NonDet K, ? super @NonDet V> action) {
         if (action == null)
             throw new NullPointerException();
         int mc = modCount;
