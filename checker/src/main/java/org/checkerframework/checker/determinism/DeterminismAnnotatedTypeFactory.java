@@ -487,7 +487,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
      * nested component types as {@code annotation}.
      */
     void defaultCollectionComponentType(AnnotatedTypeMirror type, AnnotationMirror annotation) {
-        if ((isCollection(type) || isMap(type))
+        if ((isCollection(type) || isMap(type) || isIterator(type))
                 && (type.getAnnotations().isEmpty() || type.hasExplicitAnnotation(NONDET))) {
             AnnotatedDeclaredType annoCollectionType = (AnnotatedDeclaredType) type;
             recursiveDefaultCollectionComponentType(annoCollectionType, annotation);
