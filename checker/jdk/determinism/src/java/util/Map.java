@@ -271,7 +271,7 @@ public interface Map<K,V> {
      *         map does not permit null keys
      * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      */
-    @PolyDet("down") V remove(@PolyDet Map<K,V> this, @PolyDet Object key);
+    @PolyDet("down") V remove(@PolyDet Map<K,V> this, @PolyDet("use") Object key);
 
 
     // Bulk Operations
@@ -417,7 +417,7 @@ public interface Map<K,V> {
          *         required to, throw this exception if the entry has been
          *         removed from the backing map.
          */
-        @PolyDet("up") V setValue(@PolyDet Entry<K,V> this, @PolyDet V value);
+        @PolyDet V setValue(@PolyDet Entry<K,V> this, @PolyDet("use") V value);
 
         /**
          * Compares the specified object with this entry for equality.
