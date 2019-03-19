@@ -276,7 +276,7 @@ public class TreeMap<K,V>
      *         and this map uses natural ordering, or its comparator
      *         does not permit null keys
      */
-    public @PolyDet("down") V get(@PolyDet TreeMap<K, V> this, @PolyDet Object key) {
+    public @PolyDet V get(@PolyDet TreeMap<K, V> this, @PolyDet Object key) {
         Entry<K,V> p = getEntry(key);
         return (p==null ? null : p.value);
     }
@@ -288,14 +288,14 @@ public class TreeMap<K,V>
     /**
      * @throws NoSuchElementException {@inheritDoc}
      */
-    public @PolyDet("down") K firstKey(@PolyDet TreeMap<K, V> this) {
+    public K firstKey(@PolyDet TreeMap<K, V> this) {
         return key(getFirstEntry());
     }
 
     /**
      * @throws NoSuchElementException {@inheritDoc}
      */
-    public @PolyDet("down") K lastKey(@PolyDet TreeMap<K, V> this) {
+    public K lastKey(@PolyDet TreeMap<K, V> this) {
         return key(getLastEntry());
     }
 
@@ -601,7 +601,7 @@ public class TreeMap<K,V>
      *         and this map uses natural ordering, or its comparator
      *         does not permit null keys
      */
-    public @PolyDet("down") V remove(@PolyDet TreeMap<K, V> this, @PolyDet Object key) {
+    public V remove(@PolyDet TreeMap<K, V> this, @PolyDet("use") Object key) {
         Entry<K,V> p = getEntry(key);
         if (p == null)
             return null;
@@ -709,7 +709,7 @@ public class TreeMap<K,V>
      *         does not permit null keys
      * @since 1.6
      */
-    public @PolyDet("down") K lowerKey(@PolyDet TreeMap<K, V> this, K key) {
+    public K lowerKey(@PolyDet TreeMap<K, V> this, K key) {
         return keyOrNull(getLowerEntry(key));
     }
 
@@ -731,7 +731,7 @@ public class TreeMap<K,V>
      *         does not permit null keys
      * @since 1.6
      */
-    public @PolyDet("down") K floorKey(@PolyDet TreeMap<K, V> this, K key) {
+    public K floorKey(@PolyDet TreeMap<K, V> this, K key) {
         return keyOrNull(getFloorEntry(key));
     }
 
@@ -753,7 +753,7 @@ public class TreeMap<K,V>
      *         does not permit null keys
      * @since 1.6
      */
-    public @PolyDet("down") K ceilingKey(@PolyDet TreeMap<K, V> this, K key) {
+    public K ceilingKey(@PolyDet TreeMap<K, V> this, K key) {
         return keyOrNull(getCeilingEntry(key));
     }
 
@@ -775,7 +775,7 @@ public class TreeMap<K,V>
      *         does not permit null keys
      * @since 1.6
      */
-    public @PolyDet("down") K higherKey(@PolyDet TreeMap<K, V> this, K key) {
+    public K higherKey(@PolyDet TreeMap<K, V> this, K key) {
         return keyOrNull(getHigherEntry(key));
     }
 
