@@ -1000,7 +1000,7 @@ public class TreeMap<K,V>
     }
 
     @Override
-    public void forEach(@PolyDet TreeMap<K, V> this, @PolyDet("use") BiConsumer<? super @NonDet K, ? super @NonDet V> action) {
+    public void forEach(@PolyDet TreeMap<K, V> this, @PolyDet("use") BiConsumer<? super @PolyDet("up") K, ? super @PolyDet("up") V> action) {
         Objects.requireNonNull(action);
         int expectedModCount = modCount;
         for (Entry<K, V> e = getFirstEntry(); e != null; e = successor(e)) {

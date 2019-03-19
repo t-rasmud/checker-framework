@@ -1279,7 +1279,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     }
 
     @Override
-    public void forEach(@PolyDet HashMap<K, V> this, @PolyDet("use") BiConsumer<? super @NonDet K, ? super @NonDet V> action) {
+    public void forEach(@PolyDet HashMap<K, V> this, @PolyDet("use") BiConsumer<? super @PolyDet("up") K, ? super @PolyDet("up") V> action) {
         Node<K,V>[] tab;
         if (action == null)
             throw new NullPointerException();

@@ -509,7 +509,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     && argType.getKind() != TypeKind.WILDCARD
                     && argType.getAnnotations().isEmpty()) {
                 argType.replaceAnnotation(annotation);
-                if (isCollection(argType) || isMap(argType)) {
+                if (isCollection(argType) || isMap(argType) || isIterator(argType)) {
                     recursiveDefaultCollectionComponentType(
                             (AnnotatedDeclaredType) argType, annotation);
                 }
