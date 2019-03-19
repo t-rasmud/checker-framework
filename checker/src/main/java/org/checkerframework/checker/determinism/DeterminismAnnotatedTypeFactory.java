@@ -231,14 +231,16 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 }
             }
 
-            // Annotates the return types of method calls "System.getProperty("line.separator")"
+            // Annotates the return types of method calls "System.getProperty("line.separator")",
+            // "System.getProperty("file.separator")"
             // and "System.getProperty("path.separator")" as "@Det"
             ExecutableElement systemGetProperty =
                     TreeUtils.getMethod("java.lang.System", "getProperty", 1, getProcessingEnv());
             if (ElementUtils.isMethod(m, systemGetProperty, getProcessingEnv())) {
-                String getPropoertyArgument = node.getArguments().get(0).toString();
-                if (getPropoertyArgument.equals("\"" + "line.separator" + "\"")
-                        || getPropoertyArgument.equals("\"" + "path.separator" + "\"")) {
+                String getPropertyArgument = node.getArguments().get(0).toString();
+                if (getPropertyArgument.equals("\"" + "line.separator" + "\"")
+                        || getPropertyArgument.equals("\"" + "file.separator" + "\"")
+                        || getPropertyArgument.equals("\"" + "path.separator" + "\"")) {
                     annotatedRetType.replaceAnnotation(DET);
                 }
             }
