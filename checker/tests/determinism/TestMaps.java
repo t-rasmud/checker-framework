@@ -17,9 +17,12 @@ public class TestMaps {
 
     void testMapGet(
             @OrderNonDet Map<@Det Integer, @Det String> map,
+            @OrderNonDet Map<@Det Integer, @OrderNonDet List<@Det String>> map1,
             @Det Integer dKey,
             @NonDet Integer nKey) {
         @Det String val = map.get(dKey);
+        // :: error: (assignment.type.incompatible)
+        @Det List<@Det String> val1 = map1.get(dKey);
         // :: error: (assignment.type.incompatible)
         @Det String val2 = map.get(nKey);
     }

@@ -276,7 +276,7 @@ public class TreeMap<K,V>
      *         and this map uses natural ordering, or its comparator
      *         does not permit null keys
      */
-    public @PolyDet("down") V get(@PolyDet TreeMap<K, V> this, @PolyDet Object key) {
+    public @PolyDet V get(@PolyDet TreeMap<K, V> this, @PolyDet Object key) {
         Entry<K,V> p = getEntry(key);
         return (p==null ? null : p.value);
     }

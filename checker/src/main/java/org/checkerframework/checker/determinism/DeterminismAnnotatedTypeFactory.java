@@ -245,7 +245,53 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 }
             }
 
+            // Since the return type of Map.get() is annotated as "@PolyDet",
+            // replace the annotation on return type as "@Det" if the receiver is of
+            // type "@OrderNonDet", the argument of type "@Det", and the return type is
+            // not a collection.
+            if (isMap(receiverType)
+                    && receiverType.hasAnnotation(ORDERNONDET)
+                    && !mayBeOrderNonDet(annotatedRetType)
+                    && annotatedRetType.hasAnnotation(NONDET)
+                    && isMapGet(m)
+                    && getAnnotatedType(node.getArguments().get(0)).hasAnnotation(DET)) {
+                annotatedRetType.replaceAnnotation(DET);
+            }
+
             return super.visitMethodInvocation(node, annotatedRetType);
+        }
+
+        /**
+         * Returns true if {@code method} is one of Map.get(), Map.getOrDefault(), HashMap.get(),
+         * HashMap.getOrDefault(), LinkedHashMap.get(), LinkedHashMap.getOrDefault() or
+         * TreeMap.get().
+         */
+        private boolean isMapGet(ExecutableElement method) {
+            ExecutableElement MapGet =
+                    TreeUtils.getMethod("java.util.Map", "get", 1, getProcessingEnv());
+            ExecutableElement MapGetOrDefault =
+                    TreeUtils.getMethod("java.util.Map", "getOrDefault", 2, getProcessingEnv());
+            ExecutableElement HashMapGet =
+                    TreeUtils.getMethod("java.util.HashMap", "get", 1, getProcessingEnv());
+            ExecutableElement HashMapGetOrDefault =
+                    TreeUtils.getMethod("java.util.HashMap", "getOrDefault", 2, getProcessingEnv());
+            ExecutableElement LinkedHashMapGet =
+                    TreeUtils.getMethod("java.util.LinkedHashMap", "get", 1, getProcessingEnv());
+            ExecutableElement LinkedHashMapGetOrDefault =
+                    TreeUtils.getMethod(
+                            "java.util.LinkedHashMap", "getOrDefault", 2, getProcessingEnv());
+            ExecutableElement TreeMapGet =
+                    TreeUtils.getMethod("java.util.TreeMap", "get", 1, getProcessingEnv());
+            if (ElementUtils.isMethod(method, MapGet, getProcessingEnv())
+                    || ElementUtils.isMethod(method, MapGetOrDefault, getProcessingEnv())
+                    || ElementUtils.isMethod(method, HashMapGet, getProcessingEnv())
+                    || ElementUtils.isMethod(method, HashMapGetOrDefault, getProcessingEnv())
+                    || ElementUtils.isMethod(method, LinkedHashMapGet, getProcessingEnv())
+                    || ElementUtils.isMethod(method, LinkedHashMapGetOrDefault, getProcessingEnv())
+                    || ElementUtils.isMethod(method, TreeMapGet, getProcessingEnv())) {
+                return true;
+            }
+            return false;
         }
 
         /**

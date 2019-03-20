@@ -553,7 +553,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      *
      * @see #put(Object, Object)
      */
-    public @PolyDet("down") V get(@PolyDet HashMap<K, V> this, @PolyDet Object key) {
+    public @PolyDet V get(@PolyDet HashMap<K, V> this, @PolyDet Object key) {
         Node<K,V> e;
         return (e = getNode(hash(key), key)) == null ? null : e.value;
     }
@@ -1053,7 +1053,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     // Overrides of JDK8 Map extension methods
 
     @Override
-    public @PolyDet("down") V getOrDefault(@PolyDet HashMap<K, V> this, @PolyDet Object key, V defaultValue) {
+    public @PolyDet V getOrDefault(@PolyDet HashMap<K, V> this, @PolyDet Object key, V defaultValue) {
         Node<K,V> e;
         return (e = getNode(hash(key), key)) == null ? defaultValue : e.value;
     }
