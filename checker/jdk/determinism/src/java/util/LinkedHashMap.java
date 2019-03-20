@@ -437,7 +437,7 @@ public class LinkedHashMap<K,V>
      * The {@link #containsKey containsKey} operation may be used to
      * distinguish these two cases.
      */
-    public @PolyDet V get(@PolyDet LinkedHashMap<K, V> this, @PolyDet Object key) {
+    public @PolyDet("down") V get(@PolyDet LinkedHashMap<K, V> this, @PolyDet Object key) {
         Node<K,V> e;
         if ((e = getNode(hash(key), key)) == null)
             return null;
@@ -449,7 +449,7 @@ public class LinkedHashMap<K,V>
     /**
      * {@inheritDoc}
      */
-    public @PolyDet V getOrDefault(@PolyDet LinkedHashMap<K, V> this, @PolyDet Object key, V defaultValue) {
+    public @PolyDet("down") V getOrDefault(@PolyDet LinkedHashMap<K, V> this, @PolyDet Object key, V defaultValue) {
        Node<K,V> e;
        if ((e = getNode(hash(key), key)) == null)
            return defaultValue;

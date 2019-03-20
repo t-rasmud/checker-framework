@@ -211,7 +211,7 @@ public interface Map<K,V> {
      *         does not permit null keys
      * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      */
-    @PolyDet V get(@PolyDet Map<K,V> this, @PolyDet Object key);
+    @PolyDet("down") V get(@PolyDet Map<K,V> this, @PolyDet Object key);
 
     // Modification Operations
 
@@ -585,7 +585,7 @@ public interface Map<K,V> {
      * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      * @since 1.8
      */
-    default @PolyDet V getOrDefault(@PolyDet Map<K,V> this, @PolyDet Object key, V defaultValue) {
+    default @PolyDet("down") V getOrDefault(@PolyDet Map<K,V> this, @PolyDet Object key, V defaultValue) {
         V v;
         return (((v = get(key)) != null) || containsKey(key))
                 ? v
