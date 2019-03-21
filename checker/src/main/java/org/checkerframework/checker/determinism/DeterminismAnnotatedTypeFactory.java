@@ -62,6 +62,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** The java.util.Collection class. */
     private final TypeMirror collectionInterfaceTypeMirror =
             TypesUtils.typeFromClass(Collection.class, types, processingEnv.getElementUtils());
+    /** The java.util.Map class. */
+    private final TypeMirror mapInterfaceTypeMirror =
+            TypesUtils.typeFromClass(Map.class, types, processingEnv.getElementUtils());
     /** The java.util.Iterator class. */
     private final TypeMirror iteratorTypeMirror =
             TypesUtils.typeFromClass(Iterator.class, types, processingEnv.getElementUtils());
@@ -77,6 +80,18 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** The java.util.LinkedHashSet class. */
     private final TypeMirror linkedHashSetTypeMirror =
             TypesUtils.typeFromClass(LinkedHashSet.class, types, processingEnv.getElementUtils());
+    /** The java.util.HashSet class. */
+    private final TypeMirror treeSetTypeMirror =
+            TypesUtils.typeFromClass(TreeSet.class, types, processingEnv.getElementUtils());
+    /** The java.util.HashMap class. */
+    private final TypeMirror hashMapTypeMirror =
+            TypesUtils.typeFromClass(HashMap.class, types, processingEnv.getElementUtils());
+    /** The java.util.LinkedHashMap class. */
+    private final TypeMirror linkedHashMapTypeMirror =
+            TypesUtils.typeFromClass(LinkedHashMap.class, types, processingEnv.getElementUtils());
+    /** The java.util.TreeMap class. */
+    private final TypeMirror treeMapTypeMirror =
+            TypesUtils.typeFromClass(TreeMap.class, types, processingEnv.getElementUtils());
 
     /** Creates {@code @PolyDet} annotation mirror constants. */
     public DeterminismAnnotatedTypeFactory(BaseTypeChecker checker) {
@@ -230,7 +245,53 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 }
             }
 
+            // Since the return type of Map.get() is annotated as "@PolyDet",
+            // replace the annotation on return type as "@Det" if the receiver is of
+            // type "@OrderNonDet", the argument of type "@Det", and the return type is
+            // not a collection.
+            if (isMap(receiverType)
+                    && receiverType.hasAnnotation(ORDERNONDET)
+                    && !mayBeOrderNonDet(annotatedRetType)
+                    && annotatedRetType.hasAnnotation(NONDET)
+                    && isMapGet(m)
+                    && getAnnotatedType(node.getArguments().get(0)).hasAnnotation(DET)) {
+                annotatedRetType.replaceAnnotation(DET);
+            }
+
             return super.visitMethodInvocation(node, annotatedRetType);
+        }
+
+        /**
+         * Returns true if {@code method} is one of Map.get(), Map.getOrDefault(), HashMap.get(),
+         * HashMap.getOrDefault(), LinkedHashMap.get(), LinkedHashMap.getOrDefault() or
+         * TreeMap.get().
+         */
+        private boolean isMapGet(ExecutableElement method) {
+            ExecutableElement MapGet =
+                    TreeUtils.getMethod("java.util.Map", "get", 1, getProcessingEnv());
+            ExecutableElement MapGetOrDefault =
+                    TreeUtils.getMethod("java.util.Map", "getOrDefault", 2, getProcessingEnv());
+            ExecutableElement HashMapGet =
+                    TreeUtils.getMethod("java.util.HashMap", "get", 1, getProcessingEnv());
+            ExecutableElement HashMapGetOrDefault =
+                    TreeUtils.getMethod("java.util.HashMap", "getOrDefault", 2, getProcessingEnv());
+            ExecutableElement LinkedHashMapGet =
+                    TreeUtils.getMethod("java.util.LinkedHashMap", "get", 1, getProcessingEnv());
+            ExecutableElement LinkedHashMapGetOrDefault =
+                    TreeUtils.getMethod(
+                            "java.util.LinkedHashMap", "getOrDefault", 2, getProcessingEnv());
+            ExecutableElement TreeMapGet =
+                    TreeUtils.getMethod("java.util.TreeMap", "get", 1, getProcessingEnv());
+            if (ElementUtils.isMethod(method, MapGet, getProcessingEnv())
+                    || ElementUtils.isMethod(method, MapGetOrDefault, getProcessingEnv())
+                    || ElementUtils.isMethod(method, HashMapGet, getProcessingEnv())
+                    || ElementUtils.isMethod(method, HashMapGetOrDefault, getProcessingEnv())
+                    || ElementUtils.isMethod(method, LinkedHashMapGet, getProcessingEnv())
+                    || ElementUtils.isMethod(method, LinkedHashMapGetOrDefault, getProcessingEnv())
+                    || ElementUtils.isMethod(method, TreeMapGet, getProcessingEnv())) {
+                return true;
+            }
+            return false;
         }
 
         /**
@@ -254,10 +315,24 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
 
         /**
-         * Reports an error if {@code node} represents explicitly constructing a {@code @Det
-         * HashSet}. If {@code Det} wasn't explicitly written, but the constructor would resolve to
-         * {@code @Det}, inserts {@code @OrderNonDet} instead. Also reports an error if the result
-         * of the constructor would resolve to any variant of {@code @PolyDet}.
+         * Reports an error if {@code node} represents explicitly constructing a
+         *
+         * <ol>
+         *   <li>{@code @Det HashSet}
+         *   <li>{@code @Det HashMap}
+         *   <li>{@code @OrderNonDet TreeSet}
+         *   <li>{@code @OrderNonDet TreeMap}
+         * </ol>
+         *
+         * If {@code @Det} wasn't explicitly written on a {@code HashSet} or a {@code HashMap}, but
+         * the constructor would resolve to {@code @Det}, inserts {@code @OrderNonDet} instead.
+         *
+         * <p>If {@code @OrderNonDet} wasn't explicitly written on a {@code TreeSet} or a {@code
+         * TreeMap}, but the constructor would resolve to {@code @OrderNonDet}, inserts {@code @Det}
+         * instead.
+         *
+         * <p>Also reports an error if the result of the constructor would resolve to any variant of
+         * {@code @PolyDet}.
          *
          * @param node a tree representing instantiating a class
          * @param annotatedTypeMirror the type to modify if it represents an invalid constructor
@@ -266,7 +341,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          */
         @Override
         public Void visitNewClass(NewClassTree node, AnnotatedTypeMirror annotatedTypeMirror) {
-            if (isHashSet(annotatedTypeMirror) && !isLinkedHashSet(annotatedTypeMirror)) {
+            if ((isHashSet(annotatedTypeMirror) && !isLinkedHashSet(annotatedTypeMirror))
+                    || (isHashMap(annotatedTypeMirror) && !isLinkedHashMap(annotatedTypeMirror))) {
                 AnnotationMirror explicitAnno = getNewClassAnnotation(node);
                 // There are two checks for @PolyDet. The first catches "new @PolyDet HashSet()"
                 // because in that case the annotation on annotatedTypeMirror is @OrderNonDet. The
@@ -278,12 +354,31 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                                 annotatedTypeMirror.getAnnotationInHierarchy(NONDET), POLYDET)) {
                     checker.report(
                             Result.failure(
-                                    DeterminismVisitor.INVALID_HASH_SET_CONSTRUCTOR_INVOCATION),
+                                    DeterminismVisitor.INVALID_COLLECTION_CONSTRUCTOR_INVOCATION,
+                                    annotatedTypeMirror),
                             node);
                     return super.visitNewClass(node, annotatedTypeMirror);
                 }
                 if (annotatedTypeMirror.hasAnnotation(DET)) {
                     annotatedTypeMirror.replaceAnnotation(ORDERNONDET);
+                }
+            }
+
+            if (isTreeSet(annotatedTypeMirror) || isTreeMap(annotatedTypeMirror)) {
+                AnnotationMirror explicitAnno = getNewClassAnnotation(node);
+                if (AnnotationUtils.areSame(explicitAnno, ORDERNONDET)
+                        || AnnotationUtils.areSameByName(explicitAnno, POLYDET)
+                        || AnnotationUtils.areSameByName(
+                                annotatedTypeMirror.getAnnotationInHierarchy(NONDET), POLYDET)) {
+                    checker.report(
+                            Result.failure(
+                                    DeterminismVisitor.INVALID_COLLECTION_CONSTRUCTOR_INVOCATION,
+                                    annotatedTypeMirror),
+                            node);
+                    return super.visitNewClass(node, annotatedTypeMirror);
+                }
+                if (annotatedTypeMirror.hasAnnotation(ORDERNONDET)) {
+                    annotatedTypeMirror.replaceAnnotation(DET);
                 }
             }
             return super.visitNewClass(node, annotatedTypeMirror);
@@ -315,7 +410,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     public boolean mayBeOrderNonDet(AnnotatedTypeMirror javaType) {
         return (javaType.getKind() == TypeKind.ARRAY
                 || isCollection(javaType)
-                || isIterator(javaType));
+                || isIterator(javaType)
+                || isMap(javaType));
     }
 
     /**
@@ -435,11 +531,11 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
-     * If {@code type} is a collection type that is not explicitly annotated, defaults all its
+     * If {@code type} is a Collection type that is not explicitly annotated, defaults all its
      * nested component types as {@code annotation}.
      */
     void defaultCollectionComponentType(AnnotatedTypeMirror type, AnnotationMirror annotation) {
-        if (isCollection(type)
+        if ((isCollection(type) || isMap(type) || isIterator(type))
                 && (type.getAnnotations().isEmpty() || type.hasExplicitAnnotation(NONDET))) {
             AnnotatedDeclaredType annoCollectionType = (AnnotatedDeclaredType) type;
             recursiveDefaultCollectionComponentType(annoCollectionType, annotation);
@@ -461,7 +557,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     && argType.getKind() != TypeKind.WILDCARD
                     && argType.getAnnotations().isEmpty()) {
                 argType.replaceAnnotation(annotation);
-                if (isCollection(argType)) {
+                if (isCollection(argType) || isMap(argType) || isIterator(argType)) {
                     recursiveDefaultCollectionComponentType(
                             (AnnotatedDeclaredType) argType, annotation);
                 }
@@ -567,6 +663,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 types.erasure(collectionInterfaceTypeMirror));
     }
 
+    /** @return true if {@code tm} is Map or a subtype of Map */
+    public boolean isMap(AnnotatedTypeMirror tm) {
+        return types.isSubtype(
+                types.erasure(tm.getUnderlyingType()), types.erasure(mapInterfaceTypeMirror));
+    }
+
     /** @return true if {@code tm} is Iterator or a subtype of Iterator */
     public boolean isIterator(AnnotatedTypeMirror tm) {
         return types.isSubtype(
@@ -585,9 +687,33 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 types.erasure(tm.getUnderlyingType()), types.erasure(linkedHashSetTypeMirror));
     }
 
+    /** @return true if {@code tm} is a TreeSet or a subtype of TreeSet */
+    public boolean isTreeSet(AnnotatedTypeMirror tm) {
+        return types.isSubtype(
+                types.erasure(tm.getUnderlyingType()), types.erasure(treeSetTypeMirror));
+    }
+
     /** @return true if {@code tm} is a List or a subtype of List */
     public boolean isList(TypeMirror tm) {
         return types.isSubtype(types.erasure(tm), types.erasure(listInterfaceTypeMirror));
+    }
+
+    /** @return true if {@code tm} is a HashMap or a subtype of HashMap */
+    public boolean isHashMap(AnnotatedTypeMirror tm) {
+        return types.isSubtype(
+                types.erasure(tm.getUnderlyingType()), types.erasure(hashMapTypeMirror));
+    }
+
+    /** @return true if {@code tm} is a LinkedHashMap or a subtype of LinkedHashMap */
+    public boolean isLinkedHashMap(AnnotatedTypeMirror tm) {
+        return types.isSubtype(
+                types.erasure(tm.getUnderlyingType()), types.erasure(linkedHashMapTypeMirror));
+    }
+
+    /** @return true if {@code tm} is a TreeMap or a subtype of TreeMap */
+    public boolean isTreeMap(AnnotatedTypeMirror tm) {
+        return types.isSubtype(
+                types.erasure(tm.getUnderlyingType()), types.erasure(treeMapTypeMirror));
     }
 
     /** @return true if {@code tm} is the Arrays class */

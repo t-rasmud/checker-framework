@@ -57,7 +57,7 @@ The Determinism type system uses the following type qualifiers (see Figure~\ref{
 \item[\refqualclass{checker/determinism/qual}{OrderNonDet}] indicates that
   a collection (i.e any class that is a subtype of java.util.Collection or java.util.Iterator) or an array will have the same elements in every execution, but in a
   possibly different order.  \<@OrderNonDet> may only be written on
-  collections and arrays.
+  collections and arrays. An \<@OrderNonDet> Map indicates that the its keySet is \<@OrderNonDet>.
 \item[\refqualclass{checker/determinism/qual}{Det}] indicates that
   the expression evaluates to the same value (with respect to \<.equals()>) in all
   executions on the same machine; for a collection, iteration also yields the values in the same

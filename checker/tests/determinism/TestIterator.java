@@ -16,4 +16,12 @@ public class TestIterator {
             @Det String str = it.next();
         }
     }
+
+    void testIterator3(@OrderNonDet List<@OrderNonDet List<@Det String>> lst) {
+        @OrderNonDet Iterator<@OrderNonDet List<@Det String>> it = lst.iterator();
+        while (it.hasNext()) {
+            // :: error: (assignment.type.incompatible) :: error: (invalid.element.type)
+            @OrderNonDet List<@Det String> strList = it.next();
+        }
+    }
 }
