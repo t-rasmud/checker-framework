@@ -12,7 +12,8 @@ public class DeterminismTest extends CheckerFrameworkPerDirectoryTest {
                 testFiles,
                 org.checkerframework.checker.determinism.DeterminismChecker.class,
                 "determinism",
-                "-Anomsgtext");
+                "-Anomsgtext",
+                "-Alint=enableconditionaltypecheck");
     }
 
     @Parameters
