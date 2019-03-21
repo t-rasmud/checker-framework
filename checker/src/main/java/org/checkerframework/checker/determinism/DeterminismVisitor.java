@@ -375,7 +375,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         }
         AnnotatedTypeMirror conditionType = atypeFactory.getAnnotatedType(conditionalExpression);
         if (!conditionType.hasAnnotation(atypeFactory.DET)
-                && !checker.getLintOption("disableconditionaltypecheck", false)) {
+                && checker.getLintOption("enableconditionaltypecheck", false)) {
             checker.report(
                     Result.failure(
                             "invalid.type.on.conditional",

@@ -11,8 +11,8 @@ import org.checkerframework.framework.source.SupportedLintOptions;
  * @checker_framework.manual #determinism-checker Determinism Checker
  */
 @SupportedLintOptions({
-    // disables "invalid.typ.on.conditional" errors. Use this option to reduce false positives
-    // until we fix type refinement of every statement after a conditional check.
-    "disableconditionaltypecheck"
+    // enables "invalid.typ.on.conditional" errors. This is currently disabled and should be enabled
+    // once we fix type refinement of every statement after a conditional check.
+    "enableconditionaltypecheck"
 })
 public class DeterminismChecker extends BaseTypeChecker {}
