@@ -29,9 +29,11 @@ public class TestMaps {
 
     void testHashMapGet(
             @OrderNonDet HashMap<@Det Integer, @Det String> map,
+            @OrderNonDet HashMap<@Det Integer, @Det List<@Det String>> map1,
             @Det Integer dKey,
             @NonDet Integer nKey) {
         @Det String val = map.get(dKey);
+        @Det List<@Det String> val1 = map1.get(dKey);
         // :: error: (assignment.type.incompatible)
         @Det String val2 = map.get(nKey);
     }
