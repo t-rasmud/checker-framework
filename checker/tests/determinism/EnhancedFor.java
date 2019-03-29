@@ -16,4 +16,9 @@ public class EnhancedFor {
         // :: error: (enhancedfor.type.incompatible)
         for (@Det Entry<@Det String, @Det String> item : map.entrySet()) {}
     }
+
+    void testArr(@Det int @OrderNonDet [] arr) {
+        // :: error: (enhancedfor.type.incompatible)
+        for (@Det int x : arr) {}
+    }
 }
