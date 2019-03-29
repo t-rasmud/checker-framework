@@ -18,6 +18,7 @@ import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedArrayTyp
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedDeclaredType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedPrimitiveType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedTypeVariable;
+import org.checkerframework.framework.util.AnnotatedTypes;
 import org.checkerframework.javacutil.AnnotationUtils;
 
 /** Visitor for the determinism type-system. */
@@ -318,6 +319,27 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             }
         }
         super.commonAssignmentCheck(varType, valueType, valueTree, errorKey);
+    }
+
+    // Hack: Remove this after it's fixed on the master branch.
+    @Override
+    public Void visitEnhancedForLoop(EnhancedForLoopTree node, Void p) {
+        AnnotatedTypeMirror var = this.atypeFactory.getAnnotatedTypeLhs(node.getVariable());
+        AnnotatedTypeMirror iterableType = this.atypeFactory.getAnnotatedType(node.getExpression());
+        AnnotatedTypeMirror iteratedType =
+                AnnotatedTypes.getIteratedType(
+                        this.checker.getProcessingEnvironment(), this.atypeFactory, iterableType);
+        boolean valid = this.validateTypeOf(node.getVariable());
+        if (iterableType.hasAnnotation(atypeFactory.ORDERNONDET)
+                || iterableType.hasAnnotation(atypeFactory.NONDET)) {
+            iteratedType.replaceAnnotation(atypeFactory.NONDET);
+        }
+        if (valid) {
+            this.commonAssignmentCheck(
+                    var, iteratedType, node.getExpression(), "enhancedfor.type.incompatible");
+        }
+
+        return super.visitEnhancedForLoop(node, p);
     }
 
     /**

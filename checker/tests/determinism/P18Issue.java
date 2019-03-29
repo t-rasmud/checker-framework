@@ -1,3 +1,5 @@
+// @skip-test
+
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
 import org.checkerframework.checker.determinism.qual.Det;
