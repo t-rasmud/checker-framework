@@ -1,0 +1,156 @@
+package org.junit;
+
+import org.checkerframework.checker.determinism.qual.*;
+
+import org.hamcrest.Matcher;
+import org.hamcrest.MatcherAssert;
+import org.junit.function.ThrowingRunnable;
+import org.junit.internal.ArrayComparisonFailure;
+import org.junit.internal.ExactComparisonCriteria;
+import org.junit.internal.InexactComparisonCriteria;
+
+public class Assert {
+    public static void assertTrue(@Det String message, @Det boolean condition);
+
+    public static void assertFalse(@Det String message, @Det boolean condition);
+
+    public static void assertFalse(@Det boolean condition);
+
+    public static void fail(@Det String message);
+
+    public static void assertEquals(@Det String message, @Det Object expected,
+            @Det Object actual);
+
+    private static boolean equalsRegardingNull(@Det Object expected, @Det Object actual);
+
+    private static boolean isEquals(@Det Object expected, @Det Object actual);
+
+    public static void assertEquals(@Det Object expected, @Det Object actual);
+
+    public static void assertNotEquals(@Det String message, @Det Object unexpected,
+            @Det Object actual);
+
+    public static void assertNotEquals(@Det Object unexpected, @Det Object actual);
+
+    private static void failEquals(@Det String message, @Det Object actual);
+
+    public static void assertNotEquals(@Det String message, @Det long unexpected, @Det long actual);
+
+    public static void assertNotEquals(@Det long unexpected, @Det long actual);
+
+    public static void assertNotEquals(@Det String message, @Det double unexpected,
+            @Det double actual, @Det double delta);
+
+    public static void assertNotEquals(@Det double unexpected, @Det double actual, @Det double delta);
+
+    public static void assertNotEquals(@Det float unexpected, @Det float actual, @Det float delta);
+
+    public static void assertArrayEquals(@Det String message, @Det Object@Det [] expecteds,
+            @Det Object @Det [] actuals) throws ArrayComparisonFailure;
+
+    public static void assertArrayEquals(@Det Object @Det [] expecteds, @Det Object @Det [] actuals);
+
+    public static void assertArrayEquals(@Det String message, @Det boolean @Det [] expecteds,
+            @Det boolean @Det [] actuals) throws ArrayComparisonFailure;
+
+    public static void assertArrayEquals(@Det boolean @Det [] expecteds, @Det boolean @Det [] actuals);
+
+    public static void assertArrayEquals(@Det String message, @Det byte @Det [] expecteds,
+            @Det byte @Det [] actuals) throws ArrayComparisonFailure;
+
+    public static void assertArrayEquals(@Det byte @Det [] expecteds, @Det byte @Det [] actuals);
+
+    public static void assertArrayEquals(@Det String message, @Det char @Det [] expecteds,
+            @Det char @Det [] actuals) throws ArrayComparisonFailure;
+
+    public static void assertArrayEquals(@Det char @Det [] expecteds, @Det char @Det [] actuals);
+
+    public static void assertArrayEquals(@Det String message, @Det short @Det [] expecteds,
+            @Det short @Det [] actuals) throws ArrayComparisonFailure;
+
+    public static void assertArrayEquals(@Det short @Det [] expecteds, @Det short @Det [] actuals);
+
+    public static void assertArrayEquals(@Det String message, @Det int @Det [] expecteds,
+            @Det int @Det [] actuals) throws ArrayComparisonFailure;
+
+    public static void assertArrayEquals(@Det int @Det [] expecteds, @Det int @Det [] actuals);
+
+    public static void assertArrayEquals(@Det String message, @Det long @Det [] expecteds,
+            @Det long @Det [] actuals) throws ArrayComparisonFailure;
+
+    public static void assertArrayEquals(@Det long @Det [] expecteds, @Det long @Det [] actuals);
+
+    public static void assertArrayEquals(@Det String message, @Det double @Det [] expecteds,
+            @Det double @Det [] actuals, @Det double delta) throws ArrayComparisonFailure;
+
+    public static void assertArrayEquals(@Det double @Det [] expecteds, @Det double @Det [] actuals, @Det double delta);
+
+    public static void assertArrayEquals(@Det String message, @Det float @Det [] expecteds,
+            @Det float @Det [] actuals, @Det float delta) throws ArrayComparisonFailure;
+
+    public static void assertArrayEquals(@Det float @Det [] expecteds, @Det float @Det [] actuals, @Det float delta);
+
+    private static void internalArrayEquals(@Det String message, @Det Object expecteds,
+            @Det Object actuals) throws ArrayComparisonFailure;
+
+    public static void assertEquals(@Det String message, @Det double expected,
+            @Det double actual, @Det double delta);
+
+    public static void assertEquals(@Det String message, @Det float expected,
+            @Det float actual, @Det float delta);
+
+    public static void assertNotEquals(@Det String message, @Det float unexpected,
+            @Det float actual, @Det float delta);
+
+    public static void assertEquals(@Det long expected, @Det long actual);
+
+    public static void assertEquals(@Det String message, @Det long expected, @Det long actual);
+
+    @Deprecated
+    public static void assertEquals(@Det double expected, @Det double actual);
+
+    @Deprecated
+    public static void assertEquals(@Det String message, @Det double expected,
+            @Det double actual);
+
+    public static void assertEquals(@Det double expected, @Det double actual, @Det double delta);
+
+    public static void assertEquals(@Det float expected, @Det float actual, @Det float delta);
+
+    public static void assertNotNull(@Det String message, @Det Object object);
+
+    public static void assertNotNull(@Det Object object);
+
+    public static void assertNull(@Det String message, @Det Object object);
+
+    public static void assertNull(@Det Object object);
+
+    public static void assertSame(@Det String message, @Det Object expected, @Det Object actual);
+
+    public static void assertSame(@Det Object expected, @Det Object actual);
+
+    public static void assertNotSame(@Det String message, @Det Object unexpected,
+            @Det Object actual);
+
+    public static void assertNotSame(@Det Object unexpected, @Det Object actual);
+
+    @Deprecated
+    public static void assertEquals(@Det String message, @Det Object @Det [] expecteds,
+            @Det Object @Det [] actuals);
+
+    @Deprecated
+    public static void assertEquals(@Det Object @Det [] expecteds, @Det Object @Det [] actuals);
+
+    @Deprecated
+    public static <@Det T> void assertThat(T actual, @Det Matcher<? super T> matcher);
+
+    @Deprecated
+    public static <@Det T> void assertThat(@Det String reason, T actual,
+            @Det Matcher<? super T> matcher);
+
+    public static <@Det T extends Throwable> T assertThrows(@Det Class<T> expectedThrowable,
+            @Det ThrowingRunnable runnable);
+
+    public static <@Det T extends Throwable> T assertThrows(@Det String message, @Det Class<T> expectedThrowable,
+            @Det ThrowingRunnable runnable);
+}
