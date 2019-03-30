@@ -1,6 +1,7 @@
 package org.checkerframework.checker.determinism;
 
 import org.checkerframework.common.basetype.BaseTypeChecker;
+import org.checkerframework.framework.qual.StubFiles;
 import org.checkerframework.framework.source.SupportedLintOptions;
 
 /**
@@ -15,4 +16,5 @@ import org.checkerframework.framework.source.SupportedLintOptions;
     // once we fix type refinement of every statement after a conditional check.
     "enableconditionaltypecheck"
 })
+@StubFiles("junit.astub")
 public class DeterminismChecker extends BaseTypeChecker {}

@@ -19,9 +19,5 @@ public class P18 {
                 m.invoke(proxyLogger, new Object[m.getParameterTypes().length]);
             }
         }
-        @Det Method @Det [] declaredMethods = Logger.class.getDeclaredMethods();
-        for (int i = 0; i < declaredMethods.length; i++) {
-            @Det Method m = declaredMethods[i];
-        }
     }
 }
