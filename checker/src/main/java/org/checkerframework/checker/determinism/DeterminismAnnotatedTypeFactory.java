@@ -93,6 +93,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     private final TypeMirror treeMapTypeMirror =
             TypesUtils.typeFromClass(TreeMap.class, types, processingEnv.getElementUtils());
 
+    /** Comma separated list of deterministic system properties */
+    private final List<String> inputProperties;
+
     /** Creates {@code @PolyDet} annotation mirror constants. */
     public DeterminismAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker);
@@ -102,7 +105,24 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         POLYDET_DOWN = newPolyDet("down");
         POLYDET_USE = newPolyDet("use");
 
+        this.inputProperties = Collections.unmodifiableList(buildinputProperties());
+
         postInit();
+    }
+
+    /**
+     * Returns a list of properties supplied by the user via the command line option
+     * "-AinputProperties".
+     */
+    private List<String> buildinputProperties() {
+        List<String> result = new ArrayList<>();
+
+        if (checker.hasOption("inputProperties")) {
+            String[] props = checker.getOption("inputProperties").split(",");
+            result.addAll(Arrays.asList(props));
+        }
+
+        return result;
     }
 
     /** Creates an AnnotationMirror for {@code @PolyDet} with {@code arg} as its value. */
@@ -238,9 +258,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     TreeUtils.getMethod("java.lang.System", "getProperty", 1, getProcessingEnv());
             if (ElementUtils.isMethod(m, systemGetProperty, getProcessingEnv())) {
                 String getPropertyArgument = node.getArguments().get(0).toString();
-                if (getPropertyArgument.equals("\"" + "line.separator" + "\"")
-                        || getPropertyArgument.equals("\"" + "file.separator" + "\"")
-                        || getPropertyArgument.equals("\"" + "path.separator" + "\"")) {
+                String getPropertyArgumentWithoutQuotes =
+                        getPropertyArgument.substring(1, getPropertyArgument.length() - 1);
+                if (inputProperties.contains(getPropertyArgumentWithoutQuotes)) {
                     annotatedRetType.replaceAnnotation(DET);
                 }
             }
