@@ -260,7 +260,10 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 String getPropertyArgument = node.getArguments().get(0).toString();
                 String getPropertyArgumentWithoutQuotes =
                         getPropertyArgument.substring(1, getPropertyArgument.length() - 1);
-                if (inputProperties.contains(getPropertyArgumentWithoutQuotes)) {
+                if (getPropertyArgument.equals("\"" + "line.separator" + "\"")
+                        || getPropertyArgument.equals("\"" + "file.separator" + "\"")
+                        || getPropertyArgument.equals("\"" + "path.separator" + "\"")
+                        || inputProperties.contains(getPropertyArgumentWithoutQuotes)) {
                     annotatedRetType.replaceAnnotation(DET);
                 }
             }
