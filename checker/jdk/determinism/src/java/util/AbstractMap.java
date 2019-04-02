@@ -345,7 +345,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * is performed, so there is a slight chance that multiple calls to this
      * method will not all return the same set.
      */
-    public @NonDet Set<K> keySet(@PolyDet AbstractMap<K,V> this) {
+    public @PolyDet Set<K> keySet(@PolyDet AbstractMap<K,V> this) {
         Set<K> ks = keySet;
         if (ks == null) {
             ks = new AbstractSet<K>() {
@@ -404,7 +404,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * performed, so there is a slight chance that multiple calls to this
      * method will not all return the same collection.
      */
-    public @NonDet Collection<V> values(@PolyDet AbstractMap<K,V> this) {
+    public @PolyDet Collection<V> values(@PolyDet AbstractMap<K,V> this) {
         Collection<V> vals = values;
         if (vals == null) {
             vals = new AbstractCollection<V>() {
@@ -447,7 +447,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
         return vals;
     }
 
-    public abstract @NonDet Set<Entry<K,V>> entrySet(@PolyDet AbstractMap<K,V> this);
+    public abstract @PolyDet Set<Entry<K,V>> entrySet(@PolyDet AbstractMap<K,V> this);
 
 
     // Comparison and hashing
