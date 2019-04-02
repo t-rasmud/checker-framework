@@ -341,7 +341,7 @@ public interface Map<K,V> {
      *
      * @return a collection view of the values contained in this map
      */
-    @NonDet Collection<V> values(@PolyDet Map<K,V> this);
+    @PolyDet Collection<V> values(@PolyDet Map<K,V> this);
 
     /**
      * Returns a {@link Set} view of the mappings contained in this map.
@@ -359,7 +359,8 @@ public interface Map<K,V> {
      *
      * @return a set view of the mappings contained in this map
      */
-    @NonDet Set<Map.Entry<K, V>> entrySet(@PolyDet Map<K,V> this);
+    @PolyDet Set<Map.Entry<K, V>> entrySet(@PolyDet Map<K,V> this);
+
 
     /**
      * A map entry (key-value pair).  The <tt>Map.entrySet</tt> method returns
