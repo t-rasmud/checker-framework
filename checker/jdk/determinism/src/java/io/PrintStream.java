@@ -32,7 +32,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
 
-import org.checkerframework.checker.determinism.*;
 import org.checkerframework.checker.determinism.qual.*;
 
 /**
