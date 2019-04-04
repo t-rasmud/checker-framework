@@ -9,7 +9,6 @@ import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedDeclared
 import org.checkerframework.framework.type.poly.DefaultQualifierPolymorphism;
 import org.checkerframework.framework.util.AnnotationMirrorMap;
 import org.checkerframework.framework.util.AnnotationMirrorSet;
-import org.checkerframework.javacutil.AnnotationUtils;
 
 /**
  * Resolves polymorphic annotations at method invocations as follows:
@@ -153,9 +152,6 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                 || factory.isMap(argOrComponentType)
                 || factory.isIterator(argOrComponentType)
                 || argOrComponentType.getKind() == TypeKind.ARRAY)) {
-            if (AnnotationUtils.areSame(replaceType, factory.NONDET)) {
-                argOrComponentType.replaceAnnotation(replaceType);
-            }
             return;
         }
         argOrComponentType.replaceAnnotation(replaceType);
