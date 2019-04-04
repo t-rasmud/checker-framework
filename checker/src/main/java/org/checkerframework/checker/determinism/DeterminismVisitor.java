@@ -210,6 +210,12 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         return true;
     }
 
+    @Override
+    public Void visitInstanceOf(InstanceOfTree node, Void p) {
+        // skip super call.  There's no need to validate the type in the instanceOf.
+        return null;
+    }
+
     /**
      * Returns annotation on the upper bound of {@code argTypeUpperBound}
      *
