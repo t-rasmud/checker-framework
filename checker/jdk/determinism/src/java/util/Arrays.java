@@ -3798,7 +3798,7 @@ public class Arrays {
      */
     @SafeVarargs
     @SuppressWarnings("varargs")
-    public static <@PolyDet T> @PolyDet List<T> asList(T... a) {
+    public static <T> @PolyDet List<T> asList(@PolyDet T... a) {
         return new ArrayList<>(a);
     }
 
