@@ -20,6 +20,7 @@ import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedPrimitiv
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedTypeVariable;
 import org.checkerframework.framework.util.AnnotatedTypes;
 import org.checkerframework.javacutil.AnnotationUtils;
+import org.checkerframework.javacutil.TreeUtils;
 
 /** Visitor for the determinism type-system. */
 public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedTypeFactory> {
@@ -93,6 +94,10 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     @Override
     public boolean isValidUse(
             AnnotatedDeclaredType declarationType, AnnotatedDeclaredType useType, Tree tree) {
+        if (TreeUtils.isClassLiteral(tree)) {
+            // Don't validate class literals
+            return true;
+        }
         // Raises an error if a non-collection type is annotated with @OrderNonDet.
         if (useType.hasAnnotation(atypeFactory.ORDERNONDET)
                 && !atypeFactory.mayBeOrderNonDet(useType)) {
