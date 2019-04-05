@@ -11,11 +11,11 @@ class TestLocalCollections {
     }
 
     void testList2(@NonDet List<@NonDet String> a) {
-        List<String> b = a;
+        @NonDet List<String> b = a;
     }
 
     @NonDet List<@NonDet String> testList3(@NonDet List<@NonDet String> a) {
-        List<String> b = a;
+        @NonDet List<String> b = a;
         return b;
     }
 
@@ -36,7 +36,7 @@ class TestLocalCollections {
     }
 
     void testNestedList3(@NonDet List<@NonDet List<@NonDet String>> a) {
-        List<List<String>> b = a;
+        @NonDet List<List<String>> b = a;
     }
 
     void testArray1() {

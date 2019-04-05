@@ -650,6 +650,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                                 elt);
                     }
                     type.addMissingAnnotations(Collections.singleton(DET));
+                } else if (isList(type.getUnderlyingType())
+                        && !type.isAnnotatedInHierarchy(NONDET)) {
+
+                    type.addAnnotation(DET);
+                    defaultCollectionComponentType(type, DET);
+
                 } else {
                     defaultArrayComponentType(type, POLYDET);
                 }
@@ -658,8 +664,13 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             }
         }
         if (elt.getKind() == ElementKind.LOCAL_VARIABLE) {
-            defaultArrayComponentType(type, NONDET);
-            defaultCollectionComponentType(type, NONDET);
+            if (isList(type.getUnderlyingType()) && !type.isAnnotatedInHierarchy(NONDET)) {
+                type.addAnnotation(DET);
+                defaultCollectionComponentType(type, DET);
+            } else {
+                defaultArrayComponentType(type, NONDET);
+                defaultCollectionComponentType(type, NONDET);
+            }
         }
         super.addComputedTypeAnnotations(elt, type);
     }
@@ -671,8 +682,14 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         if (elt != null
                 && elt.getKind() == ElementKind.LOCAL_VARIABLE
                 && tree.getKind() == Tree.Kind.VARIABLE) {
-            defaultArrayComponentType(type, NONDET);
-            defaultCollectionComponentType(type, NONDET);
+            if (isList(type.getUnderlyingType()) && !type.isAnnotatedInHierarchy(NONDET)) {
+                type.addAnnotation(DET);
+                defaultCollectionComponentType(type, DET);
+
+            } else {
+                defaultArrayComponentType(type, NONDET);
+                defaultCollectionComponentType(type, NONDET);
+            }
         }
         super.addComputedTypeAnnotations(tree, type, iUseFlow);
     }
