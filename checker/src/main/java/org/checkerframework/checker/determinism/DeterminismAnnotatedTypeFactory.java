@@ -96,6 +96,15 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** Comma separated list of deterministic system properties */
     private final List<String> inputProperties;
 
+    /** The Map.get method. */
+    private final ExecutableElement mapGet;
+
+    /** The Map.getOrDefault method. */
+    private final ExecutableElement mapGetOrDefault;
+
+    /** The Object.equals method. */
+    private final ExecutableElement equals;
+
     /** Creates {@code @PolyDet} annotation mirror constants. */
     public DeterminismAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker);
@@ -106,6 +115,10 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         POLYDET_USE = newPolyDet("use");
 
         this.inputProperties = Collections.unmodifiableList(buildinputProperties());
+
+        mapGet = TreeUtils.getMethod("java.util.Map", "get", 1, processingEnv);
+        mapGetOrDefault = TreeUtils.getMethod("java.util.Map", "getOrDefault", 2, processingEnv);
+        equals = TreeUtils.getMethod("java.lang.Object", "equals", 1, processingEnv);
 
         postInit();
     }
@@ -239,7 +252,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 return super.visitMethodInvocation(node, annotatedRetType);
             }
 
-            if (isEqualsMethod(m)) {
+            if (isEqualsMethod(node)) {
                 AnnotatedTypeMirror argument = getAnnotatedType(node.getArguments().get(0));
                 if (isSubClassOf(receiverType, setInterfaceTypeMirror)
                         && receiverType.hasAnnotation(ORDERNONDET)
@@ -273,7 +286,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             // type "@OrderNonDet", map's V(value) type argument of type "@Det",
             // and the argument to get() of type "@Det".
             if (isMap(receiverType)
-                    && isMapGet(m)
+                    && (isMapGet(node) || isMapGetOrDefault(node))
                     && receiverType.hasAnnotation(ORDERNONDET)
                     && ((AnnotatedDeclaredType) receiverType)
                             .getTypeArguments()
@@ -286,37 +299,14 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             return super.visitMethodInvocation(node, annotatedRetType);
         }
 
-        /**
-         * Returns true if {@code method} is one of Map.get(), Map.getOrDefault(), HashMap.get(),
-         * HashMap.getOrDefault(), LinkedHashMap.get(), LinkedHashMap.getOrDefault() or
-         * TreeMap.get().
-         */
-        private boolean isMapGet(ExecutableElement method) {
-            ExecutableElement MapGet =
-                    TreeUtils.getMethod("java.util.Map", "get", 1, getProcessingEnv());
-            ExecutableElement MapGetOrDefault =
-                    TreeUtils.getMethod("java.util.Map", "getOrDefault", 2, getProcessingEnv());
-            ExecutableElement HashMapGet =
-                    TreeUtils.getMethod("java.util.HashMap", "get", 1, getProcessingEnv());
-            ExecutableElement HashMapGetOrDefault =
-                    TreeUtils.getMethod("java.util.HashMap", "getOrDefault", 2, getProcessingEnv());
-            ExecutableElement LinkedHashMapGet =
-                    TreeUtils.getMethod("java.util.LinkedHashMap", "get", 1, getProcessingEnv());
-            ExecutableElement LinkedHashMapGetOrDefault =
-                    TreeUtils.getMethod(
-                            "java.util.LinkedHashMap", "getOrDefault", 2, getProcessingEnv());
-            ExecutableElement TreeMapGet =
-                    TreeUtils.getMethod("java.util.TreeMap", "get", 1, getProcessingEnv());
-            if (ElementUtils.isMethod(method, MapGet, getProcessingEnv())
-                    || ElementUtils.isMethod(method, MapGetOrDefault, getProcessingEnv())
-                    || ElementUtils.isMethod(method, HashMapGet, getProcessingEnv())
-                    || ElementUtils.isMethod(method, HashMapGetOrDefault, getProcessingEnv())
-                    || ElementUtils.isMethod(method, LinkedHashMapGet, getProcessingEnv())
-                    || ElementUtils.isMethod(method, LinkedHashMapGetOrDefault, getProcessingEnv())
-                    || ElementUtils.isMethod(method, TreeMapGet, getProcessingEnv())) {
-                return true;
-            }
-            return false;
+        /** Returns true if the node is an invocation of Map.get. */
+        boolean isMapGet(Tree tree) {
+            return TreeUtils.isMethodInvocation(tree, mapGet, getProcessingEnv());
+        }
+
+        /** Returns true if the node is an invocation of Map.getOrDefault. */
+        boolean isMapGetOrDefault(Tree tree) {
+            return TreeUtils.isMethodInvocation(tree, mapGetOrDefault, getProcessingEnv());
         }
 
         /**
@@ -590,12 +580,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
     }
 
-    /** @return true if {@code method} is equals */
-    public static boolean isEqualsMethod(ExecutableElement method) {
-        return (method.getReturnType().getKind() == TypeKind.BOOLEAN
-                && method.getSimpleName().contentEquals("equals")
-                && method.getParameters().size() == 1
-                && TypesUtils.isObject(method.getParameters().get(0).asType()));
+    /** Returns true if the node is an invocation of Object.equals. */
+    boolean isEqualsMethod(Tree tree) {
+        return TreeUtils.isMethodInvocation(tree, equals, getProcessingEnv());
     }
 
     /** @return true if {@code method} is a main method */
