@@ -33,8 +33,10 @@ Another common cause of nondeterminism is the operating system scheduler,
 for concurrent programs.  The Determinism Checker does not address this
 cause of nondeterminism.  Also, the Determinism Checker does not warn
 about the possibility that the file system contains different files or
-contents on different runs of a program, or that system properties (such as
-line and path separators) vary across different machines.
+contents on different runs of a program.  As a special case, the system
+properties for line and path separators are allowed to vary across
+different machines, because many tools (such as diff, editors, etc.)
+treat all possible values the same.
 
 To run the Determinism Checker, supply the
 \code{-processor DeterminismChecker}
@@ -100,21 +102,20 @@ The possibility of mutation allows us to add to the \code{@Det List} at a
 Some examples of valid types are:
 \begin{itemize}
     \item \code{@NonDet\ \ \ \ \ \ List<@NonDet\ \ \ \ \ \ Integer>}
+    \item \code{@OrderNonDet List<@OrderNonDet Set<...>\relax >}
+    \item \code{@OrderNonDet List<@Det String>}
     \item \code{@Det\ \ \ \ \ \ \ \ \ List<@Det\ \ \ \ \ \ \ \ \ Integer>}
-    \item \code{@OrderNonDet Set <@OrderNonDet Set<...>\relax >}
-    \item \code{@OrderNonDet Set <@Det String>}
-    \item \code{@NonDet\ \ \ \ \ \ Set <T extends @NonDet Object>}
 \end{itemize}
 
 These types are invalid:
   \begin{itemize}
-    \item \code{@OrderNonDet Set <@NonDet\ \ \ \ \ \ Integer>}
-    \item \code{@NonDet\ \ \ \ \ \ List<@Det\ \ \ \ \ \ \ \ \ Integer>}
     \item \code{@NonDet\ \ \ \ \ \ List<@OrderNonDet Set<...>\relax >}
+    \item \code{@NonDet\ \ \ \ \ \ List<@Det\ \ \ \ \ \ \ \ \ Integer>}
+    \item \code{@NonDet\ \ \ \ \ \ List<T extends @Det Object>}
+    \item \code{@OrderNonDet List<@NonDet\ \ \ \ \ \ Integer>}
     \item \code{@Det\ \ \ \ \ \ \ \ \ List<@NonDet\ \ \ \ \ \ Integer>}
     \item \code{@Det\ \ \ \ \ \ \ \ \ List<@OrderNonDet Set<...>\relax >}
     \item \code{@Det\ \ \ \ \ \ \ \ \ List<T extends @NonDet Object>}
-    \item \code{@NonDet\ \ \ \ \ \ Set\ <T extends @Det Object>}
   \end{itemize}
 
 Similarly, the (determinism) type of an array must be a supertype or equal to
@@ -140,7 +141,7 @@ These types are invalid:
   \centering
   \begin{tabular}{|l|l|l|l|l|}
     \cline{3-5}
-    \multicolumn{2}{c|}{~}  &  \multicolumn{3}{c|}{Type Argument (or array component type)} \\ \cline{3-5}
+    \multicolumn{2}{c|}{~}  &  \multicolumn{3}{c|}{Type argument (or array component type)} \\ \cline{3-5}
     \multicolumn{2}{c|}{~}  & NonDet     & OrderNonDet & Det \\ \hline
               & NonDet      &   valid    &  invalid    & invalid  \\ \cline{2-5}
 Collection (or array)   & OrderNonDet &   invalid  &  valid      & valid  \\ \cline{2-5}
@@ -184,7 +185,7 @@ may not be annotated as \code{@OrderNonDet}.
 % \end{verbatim}
 
 \subsection{Sorting\label{determinism-sorting}}
-If a collection is of type \<@OrderNonDet>, sorting it should put
+If a collection is of type \<@OrderNonDet>, sorting it puts
 its elements in a deterministic order. Thus, the Determinism Checker automatically
 performs type refinement for the following methods: \code{Arrays.sort},
 \code{Collections.sort} and the \code{sort} method in the \code{List} interface.
@@ -402,6 +403,7 @@ The default annotation for most unannotated types is \<@Det>.
 These choices permit all possible arguments to an unannotated method.
 
 \subsection{Constructor signatures\label{determinism-constructor-defaults}}
+% TODO Is this accurate?
 The default annotation on constructor parameters and return types is also \<@PolyDet>.
 As a result, one can construct Objects whose type
 is dependent on the types of constructor arguments without any explicit
@@ -419,7 +421,7 @@ As an illustration, consider the example below:
     }
 \end{Verbatim}
 
-In this example, the checker reports an error "assignment type incompatible"
+In this example, the checker reports an error ``assignment type incompatible''
 at the line \<this.data = data> because the field \<data> is annotated as
 \<@Det> by default, whereas the constructor argument has \<@PolyDet>
 as its default annotation. In such cases, you could do either of the following:
