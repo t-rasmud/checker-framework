@@ -10,7 +10,6 @@ import org.checkerframework.checker.determinism.qual.*;
 public class TestMaps {
     void testMapCreation() {
         @OrderNonDet HashMap<@Det Integer, @Det String> hashMap = new HashMap<>();
-        // :: warning: (cast.unsafe.constructor.invocation)
         @Det TreeMap<@Det Integer, @Det String> treeMap = new TreeMap<>(hashMap);
         @Det LinkedHashMap<@Det String, @Det List<@Det Integer>> lMap = new LinkedHashMap<>();
     }
@@ -73,7 +72,6 @@ public class TestMaps {
 
     void testTreeMapIteration() {
         @OrderNonDet HashMap<@Det Integer, @Det String> hashMap = new HashMap<>();
-        // :: warning: (cast.unsafe.constructor.invocation)
         @Det TreeMap<@Det Integer, @Det String> treeMap = new TreeMap<>(hashMap);
         @Det Set<Entry<Integer, String>> it = treeMap.entrySet();
     }
