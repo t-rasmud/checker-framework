@@ -1,5 +1,5 @@
 \htmlhr
-\chapter{Determinism Checker\label{determinism-checker}}
+\chapterAndLabel{Determinism Checker}{determinism-checker}
 
 A nondeterministic program is one that may produce different output when
 it is run twice with the same input on the same machine.
@@ -50,7 +50,7 @@ For example:
 %./bin/javac -cp NonDetTypeChecker/jsr308/checker-framework/checker/build -processor org.checkerframework.checker.determinism.DeterminismChecker NDCheckerTest/src/TestListUnsafe2.java
 
 
-\section{Determinism qualifiers\label{determinism-qualifiers}}
+\sectionAndLabel{Determinism qualifiers}{determinism-qualifiers}
 
 The Determinism type system uses the following type qualifiers (see Figure~\ref{fig-determinism-hierarchy}):
 \begin{description}
@@ -78,7 +78,7 @@ Section~\ref{determinism-polymorphism} explains polymorphic qualifiers.
 \end{figure}
 
 
-\section{Valid collection and array types\label{determinism-collection-types}}
+\sectionAndLabel{Valid collection and array types}{determinism-collection-types}
 
 The (determinism) type of a Collection or Iterator must be a supertype or equal to
 the type of the type parameter (see Figure~\ref{fig-determinism-collections}).
@@ -152,7 +152,7 @@ Collection (or array)   & OrderNonDet &   invalid  &  valid      & valid  \\ \cl
   \label{fig-determinism-collections}
 \end{figure}
 
-\subsection{Valid user defined types\label{determinism-valid-user-types}}
+\subsectionAndLabel{Valid user defined types}{determinism-valid-user-types}
 A user defined type may be annotated as \<@OrderNonDet> if and only if it
 is a subtype of Collection or Iterator.
 For example, if a user defines a type as
@@ -184,7 +184,7 @@ may not be annotated as \code{@OrderNonDet}.
 % }
 % \end{verbatim}
 
-\subsection{Sorting\label{determinism-sorting}}
+\subsectionAndLabel{Sorting}{determinism-sorting}
 If a collection is of type \<@OrderNonDet>, sorting it puts
 its elements in a deterministic order. Thus, the Determinism Checker automatically
 performs type refinement for the following methods: \code{Arrays.sort},
@@ -207,7 +207,7 @@ For example, the following code type checks as expected:
     }
 \end{Verbatim}
 
-\subsection{HashSet\label{determinism-hash-set}}
+\subsectionAndLabel{HashSet}{determinism-hash-set}
 The class \code{HashSet} is special. Because iteration order is
 non-deterministic, it is impossible to construct a \code{@Det HashSet}.
 Accordingly, the checker has rules that give expressions of the form \code{new
@@ -223,7 +223,7 @@ should be written explicitly. These are \code{@OrderNonDet HashSet<@Det T>},
 T>}.
 
 
-\section{Controlling polymorphism\label{determinism-polymorphism}}
+\sectionAndLabel{Controlling polymorphism}{determinism-polymorphism}
 
 \begin{description}
 \item[\refqualclass{checker/determinism/qual}{PolyDet}] is a
@@ -234,7 +234,7 @@ The Determinism Checker makes
 several enhancements to standard polymorphic qualifiers.
 
 
-\subsection{Avoiding @OrderNonDet\label{determinism-polymorphism-ordernondet}}
+\subsectionAndLabel{Avoiding @OrderNonDet}{determinism-polymorphism-ordernondet}
 
 \begin{description}
 \item[\refqualclass{checker/determinism/qual}{PolyDet}\<("down")>]
@@ -288,7 +288,7 @@ if \<@PolyDet> is applied to a collection somewhere in the method signature
 and if the return type isn't a collection, then the return type should be
 annotated as \<@PolyDet("up")> or \<@PolyDet("down")>.
 
-\subsubsection{Special handling of Set.equals()\label{determinism-improved-precision-set-equals}}
+\subsubsectionAndLabel{Special handling of Set.equals()}{determinism-improved-precision-set-equals}
 
 In the JDK, the \<equals()> method of \<Set> is annotated as
 \begin{Verbatim}
@@ -315,7 +315,7 @@ following conditions are true:
     type parameter
 \end{itemize}
 
-\subsection{Distinguishing bindings and uses\label{determinism-polymorphism-binding}}
+\subsectionAndLabel{Distinguishing bindings and uses}{determinism-polymorphism-binding}
 
 \begin{description}
 \item[\refqualclass{checker/determinism/qual}{PolyDet}\<("use")>]
@@ -368,7 +368,7 @@ E set(@PolyDet List<E> this, @PolyDet("use") int index, E element)
 
 
 
-\section{How to customize the Determinism Checker\label{determinism-customization}}
+\sectionAndLabel{How to customize the Determinism Checker}{determinism-customization}
 
 In the JDK, printing methods such as \<println> are annotated as taking a
 deterministic result.  This guarantees that a program's output will be
@@ -383,11 +383,11 @@ deterministic.  If it is be too restrictive for your program:
 \end{itemize}
 
 
-\section{Default annotations\label{determinism-defaults}}
+\sectionAndLabel{Default annotations}{determinism-defaults}
 
 The default annotation for most unannotated types is \<@Det>.
 
-\subsection{Method signatures\label{determinism-method-defaults}}
+\subsectionAndLabel{Method signatures}{determinism-method-defaults}
 \begin{itemize}
 \item
   Formal parameter and return types default to \<@PolyDet>.
@@ -402,7 +402,7 @@ The default annotation for most unannotated types is \<@Det>.
 
 These choices permit all possible arguments to an unannotated method.
 
-\subsection{Constructor signatures\label{determinism-constructor-defaults}}
+\subsectionAndLabel{Constructor signatures}{determinism-constructor-defaults}
 % TODO Is this accurate?
 The default annotation on constructor parameters and return types is also \<@PolyDet>.
 As a result, one can construct Objects whose type
@@ -440,7 +440,7 @@ as its default annotation. In such cases, you could do either of the following:
     \end{Verbatim}
 \end{itemize}
 
-\subsection{Local array and generic types\label{determinism-array-defaults}}
+\subsectionAndLabel{Local array and generic types}{determinism-array-defaults}
 According to the CLIMB to top rule (see Section~\ref{climb-to-top}), the default
 for a local collection or array would be a \code{@NonDet} collection or array
 with \code{@Det} elements. For example, in the following local declarations
@@ -470,7 +470,7 @@ the type of \code{list1} is \code{@NonDet List<@NonDet String>} and the type of
 \code{list2} is \code{@Det List<@Det String>}. Notice, in both instances the
 default type was the correct choice.
 
-\section{Implicit annotations\label{determinism-implicits}}
+\sectionAndLabel{Implicit annotations}{determinism-implicits}
 The parameter type of the \code{main} method has an implicit annotation
 \<@Det String @Det[]>.
 
