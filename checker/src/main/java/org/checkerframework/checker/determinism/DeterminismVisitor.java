@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeKind;
 import org.checkerframework.checker.compilermsgs.qual.CompilerMessageKey;
@@ -531,4 +532,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             protected void reportInvalidAnnotationsOnUse(AnnotatedTypeMirror type, Tree p) {}
         };
     }
+
+    @Override
+    protected void checkConstructorResult(
+            AnnotatedTypeMirror.AnnotatedExecutableType constructorType,
+            ExecutableElement constructorElement) {}
 }
