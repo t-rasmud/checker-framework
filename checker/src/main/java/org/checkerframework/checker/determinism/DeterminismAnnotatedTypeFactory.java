@@ -183,6 +183,15 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
 
         /**
+         * Refines the return type of a method invocation for the following cases:
+         *
+         * <ol>
+         *   <li>Return type is a non-collection.
+         *   <li>The invoked method is {@code equals} and the receiver is a {@code Set}.
+         *   <li>The invoked method is {@code System.get}
+         *   <li>The invoked method is {@code Map.get}
+         * </ol>
+         *
          * Replaces the annotation on the return type of a method invocation as follows:
          *
          * <ol>
@@ -241,8 +250,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
 
         /**
-         * If the annotation on {@code methodInvocationType} is to {@code OrderNonDet} and it isn't
-         * an array or a collection, replaces the annotation on {@code methodInvocationType} with
+         * If the annotation on {@code methodInvocationType} is {@code OrderNonDet} and it isn't an
+         * array or a collection, replaces the annotation on {@code methodInvocationType} with
          * {@code @NonDet}.
          *
          * @param methodInvocationType AnnotatedTypeMirror for a method invocation
@@ -255,22 +264,17 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
 
         /**
-         * Annotates the return types of System.getProperty("line.separator") and
-         * System.getProperty("line.separator") as {@code Det}. Usually, the return type of
-         * System.getProperty() is annotated as {@code NonDet}. We make an exception when the
-         * argument is either {@code line.separator} or {@code path.separator} because they will
-         * always produce the same result on the same machine.
+         * Usually, the return type of {@code System.getProperty} is annotated as {@code NonDet}. We
+         * make an exception when the argument is either {@code line.separator}, {@code
+         * file.separator}, or {@code path.separator} because they will always produce the same
+         * result on the same machine.
          *
-         * @param node
-         * @param methodInvocationType
+         * @param node method invocation tree
+         * @param methodInvocationType AnnotatedTypeMirror for a method invocation
          */
         private void refineSystemGet(
                 MethodInvocationTree node, AnnotatedTypeMirror methodInvocationType) {
             ExecutableElement m = TreeUtils.elementFromUse(node);
-
-            // Annotates the return types of method calls "System.getProperty("line.separator")",
-            // "System.getProperty("file.separator")"
-            // and "System.getProperty("path.separator")" as "@Det"
             ExecutableElement systemGetProperty =
                     TreeUtils.getMethod("java.lang.System", "getProperty", 1, getProcessingEnv());
             if (ElementUtils.isMethod(m, systemGetProperty, getProcessingEnv())) {
@@ -296,10 +300,14 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          *   <li>the type is {@code @OrderNonDet Set}, and
          *   <li>its type argument is not {@code @OrderNonDet List} or a subtype
          * </ol>
+         *
+         * @param node method invocation tree
+         * @param methodInvocationType AnnotatedTypeMirror for a method invocation
+         * @param receiverType receiver type of the invoked method
          */
         protected void refineResultOfEquals(
                 MethodInvocationTree node,
-                AnnotatedTypeMirror annotatedRetType,
+                AnnotatedTypeMirror methodInvocationType,
                 AnnotatedTypeMirror receiverType) {
 
             // Annotates the return type of "equals()" method called on a Set receiver
@@ -322,19 +330,20 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                         && isSubClassOf(argument, setInterfaceTypeMirror)
                         && argument.hasAnnotation(ORDERNONDET)
                         && !hasOrderNonDetListAsTypeArgument(argument)) {
-                    annotatedRetType.replaceAnnotation(DET);
+                    methodInvocationType.replaceAnnotation(DET);
                 }
             }
         }
 
         /**
-         * Since the return type of Map.get() is annotated as "@PolyDet", replace the annotation on
-         * return type as "@Det" if the receiver is of type "@OrderNonDet", map's V(value) type
-         * argument of type "@Det", and the argument to get() of type "@Det".
+         * Since the return type of {@code Map.get} is annotated as {@code @PolyDet}, replace the
+         * annotation on return type as {@code @Det} if the receiver is of type
+         * {@code @OrderNonDet}, map's V(value) type argument of type {@code @Det}, and the argument
+         * to {@code get} of type {@code @Det}.
          *
-         * @param node
-         * @param methodInvocationType
-         * @param receiverType
+         * @param node method invocation tree
+         * @param methodInvocationType AnnotatedTypeMirror for a method invocation
+         * @param receiverType receiver type of the invoked method
          */
         private void refineMapGet(
                 MethodInvocationTree node,
