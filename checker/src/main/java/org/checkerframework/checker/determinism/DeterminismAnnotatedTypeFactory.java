@@ -114,7 +114,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         POLYDET_DOWN = newPolyDet("down");
         POLYDET_USE = newPolyDet("use");
 
-        this.inputProperties = Collections.unmodifiableList(buildinputProperties());
+        this.inputProperties = Collections.unmodifiableList(buildInputProperties());
 
         mapGet = TreeUtils.getMethod("java.util.Map", "get", 1, processingEnv);
         mapGetOrDefault = TreeUtils.getMethod("java.util.Map", "getOrDefault", 2, processingEnv);
@@ -127,7 +127,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
      * Returns a list of properties supplied by the user via the command line option
      * "-AinputProperties".
      */
-    private List<String> buildinputProperties() {
+    private List<String> buildInputProperties() {
         List<String> result = new ArrayList<>();
 
         if (checker.hasOption("inputProperties")) {
@@ -188,7 +188,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          * <ol>
          *   <li>If the annotation on the type of method invocation resolves to {@code OrderNonDet}
          *       and if the return type of the invoked method isn't an array or a collection,
-         *       replaces the annotation on {@code annotatedRetType} with {@code @NonDet}.
+         *       replaces the annotation on {@code methodInvocationType} with {@code @NonDet}.
          *   <li>Return type of equals() gets the annotation {@code @Det}, when both the receiver
          *       and the argument satisfy these conditions (@see <a
          *       href="https://checkerframework.org/manual/#determinism-improved-precision-set-equals">Improves
@@ -205,42 +205,23 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          * </ol>
          *
          * @param node method invocation tree
-         * @param annotatedRetType type of the method invocation
+         * @param methodInvocationType type of the method invocation
          * @return visitMethodInvocation() of the super class
          */
         @Override
         public Void visitMethodInvocation(
-                MethodInvocationTree node, AnnotatedTypeMirror annotatedRetType) {
+                MethodInvocationTree node, AnnotatedTypeMirror methodInvocationType) {
             AnnotatedTypeMirror receiverType = getReceiverType(node);
+            changeReturnOnNonCollections(methodInvocationType);
 
             // ReceiverType is null for abstract classes
             // (Example: Ordering.natural() in tests/all-systems/PolyCollectorTypeVars.java)
             // For static methods, receiverType is the AnnotatedTypeMirror of the class in which the
             // invoked method "node" is declared.
             if (receiverType == null) {
-                return super.visitMethodInvocation(node, annotatedRetType);
+                return super.visitMethodInvocation(node, methodInvocationType);
             }
 
-            ExecutableElement m = TreeUtils.elementFromUse(node);
-
-            // If return type (non-array, non-collection, and non-iterator) resolves to
-            // @OrderNonDet, replaces the annotation on the return type with @NonDet.
-            if (annotatedRetType.hasAnnotation(ORDERNONDET)
-                    && !mayBeOrderNonDet(annotatedRetType)) {
-                annotatedRetType.replaceAnnotation(NONDET);
-            }
-
-            // Annotates the return type of "equals()" method called on a Set receiver
-            // as described in the specification of this method.
-
-            // Example1: @OrderNonDet Set<@OrderNonDet List<@Det Integer>> s1;
-            //           @OrderNonDet Set<@OrderNonDet List<@Det Integer>> s2;
-            // s1.equals(s2) is @NonDet
-
-            // Example 2: @OrderNonDet Set<@Det List<@Det Integer>> s1;
-            //            @OrderNonDet Set<@Det List<@Det Integer>> s2;
-            // s1.equals(s2) is @Det
-            // TODO-rashmi: this can be more precise (@Det receiver and @OrderNonDet argument)
             TypeElement receiverUnderlyingType =
                     TypesUtils.getTypeElement(receiverType.getUnderlyingType());
 
@@ -249,20 +230,43 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             // Error at line: public class Collections {
             // TODO-rashmi: check why?
             if (receiverUnderlyingType == null) {
-                return super.visitMethodInvocation(node, annotatedRetType);
+                return super.visitMethodInvocation(node, methodInvocationType);
             }
 
-            if (isEqualsMethod(node)) {
-                AnnotatedTypeMirror argument = getAnnotatedType(node.getArguments().get(0));
-                if (isSubClassOf(receiverType, setInterfaceTypeMirror)
-                        && receiverType.hasAnnotation(ORDERNONDET)
-                        && !hasOrderNonDetListAsTypeArgument(receiverType)
-                        && isSubClassOf(argument, setInterfaceTypeMirror)
-                        && argument.hasAnnotation(ORDERNONDET)
-                        && !hasOrderNonDetListAsTypeArgument(argument)) {
-                    annotatedRetType.replaceAnnotation(DET);
-                }
+            refineResultOfEquals(node, methodInvocationType, receiverType);
+            refineSystemGet(node, methodInvocationType);
+            refineMapGet(node, methodInvocationType, receiverType);
+
+            return super.visitMethodInvocation(node, methodInvocationType);
+        }
+
+        /**
+         * If the annotation on {@code methodInvocationType} is to {@code OrderNonDet} and it isn't
+         * an array or a collection, replaces the annotation on {@code methodInvocationType} with
+         * {@code @NonDet}.
+         *
+         * @param methodInvocationType AnnotatedTypeMirror for a method invocation
+         */
+        protected void changeReturnOnNonCollections(AnnotatedTypeMirror methodInvocationType) {
+            if (methodInvocationType.hasAnnotation(ORDERNONDET)
+                    && !mayBeOrderNonDet(methodInvocationType)) {
+                methodInvocationType.replaceAnnotation(NONDET);
             }
+        }
+
+        /**
+         * Annotates the return types of System.getProperty("line.separator") and
+         * System.getProperty("line.separator") as {@code Det}. Usually, the return type of
+         * System.getProperty() is annotated as {@code NonDet}. We make an exception when the
+         * argument is either {@code line.separator} or {@code path.separator} because they will
+         * always produce the same result on the same machine.
+         *
+         * @param node
+         * @param methodInvocationType
+         */
+        private void refineSystemGet(
+                MethodInvocationTree node, AnnotatedTypeMirror methodInvocationType) {
+            ExecutableElement m = TreeUtils.elementFromUse(node);
 
             // Annotates the return types of method calls "System.getProperty("line.separator")",
             // "System.getProperty("file.separator")"
@@ -277,14 +281,65 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                         || getPropertyArgument.equals("\"" + "file.separator" + "\"")
                         || getPropertyArgument.equals("\"" + "path.separator" + "\"")
                         || inputProperties.contains(getPropertyArgumentWithoutQuotes)) {
+                    methodInvocationType.replaceAnnotation(DET);
+                }
+            }
+        }
+
+        /**
+         * Return type of equals() gets the annotation {@code @Det}, when both the receiver and the
+         * argument satisfy these conditions (@see <a
+         * href="https://checkerframework.org/manual/#determinism-improved-precision-set-equals">Improves
+         * precision for Set.equals()</a>):
+         *
+         * <ol>
+         *   <li>the type is {@code @OrderNonDet Set}, and
+         *   <li>its type argument is not {@code @OrderNonDet List} or a subtype
+         * </ol>
+         */
+        protected void refineResultOfEquals(
+                MethodInvocationTree node,
+                AnnotatedTypeMirror annotatedRetType,
+                AnnotatedTypeMirror receiverType) {
+
+            // Annotates the return type of "equals()" method called on a Set receiver
+            // as described in the specification of this method.
+
+            // Example1: @OrderNonDet Set<@OrderNonDet List<@Det Integer>> s1;
+            //           @OrderNonDet Set<@OrderNonDet List<@Det Integer>> s2;
+            // s1.equals(s2) is @NonDet
+
+            // Example 2: @OrderNonDet Set<@Det List<@Det Integer>> s1;
+            //            @OrderNonDet Set<@Det List<@Det Integer>> s2;
+            // s1.equals(s2) is @Det
+            // TODO-rashmi: this can be more precise (@Det receiver and @OrderNonDet argument)
+
+            if (isEqualsMethod(node)) {
+                AnnotatedTypeMirror argument = getAnnotatedType(node.getArguments().get(0));
+                if (isSubClassOf(receiverType, setInterfaceTypeMirror)
+                        && receiverType.hasAnnotation(ORDERNONDET)
+                        && !hasOrderNonDetListAsTypeArgument(receiverType)
+                        && isSubClassOf(argument, setInterfaceTypeMirror)
+                        && argument.hasAnnotation(ORDERNONDET)
+                        && !hasOrderNonDetListAsTypeArgument(argument)) {
                     annotatedRetType.replaceAnnotation(DET);
                 }
             }
+        }
 
-            // Since the return type of Map.get() is annotated as "@PolyDet",
-            // replace the annotation on return type as "@Det" if the receiver is of
-            // type "@OrderNonDet", map's V(value) type argument of type "@Det",
-            // and the argument to get() of type "@Det".
+        /**
+         * Since the return type of Map.get() is annotated as "@PolyDet", replace the annotation on
+         * return type as "@Det" if the receiver is of type "@OrderNonDet", map's V(value) type
+         * argument of type "@Det", and the argument to get() of type "@Det".
+         *
+         * @param node
+         * @param methodInvocationType
+         * @param receiverType
+         */
+        private void refineMapGet(
+                MethodInvocationTree node,
+                AnnotatedTypeMirror methodInvocationType,
+                AnnotatedTypeMirror receiverType) {
             if (isMap(receiverType)
                     && (isMapGet(node) || isMapGetOrDefault(node))
                     && receiverType.hasAnnotation(ORDERNONDET)
@@ -293,10 +348,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                             .get(1)
                             .hasAnnotation(DET)
                     && getAnnotatedType(node.getArguments().get(0)).hasAnnotation(DET)) {
-                annotatedRetType.replaceAnnotation(DET);
+                methodInvocationType.replaceAnnotation(DET);
             }
-
-            return super.visitMethodInvocation(node, annotatedRetType);
         }
 
         /** Returns true if the node is an invocation of Map.get. */
