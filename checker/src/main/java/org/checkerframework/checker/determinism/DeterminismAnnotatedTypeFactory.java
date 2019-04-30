@@ -192,9 +192,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          *   <li>Return type of equals() gets the annotation {@code @Det}, when both the receiver
          *       and the argument satisfy these conditions (@see <a
          *       href="https://checkerframework.org/manual/#determinism-improved-precision-set-equals">Improves
-         *       precision for Set.equals()</a>):
+         *       precision for Set.equals() and Map.equals()</a>):
          *       <ol>
-         *         <li>the type is {@code @OrderNonDet Set}, and
+         *         <li>the type is {@code @OrderNonDet Set} or {@code @OrderNonDet Map}, and
          *         <li>its type argument is not {@code @OrderNonDet List} or a subtype
          *       </ol>
          *   <li>Annotates the return types of System.getProperty("line.separator") and
@@ -230,7 +230,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 annotatedRetType.replaceAnnotation(NONDET);
             }
 
-            // Annotates the return type of "equals()" method called on a Set receiver
+            // Annotates the return type of "equals()" method called on a Set or Map receiver
             // as described in the specification of this method.
 
             // Example1: @OrderNonDet Set<@OrderNonDet List<@Det Integer>> s1;
@@ -254,10 +254,15 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
             if (isEqualsMethod(node)) {
                 AnnotatedTypeMirror argument = getAnnotatedType(node.getArguments().get(0));
-                if (isSubClassOf(receiverType, setInterfaceTypeMirror)
+                boolean bothSets =
+                        isSubClassOf(receiverType, setInterfaceTypeMirror)
+                                && isSubClassOf(argument, setInterfaceTypeMirror);
+                boolean bothMaps =
+                        isSubClassOf(receiverType, mapInterfaceTypeMirror)
+                                && isSubClassOf(argument, mapInterfaceTypeMirror);
+                if ((bothSets || bothMaps)
                         && receiverType.hasAnnotation(ORDERNONDET)
                         && !hasOrderNonDetListAsTypeArgument(receiverType)
-                        && isSubClassOf(argument, setInterfaceTypeMirror)
                         && argument.hasAnnotation(ORDERNONDET)
                         && !hasOrderNonDetListAsTypeArgument(argument)) {
                     annotatedRetType.replaceAnnotation(DET);
