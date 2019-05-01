@@ -420,40 +420,11 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         public Void visitNewClass(NewClassTree node, AnnotatedTypeMirror annotatedTypeMirror) {
             if ((isHashSet(annotatedTypeMirror) && !isLinkedHashSet(annotatedTypeMirror))
                     || (isHashMap(annotatedTypeMirror) && !isLinkedHashMap(annotatedTypeMirror))) {
-                AnnotationMirror explicitAnno = getNewClassAnnotation(node);
-                // There are two checks for @PolyDet. The first catches "new @PolyDet HashSet()"
-                // because in that case the annotation on annotatedTypeMirror is @OrderNonDet. The
-                // second catches instances where a @PolyDet collection was passed to the
-                // constructor.
-                if (AnnotationUtils.areSame(explicitAnno, DET)
-                        || AnnotationUtils.areSameByName(explicitAnno, POLYDET)
-                        || AnnotationUtils.areSameByName(
-                                annotatedTypeMirror.getAnnotationInHierarchy(NONDET), POLYDET)) {
-                    checker.report(
-                            Result.failure(
-                                    DeterminismVisitor.INVALID_COLLECTION_CONSTRUCTOR_INVOCATION,
-                                    annotatedTypeMirror),
-                            node);
-                    return super.visitNewClass(node, annotatedTypeMirror);
-                }
                 if (annotatedTypeMirror.hasAnnotation(DET)) {
                     annotatedTypeMirror.replaceAnnotation(ORDERNONDET);
                 }
-            }
-
-            if (isTreeSet(annotatedTypeMirror) || isTreeMap(annotatedTypeMirror)) {
+            } else if (isTreeSet(annotatedTypeMirror) || isTreeMap(annotatedTypeMirror)) {
                 AnnotationMirror explicitAnno = getNewClassAnnotation(node);
-                if (AnnotationUtils.areSame(explicitAnno, ORDERNONDET)
-                        || AnnotationUtils.areSameByName(explicitAnno, POLYDET)
-                        || AnnotationUtils.areSameByName(
-                                annotatedTypeMirror.getAnnotationInHierarchy(NONDET), POLYDET)) {
-                    checker.report(
-                            Result.failure(
-                                    DeterminismVisitor.INVALID_COLLECTION_CONSTRUCTOR_INVOCATION,
-                                    annotatedTypeMirror),
-                            node);
-                    return super.visitNewClass(node, annotatedTypeMirror);
-                }
                 if (annotatedTypeMirror.hasAnnotation(ORDERNONDET)) {
                     annotatedTypeMirror.replaceAnnotation(DET);
                 }

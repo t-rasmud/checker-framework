@@ -534,6 +534,49 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     }
 
     @Override
+    protected void checkConstructorInvocation(
+            AnnotatedDeclaredType invocation,
+            AnnotatedTypeMirror.AnnotatedExecutableType constructor,
+            NewClassTree newClassTree) {
+        AnnotatedTypeMirror constructorResultType = constructor.getReturnType();
+        AnnotationMirror explicitAnno = atypeFactory.getNewClassAnnotation(newClassTree);
+        if ((atypeFactory.isHashSet(constructorResultType)
+                        && !atypeFactory.isLinkedHashSet(constructorResultType))
+                || (atypeFactory.isHashMap(constructorResultType)
+                        && !atypeFactory.isLinkedHashMap(constructorResultType))) {
+            // There are two checks for @PolyDet. The first catches "new @PolyDet HashSet()"
+            // because in that case the annotation on constructorResultType is @OrderNonDet. The
+            // second catches instances where a @PolyDet collection was passed to the
+            // constructor.
+            if (AnnotationUtils.areSame(explicitAnno, atypeFactory.DET)
+                    || AnnotationUtils.areSameByName(explicitAnno, atypeFactory.POLYDET)
+                    || AnnotationUtils.areSameByName(
+                            constructorResultType.getAnnotationInHierarchy(atypeFactory.NONDET),
+                            atypeFactory.POLYDET)) {
+                checker.report(
+                        Result.failure(
+                                DeterminismVisitor.INVALID_COLLECTION_CONSTRUCTOR_INVOCATION,
+                                constructorResultType),
+                        newClassTree);
+            }
+        } else if (atypeFactory.isTreeSet(constructorResultType)
+                || atypeFactory.isTreeMap(constructorResultType)) {
+            if (AnnotationUtils.areSame(explicitAnno, atypeFactory.ORDERNONDET)
+                    || AnnotationUtils.areSameByName(explicitAnno, atypeFactory.POLYDET)
+                    || AnnotationUtils.areSameByName(
+                            constructorResultType.getAnnotationInHierarchy(atypeFactory.NONDET),
+                            atypeFactory.POLYDET)) {
+                checker.report(
+                        Result.failure(
+                                DeterminismVisitor.INVALID_COLLECTION_CONSTRUCTOR_INVOCATION,
+                                constructorResultType),
+                        newClassTree);
+            }
+        }
+        super.checkConstructorInvocation(invocation, constructor, newClassTree);
+    }
+
+    @Override
     protected void checkConstructorResult(
             AnnotatedTypeMirror.AnnotatedExecutableType constructorType,
             ExecutableElement constructorElement) {}
