@@ -533,6 +533,23 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         };
     }
 
+    /**
+     * Reports an error if {@code newClassTree} represents explicitly constructing a
+     *
+     * <ol>
+     *   <li>{@code @Det HashSet}
+     *   <li>{@code @Det HashMap}
+     *   <li>{@code @OrderNonDet TreeSet}
+     *   <li>{@code @OrderNonDet TreeMap}
+     * </ol>
+     *
+     * <p>Also reports an error if the result of the constructor would resolve to any variant of
+     * {@code @PolyDet}.
+     *
+     * @param invocation annotated declared type of constructor invocation
+     * @param constructor annotated executable type of the constructor
+     * @param newClassTree a tree representing instantiating a class
+     */
     @Override
     protected void checkConstructorInvocation(
             AnnotatedDeclaredType invocation,

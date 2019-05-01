@@ -392,24 +392,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
 
         /**
-         * Reports an error if {@code node} represents explicitly constructing a
-         *
-         * <ol>
-         *   <li>{@code @Det HashSet}
-         *   <li>{@code @Det HashMap}
-         *   <li>{@code @OrderNonDet TreeSet}
-         *   <li>{@code @OrderNonDet TreeMap}
-         * </ol>
-         *
          * If {@code @Det} wasn't explicitly written on a {@code HashSet} or a {@code HashMap}, but
          * the constructor would resolve to {@code @Det}, inserts {@code @OrderNonDet} instead.
          *
          * <p>If {@code @OrderNonDet} wasn't explicitly written on a {@code TreeSet} or a {@code
          * TreeMap}, but the constructor would resolve to {@code @OrderNonDet}, inserts {@code @Det}
          * instead.
-         *
-         * <p>Also reports an error if the result of the constructor would resolve to any variant of
-         * {@code @PolyDet}.
          *
          * @param node a tree representing instantiating a class
          * @param annotatedTypeMirror the type to modify if it represents an invalid constructor
@@ -424,7 +412,6 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     annotatedTypeMirror.replaceAnnotation(ORDERNONDET);
                 }
             } else if (isTreeSet(annotatedTypeMirror) || isTreeMap(annotatedTypeMirror)) {
-                AnnotationMirror explicitAnno = getNewClassAnnotation(node);
                 if (annotatedTypeMirror.hasAnnotation(ORDERNONDET)) {
                     annotatedTypeMirror.replaceAnnotation(DET);
                 }
@@ -806,17 +793,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
      *     one, {@code null} otherwise.
      */
     public AnnotationMirror getNewClassAnnotation(NewClassTree tree) {
-        ExpressionTree className = tree.getIdentifier();
-        if (className.getKind() != Tree.Kind.PARAMETERIZED_TYPE) {
-            return null;
-        }
-        ParameterizedTypeTree paramType = (ParameterizedTypeTree) className;
-        if (paramType.getType().getKind() != Tree.Kind.ANNOTATED_TYPE) {
-            return null;
-        }
-        List<? extends AnnotationMirror> annos =
-                TreeUtils.typeOf(paramType.getType()).getAnnotationMirrors();
-        return getQualifierHierarchy().findAnnotationInHierarchy(annos, NONDET);
+        return fromNewClass(tree).getAnnotationInHierarchy(NONDET);
     }
 
     class DeterminismQualifierHierarchy extends GraphQualifierHierarchy {
