@@ -261,9 +261,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                         isSubClassOf(receiverType, mapInterfaceTypeMirror)
                                 && isSubClassOf(argument, mapInterfaceTypeMirror);
                 if ((bothSets || bothMaps)
-                        && receiverType.hasAnnotation(ORDERNONDET)
+                        && getQualifierHierarchy()
+                                .isSubtype(
+                                        receiverType.getAnnotationInHierarchy(NONDET), ORDERNONDET)
                         && !hasOrderNonDetListAsTypeArgument(receiverType)
-                        && argument.hasAnnotation(ORDERNONDET)
+                        && getQualifierHierarchy()
+                                .isSubtype(argument.getAnnotationInHierarchy(NONDET), ORDERNONDET)
                         && !hasOrderNonDetListAsTypeArgument(argument)) {
                     annotatedRetType.replaceAnnotation(DET);
                 }

@@ -87,12 +87,10 @@ public class TestListSetEquals {
     }
 
     void testSetEquals2(@Det Set<@Det Integer> aList, @OrderNonDet Set<@Det Integer> bList) {
-        // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
 
     void testSetEquals3(@OrderNonDet Set<@Det Integer> aList, @Det Set<@Det Integer> bList) {
-        // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
 

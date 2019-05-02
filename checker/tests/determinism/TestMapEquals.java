@@ -32,13 +32,11 @@ public class TestMapEquals {
 
     @Det boolean testEqualsOND3(
             @OrderNonDet Map<@Det String, @Det String> m1, @Det Map<@Det String, @Det String> m2) {
-        // :: error: (return.type.incompatible)
         return m1.equals(m2);
     }
 
     @Det boolean testEqualsOND4(
             @Det Map<@Det String, @Det String> m1, @OrderNonDet Map<@Det String, @Det String> m2) {
-        // :: error: (return.type.incompatible)
         return m1.equals(m2);
     }
 }
