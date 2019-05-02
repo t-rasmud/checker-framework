@@ -189,6 +189,11 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          *   <li>If the annotation on the type of method invocation resolves to {@code OrderNonDet}
          *       and if the return type of the invoked method isn't an array or a collection,
          *       replaces the annotation on {@code annotatedRetType} with {@code @NonDet}.
+         *   <li>If the return type is {@code @PolyDet("up")}, and if this was because a method that
+         *       returns {@code @PolyDet("up")} was passed a {@code @PolyDet} argument, but no such
+         *       {@code @PolyDet} argument could be {@code @OrderNonDet}, then changes the return
+         *       type to {@code @PolyDet}. This is because {@code @PolyDet("up")} is imprecise if no
+         *       {@code @PolyDet} argument could be {@code @OrderNonDet}.
          *   <li>Return type of equals() gets the annotation {@code @Det}, when both the receiver
          *       and the argument satisfy these conditions (@see <a
          *       href="https://checkerframework.org/manual/#determinism-improved-precision-set-equals">Improves
@@ -217,9 +222,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             // Makes a @PolyDet("up") return type more precise if possible. If the method call has
             // at least one @PolyDet argument and no @PolyDet argument that can be @OrderNonDet,
             // then the return type is changed to @PolyDet. This is because if no @PolyDet parameter
-            // can be @OrderNonDet, then it should never be the case the return type is
-            // @PolyDet("up"). However, if there is no @PolyDet argument then this refinement would
-            // be invalid.
+            // can be @OrderNonDet, then it should never be the return type is @PolyDet("up").
+            // However, if there is no @PolyDet argument then this refinement would be invalid.
             if (annotatedRetType.hasAnnotation(POLYDET_UP)) {
                 boolean hasPolyArg = false;
                 boolean hasPolyONDArg = false;
