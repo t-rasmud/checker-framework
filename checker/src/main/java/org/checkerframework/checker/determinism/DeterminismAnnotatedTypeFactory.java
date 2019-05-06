@@ -847,13 +847,4 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             return super.isSubtype(subAnno, superAnno);
         }
     }
-
-    @Override
-    public void postAsMemberOf(
-            AnnotatedTypeMirror type, AnnotatedTypeMirror owner, Element element) {
-        super.postAsMemberOf(type, owner, element);
-        if (element.getKind() == ElementKind.FIELD) {
-            poly.annotate(((VariableElement) element), owner, type);
-        }
-    }
 }
