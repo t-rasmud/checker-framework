@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
  * declaration:
  *
  * <pre>
- *  {@code @HasQualifierParameter}
+ *  {@code @HasQualifierParameter(Tainted.class)}
  *   class StringBuffer { ... }
  * </pre>
  *
