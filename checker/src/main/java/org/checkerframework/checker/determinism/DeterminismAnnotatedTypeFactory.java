@@ -246,7 +246,16 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             refineSystemGet(node, methodInvocationType);
             refineMapGet(node, methodInvocationType, receiverType);
 
+            System.out.println("??? " + receiverType + " :: " + receiverUnderlyingType);
+            System.out.println("calling: " + node);
+            System.out.println("returns: " + methodInvocationType);
+
             return super.visitMethodInvocation(node, methodInvocationType);
+        }
+
+        @Override
+        public Void visitWildcard(WildcardTree node, AnnotatedTypeMirror annotatedTypeMirror) {
+            return super.visitWildcard(node, annotatedTypeMirror);
         }
 
         /**
