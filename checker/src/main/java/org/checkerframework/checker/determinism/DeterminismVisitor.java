@@ -422,9 +422,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     }
 
     /**
-     * Reports an error if {@code @PolyDet("up")}, {@code @PolyDet("down")} or
-     * {@code @PolyDet("use")} is written on a formal parameter or a return type and none of the
-     * formal parameters or the receiver has the type {@code @PolyDet}.
+     * Reports an error if {@code @PolyDet("up")}, {@code @PolyDet("down")},
+     * {@code @PolyDet("use")}, or {@code @PolyDet("upDet")} is written on a formal parameter or a
+     * return type and none of the formal parameters or the receiver has the type {@code @PolyDet}.
      */
     @Override
     public Void visitMethod(MethodTree node, Void p) {
@@ -448,6 +448,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         boolean isPolyUpPresent = false;
         boolean isPolyDownPresent = false;
         boolean isPolyUsePresent = false;
+        boolean isPolyUpDetPresent = false;
         for (AnnotationMirror atm : polyAnnotations) {
             if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_UP)) {
                 isPolyUpPresent = true;
@@ -457,6 +458,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             }
             if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_USE)) {
                 isPolyUsePresent = true;
+            }
+            if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_UPDET)) {
+                isPolyUpDetPresent = true;
             }
             if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET)) {
                 isPolyPresent = true;
@@ -471,6 +475,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             }
             if (isPolyUsePresent) {
                 checker.report(Result.failure("invalid.polydet.use"), node);
+            }
+            if (isPolyUpDetPresent) {
+                checker.report(Result.failure("invalid.polydet.updet"), node);
             }
         }
         return super.visitMethod(node, p);
