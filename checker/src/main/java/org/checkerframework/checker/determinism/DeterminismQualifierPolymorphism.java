@@ -5,8 +5,10 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.TypeKind;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
+import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedArrayType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedDeclaredType;
 import org.checkerframework.framework.type.poly.DefaultQualifierPolymorphism;
+import org.checkerframework.framework.type.visitor.AnnotatedTypeScanner;
 import org.checkerframework.framework.util.AnnotationMirrorMap;
 import org.checkerframework.framework.util.AnnotationMirrorSet;
 
@@ -108,8 +110,7 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                 || type.getKind() == TypeKind.ARRAY)) {
             return;
         }
-        // TODO-rashmi: Handle Maps
-        recursiveReplaceForPolyUpOrDown(type, replaceType);
+        new CollectionReplacer().visit(type, replaceType);
     }
 
     /**
@@ -139,22 +140,26 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
      * int @OrderNonDet[] @OrderNonDet} and {@code replaceType} as {@code @NonDet}, the result will
      * be {@code @Det int @NonDet[] @NonDet}.
      */
-    void recursiveReplaceForPolyUpOrDown(AnnotatedTypeMirror type, AnnotationMirror replaceType) {
-        AnnotatedTypeMirror argOrComponentType = null;
-        if (factory.isCollection(type) || factory.isMap(type) || factory.isIterator(type)) {
-            AnnotatedDeclaredType declaredTypeOuter = (AnnotatedDeclaredType) type;
-            argOrComponentType = declaredTypeOuter.getTypeArguments().get(0);
+    class CollectionReplacer extends AnnotatedTypeScanner<Void, AnnotationMirror> {
+        @Override
+        public Void visitDeclared(AnnotatedDeclaredType type, AnnotationMirror annotationMirror) {
+            if (!(factory.isCollection(type)
+                    || factory.isMap(type)
+                    || factory.isIterator(type)
+                    || type.getKind() == TypeKind.ARRAY)) {
+                // Don't look further.
+                return null;
+            }
+            if (!type.getTypeArguments().isEmpty()) {
+                type.replaceAnnotation(annotationMirror);
+            }
+            return super.visitDeclared(type, annotationMirror);
         }
-        if (type.getKind() == TypeKind.ARRAY) {
-            argOrComponentType = ((AnnotatedTypeMirror.AnnotatedArrayType) type).getComponentType();
+
+        @Override
+        public Void visitArray(AnnotatedArrayType type, AnnotationMirror annotationMirror) {
+            type.replaceAnnotation(annotationMirror);
+            return super.visitArray(type, annotationMirror);
         }
-        if (!(factory.isCollection(argOrComponentType)
-                || factory.isMap(argOrComponentType)
-                || factory.isIterator(argOrComponentType)
-                || argOrComponentType.getKind() == TypeKind.ARRAY)) {
-            return;
-        }
-        argOrComponentType.replaceAnnotation(replaceType);
-        recursiveReplaceForPolyUpOrDown(argOrComponentType, replaceType);
     }
 }
