@@ -207,21 +207,13 @@ For example, the following code type checks as expected:
     }
 \end{Verbatim}
 
-\subsectionAndLabel{HashSet}{determinism-hash-set}
-The class \code{HashSet} is special. Because iteration order is
-non-deterministic, it is impossible to construct a \code{@Det HashSet}.
-Accordingly, the checker has rules that give expressions of the form \code{new
-HashSet<T>(collection)} the correct type. The result of this expression will
-have the same determinism type as the collection. Except, if collection is
-\code{@Det} the result is \code{@OrderNonDet}.
-
-Because it impossible to construct a \code{@Det HashSet}, it is not allowed to
-explicitly write \code{new @Det HashSet} or \code{new @PolyDet HashSet}. There
-are only three valid instantiations of \code{HashSet}, and the desired type
-should be written explicitly. These are \code{@OrderNonDet HashSet<@Det T>},
-\code{@OrderNonDet HashSet<@OrderNonDet T>}, and \code{@NonDet HashSet<@NonDet
-T>}.
-
+\subsectionAndLabel{HashSet and HashMap}{determinism-hash-set}
+The \code{HashSet} and \code{HashMap} classes are special. Because iteration order is
+non-deterministic, it is impossible to construct a \code{@Det HashSet}
+or \code{@Det HashMap}.
+Accordingly, the return type of the \code{HashSet} and \code{Hashmap}
+constuctors are annotated as \code{@PolyDet("upDet")}. See
+Section~\ref{determinism-polymorphism-ordernondet}.
 
 \sectionAndLabel{Controlling polymorphism}{determinism-polymorphism}
 
@@ -234,7 +226,7 @@ The Determinism Checker makes
 several enhancements to standard polymorphic qualifiers.
 
 
-\subsectionAndLabel{Avoiding @OrderNonDet}{determinism-polymorphism-ordernondet}
+\subsectionAndLabel{@PolyDet Variants for Special Cases}{determinism-polymorphism-ordernondet}
 
 \begin{description}
 \item[\refqualclass{checker/determinism/qual}{PolyDet}\<("down")>]
