@@ -247,6 +247,12 @@ several enhancements to standard polymorphic qualifiers.
   \<@OrderNonDet>.
   ``\<up>'' refers to the direction in the qualifier hierarchy:
   \<@OrderNonDet> is changed to a higher qualifier that is a supertype of it.
+\item[\refqualclass{checker/determinism/qual}{PolyDet}\<("upDet")>]
+  Acts like \<@OrderNonDet> when the polymorphic qualifier is instantiated as
+  \<@Det>.
+  ``\<up>'' refers to the direction in the qualifier hierarchy and ``\<Det>''
+  refers to the annotation that is modified:
+  \<@Det> is changed to a higher qualifier that is a supertype of it.
 \end{description}
 
 Ordinarily, every occurrence of \<@PolyDet> is instantiated to the same
@@ -280,6 +286,20 @@ expressing the method behavior:
 @PolyDet("down") boolean add(     @PolyDet List<E> this, E e)
   @PolyDet("up") int hashCode(    @PolyDet List<E> this)
 \end{Verbatim}
+
+For an example of \refqualclass{checker/determinism/qual}{PolyDet}\<("upDet")>,
+consider the three versions of the \<HashSet> constructor that uses the elements
+of another \<Collection>:
+
+\begin{Verbatim}
+         @NonDet HashSet(      @NonDet Collection<? extends E> c)
+    @OrderNonDet HashSet( @OrderNonDet Collection<? extends E> c)
+    @OrderNonDet HashSet(         @Det Collection<? extends E> c)
+\end{Verbatim}
+
+Since a \<HashSet> can never be deterministic, the return type in the third case
+must be \<@OrderNonDet>. This is exactly what
+\refqualclass{checker/determinism/qual}{PolyDet}\<("upDet")> expresses.
 
 See the annotated JDK for more example uses of the annotations.
 
