@@ -395,10 +395,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
 
         /**
-         * If {@code @Det} wasn't explicitly written on a {@code HashSet} or a {@code HashMap}, but
-         * the constructor would resolve to {@code @Det}, inserts {@code @OrderNonDet} instead.
-         *
-         * <p>If {@code @OrderNonDet} wasn't explicitly written on a {@code TreeSet} or a {@code
+         * If {@code @OrderNonDet} wasn't explicitly written on a {@code TreeSet} or a {@code
          * TreeMap}, but the constructor would resolve to {@code @OrderNonDet}, inserts {@code @Det}
          * instead.
          *
@@ -409,12 +406,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          */
         @Override
         public Void visitNewClass(NewClassTree node, AnnotatedTypeMirror annotatedTypeMirror) {
-            if ((isHashSet(annotatedTypeMirror) && !isLinkedHashSet(annotatedTypeMirror))
-                    || (isHashMap(annotatedTypeMirror) && !isLinkedHashMap(annotatedTypeMirror))) {
-                if (annotatedTypeMirror.hasAnnotation(DET)) {
-                    annotatedTypeMirror.replaceAnnotation(ORDERNONDET);
-                }
-            } else if (isTreeSet(annotatedTypeMirror) || isTreeMap(annotatedTypeMirror)) {
+            if (isTreeSet(annotatedTypeMirror) || isTreeMap(annotatedTypeMirror)) {
                 if (annotatedTypeMirror.hasAnnotation(ORDERNONDET)) {
                     annotatedTypeMirror.replaceAnnotation(DET);
                 }
