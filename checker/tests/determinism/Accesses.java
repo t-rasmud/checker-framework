@@ -4,6 +4,7 @@ import org.checkerframework.checker.determinism.qual.PolyDet;
 
 public class Accesses {
     public @Det Object field;
+    public @PolyDet Object polyField;
 
     @Det Object method1(@PolyDet Accesses this) {
         // :: error: (return.type.incompatible)
@@ -20,7 +21,7 @@ public class Accesses {
             return false;
         }
         Accesses other = (Accesses) o;
-        return this.field == other.field;
+        return this.polyField == other.polyField;
     }
 
     static class Use {
