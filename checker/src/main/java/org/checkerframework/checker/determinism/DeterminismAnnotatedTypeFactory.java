@@ -701,6 +701,15 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         super.addComputedTypeAnnotations(tree, type, iUseFlow);
     }
 
+    @Override
+    public void postAsMemberOf(
+            AnnotatedTypeMirror type, AnnotatedTypeMirror owner, Element element) {
+        super.postAsMemberOf(type, owner, element);
+        if (element.getKind() == ElementKind.FIELD && !owner.hasAnnotation(DET)) {
+            type.replaceAnnotation(NONDET);
+        }
+    }
+
     /** @return true if {@code subClass} is a subtype of {@code superClass} */
     private boolean isSubClassOf(AnnotatedTypeMirror subClass, TypeMirror superClass) {
         return types.isSubtype(
