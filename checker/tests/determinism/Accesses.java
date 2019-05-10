@@ -14,6 +14,15 @@ public class Accesses {
         return field; // ok
     }
 
+    @Override
+    public @PolyDet boolean equals(@PolyDet Accesses this, @PolyDet Object o) {
+        if (!(o instanceof Accesses)) {
+            return false;
+        }
+        Accesses other = (Accesses) o;
+        return this.field == other.field;
+    }
+
     static class Use {
         void method(@NonDet Accesses nonDet) {
             // :: error: (assignment.type.incompatible)
