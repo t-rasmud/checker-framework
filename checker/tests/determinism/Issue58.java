@@ -1,4 +1,4 @@
-import java.util.*;
+// @skip-test until https://github.com/t-rasmud/checker-framework/issues/58 is fixed.
 import org.checkerframework.checker.determinism.qual.*;
 
 public class Issue58 {

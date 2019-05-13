@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import org.checkerframework.checker.compilermsgs.qual.CompilerMessageKey;
 import org.checkerframework.common.basetype.BaseTypeChecker;
@@ -593,8 +594,54 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         super.checkConstructorInvocation(invocation, constructor, newClassTree);
     }
 
+    /**
+     * Issue a warning if the under the following conditions:
+     *
+     * <ol>
+     *   <li>result type of the constructor is {@code @Det} and any of the constructor parameters is
+     *       not {@Det}.
+     *   <li>result type of the constructor is {@code @PolyDet} and none of the constructor
+     *       parameters is {@PolyDet}.
+     * </ol>
+     *
+     * @param constructorType AnnotatedExecutableType for the constructor
+     * @param constructorElement element that declares the constructor
+     */
     @Override
     protected void checkConstructorResult(
             AnnotatedTypeMirror.AnnotatedExecutableType constructorType,
-            ExecutableElement constructorElement) {}
+            ExecutableElement constructorElement) {
+        System.out.println("Constructor element: " + constructorElement);
+        System.out.println("Constructor result: " + constructorType);
+        AnnotationMirror consructorReturnType =
+                constructorType.getReturnType().getAnnotationInHierarchy(atypeFactory.NONDET);
+        if (AnnotationUtils.areSame(consructorReturnType, atypeFactory.DET)) {
+            for (VariableElement constructorParam : constructorElement.getParameters()) {
+                if (!atypeFactory
+                        .getAnnotatedType(constructorParam)
+                        .hasAnnotation(atypeFactory.DET)) {
+                    checker.report(
+                            Result.warning("inconsistent.constructor.type", constructorType),
+                            constructorElement);
+                }
+            }
+        } else if (AnnotationUtils.areSame(consructorReturnType, atypeFactory.POLYDET)) {
+            boolean hasPolyParameter = false;
+            for (VariableElement constructorParam : constructorElement.getParameters()) {
+                if (atypeFactory
+                        .getAnnotatedType(constructorParam)
+                        .hasAnnotation(atypeFactory.POLYDET)) {
+                    hasPolyParameter = true;
+                    break;
+                }
+            }
+            if (!hasPolyParameter) {
+                checker.report(
+                        Result.warning("inconsistent.constructor.type", constructorType),
+                        constructorElement);
+            }
+        } else {
+            super.checkConstructorResult(constructorType, constructorElement);
+        }
+    }
 }
