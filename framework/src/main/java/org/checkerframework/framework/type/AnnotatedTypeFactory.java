@@ -2255,8 +2255,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
             con = (AnnotatedExecutableType) typeVarSubstitutor.substitute(typeVarMapping, con);
         }
 
-        ParameterizedExecutableType ret = new ParameterizedExecutableType(con, typeargs);
-        return ret;
+        return new ParameterizedExecutableType(con, typeargs);
     }
 
     /** Returns the return type of the method {@code m}. */
