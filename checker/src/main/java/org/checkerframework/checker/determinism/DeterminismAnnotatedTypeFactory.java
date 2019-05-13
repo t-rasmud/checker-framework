@@ -705,7 +705,10 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     public void postAsMemberOf(
             AnnotatedTypeMirror type, AnnotatedTypeMirror owner, Element element) {
         super.postAsMemberOf(type, owner, element);
-        if (element.getKind() == ElementKind.FIELD && !owner.hasAnnotation(DET)) {
+        if (!isLHS
+                && element.getKind() == ElementKind.FIELD
+                && !ElementUtils.isStatic(element)
+                && !owner.hasAnnotation(DET)) {
             if (owner.hasAnnotation(POLYDET)) {
                 if (type.hasAnnotation(DET)) {
                     type.replaceAnnotation(POLYDET);
@@ -716,6 +719,17 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 type.replaceAnnotation(NONDET);
             }
         }
+    }
+
+    private boolean isLHS = false;
+
+    @Override
+    public AnnotatedTypeMirror getAnnotatedTypeLhs(Tree lhsTree) {
+        boolean oldIsLhs = isLHS;
+        isLHS = true;
+        AnnotatedTypeMirror type = super.getAnnotatedTypeLhs(lhsTree);
+        isLHS = oldIsLhs;
+        return type;
     }
 
     /** @return true if {@code subClass} is a subtype of {@code superClass} */
