@@ -706,8 +706,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             AnnotatedTypeMirror type, AnnotatedTypeMirror owner, Element element) {
         super.postAsMemberOf(type, owner, element);
         if (element.getKind() == ElementKind.FIELD && !owner.hasAnnotation(DET)) {
-            if (owner.hasAnnotation(POLYDET) && type.hasAnnotation(POLYDET)) {
-                // skip
+            if (owner.hasAnnotation(POLYDET)) {
+                if (type.hasAnnotation(DET)) {
+                    type.replaceAnnotation(POLYDET);
+                } else if (!type.hasAnnotation(POLYDET)) {
+                    type.replaceAnnotation(NONDET);
+                }
             } else {
                 type.replaceAnnotation(NONDET);
             }
