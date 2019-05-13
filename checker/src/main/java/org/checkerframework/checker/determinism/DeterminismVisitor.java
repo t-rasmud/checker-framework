@@ -599,9 +599,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      *
      * <ol>
      *   <li>result type of the constructor is {@code @Det} and any of the constructor parameters is
-     *       not {@Det}.
+     *       not {@code @Det}.
      *   <li>result type of the constructor is {@code @PolyDet} and none of the constructor
-     *       parameters is {@PolyDet}.
+     *       parameters is {@code @PolyDet}.
      * </ol>
      *
      * @param constructorType AnnotatedExecutableType for the constructor
