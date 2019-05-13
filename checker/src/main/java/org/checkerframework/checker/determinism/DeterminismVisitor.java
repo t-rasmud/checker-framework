@@ -595,13 +595,14 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     }
 
     /**
-     * Issue a warning if the under the following conditions:
+     * Issues a warning if the result type of the constructor is {@code @Det} and any of the
+     * constructor parameters is not {@code @Det}.
+     *
+     * <p>Does not issue "inconsistent.constructor.type" warning if
      *
      * <ol>
-     *   <li>result type of the constructor is {@code @Det} and any of the constructor parameters is
-     *       not {@code @Det}.
-     *   <li>result type of the constructor is {@code @PolyDet} and none of the constructor
-     *       parameters is {@code @PolyDet}.
+     *   <li>constructor result type is {@code @Det} and all its parameters are also {@code @Det}
+     *   <li>constructor result type is {@code @PolyDet}
      * </ol>
      *
      * @param constructorType AnnotatedExecutableType for the constructor
@@ -611,8 +612,6 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     protected void checkConstructorResult(
             AnnotatedTypeMirror.AnnotatedExecutableType constructorType,
             ExecutableElement constructorElement) {
-        System.out.println("Constructor element: " + constructorElement);
-        System.out.println("Constructor result: " + constructorType);
         AnnotationMirror consructorReturnType =
                 constructorType.getReturnType().getAnnotationInHierarchy(atypeFactory.NONDET);
         if (AnnotationUtils.areSame(consructorReturnType, atypeFactory.DET)) {
@@ -625,22 +624,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                             constructorElement);
                 }
             }
-        } else if (AnnotationUtils.areSame(consructorReturnType, atypeFactory.POLYDET)) {
-            boolean hasPolyParameter = false;
-            for (VariableElement constructorParam : constructorElement.getParameters()) {
-                if (atypeFactory
-                        .getAnnotatedType(constructorParam)
-                        .hasAnnotation(atypeFactory.POLYDET)) {
-                    hasPolyParameter = true;
-                    break;
-                }
-            }
-            if (!hasPolyParameter) {
-                checker.report(
-                        Result.warning("inconsistent.constructor.type", constructorType),
-                        constructorElement);
-            }
-        } else {
+        } else if (!AnnotationUtils.areSame(consructorReturnType, atypeFactory.POLYDET)) {
             super.checkConstructorResult(constructorType, constructorElement);
         }
     }
