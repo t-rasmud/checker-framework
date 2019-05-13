@@ -24,7 +24,12 @@ import org.checkerframework.framework.qual.TypeUseLocation;
 @PolymorphicQualifier(NonDet.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})
-@DefaultFor({TypeUseLocation.PARAMETER, TypeUseLocation.RETURN, TypeUseLocation.RECEIVER})
+@DefaultFor({
+    TypeUseLocation.PARAMETER,
+    TypeUseLocation.RETURN,
+    TypeUseLocation.RECEIVER,
+    TypeUseLocation.CONSTRUCTOR_RESULT
+})
 public @interface PolyDet {
     /**
      * Optionally, {@code @PolyDet} takes one of the three String values "up", "down" or "use".
