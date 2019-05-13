@@ -1404,6 +1404,24 @@ public abstract class GenericAnnotatedTypeFactory<
             dependentTypesHelper.viewpointAdaptConstructor(tree, method);
         }
         poly.annotate(tree, method);
+        List<AnnotatedTypeMirror> constructorParams = method.getParameterTypes();
+        QualifierHierarchy qualifierHierarchy = getQualifierHierarchy();
+        Set<? extends AnnotationMirror> topAnnotations = qualifierHierarchy.getTopAnnotations();
+        for (AnnotationMirror top : topAnnotations) {
+            AnnotationMirror polyAnnotation = qualifierHierarchy.getPolymorphicAnnotation(top);
+            boolean hasPolyParam = false;
+            for (AnnotatedTypeMirror param : constructorParams) {
+                AnnotationMirror paramAnnotation = param.getAnnotationInHierarchy(top);
+                if (AnnotationUtils.areSameByName(paramAnnotation, polyAnnotation)) {
+                    hasPolyParam = true;
+                    break;
+                }
+            }
+            if (hasPolyParam) {
+                method.returnType.replaceAnnotation(polyAnnotation);
+            }
+        }
+
         return mType;
     }
 

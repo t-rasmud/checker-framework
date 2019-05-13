@@ -2231,8 +2231,6 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     public ParameterizedExecutableType constructorFromUse(NewClassTree tree) {
         ExecutableElement ctor = TreeUtils.constructor(tree);
         AnnotatedTypeMirror type = fromNewClass(tree);
-        System.out.println("ctor: " + ctor.getReturnType());
-        System.out.println("type: " + type);
         addComputedTypeAnnotations(tree, type);
         AnnotatedExecutableType con = AnnotatedTypes.asMemberOf(types, this, type, ctor);
 
@@ -2258,8 +2256,6 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         }
 
         ParameterizedExecutableType ret = new ParameterizedExecutableType(con, typeargs);
-        System.out.println("con: " + con.getReturnType());
-        System.out.println("Returning: " + ret.executableType.getReturnType());
         return ret;
     }
 
