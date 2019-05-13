@@ -706,6 +706,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             AnnotatedTypeMirror type, AnnotatedTypeMirror owner, Element element) {
         super.postAsMemberOf(type, owner, element);
         if (!isLHS
+                && owner.getKind() != TypeKind.ARRAY
                 && element.getKind() == ElementKind.FIELD
                 && !ElementUtils.isStatic(element)
                 && !owner.hasAnnotation(DET)) {

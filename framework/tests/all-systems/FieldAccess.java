@@ -20,6 +20,7 @@ public class FieldAccess {
         T myClass = null;
     }
 
+    @SuppressWarnings("determinism:invalid.field.assignment")
     void test(Object o, MyGen raw) {
         // Raw type field access:
         raw.myClass.field = new Object();

@@ -1,5 +1,6 @@
 import org.checkerframework.checker.determinism.qual.*;
 
+// @skip-test  I don't understand what this class is testing.
 public class TestClassAnnos {
     void test1() {
         Node nd = new Node();
