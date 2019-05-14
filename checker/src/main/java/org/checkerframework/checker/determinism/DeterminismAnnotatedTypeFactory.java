@@ -705,23 +705,32 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     public void postAsMemberOf(
             AnnotatedTypeMirror type, AnnotatedTypeMirror owner, Element element) {
         super.postAsMemberOf(type, owner, element);
+        // For the field access of "element" whose type is "type" and whose access expression's type
+        // is "owner".
         if (!isLHS
-                && owner.getKind() != TypeKind.ARRAY
+                && owner.getKind() != TypeKind.ARRAY // array.length is dealt with elsewhere
                 && element.getKind() == ElementKind.FIELD
                 && !ElementUtils.isStatic(element)
                 && !owner.hasAnnotation(DET)) {
+            // For reads of non-static fields whose owner is not deterministic:
             if (owner.hasAnnotation(POLYDET)) {
                 if (type.hasAnnotation(DET)) {
+                    // if owner is @PolyDet and field is @Det, change the type of the field to
+                    // @PolyDet.
                     type.replaceAnnotation(POLYDET);
                 } else if (!type.hasAnnotation(POLYDET)) {
+                    // if owner is @PolyDet and field is not @PolyDet, change the type of the field
+                    // to @NonDet.
                     type.replaceAnnotation(NONDET);
                 }
             } else {
+                // if owner is not @Det nor @PolyDet, change the type of the field to @NonDet.
                 type.replaceAnnotation(NONDET);
             }
         }
     }
 
+    /** Is the type of a left hand side currently being computed? */
     private boolean isLHS = false;
 
     @Override
