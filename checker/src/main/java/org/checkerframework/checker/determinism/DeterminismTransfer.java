@@ -1,7 +1,6 @@
 package org.checkerframework.checker.determinism;
 
 import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.VariableTree;
 import java.util.Comparator;
@@ -75,9 +74,7 @@ public class DeterminismTransfer extends CFTransfer {
             UnderlyingAST underlyingAST, @Nullable List<LocalVariableNode> parameters) {
         CFStore initStore = super.initialStore(underlyingAST, parameters);
         if (underlyingAST.getKind() == Kind.METHOD) {
-
             CFGMethod method = (CFGMethod) underlyingAST;
-            MethodTree methodTree = method.getMethod();
             final ClassTree classTree = method.getClassTree();
             TypeMirror classType = TreeUtils.typeOf(classTree);
             Receiver receiver = new ThisReference(classType);
