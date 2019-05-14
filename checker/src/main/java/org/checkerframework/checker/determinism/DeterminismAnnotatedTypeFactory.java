@@ -710,23 +710,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         if (!isLHS
                 && owner.getKind() != TypeKind.ARRAY // array.length is dealt with elsewhere
                 && element.getKind() == ElementKind.FIELD
-                && !ElementUtils.isStatic(element)
-                && !owner.hasAnnotation(DET)) {
-            // For reads of non-static fields whose owner is not deterministic:
-            if (owner.hasAnnotation(POLYDET)) {
-                if (type.hasAnnotation(DET)) {
-                    // if owner is @PolyDet and field is @Det, change the type of the field to
-                    // @PolyDet.
-                    type.replaceAnnotation(POLYDET);
-                } else if (!type.hasAnnotation(POLYDET)) {
-                    // if owner is @PolyDet and field is not @PolyDet, change the type of the field
-                    // to @NonDet.
-                    type.replaceAnnotation(NONDET);
-                }
-            } else {
-                // if owner is not @Det nor @PolyDet, change the type of the field to @NonDet.
-                type.replaceAnnotation(NONDET);
-            }
+                && !ElementUtils.isStatic(element)) {
+            // The qualifier type of a field access is the LUB of the qualifier on the type of the
+            // field and the qualifier on the type of the access expression.
+            AnnotationMirror expressionAnno = owner.getEffectiveAnnotationInHierarchy(NONDET);
+            AnnotationMirror fieldAnno = type.getEffectiveAnnotationInHierarchy(NONDET);
+            type.replaceAnnotation(qualHierarchy.leastUpperBound(expressionAnno, fieldAnno));
         }
     }
 
