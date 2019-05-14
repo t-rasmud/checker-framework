@@ -261,6 +261,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      *
      * The array access {@code x[i]} is flagged as an error.
      *
+     * <p>Also, reports error in case of invalid field access on the lhs of an assignment.
+     *
      * @param varTree the AST node for the lvalue
      * @param valueExp the AST node for the rvalue (the new value)
      * @param errorKey the error message to use if the check fails (must be a compiler message key)
