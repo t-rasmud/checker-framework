@@ -3366,7 +3366,7 @@ public final class Class<T> implements java.io.Serializable,
      * @since 1.5
      */
     @SuppressWarnings("unchecked")
-    public @PolyDet T cast(@PolyDet Class<T> this, @PolyDet Object obj) {
+    public T cast(@PolyDet Class<T> this, @PolyDet Object obj) {
         if (obj != null && !isInstance(obj))
             throw new ClassCastException(cannotCastMsg(obj));
         return (T) obj;
