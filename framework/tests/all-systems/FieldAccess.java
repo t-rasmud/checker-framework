@@ -11,8 +11,10 @@ public class FieldAccess {
         Object field = new Object();
     }
 
+    @SuppressWarnings("super.invocation.invalid")
     class MyExceptionA extends MyException {}
 
+    @SuppressWarnings("super.invocation.invalid")
     class MyExceptionB extends MyException {}
 
     @SuppressWarnings("nullness")

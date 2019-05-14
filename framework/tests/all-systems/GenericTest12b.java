@@ -9,6 +9,7 @@ class GenericTest12b {
     }
 
     class RootNode extends Node<Void> {
+        @SuppressWarnings("super.invocation.invalid")
         public RootNode() {
             super(new Cell<Void>());
             call(new Cell<Void>());
