@@ -33,7 +33,6 @@ import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedArrayType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedDeclaredType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedTypeVariable;
-import org.checkerframework.javacutil.AnnotationUtils;
 import org.checkerframework.javacutil.ElementUtils;
 import org.checkerframework.javacutil.TreeUtils;
 import org.checkerframework.javacutil.TypesUtils;
@@ -119,7 +118,7 @@ public class DeterminismTransfer extends CFTransfer {
         if (isListSort(factory, receiverTypeMirror, invokedMethod)) {
             AnnotatedTypeMirror annotatedReceiverTypeMirror =
                     factory.getAnnotatedType(receiver.getTree());
-            if (typeArgumentsHaveAnnotation(factory, annotatedReceiverTypeMirror, factory.DET)) {
+            if (typeArgumentsHaveAnnotation(annotatedReceiverTypeMirror, factory.DET)) {
                 if (annotatedReceiverTypeMirror.hasAnnotation(factory.ORDERNONDET)) {
                     typeRefine(n.getTarget().getReceiver(), result, factory.DET, factory);
                 } else if (annotatedReceiverTypeMirror.hasAnnotation(factory.POLYDET)) {
@@ -154,7 +153,7 @@ public class DeterminismTransfer extends CFTransfer {
         if (isCollectionsSort(factory, receiverTypeMirror, invokedMethod)) {
             AnnotatedTypeMirror firstArg =
                     factory.getAnnotatedType(n.getTree().getArguments().get(0));
-            if (typeArgumentsHaveAnnotation(factory, firstArg, factory.DET)) {
+            if (typeArgumentsHaveAnnotation(firstArg, factory.DET)) {
                 if (firstArg.hasAnnotation(factory.ORDERNONDET)) {
                     typeRefine(n.getArgument(0), result, factory.DET, factory);
                 } else if (firstArg.hasAnnotation(factory.POLYDET)) {
@@ -277,7 +276,6 @@ public class DeterminismTransfer extends CFTransfer {
     /**
      * Checks if the annotations for all type arguments of {@code type} are {@code annotation}.
      *
-     * @param factory the determinism factory
      * @param type the type to check the type arguments of
      * @param annotation the annotation that {@code type}'s type arguments must have
      * @return true if the annotation of every type argument of {@code type} is {@code annotation},
@@ -285,28 +283,10 @@ public class DeterminismTransfer extends CFTransfer {
      *     bound.
      */
     private boolean typeArgumentsHaveAnnotation(
-            DeterminismAnnotatedTypeFactory factory,
-            AnnotatedTypeMirror type,
-            AnnotationMirror annotation) {
+            AnnotatedTypeMirror type, AnnotationMirror annotation) {
         AnnotatedDeclaredType declaredType = (AnnotatedDeclaredType) type;
         for (AnnotatedTypeMirror typeArg : declaredType.getTypeArguments()) {
-            if (typeArg.getKind() == TypeKind.TYPEVAR) {
-                AnnotatedTypeMirror typeArgUpperBound =
-                        ((AnnotatedTypeVariable) typeArg).getUpperBound();
-                AnnotationMirror typevarAnnotation =
-                        DeterminismVisitor.getUpperBound(factory, typeArgUpperBound);
-                if (!AnnotationUtils.areSame(typevarAnnotation, annotation)) {
-                    return false;
-                }
-            } else if (typeArg.getKind() == TypeKind.WILDCARD) {
-                AnnotatedTypeMirror typeArgExtendsBound =
-                        ((AnnotatedTypeMirror.AnnotatedWildcardType) typeArg).getExtendsBound();
-                AnnotationMirror typevarAnnotation =
-                        DeterminismVisitor.getUpperBound(factory, typeArgExtendsBound);
-                if (!AnnotationUtils.areSame(typevarAnnotation, annotation)) {
-                    return false;
-                }
-            } else if (!typeArg.hasAnnotation(annotation)) {
+            if (!typeArg.hasEffectiveAnnotation(annotation)) {
                 return false;
             }
         }
