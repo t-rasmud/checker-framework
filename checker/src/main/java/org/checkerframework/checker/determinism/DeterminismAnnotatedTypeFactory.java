@@ -250,11 +250,6 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             return super.visitMethodInvocation(node, methodInvocationType);
         }
 
-        @Override
-        public Void visitWildcard(WildcardTree node, AnnotatedTypeMirror annotatedTypeMirror) {
-            return super.visitWildcard(node, annotatedTypeMirror);
-        }
-
         /**
          * If the annotation on {@code methodInvocationType} is {@code OrderNonDet} and it isn't an
          * array or a collection, replaces the annotation on {@code methodInvocationType} with
