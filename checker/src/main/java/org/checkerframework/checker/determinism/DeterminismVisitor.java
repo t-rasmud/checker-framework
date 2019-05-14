@@ -303,10 +303,10 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 super.commonAssignmentCheck(varTree, valueExp, errorKey);
             } else if (varTree.getKind() == Kind.ARRAY_ACCESS) {
                 checker.report(
-                        Result.failure(INVALID_ARRAY_ASSIGNMENT, exprAnno, varAnno), varTree);
+                        Result.failure(INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno), varTree);
             } else {
                 checker.report(
-                        Result.failure(INVALID_FIELD_ASSIGNMENT, exprAnno, varAnno), varTree);
+                        Result.failure(INVALID_FIELD_ASSIGNMENT, varAnno, exprAnno), varTree);
             }
         } else {
             super.commonAssignmentCheck(varTree, valueExp, errorKey);
