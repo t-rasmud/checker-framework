@@ -336,8 +336,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     }
 
     /**
-     * Issues an error if a {@code Det} field is declared in a class ({@param classTree}) that is
-     * not annotated as {@code @Det}.
+     * Issues an error if a {@code Det} field is declared in a class ({@code classTree}) that is not
+     * annotated as {@code @Det}.
      */
     @Override
     public void processClassTree(ClassTree classTree) {
