@@ -207,21 +207,13 @@ For example, the following code type checks as expected:
     }
 \end{Verbatim}
 
-\subsectionAndLabel{HashSet}{determinism-hash-set}
-The class \code{HashSet} is special. Because iteration order is
-non-deterministic, it is impossible to construct a \code{@Det HashSet}.
-Accordingly, the checker has rules that give expressions of the form \code{new
-HashSet<T>(collection)} the correct type. The result of this expression will
-have the same determinism type as the collection. Except, if collection is
-\code{@Det} the result is \code{@OrderNonDet}.
-
-Because it impossible to construct a \code{@Det HashSet}, it is not allowed to
-explicitly write \code{new @Det HashSet} or \code{new @PolyDet HashSet}. There
-are only three valid instantiations of \code{HashSet}, and the desired type
-should be written explicitly. These are \code{@OrderNonDet HashSet<@Det T>},
-\code{@OrderNonDet HashSet<@OrderNonDet T>}, and \code{@NonDet HashSet<@NonDet
-T>}.
-
+\subsectionAndLabel{HashSet and HashMap}{determinism-hash-set}
+The \code{HashSet} and \code{HashMap} classes are special. Because iteration order is
+non-deterministic, it is impossible to construct a \code{@Det HashSet}
+or \code{@Det HashMap}.
+Accordingly, the return type of the \code{HashSet} and \code{Hashmap}
+constuctors are annotated as \code{@PolyDet("upDet")}. See
+Section~\ref{determinism-polymorphism-ordernondet}.
 
 \sectionAndLabel{Controlling polymorphism}{determinism-polymorphism}
 
@@ -234,7 +226,7 @@ The Determinism Checker makes
 several enhancements to standard polymorphic qualifiers.
 
 
-\subsectionAndLabel{Avoiding @OrderNonDet}{determinism-polymorphism-ordernondet}
+\subsectionAndLabel{@PolyDet Variants for Special Cases}{determinism-polymorphism-ordernondet}
 
 \begin{description}
 \item[\refqualclass{checker/determinism/qual}{PolyDet}\<("down")>]
@@ -247,6 +239,12 @@ several enhancements to standard polymorphic qualifiers.
   \<@OrderNonDet>.
   ``\<up>'' refers to the direction in the qualifier hierarchy:
   \<@OrderNonDet> is changed to a higher qualifier that is a supertype of it.
+\item[\refqualclass{checker/determinism/qual}{PolyDet}\<("upDet")>]
+  Acts like \<@OrderNonDet> when the polymorphic qualifier is instantiated as
+  \<@Det>.
+  ``\<up>'' refers to the direction in the qualifier hierarchy and ``\<Det>''
+  refers to the annotation that is modified:
+  \<@Det> is changed to a higher qualifier that is a supertype of it.
 \end{description}
 
 Ordinarily, every occurrence of \<@PolyDet> is instantiated to the same
@@ -280,6 +278,20 @@ expressing the method behavior:
 @PolyDet("down") boolean add(     @PolyDet List<E> this, E e)
   @PolyDet("up") int hashCode(    @PolyDet List<E> this)
 \end{Verbatim}
+
+For an example of \refqualclass{checker/determinism/qual}{PolyDet}\<("upDet")>,
+consider the three versions of the \<HashSet> constructor that uses the elements
+of another \<Collection>:
+
+\begin{Verbatim}
+         @NonDet HashSet(      @NonDet Collection<? extends E> c)
+    @OrderNonDet HashSet( @OrderNonDet Collection<? extends E> c)
+    @OrderNonDet HashSet(         @Det Collection<? extends E> c)
+\end{Verbatim}
+
+Since a \<HashSet> can never be deterministic, the return type in the third case
+must be \<@OrderNonDet>. This is exactly what
+\refqualclass{checker/determinism/qual}{PolyDet}\<("upDet")> expresses.
 
 See the annotated JDK for more example uses of the annotations.
 

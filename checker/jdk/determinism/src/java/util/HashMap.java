@@ -445,7 +445,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * @throws IllegalArgumentException if the initial capacity is negative
      *         or the load factor is nonpositive
      */
-    public @PolyDet HashMap(@PolyDet int initialCapacity, @PolyDet float loadFactor) {
+    public @PolyDet("upDet") HashMap(@PolyDet int initialCapacity, @PolyDet float loadFactor) {
         if (initialCapacity < 0)
             throw new IllegalArgumentException("Illegal initial capacity: " +
                     initialCapacity);
@@ -465,7 +465,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * @param  initialCapacity the initial capacity.
      * @throws IllegalArgumentException if the initial capacity is negative.
      */
-    public @PolyDet HashMap(@PolyDet int initialCapacity) {
+    public @PolyDet("upDet") HashMap(@PolyDet int initialCapacity) {
         this(initialCapacity, DEFAULT_LOAD_FACTOR);
     }
 
@@ -486,7 +486,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * @param   m the map whose mappings are to be placed in this map
      * @throws  NullPointerException if the specified map is null
      */
-    public @PolyDet HashMap(@PolyDet Map<? extends K, ? extends V> m) {
+    public @PolyDet("upDet") HashMap(@PolyDet Map<? extends K, ? extends V> m) {
         this.loadFactor = DEFAULT_LOAD_FACTOR;
         putMapEntries(m, false);
     }
