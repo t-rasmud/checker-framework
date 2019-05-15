@@ -15,7 +15,7 @@ class TestHashSet {
     }
 
     void testConstructCollection2(@PolyDet List<@Det String> c) {
-        // :: error: (invalid.collection.constructor.invocation)
+        // :: error: (assignment.type.incompatible)
         @PolyDet Set<@Det String> s = new HashSet<@Det String>(c);
     }
 
@@ -24,25 +24,22 @@ class TestHashSet {
     }
 
     void testConstructCollection6(@PolyDet("up") List<@Det String> c) {
-        // :: error: (invalid.collection.constructor.invocation)
+        // :: error: (assignment.type.incompatible)
         @PolyDet("up") Set<@Det String> s = new HashSet<@Det String>(c);
     }
 
     void testExplicitDet() {
-        // :: error: (invalid.collection.constructor.invocation) :: warning:
-        // (cast.unsafe.constructor.invocation)
+        // :: warning: (cast.unsafe.constructor.invocation)
         @OrderNonDet Set<String> s = new @Det HashSet<String>();
     }
 
     void testExplicitPoly() {
-        // :: error: (invalid.collection.constructor.invocation) :: error:
-        // constructor.invocation.invalid
+        // :: error: constructor.invocation.invalid
         new @PolyDet HashSet<String>();
     }
 
     void testExplicitPolyUp() {
-        // :: error: (invalid.collection.constructor.invocation) :: error:
-        // constructor.invocation.invalid
+        // :: error: constructor.invocation.invalid
         new @PolyDet("up") HashSet<String>();
     }
 
