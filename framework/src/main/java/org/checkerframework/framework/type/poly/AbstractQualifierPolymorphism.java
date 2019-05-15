@@ -2,12 +2,11 @@ package org.checkerframework.framework.type.poly;
 
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.tree.NewClassTree;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.Map.Entry;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Elements;
 import org.checkerframework.framework.qual.PolyAll;
@@ -187,6 +186,31 @@ public abstract class AbstractQualifierPolymorphism implements QualifierPolymorp
             completer.visit(type);
         }
         reset();
+    }
+
+    @Override
+    public void annotate(
+            VariableElement field, AnnotatedTypeMirror owner, AnnotatedTypeMirror type) {
+        if (polyQuals.isEmpty()) {
+            return;
+        }
+        AnnotationMirrorMap<AnnotationMirrorSet> matchingMapping = new AnnotationMirrorMap<>();
+        for (Entry<AnnotationMirror, AnnotationMirror> entry : polyQuals.entrySet()) {
+            AnnotationMirror polyAnnotation = entry.getKey();
+            if (entry.getValue() == null) {
+                matchingMapping.put(
+                        polyAnnotation, new AnnotationMirrorSet(owner.getAnnotations()));
+                continue;
+            }
+            AnnotationMirrorSet resolvedType = new AnnotationMirrorSet();
+            resolvedType.add(owner.getAnnotationInHierarchy(entry.getValue()));
+            matchingMapping.put(polyAnnotation, resolvedType);
+        }
+        if (!matchingMapping.isEmpty()) {
+            replacer.visit(type, matchingMapping);
+        } else {
+            completer.visit(type);
+        }
     }
 
     @Override
