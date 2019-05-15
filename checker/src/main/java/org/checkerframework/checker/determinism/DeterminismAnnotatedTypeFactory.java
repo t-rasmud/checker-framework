@@ -53,6 +53,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     public final AnnotationMirror POLYDET_DOWN;
     /** The @PolyDet("use") annotation. */
     public final AnnotationMirror POLYDET_USE;
+    /** The @PolyDet("upDet") annotation. */
+    public final AnnotationMirror POLYDET_UPDET;
 
     /** The java.util.Set interface. */
     private final TypeMirror setInterfaceTypeMirror =
@@ -114,6 +116,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         POLYDET_UP = newPolyDet("up");
         POLYDET_DOWN = newPolyDet("down");
         POLYDET_USE = newPolyDet("use");
+        POLYDET_UPDET = newPolyDet("upDet");
 
         this.inputProperties = Collections.unmodifiableList(buildInputProperties());
 
@@ -393,10 +396,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
 
         /**
-         * If {@code @Det} wasn't explicitly written on a {@code HashSet} or a {@code HashMap}, but
-         * the constructor would resolve to {@code @Det}, inserts {@code @OrderNonDet} instead.
-         *
-         * <p>If {@code @OrderNonDet} wasn't explicitly written on a {@code TreeSet} or a {@code
+         * If {@code @OrderNonDet} wasn't explicitly written on a {@code TreeSet} or a {@code
          * TreeMap}, but the constructor would resolve to {@code @OrderNonDet}, inserts {@code @Det}
          * instead.
          *
@@ -407,12 +407,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          */
         @Override
         public Void visitNewClass(NewClassTree node, AnnotatedTypeMirror annotatedTypeMirror) {
-            if ((isHashSet(annotatedTypeMirror) && !isLinkedHashSet(annotatedTypeMirror))
-                    || (isHashMap(annotatedTypeMirror) && !isLinkedHashMap(annotatedTypeMirror))) {
-                if (annotatedTypeMirror.hasAnnotation(DET)) {
-                    annotatedTypeMirror.replaceAnnotation(ORDERNONDET);
-                }
-            } else if (isTreeSet(annotatedTypeMirror) || isTreeMap(annotatedTypeMirror)) {
+            if (isTreeSet(annotatedTypeMirror) || isTreeMap(annotatedTypeMirror)) {
                 if (annotatedTypeMirror.hasAnnotation(ORDERNONDET)) {
                     annotatedTypeMirror.replaceAnnotation(DET);
                 }
@@ -873,6 +868,30 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             if (AnnotationUtils.areSame(subAnno, POLYDET_UP)
                     && AnnotationUtils.areSame(superAnno, POLYDET_DOWN)) {
                 return false;
+            }
+            if (AnnotationUtils.areSame(subAnno, POLYDET_UPDET)
+                    && AnnotationUtils.areSame(superAnno, POLYDET_UP)) {
+                return false;
+            }
+            if (AnnotationUtils.areSame(subAnno, POLYDET_UP)
+                    && AnnotationUtils.areSame(superAnno, POLYDET_UPDET)) {
+                return false;
+            }
+            if (AnnotationUtils.areSame(subAnno, POLYDET_UPDET)
+                    && AnnotationUtils.areSame(superAnno, POLYDET)) {
+                return false;
+            }
+            if (AnnotationUtils.areSame(subAnno, POLYDET)
+                    && AnnotationUtils.areSame(superAnno, POLYDET_UPDET)) {
+                return true;
+            }
+            if (AnnotationUtils.areSame(subAnno, POLYDET_UPDET)
+                    && AnnotationUtils.areSame(superAnno, POLYDET_DOWN)) {
+                return false;
+            }
+            if (AnnotationUtils.areSame(subAnno, POLYDET_DOWN)
+                    && AnnotationUtils.areSame(superAnno, POLYDET_UPDET)) {
+                return true;
             }
             if (AnnotationUtils.areSameByName(subAnno, POLYDET)) {
                 subAnno = POLYDET;
