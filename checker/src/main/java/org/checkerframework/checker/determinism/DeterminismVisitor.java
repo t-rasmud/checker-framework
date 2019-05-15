@@ -343,13 +343,13 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     public void processClassTree(ClassTree classTree) {
         List<? extends Tree> members = classTree.getMembers();
 
-        for (Tree mem : members) {
-            if (mem.getKind() == Tree.Kind.VARIABLE) {
-                AnnotatedTypeMirror fieldAnno = atypeFactory.getAnnotatedType(mem);
-                if (fieldAnno.hasAnnotation(atypeFactory.DET)) {
-                    Element classTreeElement = TreeUtils.elementFromTree(classTree);
-                    AnnotatedTypeMirror classAnno = atypeFactory.getAnnotatedType(classTreeElement);
-                    if (!classAnno.hasAnnotation(atypeFactory.DET)) {
+        Element classTreeElement = TreeUtils.elementFromTree(classTree);
+        AnnotatedTypeMirror classAnno = atypeFactory.getAnnotatedType(classTreeElement);
+        if (!classAnno.hasAnnotation(atypeFactory.DET)) {
+            for (Tree mem : members) {
+                if (mem.getKind() == Tree.Kind.VARIABLE) {
+                    AnnotatedTypeMirror fieldAnno = atypeFactory.getAnnotatedType(mem);
+                    if (fieldAnno.hasAnnotation(atypeFactory.DET)) {
                         checker.report(
                                 Result.failure(
                                         "invalid.annotation.on.field",
