@@ -454,9 +454,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     }
 
     /**
-     * Reports an error if {@code @PolyDet("up")}, {@code @PolyDet("down")} or
-     * {@code @PolyDet("use")} is written on a formal parameter or a return type and none of the
-     * formal parameters or the receiver has the type {@code @PolyDet}.
+     * Reports an error if {@code @PolyDet("up")}, {@code @PolyDet("down")},
+     * {@code @PolyDet("use")}, or {@code @PolyDet("upDet")} is written on a formal parameter or a
+     * return type and none of the formal parameters or the receiver has the type {@code @PolyDet}.
      */
     @Override
     public Void visitMethod(MethodTree node, Void p) {
@@ -480,6 +480,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         boolean isPolyUpPresent = false;
         boolean isPolyDownPresent = false;
         boolean isPolyUsePresent = false;
+        boolean isPolyUpDetPresent = false;
         for (AnnotationMirror atm : polyAnnotations) {
             if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_UP)) {
                 isPolyUpPresent = true;
@@ -489,6 +490,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             }
             if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_USE)) {
                 isPolyUsePresent = true;
+            }
+            if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_UPDET)) {
+                isPolyUpDetPresent = true;
             }
             if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET)) {
                 isPolyPresent = true;
@@ -503,6 +507,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             }
             if (isPolyUsePresent) {
                 checker.report(Result.failure("invalid.polydet.use"), node);
+            }
+            if (isPolyUpDetPresent) {
+                checker.report(Result.failure("invalid.polydet.updet"), node);
             }
         }
         return super.visitMethod(node, p);
@@ -569,8 +576,6 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      * Reports an error if {@code newClassTree} represents explicitly constructing a
      *
      * <ol>
-     *   <li>{@code @Det HashSet}
-     *   <li>{@code @Det HashMap}
      *   <li>{@code @OrderNonDet TreeSet}
      *   <li>{@code @OrderNonDet TreeMap}
      * </ol>
@@ -589,26 +594,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             NewClassTree newClassTree) {
         AnnotatedTypeMirror constructorResultType = constructor.getReturnType();
         AnnotationMirror explicitAnno = atypeFactory.getNewClassAnnotation(newClassTree);
-        if ((atypeFactory.isHashSet(constructorResultType)
-                        && !atypeFactory.isLinkedHashSet(constructorResultType))
-                || (atypeFactory.isHashMap(constructorResultType)
-                        && !atypeFactory.isLinkedHashMap(constructorResultType))) {
-            // There are two checks for @PolyDet. The first catches "new @PolyDet HashSet()"
-            // because in that case the annotation on constructorResultType is @OrderNonDet. The
-            // second catches instances where a @PolyDet collection was passed to the
-            // constructor.
-            if (AnnotationUtils.areSame(explicitAnno, atypeFactory.DET)
-                    || AnnotationUtils.areSameByName(explicitAnno, atypeFactory.POLYDET)
-                    || AnnotationUtils.areSameByName(
-                            constructorResultType.getAnnotationInHierarchy(atypeFactory.NONDET),
-                            atypeFactory.POLYDET)) {
-                checker.report(
-                        Result.failure(
-                                DeterminismVisitor.INVALID_COLLECTION_CONSTRUCTOR_INVOCATION,
-                                constructorResultType),
-                        newClassTree);
-            }
-        } else if (atypeFactory.isTreeSet(constructorResultType)
+        if (atypeFactory.isTreeSet(constructorResultType)
                 || atypeFactory.isTreeMap(constructorResultType)) {
             if (AnnotationUtils.areSame(explicitAnno, atypeFactory.ORDERNONDET)
                     || AnnotationUtils.areSameByName(explicitAnno, atypeFactory.POLYDET)
