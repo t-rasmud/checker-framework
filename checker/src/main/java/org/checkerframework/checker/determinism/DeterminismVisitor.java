@@ -3,8 +3,10 @@ package org.checkerframework.checker.determinism;
 import com.sun.source.tree.*;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeKind;
@@ -331,6 +333,36 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             }
         }
         super.commonAssignmentCheck(varType, valueType, valueTree, errorKey);
+    }
+
+    /**
+     * Issues an error if a {@code Det} field is declared in a class ({@param classTree}) that is
+     * not annotated as {@code @Det}.
+     */
+    @Override
+    public void processClassTree(ClassTree classTree) {
+        List<? extends Tree> members = classTree.getMembers();
+        Set<? extends AnnotationMirror> topAnnotations =
+                atypeFactory.getQualifierHierarchy().getTopAnnotations();
+
+        for (Tree mem : members) {
+            if (mem.getKind() == Tree.Kind.VARIABLE) {
+                AnnotatedTypeMirror fieldAnno = atypeFactory.getAnnotatedType(mem);
+                if (fieldAnno.hasAnnotation(atypeFactory.DET)) {
+                    Element classTreeElement = TreeUtils.elementFromTree(classTree);
+                    AnnotatedTypeMirror classAnno = atypeFactory.getAnnotatedType(classTreeElement);
+                    if (!classAnno.hasAnnotation(atypeFactory.DET)) {
+                        checker.report(
+                                Result.failure(
+                                        "invalid.annotation.on.field",
+                                        classAnno.getAnnotationInHierarchy(atypeFactory.NONDET)),
+                                mem);
+                    }
+                }
+            }
+        }
+
+        super.processClassTree(classTree);
     }
 
     // Hack: Remove this after it's fixed on the master branch.

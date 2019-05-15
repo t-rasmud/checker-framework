@@ -31,6 +31,7 @@ public class TestClassAnnos {
 }
 
 @NonDet class NonDetNode {
+    // :: error: (invalid.annotation.on.field)
     String val;
 
     public NonDetNode() {
