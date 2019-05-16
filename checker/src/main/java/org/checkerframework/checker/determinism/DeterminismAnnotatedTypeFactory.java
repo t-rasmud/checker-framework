@@ -197,25 +197,6 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          *
          * Replaces the annotation on the return type of a method invocation as follows:
          *
-         * <ol>
-         *   <li>If the annotation on the type of method invocation resolves to {@code OrderNonDet}
-         *       and if the return type of the invoked method isn't an array or a collection,
-         *       replaces the annotation on {@code methodInvocationType} with {@code @NonDet}.
-         *   <li>Return type of equals() gets the annotation {@code @Det}, when both the receiver
-         *       and the argument satisfy these conditions (@see <a
-         *       href="https://checkerframework.org/manual/#determinism-improved-precision-set-equals">Improves
-         *       precision for Set.equals()</a>):
-         *       <ol>
-         *         <li>the type is {@code @OrderNonDet Set}, and
-         *         <li>its type argument is not {@code @OrderNonDet List} or a subtype
-         *       </ol>
-         *   <li>Annotates the return types of System.getProperty("line.separator") and
-         *       System.getProperty("line.separator") as {@code Det}. Usually, the return type of
-         *       System.getProperty() is annotated as {@code NonDet}. We make an exception when the
-         *       argument is either {@code line.separator} or {@code path.separator} because they
-         *       will always produce the same result on the same machine.
-         * </ol>
-         *
          * @param node method invocation tree
          * @param methodInvocationType type of the method invocation
          * @return visitMethodInvocation() of the super class
