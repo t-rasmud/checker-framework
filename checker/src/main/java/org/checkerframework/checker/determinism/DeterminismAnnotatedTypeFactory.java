@@ -52,6 +52,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     public final AnnotationMirror POLYDET_DOWN;
     /** The @PolyDet("use") annotation. */
     public final AnnotationMirror POLYDET_USE;
+    /** The @PolyDet("upDet") annotation. */
+    public final AnnotationMirror POLYDET_UPDET;
 
     /** The java.util.Set interface. */
     private final TypeMirror setInterfaceTypeMirror =
@@ -113,8 +115,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         POLYDET_UP = newPolyDet("up");
         POLYDET_DOWN = newPolyDet("down");
         POLYDET_USE = newPolyDet("use");
+        POLYDET_UPDET = newPolyDet("upDet");
 
-        this.inputProperties = Collections.unmodifiableList(buildinputProperties());
+        this.inputProperties = Collections.unmodifiableList(buildInputProperties());
 
         mapGet = TreeUtils.getMethod("java.util.Map", "get", 1, processingEnv);
         mapGetOrDefault = TreeUtils.getMethod("java.util.Map", "getOrDefault", 2, processingEnv);
@@ -127,7 +130,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
      * Returns a list of properties supplied by the user via the command line option
      * "-AinputProperties".
      */
-    private List<String> buildinputProperties() {
+    private List<String> buildInputProperties() {
         List<String> result = new ArrayList<>();
 
         if (checker.hasOption("inputProperties")) {
@@ -183,52 +186,117 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
 
         /**
-         * Replaces the annotation on the return type of a method invocation as follows:
+         * Refines the return type of a method invocation for the following cases:
          *
          * <ol>
-         *   <li>If the annotation on the type of method invocation resolves to {@code OrderNonDet}
-         *       and if the return type of the invoked method isn't an array or a collection,
-         *       replaces the annotation on {@code annotatedRetType} with {@code @NonDet}.
-         *   <li>Return type of equals() gets the annotation {@code @Det}, when both the receiver
-         *       and the argument satisfy these conditions (@see <a
-         *       href="https://checkerframework.org/manual/#determinism-improved-precision-set-equals">Improves
-         *       precision for Set.equals() and Map.equals()</a>):
-         *       <ol>
-         *         <li>the type is {@code @OrderNonDet Set} or {@code @OrderNonDet Map}, and
-         *         <li>its type argument is not {@code @OrderNonDet List} or a subtype
-         *       </ol>
-         *   <li>Annotates the return types of System.getProperty("line.separator") and
-         *       System.getProperty("line.separator") as {@code Det}. Usually, the return type of
-         *       System.getProperty() is annotated as {@code NonDet}. We make an exception when the
-         *       argument is either {@code line.separator} or {@code path.separator} because they
-         *       will always produce the same result on the same machine.
+         *   <li>Return type is a non-collection.
+         *   <li>Return type is {@code @PolyDet("up")}
+         *   <li>The invoked method is {@code equals} and the receiver is a {@code Set} or {@code
+         *       Map}.
+         *   <li>The invoked method is {@code System.get}
+         *   <li>The invoked method is {@code Map.get}
          * </ol>
          *
          * @param node method invocation tree
-         * @param annotatedRetType type of the method invocation
+         * @param methodInvocationType type of the method invocation
          * @return visitMethodInvocation() of the super class
          */
         @Override
         public Void visitMethodInvocation(
-                MethodInvocationTree node, AnnotatedTypeMirror annotatedRetType) {
+                MethodInvocationTree node, AnnotatedTypeMirror methodInvocationType) {
             AnnotatedTypeMirror receiverType = getReceiverType(node);
+            ExecutableElement m = TreeUtils.elementFromUse(node);
+
+            changeReturnOnNonCollections(methodInvocationType);
+
+            refinePolyUp(node, methodInvocationType, receiverType, m);
 
             // ReceiverType is null for abstract classes
             // (Example: Ordering.natural() in tests/all-systems/PolyCollectorTypeVars.java)
             // For static methods, receiverType is the AnnotatedTypeMirror of the class in which the
             // invoked method "node" is declared.
             if (receiverType == null) {
-                return super.visitMethodInvocation(node, annotatedRetType);
+                return super.visitMethodInvocation(node, methodInvocationType);
             }
 
+            TypeElement receiverUnderlyingType =
+                    TypesUtils.getTypeElement(receiverType.getUnderlyingType());
+
+            // Without this check, NullPointerException in Collections class with buildJdk.
+            // Likely cause: Collections has a private constructor?
+            // Error at line: public class Collections {
+            // TODO-rashmi: check why?
+            if (receiverUnderlyingType == null) {
+                return super.visitMethodInvocation(node, methodInvocationType);
+            }
+
+            refineResultOfEquals(node, methodInvocationType, receiverType);
+            refineSystemGet(node, methodInvocationType);
+            refineMapGet(node, methodInvocationType, receiverType);
+
+            return super.visitMethodInvocation(node, methodInvocationType);
+        }
+
+        /**
+         * If the annotation on {@code methodInvocationType} is {@code OrderNonDet} and it isn't an
+         * array or a collection, replaces the annotation on {@code methodInvocationType} with
+         * {@code @NonDet}.
+         *
+         * @param methodInvocationType AnnotatedTypeMirror for a method invocation
+         */
+        protected void changeReturnOnNonCollections(AnnotatedTypeMirror methodInvocationType) {
+            if (methodInvocationType.hasAnnotation(ORDERNONDET)
+                    && !mayBeOrderNonDet(methodInvocationType)) {
+                methodInvocationType.replaceAnnotation(NONDET);
+            }
+        }
+
+        /**
+         * Usually, the return type of {@code System.getProperty} is annotated as {@code NonDet}. We
+         * make an exception when the argument is either {@code line.separator}, {@code
+         * file.separator}, or {@code path.separator} because they will always produce the same
+         * result on the same machine.
+         *
+         * @param node method invocation tree
+         * @param methodInvocationType AnnotatedTypeMirror for a method invocation
+         */
+        private void refineSystemGet(
+                MethodInvocationTree node, AnnotatedTypeMirror methodInvocationType) {
             ExecutableElement m = TreeUtils.elementFromUse(node);
-
-            // If return type (non-array, non-collection, and non-iterator) resolves to
-            // @OrderNonDet, replaces the annotation on the return type with @NonDet.
-            if (annotatedRetType.hasAnnotation(ORDERNONDET)
-                    && !mayBeOrderNonDet(annotatedRetType)) {
-                annotatedRetType.replaceAnnotation(NONDET);
+            ExecutableElement systemGetProperty =
+                    TreeUtils.getMethod("java.lang.System", "getProperty", 1, getProcessingEnv());
+            if (ElementUtils.isMethod(m, systemGetProperty, getProcessingEnv())) {
+                String getPropertyArgument = node.getArguments().get(0).toString();
+                String getPropertyArgumentWithoutQuotes =
+                        getPropertyArgument.substring(1, getPropertyArgument.length() - 1);
+                if (getPropertyArgument.equals("\"" + "line.separator" + "\"")
+                        || getPropertyArgument.equals("\"" + "file.separator" + "\"")
+                        || getPropertyArgument.equals("\"" + "path.separator" + "\"")
+                        || inputProperties.contains(getPropertyArgumentWithoutQuotes)) {
+                    methodInvocationType.replaceAnnotation(DET);
+                }
             }
+        }
+
+        /**
+         * Return type of equals() gets the annotation {@code @Det}, when both the receiver and the
+         * argument satisfy these conditions (@see <a
+         * href="https://checkerframework.org/manual/#determinism-improved-precision-set-equals">Improves
+         * precision for Set.equals()</a>):
+         *
+         * <ol>
+         *   <li>the type is {@code @OrderNonDet Set}, and
+         *   <li>its type argument is not {@code @OrderNonDet List} or a subtype
+         * </ol>
+         *
+         * @param node method invocation tree
+         * @param methodInvocationType AnnotatedTypeMirror for a method invocation
+         * @param receiverType receiver type of the invoked method
+         */
+        protected void refineResultOfEquals(
+                MethodInvocationTree node,
+                AnnotatedTypeMirror methodInvocationType,
+                AnnotatedTypeMirror receiverType) {
 
             // Annotates the return type of "equals()" method called on a Set or Map receiver
             // as described in the specification of this method.
@@ -241,16 +309,6 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             //            @OrderNonDet Set<@Det List<@Det Integer>> s2;
             // s1.equals(s2) is @Det
             // TODO-rashmi: this can be more precise (@Det receiver and @OrderNonDet argument)
-            TypeElement receiverUnderlyingType =
-                    TypesUtils.getTypeElement(receiverType.getUnderlyingType());
-
-            // Without this check, NullPointerException in Collections class with buildJdk.
-            // Likely cause: Collections has a private constructor?
-            // Error at line: public class Collections {
-            // TODO-rashmi: check why?
-            if (receiverUnderlyingType == null) {
-                return super.visitMethodInvocation(node, annotatedRetType);
-            }
 
             if (isEqualsMethod(node)) {
                 AnnotatedTypeMirror argument = getAnnotatedType(node.getArguments().get(0));
@@ -268,31 +326,25 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                         && getQualifierHierarchy()
                                 .isSubtype(argument.getAnnotationInHierarchy(NONDET), ORDERNONDET)
                         && !hasOrderNonDetListAsTypeArgument(argument)) {
-                    annotatedRetType.replaceAnnotation(DET);
+                    methodInvocationType.replaceAnnotation(DET);
                 }
             }
+        }
 
-            // Annotates the return types of method calls "System.getProperty("line.separator")",
-            // "System.getProperty("file.separator")"
-            // and "System.getProperty("path.separator")" as "@Det"
-            ExecutableElement systemGetProperty =
-                    TreeUtils.getMethod("java.lang.System", "getProperty", 1, getProcessingEnv());
-            if (ElementUtils.isMethod(m, systemGetProperty, getProcessingEnv())) {
-                String getPropertyArgument = node.getArguments().get(0).toString();
-                String getPropertyArgumentWithoutQuotes =
-                        getPropertyArgument.substring(1, getPropertyArgument.length() - 1);
-                if (getPropertyArgument.equals("\"" + "line.separator" + "\"")
-                        || getPropertyArgument.equals("\"" + "file.separator" + "\"")
-                        || getPropertyArgument.equals("\"" + "path.separator" + "\"")
-                        || inputProperties.contains(getPropertyArgumentWithoutQuotes)) {
-                    annotatedRetType.replaceAnnotation(DET);
-                }
-            }
-
-            // Since the return type of Map.get() is annotated as "@PolyDet",
-            // replace the annotation on return type as "@Det" if the receiver is of
-            // type "@OrderNonDet", map's V(value) type argument of type "@Det",
-            // and the argument to get() of type "@Det".
+        /**
+         * Since the return type of {@code Map.get} is annotated as {@code @PolyDet}, replace the
+         * annotation on return type as {@code @Det} if the receiver is of type
+         * {@code @OrderNonDet}, map's V(value) type argument of type {@code @Det}, and the argument
+         * to {@code get} of type {@code @Det}.
+         *
+         * @param node method invocation tree
+         * @param methodInvocationType AnnotatedTypeMirror for a method invocation
+         * @param receiverType receiver type of the invoked method
+         */
+        private void refineMapGet(
+                MethodInvocationTree node,
+                AnnotatedTypeMirror methodInvocationType,
+                AnnotatedTypeMirror receiverType) {
             if (isMap(receiverType)
                     && (isMapGet(node) || isMapGetOrDefault(node))
                     && receiverType.hasAnnotation(ORDERNONDET)
@@ -301,10 +353,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                             .get(1)
                             .hasAnnotation(DET)
                     && getAnnotatedType(node.getArguments().get(0)).hasAnnotation(DET)) {
-                annotatedRetType.replaceAnnotation(DET);
+                methodInvocationType.replaceAnnotation(DET);
             }
-
-            return super.visitMethodInvocation(node, annotatedRetType);
         }
 
         /** Returns true if the node is an invocation of Map.get. */
@@ -338,24 +388,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
 
         /**
-         * Reports an error if {@code node} represents explicitly constructing a
-         *
-         * <ol>
-         *   <li>{@code @Det HashSet}
-         *   <li>{@code @Det HashMap}
-         *   <li>{@code @OrderNonDet TreeSet}
-         *   <li>{@code @OrderNonDet TreeMap}
-         * </ol>
-         *
-         * If {@code @Det} wasn't explicitly written on a {@code HashSet} or a {@code HashMap}, but
-         * the constructor would resolve to {@code @Det}, inserts {@code @OrderNonDet} instead.
-         *
-         * <p>If {@code @OrderNonDet} wasn't explicitly written on a {@code TreeSet} or a {@code
+         * If {@code @OrderNonDet} wasn't explicitly written on a {@code TreeSet} or a {@code
          * TreeMap}, but the constructor would resolve to {@code @OrderNonDet}, inserts {@code @Det}
          * instead.
-         *
-         * <p>Also reports an error if the result of the constructor would resolve to any variant of
-         * {@code @PolyDet}.
          *
          * @param node a tree representing instantiating a class
          * @param annotatedTypeMirror the type to modify if it represents an invalid constructor
@@ -364,47 +399,65 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          */
         @Override
         public Void visitNewClass(NewClassTree node, AnnotatedTypeMirror annotatedTypeMirror) {
-            if ((isHashSet(annotatedTypeMirror) && !isLinkedHashSet(annotatedTypeMirror))
-                    || (isHashMap(annotatedTypeMirror) && !isLinkedHashMap(annotatedTypeMirror))) {
-                AnnotationMirror explicitAnno = getNewClassAnnotation(node);
-                // There are two checks for @PolyDet. The first catches "new @PolyDet HashSet()"
-                // because in that case the annotation on annotatedTypeMirror is @OrderNonDet. The
-                // second catches instances where a @PolyDet collection was passed to the
-                // constructor.
-                if (AnnotationUtils.areSame(explicitAnno, DET)
-                        || AnnotationUtils.areSameByName(explicitAnno, POLYDET)
-                        || AnnotationUtils.areSameByName(
-                                annotatedTypeMirror.getAnnotationInHierarchy(NONDET), POLYDET)) {
-                    checker.report(
-                            Result.failure(
-                                    DeterminismVisitor.INVALID_COLLECTION_CONSTRUCTOR_INVOCATION,
-                                    annotatedTypeMirror),
-                            node);
-                    return super.visitNewClass(node, annotatedTypeMirror);
-                }
-                if (annotatedTypeMirror.hasAnnotation(DET)) {
-                    annotatedTypeMirror.replaceAnnotation(ORDERNONDET);
-                }
-            }
-
             if (isTreeSet(annotatedTypeMirror) || isTreeMap(annotatedTypeMirror)) {
-                AnnotationMirror explicitAnno = getNewClassAnnotation(node);
-                if (AnnotationUtils.areSame(explicitAnno, ORDERNONDET)
-                        || AnnotationUtils.areSameByName(explicitAnno, POLYDET)
-                        || AnnotationUtils.areSameByName(
-                                annotatedTypeMirror.getAnnotationInHierarchy(NONDET), POLYDET)) {
-                    checker.report(
-                            Result.failure(
-                                    DeterminismVisitor.INVALID_COLLECTION_CONSTRUCTOR_INVOCATION,
-                                    annotatedTypeMirror),
-                            node);
-                    return super.visitNewClass(node, annotatedTypeMirror);
-                }
                 if (annotatedTypeMirror.hasAnnotation(ORDERNONDET)) {
                     annotatedTypeMirror.replaceAnnotation(DET);
                 }
             }
             return super.visitNewClass(node, annotatedTypeMirror);
+        }
+    }
+
+    /**
+     * If the return type is {@code @PolyDet("up")}, and if this was because a method that returns
+     * {@code @PolyDet("up")} was passed a {@code @PolyDet} argument, but no such {@code @PolyDet}
+     * argument could be {@code @OrderNonDet}, then changes the return type to {@code @PolyDet}.
+     * This is because {@code @PolyDet("up")} is imprecise if no {@code @PolyDet} argument could be
+     * {@code @OrderNonDet}. replaces the annotation on {@code methodInvocationType} with
+     * {@code @NonDet}.
+     */
+    private void refinePolyUp(
+            MethodInvocationTree node,
+            AnnotatedTypeMirror methodInvocationType,
+            AnnotatedTypeMirror receiverType,
+            ExecutableElement m) {
+        // Makes a @PolyDet("up") return type more precise if possible. If the method call has
+        // at least one @PolyDet argument and no @PolyDet argument that can be @OrderNonDet,
+        // then the return type is changed to @PolyDet. This is because if no @PolyDet parameter
+        // can be @OrderNonDet, then it should never be the return type is @PolyDet("up").
+        // However, if there is no @PolyDet argument then this refinement would be invalid.
+        if (methodInvocationType.hasAnnotation(POLYDET_UP)) {
+            boolean hasPolyArg = false;
+            boolean hasPolyONDArg = false;
+            for (ExpressionTree argTree : node.getArguments()) {
+                AnnotatedTypeMirror argType = getAnnotatedType(argTree);
+                if (argType.hasAnnotation(POLYDET)) {
+                    hasPolyArg = true;
+                    if (mayBeOrderNonDet(argType)) {
+                        hasPolyONDArg = true;
+                        break;
+                    }
+                }
+            }
+            // If receiverType is null then this is a static method and the receiver should be
+            // ignored.
+            if (receiverType != null
+                    && !ElementUtils.isStatic(m)
+                    && receiverType.hasAnnotation(POLYDET)) {
+                hasPolyArg = true;
+                if (mayBeOrderNonDet(receiverType)) {
+                    hasPolyONDArg = true;
+                }
+            }
+            if (hasPolyArg && !hasPolyONDArg) {
+                methodInvocationType.replaceAnnotation(POLYDET);
+            }
+        }
+        // If return type (non-array, non-collection, and non-iterator) resolves to
+        // @OrderNonDet, replaces the annotation on the return type with @NonDet.
+        if (methodInvocationType.hasAnnotation(ORDERNONDET)
+                && !mayBeOrderNonDet(methodInvocationType)) {
+            methodInvocationType.replaceAnnotation(NONDET);
         }
     }
 
@@ -781,17 +834,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
      *     one, {@code null} otherwise.
      */
     public AnnotationMirror getNewClassAnnotation(NewClassTree tree) {
-        ExpressionTree className = tree.getIdentifier();
-        if (className.getKind() != Tree.Kind.PARAMETERIZED_TYPE) {
-            return null;
-        }
-        ParameterizedTypeTree paramType = (ParameterizedTypeTree) className;
-        if (paramType.getType().getKind() != Tree.Kind.ANNOTATED_TYPE) {
-            return null;
-        }
-        List<? extends AnnotationMirror> annos =
-                TreeUtils.typeOf(paramType.getType()).getAnnotationMirrors();
-        return getQualifierHierarchy().findAnnotationInHierarchy(annos, NONDET);
+        return fromNewClass(tree).getAnnotationInHierarchy(NONDET);
     }
 
     class DeterminismQualifierHierarchy extends GraphQualifierHierarchy {
@@ -835,6 +878,30 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             if (AnnotationUtils.areSame(subAnno, POLYDET_UP)
                     && AnnotationUtils.areSame(superAnno, POLYDET_DOWN)) {
                 return false;
+            }
+            if (AnnotationUtils.areSame(subAnno, POLYDET_UPDET)
+                    && AnnotationUtils.areSame(superAnno, POLYDET_UP)) {
+                return false;
+            }
+            if (AnnotationUtils.areSame(subAnno, POLYDET_UP)
+                    && AnnotationUtils.areSame(superAnno, POLYDET_UPDET)) {
+                return false;
+            }
+            if (AnnotationUtils.areSame(subAnno, POLYDET_UPDET)
+                    && AnnotationUtils.areSame(superAnno, POLYDET)) {
+                return false;
+            }
+            if (AnnotationUtils.areSame(subAnno, POLYDET)
+                    && AnnotationUtils.areSame(superAnno, POLYDET_UPDET)) {
+                return true;
+            }
+            if (AnnotationUtils.areSame(subAnno, POLYDET_UPDET)
+                    && AnnotationUtils.areSame(superAnno, POLYDET_DOWN)) {
+                return false;
+            }
+            if (AnnotationUtils.areSame(subAnno, POLYDET_DOWN)
+                    && AnnotationUtils.areSame(superAnno, POLYDET_UPDET)) {
+                return true;
             }
             if (AnnotationUtils.areSameByName(subAnno, POLYDET)) {
                 subAnno = POLYDET;
