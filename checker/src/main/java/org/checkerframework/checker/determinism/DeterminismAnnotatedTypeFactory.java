@@ -195,33 +195,6 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          *   <li>The invoked method is {@code Map.get}
          * </ol>
          *
-         * Replaces the annotation on the return type of a method invocation as follows:
-         *
-         * <ol>
-         *   <li>If the annotation on the type of method invocation resolves to {@code OrderNonDet}
-         *       and if the return type of the invoked method isn't an array or a collection,
-         *       replaces the annotation on {@code methodInvocationType} with {@code @NonDet}.
-         *   <li>If the return type is {@code @PolyDet("up")}, and if this was because a method that
-         *       returns {@code @PolyDet("up")} was passed a {@code @PolyDet} argument, but no such
-         *       {@code @PolyDet} argument could be {@code @OrderNonDet}, then changes the return
-         *       type to {@code @PolyDet}. This is because {@code @PolyDet("up")} is imprecise if no
-         *       {@code @PolyDet} argument could be {@code @OrderNonDet}. replaces the annotation on
-         *       {@code methodInvocationType} with {@code @NonDet}.
-         *   <li>Return type of equals() gets the annotation {@code @Det}, when both the receiver
-         *       and the argument satisfy these conditions (@see <a
-         *       href="https://checkerframework.org/manual/#determinism-improved-precision-set-equals">Improves
-         *       precision for Set.equals()</a>):
-         *       <ol>
-         *         <li>the type is {@code @OrderNonDet Set}, and
-         *         <li>its type argument is not {@code @OrderNonDet List} or a subtype
-         *       </ol>
-         *   <li>Annotates the return types of System.getProperty("line.separator") and
-         *       System.getProperty("line.separator") as {@code Det}. Usually, the return type of
-         *       System.getProperty() is annotated as {@code NonDet}. We make an exception when the
-         *       argument is either {@code line.separator} or {@code path.separator} because they
-         *       will always produce the same result on the same machine.
-         * </ol>
-         *
          * @param node method invocation tree
          * @param methodInvocationType type of the method invocation
          * @return visitMethodInvocation() of the super class
@@ -232,46 +205,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             AnnotatedTypeMirror receiverType = getReceiverType(node);
             ExecutableElement m = TreeUtils.elementFromUse(node);
 
-            // Makes a @PolyDet("up") return type more precise if possible. If the method call has
-            // at least one @PolyDet argument and no @PolyDet argument that can be @OrderNonDet,
-            // then the return type is changed to @PolyDet. This is because if no @PolyDet parameter
-            // can be @OrderNonDet, then it should never be the return type is @PolyDet("up").
-            // However, if there is no @PolyDet argument then this refinement would be invalid.
-            if (methodInvocationType.hasAnnotation(POLYDET_UP)) {
-                boolean hasPolyArg = false;
-                boolean hasPolyONDArg = false;
-                for (ExpressionTree argTree : node.getArguments()) {
-                    AnnotatedTypeMirror argType = getAnnotatedType(argTree);
-                    if (argType.hasAnnotation(POLYDET)) {
-                        hasPolyArg = true;
-                        if (mayBeOrderNonDet(argType)) {
-                            hasPolyONDArg = true;
-                            break;
-                        }
-                    }
-                }
-                // If receiverType is null then this is a static method and the receiver should be
-                // ignored.
-                if (receiverType != null
-                        && !ElementUtils.isStatic(m)
-                        && receiverType.hasAnnotation(POLYDET)) {
-                    hasPolyArg = true;
-                    if (mayBeOrderNonDet(receiverType)) {
-                        hasPolyONDArg = true;
-                    }
-                }
-                if (hasPolyArg && !hasPolyONDArg) {
-                    methodInvocationType.replaceAnnotation(POLYDET);
-                }
-            }
-            // If return type (non-array, non-collection, and non-iterator) resolves to
-            // @OrderNonDet, replaces the annotation on the return type with @NonDet.
-            if (methodInvocationType.hasAnnotation(ORDERNONDET)
-                    && !mayBeOrderNonDet(methodInvocationType)) {
-                methodInvocationType.replaceAnnotation(NONDET);
-            }
-
             changeReturnOnNonCollections(methodInvocationType);
+
+            refinePolyUp(node, methodInvocationType, receiverType, m);
 
             // ReceiverType is null for abstract classes
             // (Example: Ordering.natural() in tests/all-systems/PolyCollectorTypeVars.java)
@@ -459,6 +395,59 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 }
             }
             return super.visitNewClass(node, annotatedTypeMirror);
+        }
+    }
+
+    /**
+     * If the return type is {@code @PolyDet("up")}, and if this was because a method that returns
+     * {@code @PolyDet("up")} was passed a {@code @PolyDet} argument, but no such {@code @PolyDet}
+     * argument could be {@code @OrderNonDet}, then changes the return type to {@code @PolyDet}.
+     * This is because {@code @PolyDet("up")} is imprecise if no {@code @PolyDet} argument could be
+     * {@code @OrderNonDet}. replaces the annotation on {@code methodInvocationType} with
+     * {@code @NonDet}.
+     */
+    private void refinePolyUp(
+            MethodInvocationTree node,
+            AnnotatedTypeMirror methodInvocationType,
+            AnnotatedTypeMirror receiverType,
+            ExecutableElement m) {
+        // Makes a @PolyDet("up") return type more precise if possible. If the method call has
+        // at least one @PolyDet argument and no @PolyDet argument that can be @OrderNonDet,
+        // then the return type is changed to @PolyDet. This is because if no @PolyDet parameter
+        // can be @OrderNonDet, then it should never be the return type is @PolyDet("up").
+        // However, if there is no @PolyDet argument then this refinement would be invalid.
+        if (methodInvocationType.hasAnnotation(POLYDET_UP)) {
+            boolean hasPolyArg = false;
+            boolean hasPolyONDArg = false;
+            for (ExpressionTree argTree : node.getArguments()) {
+                AnnotatedTypeMirror argType = getAnnotatedType(argTree);
+                if (argType.hasAnnotation(POLYDET)) {
+                    hasPolyArg = true;
+                    if (mayBeOrderNonDet(argType)) {
+                        hasPolyONDArg = true;
+                        break;
+                    }
+                }
+            }
+            // If receiverType is null then this is a static method and the receiver should be
+            // ignored.
+            if (receiverType != null
+                    && !ElementUtils.isStatic(m)
+                    && receiverType.hasAnnotation(POLYDET)) {
+                hasPolyArg = true;
+                if (mayBeOrderNonDet(receiverType)) {
+                    hasPolyONDArg = true;
+                }
+            }
+            if (hasPolyArg && !hasPolyONDArg) {
+                methodInvocationType.replaceAnnotation(POLYDET);
+            }
+        }
+        // If return type (non-array, non-collection, and non-iterator) resolves to
+        // @OrderNonDet, replaces the annotation on the return type with @NonDet.
+        if (methodInvocationType.hasAnnotation(ORDERNONDET)
+                && !mayBeOrderNonDet(methodInvocationType)) {
+            methodInvocationType.replaceAnnotation(NONDET);
         }
     }
 
