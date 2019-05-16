@@ -190,6 +190,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          *
          * <ol>
          *   <li>Return type is a non-collection.
+         *   <li>Return type is {@code @PolyDet("up")}
          *   <li>The invoked method is {@code equals} and the receiver is a {@code Set}.
          *   <li>The invoked method is {@code System.get}
          *   <li>The invoked method is {@code Map.get}
