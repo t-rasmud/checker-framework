@@ -190,12 +190,11 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          *
          * <ol>
          *   <li>Return type is a non-collection.
+         *   <li>Return type is {@code @PolyDet("up")}
          *   <li>The invoked method is {@code equals} and the receiver is a {@code Set}.
          *   <li>The invoked method is {@code System.get}
          *   <li>The invoked method is {@code Map.get}
          * </ol>
-         *
-         * Replaces the annotation on the return type of a method invocation as follows:
          *
          * @param node method invocation tree
          * @param methodInvocationType type of the method invocation
@@ -205,7 +204,11 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         public Void visitMethodInvocation(
                 MethodInvocationTree node, AnnotatedTypeMirror methodInvocationType) {
             AnnotatedTypeMirror receiverType = getReceiverType(node);
+            ExecutableElement m = TreeUtils.elementFromUse(node);
+
             changeReturnOnNonCollections(methodInvocationType);
+
+            refinePolyUp(node, methodInvocationType, receiverType, m);
 
             // ReceiverType is null for abstract classes
             // (Example: Ordering.natural() in tests/all-systems/PolyCollectorTypeVars.java)
@@ -393,6 +396,59 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 }
             }
             return super.visitNewClass(node, annotatedTypeMirror);
+        }
+    }
+
+    /**
+     * If the return type is {@code @PolyDet("up")}, and if this was because a method that returns
+     * {@code @PolyDet("up")} was passed a {@code @PolyDet} argument, but no such {@code @PolyDet}
+     * argument could be {@code @OrderNonDet}, then changes the return type to {@code @PolyDet}.
+     * This is because {@code @PolyDet("up")} is imprecise if no {@code @PolyDet} argument could be
+     * {@code @OrderNonDet}. replaces the annotation on {@code methodInvocationType} with
+     * {@code @NonDet}.
+     */
+    private void refinePolyUp(
+            MethodInvocationTree node,
+            AnnotatedTypeMirror methodInvocationType,
+            AnnotatedTypeMirror receiverType,
+            ExecutableElement m) {
+        // Makes a @PolyDet("up") return type more precise if possible. If the method call has
+        // at least one @PolyDet argument and no @PolyDet argument that can be @OrderNonDet,
+        // then the return type is changed to @PolyDet. This is because if no @PolyDet parameter
+        // can be @OrderNonDet, then it should never be the return type is @PolyDet("up").
+        // However, if there is no @PolyDet argument then this refinement would be invalid.
+        if (methodInvocationType.hasAnnotation(POLYDET_UP)) {
+            boolean hasPolyArg = false;
+            boolean hasPolyONDArg = false;
+            for (ExpressionTree argTree : node.getArguments()) {
+                AnnotatedTypeMirror argType = getAnnotatedType(argTree);
+                if (argType.hasAnnotation(POLYDET)) {
+                    hasPolyArg = true;
+                    if (mayBeOrderNonDet(argType)) {
+                        hasPolyONDArg = true;
+                        break;
+                    }
+                }
+            }
+            // If receiverType is null then this is a static method and the receiver should be
+            // ignored.
+            if (receiverType != null
+                    && !ElementUtils.isStatic(m)
+                    && receiverType.hasAnnotation(POLYDET)) {
+                hasPolyArg = true;
+                if (mayBeOrderNonDet(receiverType)) {
+                    hasPolyONDArg = true;
+                }
+            }
+            if (hasPolyArg && !hasPolyONDArg) {
+                methodInvocationType.replaceAnnotation(POLYDET);
+            }
+        }
+        // If return type (non-array, non-collection, and non-iterator) resolves to
+        // @OrderNonDet, replaces the annotation on the return type with @NonDet.
+        if (methodInvocationType.hasAnnotation(ORDERNONDET)
+                && !mayBeOrderNonDet(methodInvocationType)) {
+            methodInvocationType.replaceAnnotation(NONDET);
         }
     }
 
