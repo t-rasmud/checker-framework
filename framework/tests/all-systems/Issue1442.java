@@ -8,6 +8,7 @@ public class Issue1442 {
 
     static class MyClass<A extends MyClass<A>> {}
 
+    @SuppressWarnings("super.invocation.invalid")
     static class SubMyClass extends MyClass<SubMyClass> {}
 
     static class Config<B extends MyClass<B>> {
@@ -18,6 +19,7 @@ public class Issue1442 {
         }
     }
 
+    @SuppressWarnings("super.invocation.invalid")
     static class SubConfig<C extends MyClass<C>> extends Config<C> {
         public class SubConfigInner extends ConfigInner<Thing> {
             public C outerClassTypeVar() {

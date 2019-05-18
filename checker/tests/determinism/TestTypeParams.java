@@ -19,6 +19,7 @@ public class TestTypeParams {
         MyClass<String> sobj = new MyClass<String>();
         System.out.println(sobj);
         MyClass<Integer> nobj = new MyClass<Integer>(y);
+        // :: error: (argument.type.incompatible)
         System.out.println(nobj);
     }
 }
