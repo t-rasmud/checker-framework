@@ -733,6 +733,36 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         super.addComputedTypeAnnotations(tree, type, iUseFlow);
     }
 
+    @Override
+    public void postAsMemberOf(
+            AnnotatedTypeMirror type, AnnotatedTypeMirror owner, Element element) {
+        super.postAsMemberOf(type, owner, element);
+        // For the field access of "element" whose type is "type" and whose access expression's type
+        // is "owner".
+        if (!isLHS
+                && owner.getKind() != TypeKind.ARRAY // array.length is dealt with elsewhere
+                && element.getKind() == ElementKind.FIELD
+                && !ElementUtils.isStatic(element)) {
+            // The qualifier type of a field access is the LUB of the qualifier on the type of the
+            // field and the qualifier on the type of the access expression.
+            AnnotationMirror expressionAnno = owner.getEffectiveAnnotationInHierarchy(NONDET);
+            AnnotationMirror fieldAnno = type.getEffectiveAnnotationInHierarchy(NONDET);
+            type.replaceAnnotation(qualHierarchy.leastUpperBound(expressionAnno, fieldAnno));
+        }
+    }
+
+    /** Is the type of a left hand side currently being computed? */
+    private boolean isLHS = false;
+
+    @Override
+    public AnnotatedTypeMirror getAnnotatedTypeLhs(Tree lhsTree) {
+        boolean oldIsLhs = isLHS;
+        isLHS = true;
+        AnnotatedTypeMirror type = super.getAnnotatedTypeLhs(lhsTree);
+        isLHS = oldIsLhs;
+        return type;
+    }
+
     /** @return true if {@code subClass} is a subtype of {@code superClass} */
     private boolean isSubClassOf(AnnotatedTypeMirror subClass, TypeMirror superClass) {
         return types.isSubtype(

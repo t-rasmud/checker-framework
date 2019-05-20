@@ -1,10 +1,13 @@
 package org.checkerframework.checker.determinism;
 
 import com.sun.source.tree.*;
+import com.sun.source.tree.Tree.Kind;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeKind;
@@ -21,6 +24,7 @@ import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedPrimitiv
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedTypeVariable;
 import org.checkerframework.framework.util.AnnotatedTypes;
 import org.checkerframework.javacutil.AnnotationUtils;
+import org.checkerframework.javacutil.ElementUtils;
 import org.checkerframework.javacutil.TreeUtils;
 
 /** Visitor for the determinism type-system. */
@@ -47,6 +51,12 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     /** Error message key for assignment to a deterministic array at a non-deterministic index. */
     public static final @CompilerMessageKey String INVALID_ARRAY_ASSIGNMENT =
             "invalid.array.assignment";
+
+    /**
+     * Error message key for assignment to a deterministic field via a non-deterministic expression.
+     */
+    public static final @CompilerMessageKey String INVALID_FIELD_ASSIGNMENT =
+            "invalid.field.assignment";
     /**
      * Error message key for collections whose type is a subtype of the upper bound of their type
      * arguments, or whose type is {@code @NonDet} with element type {@code @Det} or
@@ -124,7 +134,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                             ((AnnotatedTypeVariable) argType).getUpperBound();
                     AnnotationMirror typevarAnnotation =
                             getUpperBound(atypeFactory, argTypeUpperBound);
-                    if (!isSubtype(
+                    if (!isSubtypeError(
                             typevarAnnotation,
                             baseAnnotation,
                             tree,
@@ -137,7 +147,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                             ((AnnotatedTypeMirror.AnnotatedWildcardType) argType).getExtendsBound();
                     AnnotationMirror typevarAnnotation =
                             getUpperBound(atypeFactory, argTypeExtendsBound);
-                    if (!isSubtype(
+                    if (!isSubtypeError(
                             typevarAnnotation,
                             baseAnnotation,
                             tree,
@@ -251,6 +261,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      *
      * The array access {@code x[i]} is flagged as an error.
      *
+     * <p>Also, reports error in case of invalid field access on the lhs of an assignment.
+     *
      * @param varTree the AST node for the lvalue
      * @param valueExp the AST node for the rvalue (the new value)
      * @param errorKey the error message to use if the check fails (must be a compiler message key)
@@ -258,19 +270,49 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     @Override
     protected void commonAssignmentCheck(
             Tree varTree, ExpressionTree valueExp, @CompilerMessageKey String errorKey) {
-        if (varTree.getKind() == Tree.Kind.ARRAY_ACCESS) {
-            ArrayAccessTree arrTree = (ArrayAccessTree) varTree;
-            AnnotatedTypeMirror arrExprType =
-                    atypeFactory.getAnnotatedType(arrTree.getExpression());
-            AnnotatedArrayType arrType = (AnnotatedArrayType) arrExprType;
-            AnnotationMirror arrTopType = arrType.getAnnotationInHierarchy(atypeFactory.NONDET);
-            AnnotationMirror indexType =
-                    atypeFactory
-                            .getAnnotatedType(arrTree.getIndex())
-                            .getAnnotationInHierarchy(atypeFactory.NONDET);
-            isSubtype(indexType, arrTopType, varTree, INVALID_ARRAY_ASSIGNMENT);
+        AnnotatedTypeMirror expressionType;
+        switch (varTree.getKind()) {
+            case ARRAY_ACCESS:
+                Tree indexTree = ((ArrayAccessTree) varTree).getIndex();
+                expressionType = atypeFactory.getAnnotatedType(indexTree);
+                break;
+            case MEMBER_SELECT:
+            case IDENTIFIER:
+                Element field = TreeUtils.elementFromUse((ExpressionTree) varTree);
+                if (field.getKind() == ElementKind.FIELD && !ElementUtils.isStatic(field)) {
+                    expressionType = atypeFactory.getReceiverType((ExpressionTree) varTree);
+                } else {
+                    expressionType = null;
+                }
+                break;
+            case VARIABLE:
+                Element fieldDecl = TreeUtils.elementFromDeclaration((VariableTree) varTree);
+                if (fieldDecl.getKind() == ElementKind.FIELD && !ElementUtils.isStatic(fieldDecl)) {
+                    expressionType = atypeFactory.getSelfType(varTree);
+                } else {
+                    expressionType = null;
+                }
+                break;
+            default:
+                expressionType = null;
         }
-        super.commonAssignmentCheck(varTree, valueExp, errorKey);
+        if (expressionType != null) {
+            AnnotationMirror NONDET = atypeFactory.NONDET;
+            AnnotationMirror exprAnno = expressionType.getEffectiveAnnotationInHierarchy(NONDET);
+            AnnotatedTypeMirror varType = atypeFactory.getAnnotatedTypeLhs(varTree);
+            AnnotationMirror varAnno = varType.getEffectiveAnnotationInHierarchy(NONDET);
+            if (atypeFactory.getQualifierHierarchy().isSubtype(exprAnno, varAnno)) {
+                super.commonAssignmentCheck(varTree, valueExp, errorKey);
+            } else if (varTree.getKind() == Kind.ARRAY_ACCESS) {
+                checker.report(
+                        Result.failure(INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno), varTree);
+            } else {
+                checker.report(
+                        Result.failure(INVALID_FIELD_ASSIGNMENT, varAnno, exprAnno), varTree);
+            }
+        } else {
+            super.commonAssignmentCheck(varTree, valueExp, errorKey);
+        }
     }
 
     /**
@@ -490,7 +532,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      * @return true if {@code subAnnotation} is a subtype of {@code superAnnotation}, false
      *     otherwise
      */
-    private boolean isSubtype(
+    private boolean isSubtypeError(
             AnnotationMirror subAnnotation,
             AnnotationMirror superAnnotation,
             Tree tree,

@@ -5,6 +5,7 @@ abstract class I437Bar<T> {
     private final T t;
 
     class Norf {
+        @SuppressWarnings("determinism:return.type.incompatible")
         T getT() {
             return t;
         }

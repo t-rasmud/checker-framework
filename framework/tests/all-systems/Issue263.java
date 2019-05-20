@@ -3,6 +3,7 @@
 
 abstract class Outer<T> {
 
+    @SuppressWarnings("determinism")
     public class Inner {
         private T t;
 
