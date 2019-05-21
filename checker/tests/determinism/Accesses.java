@@ -4,6 +4,7 @@ import org.checkerframework.checker.determinism.qual.PolyDet;
 
 public class Accesses {
     public @Det Object field;
+    // :: error: (invalid.polymorphic.qualifier.use)
     public @PolyDet Object polyField;
 
     @Det Object method1(@PolyDet Accesses this) {

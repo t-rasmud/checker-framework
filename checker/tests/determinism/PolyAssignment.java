@@ -4,6 +4,7 @@ import org.checkerframework.checker.determinism.qual.PolyDet;
 
 public class PolyAssignment {
     @NonDet Object ndField;
+    // :: error: (invalid.polymorphic.qualifier.use)
     @PolyDet Object polyField;
     @Det Object detField;
 
