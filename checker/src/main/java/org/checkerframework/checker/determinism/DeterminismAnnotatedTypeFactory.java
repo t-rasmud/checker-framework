@@ -470,7 +470,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /** Replaces the annotation on {@code type} with {@code annotationMirror} */
-    class AnnotationReplacer extends SimpleAnnotatedTypeScanner<Void, AnnotationMirror> {
+    static class AnnotationReplacer extends SimpleAnnotatedTypeScanner<Void, AnnotationMirror> {
         @Override
         protected Void defaultAction(AnnotatedTypeMirror type, AnnotationMirror annotationMirror) {
             type.replaceAnnotation(annotationMirror);
