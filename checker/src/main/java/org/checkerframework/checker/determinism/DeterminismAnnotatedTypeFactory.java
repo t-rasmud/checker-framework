@@ -25,6 +25,7 @@ import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedArrayType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedDeclaredType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedExecutableType;
+import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedWildcardType;
 import org.checkerframework.framework.type.QualifierHierarchy;
 import org.checkerframework.framework.type.poly.QualifierPolymorphism;
 import org.checkerframework.framework.type.treeannotator.ListTreeAnnotator;
@@ -455,27 +456,24 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
      */
     @Override
     public void adaptGetClassReturnTypeToReceiver(
-            final AnnotatedExecutableType getClassType, final AnnotatedTypeMirror receiverType) {
+            AnnotatedExecutableType getClassType, AnnotatedTypeMirror receiverType) {
 
         super.adaptGetClassReturnTypeToReceiver(getClassType, receiverType);
 
-        final AnnotatedDeclaredType returnAdt =
-                (AnnotatedDeclaredType) getClassType.getReturnType();
-        final List<AnnotatedTypeMirror> typeArgs = returnAdt.getTypeArguments();
-        final AnnotatedTypeMirror.AnnotatedWildcardType classWildcardArg =
-                (AnnotatedTypeMirror.AnnotatedWildcardType) typeArgs.get(0);
+        AnnotatedDeclaredType returnAdt = (AnnotatedDeclaredType) getClassType.getReturnType();
+        List<AnnotatedTypeMirror> typeArgs = returnAdt.getTypeArguments();
+        AnnotatedWildcardType classWildcardArg = (AnnotatedWildcardType) typeArgs.get(0);
         if (classWildcardArg.getExtendsBoundField().getKind() == TypeKind.ARRAY) {
-            AnnotatedArrayType extendsBoundArray =
-                    (AnnotatedArrayType) classWildcardArg.getExtendsBoundField();
-            new replaceTypeOnExtendsBoundArray().visitArray(extendsBoundArray, NONDET);
+            AnnotatedTypeMirror extendsBoundArray = classWildcardArg.getExtendsBoundField();
+            new AnnotationReplacer().visit(extendsBoundArray, NONDET);
         }
     }
 
-    class replaceTypeOnExtendsBoundArray
-            extends SimpleAnnotatedTypeScanner<Void, AnnotationMirror> {
+    /** */
+    class AnnotationReplacer extends SimpleAnnotatedTypeScanner<Void, AnnotationMirror> {
         @Override
         protected Void defaultAction(AnnotatedTypeMirror type, AnnotationMirror annotationMirror) {
-            type.replaceAnnotation(NONDET);
+            type.replaceAnnotation(annotationMirror);
             return super.defaultAction(type, annotationMirror);
         }
     }
