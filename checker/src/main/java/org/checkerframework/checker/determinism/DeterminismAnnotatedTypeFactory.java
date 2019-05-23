@@ -25,12 +25,14 @@ import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedArrayType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedDeclaredType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedExecutableType;
+import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedWildcardType;
 import org.checkerframework.framework.type.QualifierHierarchy;
 import org.checkerframework.framework.type.poly.QualifierPolymorphism;
 import org.checkerframework.framework.type.treeannotator.ListTreeAnnotator;
 import org.checkerframework.framework.type.treeannotator.TreeAnnotator;
 import org.checkerframework.framework.type.typeannotator.ListTypeAnnotator;
 import org.checkerframework.framework.type.typeannotator.TypeAnnotator;
+import org.checkerframework.framework.type.visitor.SimpleAnnotatedTypeScanner;
 import org.checkerframework.framework.util.GraphQualifierHierarchy;
 import org.checkerframework.framework.util.MultiGraphQualifierHierarchy;
 import org.checkerframework.javacutil.*;
@@ -479,6 +481,38 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 || isCollection(javaType)
                 || isIterator(javaType)
                 || isMap(javaType));
+    }
+
+    /**
+     * Replaces type of array components in the extends clause as {@code @NonDet}. Without this
+     * replacement, calling {@code getClass()} on an array returns the type {@code Class<? extends
+     * Det Object @NonDet[]>} which is an invalid type.
+     *
+     * @param getClassType type representing a call to Object.getClass
+     * @param receiverType the receiver type of the method invocation
+     */
+    @Override
+    public void adaptGetClassReturnTypeToReceiver(
+            AnnotatedExecutableType getClassType, AnnotatedTypeMirror receiverType) {
+
+        super.adaptGetClassReturnTypeToReceiver(getClassType, receiverType);
+
+        AnnotatedDeclaredType returnAdt = (AnnotatedDeclaredType) getClassType.getReturnType();
+        List<AnnotatedTypeMirror> typeArgs = returnAdt.getTypeArguments();
+        AnnotatedWildcardType classWildcardArg = (AnnotatedWildcardType) typeArgs.get(0);
+        if (classWildcardArg.getExtendsBoundField().getKind() == TypeKind.ARRAY) {
+            AnnotatedTypeMirror extendsBoundArray = classWildcardArg.getExtendsBoundField();
+            new AnnotationReplacer().visit(extendsBoundArray, NONDET);
+        }
+    }
+
+    /** Replaces the annotation on {@code type} with {@code annotationMirror} */
+    static class AnnotationReplacer extends SimpleAnnotatedTypeScanner<Void, AnnotationMirror> {
+        @Override
+        protected Void defaultAction(AnnotatedTypeMirror type, AnnotationMirror annotationMirror) {
+            type.replaceAnnotation(annotationMirror);
+            return super.defaultAction(type, annotationMirror);
+        }
     }
 
     /**
