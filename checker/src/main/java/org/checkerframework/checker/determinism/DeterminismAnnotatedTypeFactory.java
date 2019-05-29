@@ -557,7 +557,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     // First check receiver type. If it is unannotated or @PolyDet, don't check the
                     // rest of the parameters.
                     AnnotatedTypeMirror receiverType = executableType.getReceiverType();
-                    if (receiverType != null) {
+                    if (receiverType != null
+                            && executableType.getElement().getKind() != ElementKind.CONSTRUCTOR) {
                         unannotatedOrPolyDet =
                                 receiverType.getAnnotations().isEmpty()
                                         || receiverType.hasAnnotation(POLYDET);

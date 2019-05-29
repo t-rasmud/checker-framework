@@ -33,6 +33,5 @@ public class AllTestsMultipleUnions {
 
     class MyExceptionB extends Throwable implements Cloneable, MyInterface<String> {}
 
-    // :: error: (super.invocation.invalid)
     class SubMyExceptionA extends MyExceptionA {}
 }
