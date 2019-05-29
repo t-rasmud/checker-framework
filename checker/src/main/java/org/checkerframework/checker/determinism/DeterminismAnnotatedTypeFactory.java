@@ -193,7 +193,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          * <ol>
          *   <li>Return type is a non-collection.
          *   <li>Return type is {@code @PolyDet("up")}
-         *   <li>The invoked method is {@code equals} and the receiver is a {@code Set}.
+         *   <li>The invoked method is {@code equals} and the receiver is a {@code Set} or {@code
+         *       Map}.
          *   <li>The invoked method is {@code System.get}
          *   <li>The invoked method is {@code Map.get}
          * </ol>
@@ -299,7 +300,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 AnnotatedTypeMirror methodInvocationType,
                 AnnotatedTypeMirror receiverType) {
 
-            // Annotates the return type of "equals()" method called on a Set receiver
+            // Annotates the return type of "equals()" method called on a Set or Map receiver
             // as described in the specification of this method.
 
             // Example1: @OrderNonDet Set<@OrderNonDet List<@Det Integer>> s1;
@@ -313,11 +314,19 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
             if (isEqualsMethod(node)) {
                 AnnotatedTypeMirror argument = getAnnotatedType(node.getArguments().get(0));
-                if (isSubClassOf(receiverType, setInterfaceTypeMirror)
-                        && receiverType.hasAnnotation(ORDERNONDET)
+                boolean bothSets =
+                        isSubClassOf(receiverType, setInterfaceTypeMirror)
+                                && isSubClassOf(argument, setInterfaceTypeMirror);
+                boolean bothMaps =
+                        isSubClassOf(receiverType, mapInterfaceTypeMirror)
+                                && isSubClassOf(argument, mapInterfaceTypeMirror);
+                if ((bothSets || bothMaps)
+                        && getQualifierHierarchy()
+                                .isSubtype(
+                                        receiverType.getAnnotationInHierarchy(NONDET), ORDERNONDET)
                         && !hasOrderNonDetListAsTypeArgument(receiverType)
-                        && isSubClassOf(argument, setInterfaceTypeMirror)
-                        && argument.hasAnnotation(ORDERNONDET)
+                        && getQualifierHierarchy()
+                                .isSubtype(argument.getAnnotationInHierarchy(NONDET), ORDERNONDET)
                         && !hasOrderNonDetListAsTypeArgument(argument)) {
                     methodInvocationType.replaceAnnotation(DET);
                 }
