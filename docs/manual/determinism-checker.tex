@@ -397,7 +397,7 @@ deterministic.  If it is be too restrictive for your program:
 
 \sectionAndLabel{Default annotations}{determinism-defaults}
 
-The default annotation for most unannotated types is \<@Det>.
+The default annotation for most unannotated types is \<@PolyDet>.
 
 \subsectionAndLabel{Method signatures}{determinism-method-defaults}
 \begin{itemize}
@@ -410,47 +410,12 @@ The default annotation for most unannotated types is \<@Det>.
   As an exception, the return type of a method with no unannotated or
   \<@PolyDet> formal parameters (including the receiver) defaults to
   \<@Det>.
+\item
+  The default for fields is \<@PolyDet>. Thus, classes with fields will require
+  \<@HasQualifierParameter> by default.
 \end{itemize}
 
 These choices permit all possible arguments to an unannotated method.
-
-\subsectionAndLabel{Constructor signatures}{determinism-constructor-defaults}
-% TODO Is this accurate?
-The default annotation on constructor parameters and return types is also \<@PolyDet>.
-As a result, one can construct Objects whose type
-is dependent on the types of constructor arguments without any explicit
-annotations. This causes the checker
-to report errors in situations where the constructor modifies the fields of its class
-using these arguments. The reason for this is that the fields default to \<@Det>.
-As an illustration, consider the example below:
-
-\begin{Verbatim}
-    public class StringHolder {
-        public String data;
-        public StringHolder(String data) {
-            this.data = data;
-        }
-    }
-\end{Verbatim}
-
-In this example, the checker reports an error ``assignment type incompatible''
-at the line \<this.data = data> because the field \<data> is annotated as
-\<@Det> by default, whereas the constructor argument has \<@PolyDet>
-as its default annotation. In such cases, you could do either of the following:
-\begin{itemize}
-    \item Suppress the warning in the constructor (at line \<this.data = data> in the above example)
-    to allow construction of \<@PolyDet> objects.
-    \item Explicitly annotate the constructor arguments and return types. For example, to allow
-    the construction of only deterministic \<StringHolder> objects, annotate the above code as
-    \begin{Verbatim}
-        public class StringHolder {
-            public String data;
-            public @Det StringHolder(@Det String data) {
-            this.data = data;
-            }
-        }
-    \end{Verbatim}
-\end{itemize}
 
 \subsectionAndLabel{Local array and generic types}{determinism-array-defaults}
 According to the CLIMB to top rule (see Section~\ref{climb-to-top}), the default
@@ -464,9 +429,9 @@ the type of \code{list} would be \code{@NonDet List<@Det String>} and
 \code{arr} would be \code{@Det String @NonDet []}. These types are invalid (see
 Section~\ref{determinism-hash-set}). To prevent this, the Determinism Checker
 adds an extra rule: if the local collection or array is unannotated or
-explicitly annotated with \code{@NonDet}, and the component type is
+explicitly annotated with \code{@NonDet} or \code{@PolyDet}, and the component type is
 unannotated, then then the component type and all unannotated nested component
-types are defaulted to \code{@NonDet}. Otherwise, the explicitly written type or
+types are defaulted to the same type as the outer collection type. Otherwise, the explicitly written type or
 default type \code{@Det} is used. This allows the user to spend less time
 annotating collection types. It also means that existing local collection and
 array declarations are valid by default.
@@ -477,9 +442,11 @@ String @NonDet []}, which are valid types. In the following declarations
 \begin{Verbatim}
     @NonDet List<String> list1;
     @Det List<String> list2;
+    @PolyDet List<String> list3;
 \end{Verbatim}
-the type of \code{list1} is \code{@NonDet List<@NonDet String>} and the type of
-\code{list2} is \code{@Det List<@Det String>}. Notice, in both instances the
+the type of \code{list1} is \code{@NonDet List<@NonDet String>}, the type of
+\code{list2} is \code{@Det List<@Det String>}, and the type of \code{list3} is
+\code{@PolyDet List<@PolyDet String>}. Notice, in both instances the
 default type was the correct choice.
 
 \sectionAndLabel{Implicit annotations}{determinism-implicits}
