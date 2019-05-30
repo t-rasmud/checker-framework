@@ -427,26 +427,26 @@ with \code{@Det} elements. For example, in the following local declarations
 \end{Verbatim}
 the type of \code{list} would be \code{@NonDet List<@Det String>} and
 \code{arr} would be \code{@Det String @NonDet []}. These types are invalid (see
-Section~\ref{determinism-hash-set}). To prevent this, the Determinism Checker
-adds an extra rule: if the local collection or array is unannotated or
-explicitly annotated with \code{@NonDet} or \code{@PolyDet}, and the component type is
-unannotated, then then the component type and all unannotated nested component
-types are defaulted to the same type as the outer collection type. Otherwise, the explicitly written type or
-default type \code{@Det} is used. This allows the user to spend less time
+Section~\ref{determinism-hash-set}). The Determinism Checker instead makes the
+default for local collections \code{@PolyDet}. Also, if a local collection is
+unannotated, or annotated with \code{@PolyDet}, then any unannotated component
+types are defaulted to \code{@PolyDet} as well. Otherwise it gets the regular
+\code{@Det} default. The \code{@PolyDet} default lines up with the default for
+method parameters and returns.
+This allows the user to spend less time
 annotating collection types. It also means that existing local collection and
 array declarations are valid by default.
 
 With the Determinism Checker's Rules, the type of \code{list} above is actually
-\code{@NonDet List<@NonDet String>} and the type of \code{arr} is \code{@NonDet
-String @NonDet []}, which are valid types. In the following declarations
+\code{@PolyDet List<@PolyDet String>} and the type of \code{arr} is \code{@PolyDet
+String @PolyDet []}, which are valid types. In the following declarations
 \begin{Verbatim}
-    @NonDet List<String> list1;
-    @Det List<String> list2;
-    @PolyDet List<String> list3;
+    @Det List<String> list1;
+    @PolyDet List<String> list2;
 \end{Verbatim}
-the type of \code{list1} is \code{@NonDet List<@NonDet String>}, the type of
-\code{list2} is \code{@Det List<@Det String>}, and the type of \code{list3} is
-\code{@PolyDet List<@PolyDet String>}. Notice, in both instances the
+the type of \code{list1} is \code{@Det List<@Det String>}, and the type of
+\code{list2} is \code{@PolyDet List<@PolyDet String>}
+Notice, in both instances the
 default type was the correct choice.
 
 \sectionAndLabel{Implicit annotations}{determinism-implicits}
