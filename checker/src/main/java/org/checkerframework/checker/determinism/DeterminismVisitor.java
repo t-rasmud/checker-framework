@@ -4,6 +4,7 @@ import com.sun.source.tree.*;
 import com.sun.source.tree.Tree.Kind;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -12,6 +13,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeKind;
 import org.checkerframework.checker.compilermsgs.qual.CompilerMessageKey;
+import org.checkerframework.checker.determinism.qual.RequiresDetToString;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeValidator;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
@@ -23,9 +25,7 @@ import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedDeclared
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedPrimitiveType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedTypeVariable;
 import org.checkerframework.framework.util.AnnotatedTypes;
-import org.checkerframework.javacutil.AnnotationUtils;
-import org.checkerframework.javacutil.ElementUtils;
-import org.checkerframework.javacutil.TreeUtils;
+import org.checkerframework.javacutil.*;
 
 /** Visitor for the determinism type-system. */
 public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedTypeFactory> {
@@ -523,6 +523,40 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             }
         }
         return super.visitMethod(node, p);
+    }
+
+    @Override
+    public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
+        Element methodElement = TreeUtils.elementFromTree(node);
+        AnnotationMirror declAnnotation =
+                atypeFactory.getDeclAnnotation(methodElement, RequiresDetToString.class);
+        if (declAnnotation != null) {
+            ExecutableElement stringToString =
+                    TreeUtils.getMethod(
+                            "java.lang.Object", "toString", 0, atypeFactory.getProcessingEnv());
+            List<? extends ExpressionTree> args = node.getArguments();
+            for (ExpressionTree arg : args) {
+                AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+                if (!TypesUtils.isString(argType.getUnderlyingType())
+                        && argType.getKind() == TypeKind.DECLARED) {
+                    Pair<AnnotatedDeclaredType, ExecutableElement> overriddenMethod =
+                            AnnotatedTypes.getOverriddenMethod(
+                                    argType, stringToString, atypeFactory.getProcessingEnv());
+                    if (argType.hasAnnotation(atypeFactory.DET)
+                            && !atypeFactory
+                                    .getAnnotatedType(overriddenMethod.second)
+                                    .getReturnType()
+                                    .hasAnnotation(atypeFactory.DET)) {
+                        checker.report(
+                                Result.failure(
+                                        "nondeterministic.toString", argType.getUnderlyingType()),
+                                node);
+                        break;
+                    }
+                }
+            }
+        }
+        return super.visitMethodInvocation(node, p);
     }
 
     /**
