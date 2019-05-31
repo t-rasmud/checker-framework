@@ -182,8 +182,8 @@ public class PrintStream extends FilterOutputStream
     /**
      * Creates a new print stream, without automatic line flushing, with the
      * specified file name.  This convenience constructor creates
-     * the necessary intermediate {@link OutputStreamWriter
      * the necessary intermediate {@link java.io.OutputStreamWriter
+     * OutputStreamWriter}, which will encode characters using the
      * {@linkplain java.nio.charset.Charset#defaultCharset() default charset}
      * for this instance of the Java virtual machine.
      *
@@ -213,7 +213,7 @@ public class PrintStream extends FilterOutputStream
     /**
      * Creates a new print stream, without automatic line flushing, with the
      * specified file name and charset.  This convenience constructor creates
-     * the necessary intermediate {@link OutputStreamWriter
+     * the necessary intermediate {@link java.io.OutputStreamWriter
      * OutputStreamWriter}, which will encode characters using the provided
      * charset.
      *
@@ -331,7 +331,7 @@ public class PrintStream extends FilterOutputStream
      * Flushes the stream.  This is done by writing any buffered output bytes to
      * the underlying output stream and then flushing that stream.
      *
-     *  @see        java.io.OutputStream#close()
+     * @see        java.io.OutputStream#flush()
      */
     public void flush() {
         synchronized (this) {
@@ -351,7 +351,7 @@ public class PrintStream extends FilterOutputStream
      * Closes the stream.  This is done by flushing the stream and then closing
      * the underlying output stream.
      *
-     * @see        OutputStream#close()
+     * @see        java.io.OutputStream#close()
      */
     public void close() {
         synchronized (this) {
