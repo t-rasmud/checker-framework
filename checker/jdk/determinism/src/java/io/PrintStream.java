@@ -389,7 +389,7 @@ public class PrintStream extends FilterOutputStream
      *         <code>InterruptedIOException</code>, or the
      *         <code>setError</code> method has been invoked
      */
-    public boolean checkError(@PolyDet PrintStream this) {
+    public @PolyDet boolean checkError(@PolyDet PrintStream this) {
         if (out != null)
             flush();
         if (out instanceof java.io.PrintStream) {
