@@ -408,7 +408,7 @@ public class PrintStream extends FilterOutputStream
      *
      * @since JDK1.1
      */
-    protected void setError() {
+    protected void setError(@PolyDet PrintStream this) {
         trouble = true;
     }
 
@@ -421,7 +421,7 @@ public class PrintStream extends FilterOutputStream
      *
      * @since 1.6
      */
-    protected void clearError() {
+    protected void clearError(@PolyDet PrintStream this) {
         trouble = false;
     }
 
