@@ -530,9 +530,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
 
     /**
      * If the declaration of {@code node} is annotated with {@code @RequiresDetToString}, checks
-     * that the declared type of every argument of {@code node} corresponding to a parameter of type
-     * {@code Object} overrides {@code toString} returning a {@code @Det String} and reports an
-     * error otherwise.
+     * that the declared type of every {@code Det} argument of {@code node} corresponding to a
+     * parameter of type {@code Object} overrides {@code toString} returning a {@code @Det String}
+     * and reports an error otherwise.
      */
     @Override
     public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
