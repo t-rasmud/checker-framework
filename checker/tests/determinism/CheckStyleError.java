@@ -41,7 +41,7 @@ public class CheckStyleError {
             method.invoke(obj, "", "", "hello", null);
 
         } catch (InvocationTargetException ex) {
-            // :: error: (nondeterministic.toString)
+            // :: error: (nondeterministic.tostring)
             System.out.println(ex.getCause());
         }
     }

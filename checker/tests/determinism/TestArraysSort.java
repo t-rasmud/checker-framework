@@ -14,25 +14,25 @@ public class TestArraysSort {
     }
 
     void testSort2(@Det Integer @OrderNonDet [] a) {
-        // :: error: (argument.type.incompatible) :: error: (nondeterministic.toString)
+        // :: error: (argument.type.incompatible) :: error: (nondeterministic.tostring)
         System.out.println(a[0]);
         @Det IntComparator c = new @Det IntComparator();
         Arrays.sort(a);
         Arrays.sort(a, c);
-        // :: error: (nondeterministic.toString)
+        // :: error: (nondeterministic.tostring)
         System.out.println(a[0]);
     }
 
     void testSort3(@Det Integer @OrderNonDet [] a, @Det Comparator<Integer> c) {
         Arrays.sort(a, c);
-        // :: error: (nondeterministic.toString)
+        // :: error: (nondeterministic.tostring)
         System.out.println(a[0]);
     }
 
     void testSort4(@Det Integer @OrderNonDet [] a, @NonDet Comparator<Integer> c) {
         // :: error: (argument.type.incompatible)
         Arrays.sort(a, c);
-        // :: error: (argument.type.incompatible) :: error: (nondeterministic.toString)
+        // :: error: (argument.type.incompatible) :: error: (nondeterministic.tostring)
         System.out.println(a[0]);
     }
 

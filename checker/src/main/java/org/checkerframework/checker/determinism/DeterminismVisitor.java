@@ -555,7 +555,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                                 .hasAnnotation(atypeFactory.DET)) {
                             checker.report(
                                     Result.failure(
-                                            "nondeterministic.toString",
+                                            "nondeterministic.tostring",
                                             argType.getUnderlyingType()),
                                     node);
                             break;

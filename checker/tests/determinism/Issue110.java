@@ -7,7 +7,7 @@ public class Issue110 {
     }
 
     public static void g(@Det Object s) {
-        // :: error: (nondeterministic.toString)
+        // :: error: (nondeterministic.tostring)
         System.out.printf("%s", s);
     }
 
@@ -19,7 +19,7 @@ public class Issue110 {
     }
 
     public static void testDetPrintln(@Det Issue110 obj2) {
-        // :: error: (nondeterministic.toString)
+        // :: error: (nondeterministic.tostring)
         System.out.println(obj2);
     }
 }
@@ -33,10 +33,54 @@ class Sub extends Issue110 {
     void testExtendsToString(@Det Sub obj3) {
         System.out.println(obj3);
     }
+
+    void testExtendsToStringNull() {
+        System.out.println((String) null);
+    }
+}
+
+class SubSub extends Sub {
+    void testExtendsToString(@Det Sub obj8) {
+        System.out.println(obj8);
+    }
 }
 
 class Sub1 extends Sub {
     void testExtendsToString(@Det Sub obj4) {
         System.out.println(obj4);
+    }
+}
+
+class SubND extends Issue110 {
+    @Override
+    public @NonDet String toString() {
+        return super.toString();
+    }
+
+    void testExtendsToString(@Det Sub obj4) {
+        System.out.println(obj4);
+    }
+}
+
+class SubSubND extends SubND {
+    void testExtendsToString(@Det Sub obj6) {
+        System.out.println(obj6);
+    }
+}
+
+class SubPoly extends Issue110 {
+    @Override
+    public @PolyDet String toString() {
+        return new @PolyDet String();
+    }
+
+    void testExtendsToString(@Det Sub obj5) {
+        System.out.println(obj5);
+    }
+}
+
+class SubSubPoly extends SubPoly {
+    void testExtendsToString(@Det Sub obj7) {
+        System.out.println(obj7);
     }
 }
