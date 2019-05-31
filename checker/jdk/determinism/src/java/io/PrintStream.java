@@ -31,6 +31,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
 
+import org.checkerframework.checker.determinism.qual.*;
+
 /**
  * A <code>PrintStream</code> adds functionality to another output stream,
  * namely the ability to print representations of various data values
@@ -129,7 +131,7 @@ public class PrintStream extends FilterOutputStream
      * @param  out        The output stream to which values and objects will be
      *                    printed
      *
-     * @see PrintWriter#PrintWriter(OutputStream)
+     * @see java.io.PrintWriter#PrintWriter(java.io.OutputStream)
      */
     public PrintStream(OutputStream out) {
         this(out, false);
@@ -145,7 +147,7 @@ public class PrintStream extends FilterOutputStream
      *                    <code>println</code> methods is invoked, or a newline
      *                    character or byte (<code>'\n'</code>) is written
      *
-     * @see PrintWriter#PrintWriter(OutputStream, boolean)
+     * @see java.io.PrintWriter#PrintWriter(java.io.OutputStream, boolean)
      */
     public PrintStream(OutputStream out, boolean autoFlush) {
         this(autoFlush, requireNonNull(out, "Null output stream"));
@@ -181,8 +183,8 @@ public class PrintStream extends FilterOutputStream
      * Creates a new print stream, without automatic line flushing, with the
      * specified file name.  This convenience constructor creates
      * the necessary intermediate {@link OutputStreamWriter
-     * OutputStreamWriter}, which will encode characters using the
-     * {@linkplain Charset#defaultCharset() default charset}
+     * the necessary intermediate {@link java.io.OutputStreamWriter
+     * {@linkplain java.nio.charset.Charset#defaultCharset() default charset}
      * for this instance of the Java virtual machine.
      *
      * @param  fileName
@@ -222,7 +224,7 @@ public class PrintStream extends FilterOutputStream
      *         will be written to the file and is buffered.
      *
      * @param  csn
-     *         The name of a supported {@linkplain Charset
+     *         The name of a supported {@linkplain java.nio.charset.Charset
      *         charset}
      *
      * @throws  FileNotFoundException
@@ -251,9 +253,9 @@ public class PrintStream extends FilterOutputStream
     /**
      * Creates a new print stream, without automatic line flushing, with the
      * specified file.  This convenience constructor creates the necessary
-     * intermediate {@link OutputStreamWriter OutputStreamWriter},
+     * intermediate {@link java.io.OutputStreamWriter OutputStreamWriter},
      * which will encode characters using the {@linkplain
-     * Charset#defaultCharset() default charset} for this
+     * java.nio.charset.Charset#defaultCharset() default charset} for this
      * instance of the Java virtual machine.
      *
      * @param  file
@@ -282,7 +284,7 @@ public class PrintStream extends FilterOutputStream
     /**
      * Creates a new print stream, without automatic line flushing, with the
      * specified file and charset.  This convenience constructor creates
-     * the necessary intermediate {@link OutputStreamWriter
+     * the necessary intermediate {@link java.io.OutputStreamWriter
      * OutputStreamWriter}, which will encode characters using the provided
      * charset.
      *
@@ -293,7 +295,7 @@ public class PrintStream extends FilterOutputStream
      *         file and is buffered.
      *
      * @param  csn
-     *         The name of a supported {@linkplain Charset
+     *         The name of a supported {@linkplain java.nio.charset.Charset
      *         charset}
      *
      * @throws  FileNotFoundException
@@ -329,7 +331,7 @@ public class PrintStream extends FilterOutputStream
      * Flushes the stream.  This is done by writing any buffered output bytes to
      * the underlying output stream and then flushing that stream.
      *
-     * @see        OutputStream#flush()
+     *  @see        java.io.OutputStream#close()
      */
     public void flush() {
         synchronized (this) {
@@ -390,7 +392,7 @@ public class PrintStream extends FilterOutputStream
     public boolean checkError() {
         if (out != null)
             flush();
-        if (out instanceof PrintStream) {
+        if (out instanceof java.io.PrintStream) {
             PrintStream ps = (PrintStream) out;
             return ps.checkError();
         }
@@ -560,7 +562,7 @@ public class PrintStream extends FilterOutputStream
 
     /**
      * Prints a boolean value.  The string produced by <code>{@link
-     * String#valueOf(boolean)}</code> is translated into bytes
+     * java.lang.String#valueOf(boolean)}</code> is translated into bytes
      * according to the platform's default character encoding, and these bytes
      * are written in exactly the manner of the
      * <code>{@link #write(int)}</code> method.
@@ -585,13 +587,13 @@ public class PrintStream extends FilterOutputStream
 
     /**
      * Prints an integer.  The string produced by <code>{@link
-     * String#valueOf(int)}</code> is translated into bytes
+     * java.lang.String#valueOf(int)}</code> is translated into bytes
      * according to the platform's default character encoding, and these bytes
      * are written in exactly the manner of the
      * <code>{@link #write(int)}</code> method.
      *
      * @param      i   The <code>int</code> to be printed
-     * @see        Integer#toString(int)
+     * @see        java.lang.Integer#toString(int)
      */
     public void print(int i) {
         write(String.valueOf(i));
@@ -599,13 +601,13 @@ public class PrintStream extends FilterOutputStream
 
     /**
      * Prints a long integer.  The string produced by <code>{@link
-     * String#valueOf(long)}</code> is translated into bytes
+     * java.lang.String#valueOf(long)}</code> is translated into bytes
      * according to the platform's default character encoding, and these bytes
      * are written in exactly the manner of the
      * <code>{@link #write(int)}</code> method.
      *
      * @param      l   The <code>long</code> to be printed
-     * @see        Long#toString(long)
+     * @see        java.lang.Long#toString(long)
      */
     public void print(long l) {
         write(String.valueOf(l));
@@ -613,13 +615,13 @@ public class PrintStream extends FilterOutputStream
 
     /**
      * Prints a floating-point number.  The string produced by <code>{@link
-     * String#valueOf(float)}</code> is translated into bytes
+     * java.lang.String#valueOf(float)}</code> is translated into bytes
      * according to the platform's default character encoding, and these bytes
      * are written in exactly the manner of the
      * <code>{@link #write(int)}</code> method.
      *
      * @param      f   The <code>float</code> to be printed
-     * @see        Float#toString(float)
+     * @see        java.lang.Float#toString(float)
      */
     public void print(float f) {
         write(String.valueOf(f));
@@ -627,13 +629,13 @@ public class PrintStream extends FilterOutputStream
 
     /**
      * Prints a double-precision floating-point number.  The string produced by
-     * <code>{@link String#valueOf(double)}</code> is translated into
+     * <code>{@link java.lang.String#valueOf(double)}</code> is translated into
      * bytes according to the platform's default character encoding, and these
      * bytes are written in exactly the manner of the <code>{@link
      * #write(int)}</code> method.
      *
      * @param      d   The <code>double</code> to be printed
-     * @see        Double#toString(double)
+     * @see        java.lang.Double#toString(double)
      */
     public void print(double d) {
         write(String.valueOf(d));
@@ -671,13 +673,13 @@ public class PrintStream extends FilterOutputStream
 
     /**
      * Prints an object.  The string produced by the <code>{@link
-     * String#valueOf(Object)}</code> method is translated into bytes
+     * java.lang.String#valueOf(Object)}</code> method is translated into bytes
      * according to the platform's default character encoding, and these bytes
      * are written in exactly the manner of the
      * <code>{@link #write(int)}</code> method.
      *
      * @param      obj   The <code>Object</code> to be printed
-     * @see        Object#toString()
+     * @see        java.lang.Object#toString()
      */
     public void print(Object obj) {
         write(String.valueOf(obj));
@@ -703,7 +705,7 @@ public class PrintStream extends FilterOutputStream
      *
      * @param x  The <code>boolean</code> to be printed
      */
-    public void println(boolean x) {
+    public void println(@Det boolean x) {
         synchronized (this) {
             print(x);
             newLine();
@@ -717,7 +719,7 @@ public class PrintStream extends FilterOutputStream
      *
      * @param x  The <code>char</code> to be printed.
      */
-    public void println(char x) {
+    public void println(@Det char x) {
         synchronized (this) {
             print(x);
             newLine();
@@ -731,7 +733,7 @@ public class PrintStream extends FilterOutputStream
      *
      * @param x  The <code>int</code> to be printed.
      */
-    public void println(int x) {
+    public void println(@Det int x) {
         synchronized (this) {
             print(x);
             newLine();
@@ -745,7 +747,7 @@ public class PrintStream extends FilterOutputStream
      *
      * @param x  a The <code>long</code> to be printed.
      */
-    public void println(long x) {
+    public void println(@Det long x) {
         synchronized (this) {
             print(x);
             newLine();
@@ -759,7 +761,7 @@ public class PrintStream extends FilterOutputStream
      *
      * @param x  The <code>float</code> to be printed.
      */
-    public void println(float x) {
+    public void println(@Det float x) {
         synchronized (this) {
             print(x);
             newLine();
@@ -773,7 +775,7 @@ public class PrintStream extends FilterOutputStream
      *
      * @param x  The <code>double</code> to be printed.
      */
-    public void println(double x) {
+    public void println(@Det double x) {
         synchronized (this) {
             print(x);
             newLine();
@@ -787,7 +789,7 @@ public class PrintStream extends FilterOutputStream
      *
      * @param x  an array of chars to print.
      */
-    public void println(char x[]) {
+    public void println(@Det char x[]) {
         synchronized (this) {
             print(x);
             newLine();
@@ -801,7 +803,7 @@ public class PrintStream extends FilterOutputStream
      *
      * @param x  The <code>String</code> to be printed.
      */
-    public void println(String x) {
+    public void println(@Det String x) {
         synchronized (this) {
             print(x);
             newLine();
@@ -817,7 +819,7 @@ public class PrintStream extends FilterOutputStream
      *
      * @param x  The <code>Object</code> to be printed.
      */
-    public void println(Object x) {
+    public void println(@Det Object x) {
         String s = String.valueOf(x);
         synchronized (this) {
             print(s);
@@ -882,7 +884,7 @@ public class PrintStream extends FilterOutputStream
      *     out.format(l, format, args) </pre>
      *
      * @param  l
-     *         The {@linkplain Locale locale} to apply during
+     *         The {@linkplain java.util.Locale locale} to apply during
      *         formatting.  If <tt>l</tt> is <tt>null</tt> then no localization
      *         is applied.
      *
@@ -926,7 +928,7 @@ public class PrintStream extends FilterOutputStream
      * format string and arguments.
      *
      * <p> The locale always used is the one returned by {@link
-     * Locale#getDefault() Locale.getDefault()}, regardless of any
+     * java.util.Locale#getDefault() Locale.getDefault()}, regardless of any
      * previous invocations of other formatting methods on this object.
      *
      * @param  format
@@ -982,7 +984,7 @@ public class PrintStream extends FilterOutputStream
      * format string and arguments.
      *
      * @param  l
-     *         The {@linkplain Locale locale} to apply during
+     *         The {@linkplain java.util.Locale locale} to apply during
      *         formatting.  If <tt>l</tt> is <tt>null</tt> then no localization
      *         is applied.
      *
