@@ -74,6 +74,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     /** Error message for expressions of the form "new @Det HashSet" */
     public static final @CompilerMessageKey String INVALID_COLLECTION_CONSTRUCTOR_INVOCATION =
             "invalid.collection.constructor.invocation";
+
+    private final ExecutableElement stringToString =
+            TreeUtils.getMethod("java.lang.Object", "toString", 0, atypeFactory.getProcessingEnv());
     /**
      * The lower bound for exception parameters is {@code @Det}.
      *
@@ -537,27 +540,26 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         AnnotationMirror declAnnotation =
                 atypeFactory.getDeclAnnotation(methodElement, RequiresDetToString.class);
         if (declAnnotation != null) {
-            ExecutableElement stringToString =
-                    TreeUtils.getMethod(
-                            "java.lang.Object", "toString", 0, atypeFactory.getProcessingEnv());
             List<? extends ExpressionTree> args = node.getArguments();
             for (ExpressionTree arg : args) {
                 AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
                 if (!TypesUtils.isString(argType.getUnderlyingType())
                         && argType.getKind() == TypeKind.DECLARED) {
-                    Pair<AnnotatedDeclaredType, ExecutableElement> overriddenMethod =
-                            AnnotatedTypes.getOverriddenMethod(
-                                    argType, stringToString, atypeFactory.getProcessingEnv());
-                    if (argType.hasAnnotation(atypeFactory.DET)
-                            && !atypeFactory
-                                    .getAnnotatedType(overriddenMethod.second)
-                                    .getReturnType()
-                                    .hasAnnotation(atypeFactory.DET)) {
-                        checker.report(
-                                Result.failure(
-                                        "nondeterministic.toString", argType.getUnderlyingType()),
-                                node);
-                        break;
+                    if (argType.hasAnnotation(atypeFactory.DET)) {
+                        Pair<AnnotatedDeclaredType, ExecutableElement> overriddenMethod =
+                                AnnotatedTypes.getOverriddenMethod(
+                                        argType, stringToString, atypeFactory.getProcessingEnv());
+                        if (!atypeFactory
+                                .getAnnotatedType(overriddenMethod.second)
+                                .getReturnType()
+                                .hasAnnotation(atypeFactory.DET)) {
+                            checker.report(
+                                    Result.failure(
+                                            "nondeterministic.toString",
+                                            argType.getUnderlyingType()),
+                                    node);
+                            break;
+                        }
                     }
                 }
             }
