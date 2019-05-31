@@ -2,7 +2,12 @@ public class PrintArray {
     // the I18n checker correctly issues an error and Nullness org.checkerframework.checker
     // correctly issue a warning below, but we would like to keep this
     // test in all-systems.
-    @SuppressWarnings({"I18n", "nullness:known.nonnull", "determinism:invalid.type.on.conditional"})
+    @SuppressWarnings({
+        "I18n",
+        "nullness:known.nonnull",
+        "determinism:invalid.type.on.conditional",
+        "determinism:method.invocation.invalid"
+    })
     public static final void print(java.io.PrintStream ps, Object[][] a) {
         if (a == null) {
             ps.println("null");

@@ -6,11 +6,13 @@ import org.checkerframework.checker.determinism.qual.*;
 class TestLinkedHashSet {
     void testEmptyConstructor() {
         @Det LinkedHashSet<String> s = new LinkedHashSet<>();
+        // :: error: (nondeterministic.toString)
         System.out.println(s);
     }
 
     void testCollectionConstructor(@Det List<String> list) {
         @Det LinkedHashSet<String> s = new LinkedHashSet<>(list);
+        // :: error: (nondeterministic.toString)
         System.out.println(s);
     }
 

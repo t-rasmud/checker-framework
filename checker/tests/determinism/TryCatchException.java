@@ -5,6 +5,7 @@ public class TryCatchException {
         try {
             throw new Throwable();
         } catch (RuntimeException ex) {
+            // :: error: (nondeterministic.toString)
             System.out.println(ex);
         } catch (Throwable e) {
             e.printStackTrace();
