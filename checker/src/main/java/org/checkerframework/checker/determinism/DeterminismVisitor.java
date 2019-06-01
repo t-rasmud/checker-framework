@@ -536,7 +536,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      */
     @Override
     public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
-        Element methodElement = TreeUtils.elementFromTree(node);
+        ExecutableElement methodElement = TreeUtils.elementFromUse(node);
         AnnotationMirror declAnnotation =
                 atypeFactory.getDeclAnnotation(methodElement, RequiresDetToString.class);
         if (declAnnotation != null) {
