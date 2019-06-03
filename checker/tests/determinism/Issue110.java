@@ -11,6 +11,11 @@ public class Issue110 {
         System.out.printf("%s", s);
     }
 
+    public static void h(@Det Object s, @Det Object t) {
+        // :: error: (nondeterministic.tostring)
+        System.out.printf("%s, %s", s, t);
+    }
+
     public static void testPrintln(Object obj, Issue110 obj1) {
         // :: error: (argument.type.incompatible)
         System.out.println(obj);
