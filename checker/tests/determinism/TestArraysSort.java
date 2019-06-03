@@ -55,11 +55,13 @@ public class TestArraysSort {
 
     <T> void testSort8(@Det T @OrderNonDet [] a) {
         Arrays.sort(a);
+        // :: error: (nondeterministic.tostring)
         System.out.println(a);
     }
 
     <T extends @Det Object> void testSort9(T @OrderNonDet [] a) {
         Arrays.sort(a);
+        // :: error: (nondeterministic.tostring)
         System.out.println(a);
     }
 }

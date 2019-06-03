@@ -22,6 +22,11 @@ public class Issue110 {
         // :: error: (nondeterministic.tostring)
         System.out.println(obj2);
     }
+
+    public static void testString(@Det String @Det [] str) {
+        // :: error: (nondeterministic.tostring)
+        System.out.println(str);
+    }
 }
 
 class Sub extends Issue110 {
