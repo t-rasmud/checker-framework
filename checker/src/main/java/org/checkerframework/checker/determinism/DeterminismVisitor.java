@@ -4,14 +4,14 @@ import com.sun.source.tree.*;
 import com.sun.source.tree.Tree.Kind;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
+import javax.lang.model.element.*;
+import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.compilermsgs.qual.CompilerMessageKey;
+import org.checkerframework.checker.determinism.qual.RequiresDetToString;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeValidator;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
@@ -23,9 +23,7 @@ import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedDeclared
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedPrimitiveType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedTypeVariable;
 import org.checkerframework.framework.util.AnnotatedTypes;
-import org.checkerframework.javacutil.AnnotationUtils;
-import org.checkerframework.javacutil.ElementUtils;
-import org.checkerframework.javacutil.TreeUtils;
+import org.checkerframework.javacutil.*;
 
 /** Visitor for the determinism type-system. */
 public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedTypeFactory> {
@@ -74,6 +72,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     /** Error message for expressions of the form "new @Det HashSet" */
     public static final @CompilerMessageKey String INVALID_COLLECTION_CONSTRUCTOR_INVOCATION =
             "invalid.collection.constructor.invocation";
+
+    private final ExecutableElement stringToString =
+            TreeUtils.getMethod("java.lang.Object", "toString", 0, atypeFactory.getProcessingEnv());
     /**
      * The lower bound for exception parameters is {@code @Det}.
      *
@@ -523,6 +524,62 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             }
         }
         return super.visitMethod(node, p);
+    }
+
+    /**
+     * If the declaration of {@code node} is annotated with {@code @RequiresDetToString}, checks
+     * that the declared type of every {@code Det} argument of {@code node} corresponding to a
+     * parameter of type {@code Object} (or {@code Object[]}) overrides {@code toString} returning a
+     * {@code @Det String} or {@code @PolyDet}. Otherwise issues an error.
+     */
+    @Override
+    public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
+        ExecutableElement methodElement = TreeUtils.elementFromUse(node);
+        AnnotationMirror declAnnotation =
+                atypeFactory.getDeclAnnotation(methodElement, RequiresDetToString.class);
+        if (declAnnotation == null) {
+            return super.visitMethodInvocation(node, p);
+        }
+
+        List<? extends VariableElement> params = methodElement.getParameters();
+        List<? extends ExpressionTree> args = node.getArguments();
+
+        for (int index = 0; index < args.size(); index++) {
+            ExpressionTree arg = args.get(index);
+            VariableElement param = params.get(index);
+
+            boolean isParamObjectArray = false;
+            TypeMirror paramType = param.asType();
+            if (paramType.getKind() == TypeKind.ARRAY) {
+                TypeMirror compType = ((ArrayType) paramType).getComponentType();
+                isParamObjectArray = TypesUtils.isObject(compType);
+            }
+            if (!TypesUtils.isObject(paramType) && !isParamObjectArray) {
+                continue;
+            }
+
+            AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+            if (argType.hasAnnotation(atypeFactory.DET)) {
+                Pair<AnnotatedDeclaredType, ExecutableElement> overriddenMethod =
+                        AnnotatedTypes.getOverriddenMethod(
+                                argType, stringToString, atypeFactory.getProcessingEnv());
+                if (!atypeFactory
+                                .getAnnotatedType(overriddenMethod.second)
+                                .getReturnType()
+                                .hasAnnotation(atypeFactory.DET)
+                        && !atypeFactory
+                                .getAnnotatedType(overriddenMethod.second)
+                                .getReturnType()
+                                .hasAnnotation(atypeFactory.POLYDET)) {
+                    checker.report(
+                            Result.failure(
+                                    "nondeterministic.tostring", argType.getUnderlyingType()),
+                            node);
+                    break;
+                }
+            }
+        }
+        return super.visitMethodInvocation(node, p);
     }
 
     /**
