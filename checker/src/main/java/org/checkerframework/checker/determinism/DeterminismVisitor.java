@@ -529,50 +529,53 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     /**
      * If the declaration of {@code node} is annotated with {@code @RequiresDetToString}, checks
      * that the declared type of every {@code Det} argument of {@code node} corresponding to a
-     * parameter of type {@code Object} overrides {@code toString} returning a {@code @Det String}
-     * and reports an error otherwise.
+     * parameter of type {@code Object} (or {@code Object[]}) overrides {@code toString} returning a
+     * {@code @Det String} or {@code @PolyDet} and reports an error otherwise.
      */
     @Override
     public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
         ExecutableElement methodElement = TreeUtils.elementFromUse(node);
         AnnotationMirror declAnnotation =
                 atypeFactory.getDeclAnnotation(methodElement, RequiresDetToString.class);
-        if (declAnnotation != null) {
-            List<? extends VariableElement> params = methodElement.getParameters();
-            List<? extends ExpressionTree> args = node.getArguments();
+        if (declAnnotation == null) {
+            return super.visitMethodInvocation(node, p);
+        }
 
-            for (int index = 0; index < args.size(); index++) {
-                ExpressionTree arg = args.get(index);
-                VariableElement param = params.get(index);
+        List<? extends VariableElement> params = methodElement.getParameters();
+        List<? extends ExpressionTree> args = node.getArguments();
 
-                boolean isParamObjectArray = false;
-                TypeMirror paramType = param.asType();
-                if (paramType.getKind() == TypeKind.ARRAY) {
-                    TypeMirror compType = ((ArrayType) paramType).getComponentType();
-                    isParamObjectArray = TypesUtils.isObject(compType);
-                }
-                if (TypesUtils.isObject(paramType) || isParamObjectArray) {
-                    AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
-                    if (argType.hasAnnotation(atypeFactory.DET)) {
-                        Pair<AnnotatedDeclaredType, ExecutableElement> overriddenMethod =
-                                AnnotatedTypes.getOverriddenMethod(
-                                        argType, stringToString, atypeFactory.getProcessingEnv());
-                        if (!atypeFactory
-                                        .getAnnotatedType(overriddenMethod.second)
-                                        .getReturnType()
-                                        .hasAnnotation(atypeFactory.DET)
-                                && !atypeFactory
-                                        .getAnnotatedType(overriddenMethod.second)
-                                        .getReturnType()
-                                        .hasAnnotation(atypeFactory.POLYDET)) {
-                            checker.report(
-                                    Result.failure(
-                                            "nondeterministic.tostring",
-                                            argType.getUnderlyingType()),
-                                    node);
-                            break;
-                        }
-                    }
+        for (int index = 0; index < args.size(); index++) {
+            ExpressionTree arg = args.get(index);
+            VariableElement param = params.get(index);
+
+            boolean isParamObjectArray = false;
+            TypeMirror paramType = param.asType();
+            if (paramType.getKind() == TypeKind.ARRAY) {
+                TypeMirror compType = ((ArrayType) paramType).getComponentType();
+                isParamObjectArray = TypesUtils.isObject(compType);
+            }
+            if (!TypesUtils.isObject(paramType) && !isParamObjectArray) {
+                continue;
+            }
+
+            AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+            if (argType.hasAnnotation(atypeFactory.DET)) {
+                Pair<AnnotatedDeclaredType, ExecutableElement> overriddenMethod =
+                        AnnotatedTypes.getOverriddenMethod(
+                                argType, stringToString, atypeFactory.getProcessingEnv());
+                if (!atypeFactory
+                                .getAnnotatedType(overriddenMethod.second)
+                                .getReturnType()
+                                .hasAnnotation(atypeFactory.DET)
+                        && !atypeFactory
+                                .getAnnotatedType(overriddenMethod.second)
+                                .getReturnType()
+                                .hasAnnotation(atypeFactory.POLYDET)) {
+                    checker.report(
+                            Result.failure(
+                                    "nondeterministic.tostring", argType.getUnderlyingType()),
+                            node);
+                    break;
                 }
             }
         }
