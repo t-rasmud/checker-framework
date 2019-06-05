@@ -13,10 +13,12 @@ import org.checkerframework.framework.type.typeannotator.PropagationTypeAnnotato
 import org.checkerframework.framework.type.typeannotator.TypeAnnotator;
 import org.checkerframework.javacutil.TreeUtils;
 
+/** {@link org.checkerframework.framework.type.AnnotatedTypeFactory} for the Tainting Checker. */
 public class TaintingAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     //    private final AnnotationMirror UNTAINTED =
     //            AnnotationBuilder.fromClass(elements, Untainted.class);
 
+    /** Creates a tainting annotated type factory. */
     public TaintingAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker);
         postInit();
