@@ -664,7 +664,6 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         if (atypeFactory.isTreeSet(constructorResultType)
                 || atypeFactory.isTreeMap(constructorResultType)) {
             if (AnnotationUtils.areSame(explicitAnno, atypeFactory.ORDERNONDET)
-                    || AnnotationUtils.areSameByName(explicitAnno, atypeFactory.POLYDET)
                     || AnnotationUtils.areSameByName(
                             constructorResultType.getAnnotationInHierarchy(atypeFactory.NONDET),
                             atypeFactory.POLYDET)) {

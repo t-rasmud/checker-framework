@@ -157,7 +157,7 @@ public class TreeSet<E> extends AbstractSet<E>
      *         not {@link Comparable}, or are not mutually comparable
      * @throws NullPointerException if the specified collection is null
      */
-    public @PolyDet TreeSet(@PolyDet Collection<? extends E> c) {
+    public @PolyDet("upDet") TreeSet(@PolyDet Collection<? extends E> c) {
         this();
         addAll(c);
     }
@@ -169,7 +169,7 @@ public class TreeSet<E> extends AbstractSet<E>
      * @param s sorted set whose elements will comprise the new set
      * @throws NullPointerException if the specified sorted set is null
      */
-    public @PolyDet TreeSet(@PolyDet SortedSet<E> s) {
+    public @PolyDet("upDet") TreeSet(@PolyDet SortedSet<E> s) {
         this(s.comparator());
         addAll(s);
     }
