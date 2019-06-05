@@ -61,7 +61,10 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
             type.replaceAnnotations(quals);
         } else if (type.hasAnnotation(factory.POLYDET_USE)) {
             AnnotationMirrorSet quals = replacements.get(factory.POLYDET);
-            if (!quals.contains(factory.POLYDET)) {
+            if (!quals.contains(factory.POLYDET)
+                    && !quals.contains(factory.POLYDET_UP)
+                    && !quals.contains(factory.POLYDET_DOWN)
+                    && !quals.contains(factory.POLYDET_UPDET)) {
                 type.replaceAnnotations(quals);
             }
         } else if (type.hasAnnotation(factory.POLYDET_UP)) {
