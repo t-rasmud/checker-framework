@@ -3,7 +3,6 @@ package org.checkerframework.checker.determinism;
 import java.util.Map;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.type.TypeKind;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedArrayType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedDeclaredType;
@@ -117,10 +116,7 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
     private void replaceForPolyWithModifier(
             AnnotatedTypeMirror type, AnnotationMirror replaceType) {
         type.replaceAnnotation(replaceType);
-        if (!(factory.isCollection(type)
-                || factory.isMap(type)
-                || factory.isIterator(type)
-                || type.getKind() == TypeKind.ARRAY)) {
+        if (!factory.isCollectionType(type)) {
             return;
         }
         new CollectionReplacer().visit(type, replaceType);
@@ -156,10 +152,7 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
     class CollectionReplacer extends AnnotatedTypeScanner<Void, AnnotationMirror> {
         @Override
         public Void visitDeclared(AnnotatedDeclaredType type, AnnotationMirror annotationMirror) {
-            if (!(factory.isCollection(type)
-                    || factory.isMap(type)
-                    || factory.isIterator(type)
-                    || type.getKind() == TypeKind.ARRAY)) {
+            if (!factory.isCollectionType(type)) {
                 // Don't look further.
                 return null;
             }
