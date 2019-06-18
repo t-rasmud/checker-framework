@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Target;
 import java.net.URL;
 import java.util.ArrayList;
@@ -3308,6 +3309,8 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
             if (elt.getKind() == ElementKind.METHOD) {
                 // Retrieve the annotations from the overridden method's element.
                 inheritOverriddenDeclAnnos((ExecutableElement) elt, results);
+            } else if (ElementUtils.isTypeDeclaration(elt)) {
+                inheritOverriddenDeclAnnosFromTypeDecl(elt.asType(), results);
             }
 
             // Add the element and its annotations to the cache.
@@ -3315,6 +3318,43 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         }
 
         return results;
+    }
+
+    /**
+     * Adds into {@code results} the declaration annotations found in all elements of the super
+     * types of {@code typeMirror}.
+     */
+    private void inheritOverriddenDeclAnnosFromTypeDecl(
+            TypeMirror typeMirror, Set<AnnotationMirror> results) {
+        List<? extends TypeMirror> superTypes = types.directSupertypes(typeMirror);
+        for (TypeMirror superType : superTypes) {
+            TypeElement elt = TypesUtils.getTypeElement(superType);
+            if (elt == null) {
+                continue;
+            }
+            Set<AnnotationMirror> superAnnos = getDeclAnnotations(elt);
+            for (AnnotationMirror annotation : superAnnos) {
+                List<? extends AnnotationMirror> annotationsOnAnnotation;
+                try {
+                    annotationsOnAnnotation =
+                            annotation.getAnnotationType().asElement().getAnnotationMirrors();
+                } catch (com.sun.tools.javac.code.Symbol.CompletionFailure cf) {
+                    // Fix for Issue 348: If a CompletionFailure occurs,
+                    // issue a warning.
+                    checker.report(
+                            Result.warning(
+                                    "annotation.not.completed",
+                                    ElementUtils.getVerboseName(elt),
+                                    annotation),
+                            annotation.getAnnotationType().asElement());
+                    continue;
+                }
+                if (AnnotationUtils.containsSameByClass(annotationsOnAnnotation, Inherited.class)
+                        || AnnotationUtils.containsSameByName(inheritedAnnotations, annotation)) {
+                    addOrMerge(results, annotation);
+                }
+            }
+        }
     }
 
     /**
