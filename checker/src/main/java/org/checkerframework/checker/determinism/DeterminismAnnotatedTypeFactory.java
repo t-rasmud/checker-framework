@@ -64,15 +64,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** The java.util.List interface. */
     private final TypeMirror listInterfaceTypeMirror =
             TypesUtils.typeFromClass(List.class, types, processingEnv.getElementUtils());
-    /** The java.util.Collection class. */
-    private final TypeMirror collectionInterfaceTypeMirror =
-            TypesUtils.typeFromClass(Collection.class, types, processingEnv.getElementUtils());
     /** The java.util.Map class. */
     private final TypeMirror mapInterfaceTypeMirror =
-            TypesUtils.typeFromClass(Map.class, types, processingEnv.getElementUtils());
-    /** The java.util.Iterator class. */
-    private final TypeMirror iteratorTypeMirror =
-            TypesUtils.typeFromClass(Iterator.class, types, processingEnv.getElementUtils());
+            TypesUtils.typeFromClass(Map.class, types, processingEnv.getElementUtils());;
     /** The java.util.Arrays class. */
     private final TypeMirror arraysTypeMirror =
             TypesUtils.typeFromClass(Arrays.class, types, processingEnv.getElementUtils());
@@ -80,20 +74,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     private final TypeMirror collectionsTypeMirror =
             TypesUtils.typeFromClass(Collections.class, types, processingEnv.getElementUtils());
     /** The java.util.HashSet class. */
-    private final TypeMirror hashSetTypeMirror =
-            TypesUtils.typeFromClass(HashSet.class, types, processingEnv.getElementUtils());
-    /** The java.util.LinkedHashSet class. */
-    private final TypeMirror linkedHashSetTypeMirror =
-            TypesUtils.typeFromClass(LinkedHashSet.class, types, processingEnv.getElementUtils());
-    /** The java.util.HashSet class. */
     private final TypeMirror treeSetTypeMirror =
             TypesUtils.typeFromClass(TreeSet.class, types, processingEnv.getElementUtils());
-    /** The java.util.HashMap class. */
-    private final TypeMirror hashMapTypeMirror =
-            TypesUtils.typeFromClass(HashMap.class, types, processingEnv.getElementUtils());
-    /** The java.util.LinkedHashMap class. */
-    private final TypeMirror linkedHashMapTypeMirror =
-            TypesUtils.typeFromClass(LinkedHashMap.class, types, processingEnv.getElementUtils());
     /** The java.util.TreeMap class. */
     private final TypeMirror treeMapTypeMirror =
             TypesUtils.typeFromClass(TreeMap.class, types, processingEnv.getElementUtils());
@@ -809,35 +791,10 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 types.erasure(subClass.getUnderlyingType()), types.erasure(superClass));
     }
 
-    /** @return true if {@code tm} is Collection or a subtype of Collection */
-    public boolean isCollection(AnnotatedTypeMirror tm) {
-        return types.isSubtype(
-                types.erasure(tm.getUnderlyingType()),
-                types.erasure(collectionInterfaceTypeMirror));
-    }
-
     /** @return true if {@code tm} is Map or a subtype of Map */
     public boolean isMap(AnnotatedTypeMirror tm) {
         return types.isSubtype(
                 types.erasure(tm.getUnderlyingType()), types.erasure(mapInterfaceTypeMirror));
-    }
-
-    /** @return true if {@code tm} is Iterator or a subtype of Iterator */
-    public boolean isIterator(AnnotatedTypeMirror tm) {
-        return types.isSubtype(
-                types.erasure(tm.getUnderlyingType()), types.erasure(iteratorTypeMirror));
-    }
-
-    /** @return true if {@code tm} is a HashSet or a subtype of HashSet */
-    public boolean isHashSet(AnnotatedTypeMirror tm) {
-        return types.isSubtype(
-                types.erasure(tm.getUnderlyingType()), types.erasure(hashSetTypeMirror));
-    }
-
-    /** @return true if {@code tm} is a LinkedHashSet or a subtype of LinkedHashSet */
-    public boolean isLinkedHashSet(AnnotatedTypeMirror tm) {
-        return types.isSubtype(
-                types.erasure(tm.getUnderlyingType()), types.erasure(linkedHashSetTypeMirror));
     }
 
     /** @return true if {@code tm} is a TreeSet or a subtype of TreeSet */
@@ -849,18 +806,6 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** @return true if {@code tm} is a List or a subtype of List */
     public boolean isList(TypeMirror tm) {
         return types.isSubtype(types.erasure(tm), types.erasure(listInterfaceTypeMirror));
-    }
-
-    /** @return true if {@code tm} is a HashMap or a subtype of HashMap */
-    public boolean isHashMap(AnnotatedTypeMirror tm) {
-        return types.isSubtype(
-                types.erasure(tm.getUnderlyingType()), types.erasure(hashMapTypeMirror));
-    }
-
-    /** @return true if {@code tm} is a LinkedHashMap or a subtype of LinkedHashMap */
-    public boolean isLinkedHashMap(AnnotatedTypeMirror tm) {
-        return types.isSubtype(
-                types.erasure(tm.getUnderlyingType()), types.erasure(linkedHashMapTypeMirror));
     }
 
     /** @return true if {@code tm} is a TreeMap or a subtype of TreeMap */
