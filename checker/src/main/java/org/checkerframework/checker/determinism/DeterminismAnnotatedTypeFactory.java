@@ -7,6 +7,7 @@ import javax.lang.model.element.*;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.CollectionType;
 import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
@@ -248,7 +249,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          */
         protected void changeReturnOnNonCollections(AnnotatedTypeMirror methodInvocationType) {
             if (methodInvocationType.hasAnnotation(ORDERNONDET)
-                    && !mayBeOrderNonDet(methodInvocationType)) {
+                    && !isCollectionType(methodInvocationType)) {
                 methodInvocationType.replaceAnnotation(NONDET);
             }
         }
@@ -435,7 +436,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 AnnotatedTypeMirror argType = getAnnotatedType(argTree);
                 if (argType.hasAnnotation(POLYDET)) {
                     hasPolyArg = true;
-                    if (mayBeOrderNonDet(argType)) {
+                    if (isCollectionType(argType)) {
                         hasPolyONDArg = true;
                         break;
                     }
@@ -447,7 +448,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     && !ElementUtils.isStatic(m)
                     && receiverType.hasAnnotation(POLYDET)) {
                 hasPolyArg = true;
-                if (mayBeOrderNonDet(receiverType)) {
+                if (isCollectionType(receiverType)) {
                     hasPolyONDArg = true;
                 }
             }
@@ -458,7 +459,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         // If return type (non-array, non-collection, and non-iterator) resolves to
         // @OrderNonDet, replaces the annotation on the return type with @NonDet.
         if (methodInvocationType.hasAnnotation(ORDERNONDET)
-                && !mayBeOrderNonDet(methodInvocationType)) {
+                && !isCollectionType(methodInvocationType)) {
             methodInvocationType.replaceAnnotation(NONDET);
         }
     }
@@ -478,18 +479,13 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         return false;
     }
 
-    /**
-     * Returns true if {@code javaType} may be annotated as {@code @OrderNonDet}.
-     *
-     * @param javaType the type to be checked
-     * @return true if {@code javaType} is Collection (or a subtype), Iterator (or a subtype), or an
-     *     array
-     */
-    public boolean mayBeOrderNonDet(AnnotatedTypeMirror javaType) {
-        return (javaType.getKind() == TypeKind.ARRAY
-                || isCollection(javaType)
-                || isIterator(javaType)
-                || isMap(javaType));
+    /** Returns true if the underlying type of {@code atm} is a collection type. */
+    public boolean isCollectionType(AnnotatedTypeMirror atm) {
+        if (atm.getKind() == TypeKind.ARRAY) {
+            return true;
+        }
+        TypeElement typeElement = TypesUtils.getTypeElement(atm.getErased().getUnderlyingType());
+        return getDeclAnnotation(typeElement, CollectionType.class) != null;
     }
 
     /**

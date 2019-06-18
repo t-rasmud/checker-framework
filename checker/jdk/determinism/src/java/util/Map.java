@@ -128,6 +128,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @see Set
  * @since 1.2
  */
+@CollectionType
 public interface Map<K,V> {
     // Query Operations
 
