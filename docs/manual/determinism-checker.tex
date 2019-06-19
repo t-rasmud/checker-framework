@@ -57,10 +57,10 @@ The Determinism type system uses the following type qualifiers (see Figure~\ref{
 \item[\refqualclass{checker/determinism/qual}{NonDet}] indicates
   that the expression might have different values in two different executions on the same machine.
 \item[\refqualclass{checker/determinism/qual}{OrderNonDet}] indicates that
-  a collection (that's any class whose declaration is annotated with checker/determinism/qual}{CollectionType},
-   see Section~\ref{determinism-declaration-annotations}) or an array will have the same elements in every execution, but in a
+  a collection or an array will have the same elements in every execution, but in a
   possibly different order.  \<@OrderNonDet> may only be written on
-  collections and arrays. An \<@OrderNonDet> Map indicates that the its keySet is \<@OrderNonDet>.
+  types whose declaration is annotated with \refqualclass{checker/determinism/qual}{CollectionType} and arrays.
+  An \<@OrderNonDet> Map indicates that the its keySet is \<@OrderNonDet>.
 \item[\refqualclass{checker/determinism/qual}{Det}] indicates that
   the expression evaluates to the same value (with respect to \<.equals()>) in all
   executions on the same machine; for a collection, iteration also yields the values in the same
@@ -81,15 +81,15 @@ Section~\ref{determinism-polymorphism} explains polymorphic qualifiers.
 \sectionAndLabel{Declaration annotations}{determinism-declaration-annotations}
 
 \begin{description}
-\item[\requalclass{checker/determinism/qual}{CollectionType}] is a type declaration annotation used
+\item[\refqualclass{checker/determinism/qual}{CollectionType}] is a type declaration annotation used
   to indicate that the class (and all of its subclasses) implements a collection.
 \end{description}
 
 \sectionAndLabel{Valid collection and array types}{determinism-collection-types}
 
-The (determinism) type of a Collection or Iterator must be a supertype or equal to
+The (determinism) type of a collection must be a supertype or equal to
 the type of the type parameter (see Figure~\ref{fig-determinism-collections}).
-If the Collection is \code{@NonDet}, then the type parameter may not be
+If the collection is \code{@NonDet}, then the type parameter may not be
 \code{@Det} or \code{@OrderNonDet}. Although such types could exist, they are
 disallowed to prevent the following bug:
 
