@@ -82,7 +82,8 @@ Section~\ref{determinism-polymorphism} explains polymorphic qualifiers.
 
 \begin{description}
 \item[\refqualclass{checker/determinism/qual}{CollectionType}] is a type declaration annotation used
-  to indicate that the class (and all of its subclasses) implements a collection.
+  to indicate that the class (and all of its subclasses) implements a collection. Only types with this
+  annotation and arrays may be annotated with \<@OrderNonDet>.
 \end{description}
 
 \sectionAndLabel{Valid collection and array types}{determinism-collection-types}
@@ -159,20 +160,6 @@ Collection (or array)   & OrderNonDet &   invalid  &  valid      & valid  \\ \cl
   \label{fig-determinism-collections}
 \end{figure}
 
-\subsectionAndLabel{Valid user defined types}{determinism-valid-user-types}
-A user defined type may be annotated as \<@OrderNonDet> if and only if it
-is a subtype of Collection or Iterator.
-For example, if a user defines a type as
-\begin{Verbatim}
-    public class TestUserCollection<E> extends ArrayList<E> {...}
-\end{Verbatim}
-Writing \code{@OrderNonDet TestUserCollection<@Det Integer>} is valid.\\
-Writing \code{@OrderNonDet TestUserCollection<@NonDet Integer>} is invalid
-because the type of the type parameter (\code{@NonDet}) is not a subtype
-of the user defined Collection type (\code{@OrderNonDet}).
-
-User defined types that are not a subtype of Collection or Iterator
-may not be annotated as \code{@OrderNonDet}.
 %Formally, the type validity rule is stated as follows:
 
 %\begin{prooftree}
