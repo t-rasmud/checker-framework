@@ -176,10 +176,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
 
         /**
-         * Refines the return type of a method invocation for the following cases:
+         * Refines the type of a method invocation for the following cases:
          *
          * <ol>
-         *   <li>Return type is {@code @PolyDet("up")}
+         *   <li>Replaces {@code @OrderNonDet} with {@code @NonDet} if the Java type isn't a
+         *       collection
+         *   <li>Type is {@code @PolyDet("up")}
          *   <li>The invoked method is {@code equals} and the receiver is a {@code Set} or {@code
          *       Map}.
          *   <li>The invoked method is {@code System.get}
@@ -196,6 +198,10 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             AnnotatedTypeMirror receiverType = getReceiverType(node);
             ExecutableElement m = TreeUtils.elementFromUse(node);
 
+            if (methodInvocationType.hasAnnotation(ORDERNONDET)
+                    && !mayBeOrderNonDet(methodInvocationType)) {
+                methodInvocationType.replaceAnnotation(NONDET);
+            }
             refinePolyUp(node, methodInvocationType, receiverType, m);
 
             // ReceiverType is null for abstract classes
@@ -424,12 +430,6 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             if (hasPolyArg && !hasPolyONDArg) {
                 methodInvocationType.replaceAnnotation(POLYDET);
             }
-        }
-        // If return type (non-array, non-collection, and non-iterator) resolves to
-        // @OrderNonDet, replaces the annotation on the return type with @NonDet.
-        if (methodInvocationType.hasAnnotation(ORDERNONDET)
-                && !mayBeOrderNonDet(methodInvocationType)) {
-            methodInvocationType.replaceAnnotation(NONDET);
         }
     }
 
