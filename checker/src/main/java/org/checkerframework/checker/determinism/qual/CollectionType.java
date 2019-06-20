@@ -9,7 +9,10 @@ import java.lang.annotation.Target;
 
 /**
  * Type declaration annotation that indicates that the type is a collection of objects. The objects
- * may or may not be in a deterministic order.
+ * may or may not be in a deterministic order. java.util.Iterator are collections.
+ *
+ * <p>Any class or interface that extends or implements a collection type is automatically
+ * considered a collection type even if this annotation isn't written on the class or interface.
  *
  * @checker_framework.manual #determinism-checker Determinism Checker
  */
