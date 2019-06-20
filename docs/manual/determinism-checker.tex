@@ -315,15 +315,15 @@ For example, consider the code below:
     a.equals(b);
 \end{Verbatim}
 
-Here, the return type of \<equals()> gets the annotation \<@NonDet>.
-But it would be more precise to annotate it as \<@Det>.
-To achieve this precision, the checker annotates the return type
-of \<equals()> called on a receiver of type \<Set> as \<@Det> if the
+Here, the type of \<a.equals(b)> is \<@NonDet>,
+but it is deterministic, so it could be more precisely annotated as \<@Det>.
+To achieve this precision, the checker annotates the type
+of \<equals()> invoked on a receiver of type \<Set> as \<@Det> if the
 following conditions are true:
 \begin{itemize}
-    \item the receiver does not have {@code List} or its subtype as a type parameter,
-    \item the argument to equals() is also an {@code @OrderNonDet Set}, and
-    \item the argument to equals() also does not have {@code List} or its subtype as a
+    \item the receiver does not have \<List> or its subtype as a type argument,
+    \item the argument to equals() is also an \<@OrderNonDet Set>, and
+    \item the argument to equals() also does not have \<List> or its subtype as a
     type parameter
 \end{itemize}
 
