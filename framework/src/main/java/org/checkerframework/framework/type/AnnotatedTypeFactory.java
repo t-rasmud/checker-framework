@@ -3265,10 +3265,18 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     }
 
     /**
-     * Returns all of the actual annotation mirrors used to annotate this element (includes stub
-     * files and declaration annotations from overridden methods).
+     * Returns all of the declaration annotations on this element including annotations <il>
+     * <li>on the element
+     * <li>written in stubfiles
+     * <li>inherited from overriden methods, (see {@link InheritedAnnotation})
+     * <li>inherited from superclasses or super interfaces (see {@link Inherited}) </il>
+     *
+     *     <p>The actual annotations rather than aliases. See {@link #getDeclAnnotation(Element,
+     *     Class)}.
      *
      * @param elt the element for which to determine annotations
+     * @return all of the declaration annotations on this element, written in stub files, or
+     *     inherited.
      */
     public Set<AnnotationMirror> getDeclAnnotations(Element elt) {
         if (cacheDeclAnnos.containsKey(elt)) {
@@ -3278,6 +3286,8 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
 
         Set<AnnotationMirror> results = AnnotationUtils.createAnnotationSet();
         // Retrieving the annotations from the element.
+        // This includes annotation inherited from superclasses, but not superinterfaces or
+        // overriden methods.
         List<? extends AnnotationMirror> fromEle = elements.getAllAnnotationMirrors(elt);
         for (AnnotationMirror annotation : fromEle) {
             try {
@@ -3322,7 +3332,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
 
     /**
      * Adds into {@code results} the declaration annotations found in all elements of the super
-     * types of {@code typeMirror}.
+     * types of {@code typeMirror}. (Both superclasses and superinterfaces.)
      */
     private void inheritOverriddenDeclAnnosFromTypeDecl(
             TypeMirror typeMirror, Set<AnnotationMirror> results) {
