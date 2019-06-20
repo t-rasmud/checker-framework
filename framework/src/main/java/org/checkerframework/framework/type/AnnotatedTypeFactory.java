@@ -3163,8 +3163,15 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     }
 
     /**
-     * Returns the actual annotation mirror used to annotate this element, whose name equals the
-     * passed annotation class (or is an alias for it). Returns null if none exists.
+     * Returns all of the declaration annotations whose name equals the passed annotation class (or
+     * is an alias for it) including annotations:
+     *
+     * <ul>
+     *   <li>on the element
+     *   <li>written in stubfiles
+     *   <li>inherited from overriden methods, (see {@link InheritedAnnotation})
+     *   <li>inherited from superclasses or super interfaces (see {@link Inherited})
+     * </ul>
      *
      * @see #getDeclAnnotationNoAliases
      * @param elt the element to retrieve the declaration annotation from
@@ -3265,14 +3272,17 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     }
 
     /**
-     * Returns all of the declaration annotations on this element including annotations <il>
-     * <li>on the element
-     * <li>written in stubfiles
-     * <li>inherited from overriden methods, (see {@link InheritedAnnotation})
-     * <li>inherited from superclasses or super interfaces (see {@link Inherited}) </il>
+     * Returns all of the declaration annotations on this element including annotations
      *
-     *     <p>The actual annotations rather than aliases. See {@link #getDeclAnnotation(Element,
-     *     Class)}.
+     * <ul>
+     *   <li>on the element
+     *   <li>written in stubfiles
+     *   <li>inherited from overriden methods, (see {@link InheritedAnnotation})
+     *   <li>inherited from superclasses or super interfaces (see {@link Inherited})
+     * </ul>
+     *
+     * <p>This method returns the actual annotations not their aliases. {@link
+     * #getDeclAnnotation(Element, Class)} returns aliases.
      *
      * @param elt the element for which to determine annotations
      * @return all of the declaration annotations on this element, written in stub files, or
