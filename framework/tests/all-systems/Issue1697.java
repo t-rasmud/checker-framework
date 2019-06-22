@@ -17,6 +17,7 @@ class Issue1697 {
         abstract static class M<A extends D<A, B>, B extends M<A, B>> implements E.M {}
     }
 
+    @SuppressWarnings("super.invocation.invalid")
     abstract static class C<A extends C<A, B>, B extends C.M<A, B>> extends D<A, B> {
         abstract static class M<A extends C<A, B>, B extends M<A, B>> extends D.M<A, B> {}
     }

@@ -9,8 +9,17 @@ import org.checkerframework.framework.type.treeannotator.TreeAnnotator;
 /** A PropertyKeyATF that uses CompilerMessageKey to annotate the keys. */
 public class CompilerMessagesAnnotatedTypeFactory extends PropertyKeyAnnotatedTypeFactory {
 
+    /**
+     * Constructor.
+     *
+     * @param checker
+     */
     public CompilerMessagesAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker);
+        // Does not call postInit() because its superclass does.
+        // If we ever add code to this constructor, it needs to:
+        //   * call a superclass constructor that does not call postInit(), and
+        //   * call postInit() itself.
     }
 
     @Override

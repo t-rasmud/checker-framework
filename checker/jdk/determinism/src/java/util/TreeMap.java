@@ -182,7 +182,7 @@ public class TreeMap<K,V>
      *         or are not mutually comparable
      * @throws NullPointerException if the specified map is null
      */
-    public @PolyDet TreeMap(@PolyDet Map<? extends K, ? extends V> m) {
+    public @PolyDet("upDet") TreeMap(@PolyDet Map<? extends K, ? extends V> m) {
         comparator = null;
         putAll(m);
     }
@@ -196,7 +196,7 @@ public class TreeMap<K,V>
      *         and whose comparator is to be used to sort this map
      * @throws NullPointerException if the specified map is null
      */
-    public @PolyDet TreeMap(@PolyDet SortedMap<K, ? extends V> m) {
+    public @PolyDet("upDet") TreeMap(@PolyDet SortedMap<K, ? extends V> m) {
         comparator = m.comparator();
         try {
             buildFromSorted(m.size(), m.entrySet().iterator(), null, null);

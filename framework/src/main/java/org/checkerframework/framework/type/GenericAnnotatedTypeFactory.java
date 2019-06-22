@@ -27,11 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -74,7 +70,6 @@ import org.checkerframework.framework.qual.ImplicitFor;
 import org.checkerframework.framework.qual.MonotonicQualifier;
 import org.checkerframework.framework.qual.RelevantJavaTypes;
 import org.checkerframework.framework.qual.TypeUseLocation;
-import org.checkerframework.framework.source.Result;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedDeclaredType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedExecutableType;
 import org.checkerframework.framework.type.poly.DefaultQualifierPolymorphism;
@@ -99,6 +94,7 @@ import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
 import org.checkerframework.javacutil.BugInCF;
 import org.checkerframework.javacutil.CollectionUtils;
+import org.checkerframework.javacutil.ElementUtils;
 import org.checkerframework.javacutil.Pair;
 import org.checkerframework.javacutil.TreeUtils;
 import org.checkerframework.javacutil.UserError;
@@ -545,10 +541,18 @@ public abstract class GenericAnnotatedTypeFactory<
      * @return a string containing the number of qualifiers and canonical names of each qualifier
      */
     protected final String getSortedQualifierNames() {
+        Set<Class<? extends Annotation>> stq = getSupportedTypeQualifiers();
+        if (stq.isEmpty()) {
+            return "No qualifiers examined";
+        }
+        if (stq.size() == 1) {
+            return "1 qualifier examined: " + stq.iterator().next().getCanonicalName();
+        }
+
         // Create a list of the supported qualifiers and sort the list
         // alphabetically
         List<Class<? extends Annotation>> sortedSupportedQuals = new ArrayList<>();
-        sortedSupportedQuals.addAll(getSupportedTypeQualifiers());
+        sortedSupportedQuals.addAll(stq);
         Collections.sort(sortedSupportedQuals, QUALIFIER_SORT_ORDERING);
 
         // display the number of qualifiers as well as the names of each
@@ -557,19 +561,15 @@ public abstract class GenericAnnotatedTypeFactory<
         sb.append(sortedSupportedQuals.size());
         sb.append(" qualifiers examined");
 
-        if (sortedSupportedQuals.size() > 0) {
-            sb.append(": ");
-            // for each qualifier, add its canonical name, a comma and a space
-            // to the string.
-            for (Class<? extends Annotation> qual : sortedSupportedQuals) {
-                sb.append(qual.getCanonicalName());
-                sb.append(", ");
-            }
-            // remove last comma and space
-            return sb.substring(0, sb.length() - 2);
-        } else {
-            return sb.toString();
+        sb.append(": ");
+        // for each qualifier, add its canonical name, a comma and a space
+        // to the string.
+        for (Class<? extends Annotation> qual : sortedSupportedQuals) {
+            sb.append(qual.getCanonicalName());
+            sb.append(", ");
         }
+        // remove last comma and space
+        return sb.substring(0, sb.length() - 2);
     }
 
     /**
@@ -811,6 +811,23 @@ public abstract class GenericAnnotatedTypeFactory<
                         this.getContext());
 
         return FlowExpressionParseUtil.parse(expression, context, currentPath, true);
+    }
+
+    /**
+     * Produces the receiver and offset associated with an expression. For instance, "n+1" has no
+     * associated Receiver, but this method produces a pair of a Receiver (for "n") and an offset
+     * ("1").
+     *
+     * @param expression a Java expression, possibly with a constant offset
+     * @param currentPath location at which expression is evaluated
+     * @return receiver and offset for the given expression
+     * @throws FlowExpressionParseException thrown if the expression cannot be parsed
+     */
+    public Pair<Receiver, String> getReceiverAndOffsetFromJavaExpressionString(
+            String expression, TreePath currentPath) throws FlowExpressionParseException {
+        Pair<String, String> p = getExpressionAndOffset(expression);
+        Receiver r = getReceiverFromJavaExpressionString(p.first, currentPath);
+        return Pair.of(r, p.second);
     }
 
     /**
@@ -1405,34 +1422,6 @@ public abstract class GenericAnnotatedTypeFactory<
             dependentTypesHelper.viewpointAdaptConstructor(tree, method);
         }
         poly.annotate(tree, method);
-
-        // If the newClassTree "tree" is explicitly annotated with a polymorphic annotation,
-        // do not replace that. This ensures consistent behaviour with constructor invocations that
-        // are cast to the polymorphic type i.e "(@Poly X) new X();" is the same as
-        // "new @Poly X();"
-        // TODO: Replace getExplicitAnnotationsOnNewClassTree() with getExplicitAnnotations()
-        // when issue 2324 is fixed.
-        // See https://github.com/typetools/checker-framework/issues/2324.
-        Set<? extends AnnotationMirror> explicitAnnotations =
-                getExplicitAnnotationsOnNewClassTree(
-                        tree, getAnnotatedType(tree.getIdentifier()).getAnnotations());
-        Set<? extends AnnotationMirror> topAnnotations = qualHierarchy.getTopAnnotations();
-        for (AnnotationMirror top : topAnnotations) {
-            AnnotationMirror polyAnnotation = qualHierarchy.getPolymorphicAnnotation(top);
-            if (AnnotationUtils.containsSameByName(explicitAnnotations, polyAnnotation)) {
-                if (!qualHierarchy.isSubtype(
-                        method.returnType.getAnnotationInHierarchy(top), polyAnnotation)) {
-                    checker.report(
-                            Result.warning(
-                                    "cast.unsafe.constructor.invocation",
-                                    method.returnType.getAnnotationInHierarchy(top),
-                                    polyAnnotation),
-                            tree);
-                }
-                method.returnType.replaceAnnotation(polyAnnotation);
-            }
-        }
-
         return mType;
     }
 
@@ -1482,6 +1471,7 @@ public abstract class GenericAnnotatedTypeFactory<
                         + " root needs to be set when used on trees; factory: "
                         + this.getClass();
 
+        applyQualifierParameterDefaults(tree, type);
         treeAnnotator.visit(tree, type);
         typeAnnotator.visit(type, null);
         defaults.annotate(tree, type);
@@ -1552,8 +1542,60 @@ public abstract class GenericAnnotatedTypeFactory<
         applier.applyInferredType(type, as.getAnnotations(), as.getUnderlyingType());
     }
 
+    /**
+     * Applies defaults for types in a class with an qualifier parameter.
+     *
+     * @param tree Tree whose type is {@code type}
+     * @param type where the defaults are applied
+     */
+    protected void applyQualifierParameterDefaults(Tree tree, AnnotatedTypeMirror type) {
+        applyQualifierParameterDefaults(TreeUtils.elementFromTree(tree), type);
+    }
+
+    /**
+     * Applies defaults for types in a class with an qualifier parameter.
+     *
+     * @param elt Element whose type is {@code type}
+     * @param type where the defaults are applied
+     */
+    protected void applyQualifierParameterDefaults(Element elt, AnnotatedTypeMirror type) {
+        if (elt == null) {
+            return;
+        }
+        switch (elt.getKind()) {
+            case CONSTRUCTOR:
+            case METHOD:
+            case FIELD:
+            case LOCAL_VARIABLE:
+            case PARAMETER:
+                break;
+            default:
+                return;
+        }
+
+        TypeElement enclosingClass = ElementUtils.enclosingClass(elt);
+        Set<AnnotationMirror> tops = getQualifierParameterHierarchies(enclosingClass);
+        if (tops.isEmpty()) {
+            return;
+        }
+        new TypeAnnotator(this) {
+            @Override
+            public Void visitDeclared(AnnotatedDeclaredType type, Void aVoid) {
+                if (type.getUnderlyingType().asElement().equals(enclosingClass)) {
+                    for (AnnotationMirror top : tops) {
+                        if (!type.isAnnotatedInHierarchy(top)) {
+                            type.addAnnotation(qualHierarchy.getPolymorphicAnnotation(top));
+                        }
+                    }
+                }
+                return super.visitDeclared(type, aVoid);
+            }
+        }.visit(type);
+    }
+
     @Override
     public void addComputedTypeAnnotations(Element elt, AnnotatedTypeMirror type) {
+        applyQualifierParameterDefaults(elt, type);
         typeAnnotator.visit(type, null);
         defaults.annotate(elt, type);
         if (dependentTypesHelper != null) {
@@ -1590,8 +1632,8 @@ public abstract class GenericAnnotatedTypeFactory<
     /**
      * Returns the AnnotatedTypeFactory of the subchecker and copies the current visitor state to
      * the sub-factory so that the types are computed properly. Because the visitor state is copied,
-     * call this method each time a subfactory is needed rather than store the returned factory in a
-     * field.
+     * call this method each time a subfactory is needed rather than store the returned subfactory
+     * in a field.
      *
      * @see BaseTypeChecker#getTypeFactoryOfSubchecker(Class)
      */
@@ -1701,5 +1743,14 @@ public abstract class GenericAnnotatedTypeFactory<
     /** The CFGVisualizer to be used by all CFAbstractAnalysis instances. */
     public CFGVisualizer<Value, Store, TransferFunction> getCFGVisualizer() {
         return cfgVisualizer;
+    }
+
+    @Override
+    public void postAsMemberOf(
+            AnnotatedTypeMirror type, AnnotatedTypeMirror owner, Element element) {
+        super.postAsMemberOf(type, owner, element);
+        if (element.getKind() == ElementKind.FIELD) {
+            poly.annotate(((VariableElement) element), owner, type);
+        }
     }
 }

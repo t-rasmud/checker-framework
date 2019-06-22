@@ -115,7 +115,7 @@ public class HashSet<E>
      * @param c the collection whose elements are to be placed into this set
      * @throws NullPointerException if the specified collection is null
      */
-    public @PolyDet HashSet(@PolyDet Collection<? extends E> c) {
+    public @PolyDet("upDet") HashSet(@PolyDet Collection<? extends E> c) {
         map = new HashMap<>(Math.max((int) (c.size()/.75f) + 1, 16));
         addAll(c);
     }
@@ -129,7 +129,7 @@ public class HashSet<E>
      * @throws     IllegalArgumentException if the initial capacity is less
      *             than zero, or if the load factor is nonpositive
      */
-    public @PolyDet HashSet(@PolyDet int initialCapacity, @PolyDet float loadFactor) {
+    public @PolyDet("upDet") HashSet(@PolyDet int initialCapacity, @PolyDet float loadFactor) {
         map = new HashMap<>(initialCapacity, loadFactor);
     }
 
@@ -141,7 +141,7 @@ public class HashSet<E>
      * @throws     IllegalArgumentException if the initial capacity is less
      *             than zero
      */
-    public @PolyDet HashSet(@PolyDet int initialCapacity) {
+    public @PolyDet("upDet") HashSet(@PolyDet int initialCapacity) {
         map = new HashMap<>(initialCapacity);
     }
 
@@ -158,7 +158,7 @@ public class HashSet<E>
      * @throws     IllegalArgumentException if the initial capacity is less
      *             than zero, or if the load factor is nonpositive
      */
-    @PolyDet HashSet(@PolyDet int initialCapacity, @PolyDet float loadFactor, @PolyDet boolean dummy) {
+    @PolyDet("upDet") HashSet(@PolyDet int initialCapacity, @PolyDet float loadFactor, @PolyDet boolean dummy) {
         map = new LinkedHashMap<>(initialCapacity, loadFactor);
     }
 

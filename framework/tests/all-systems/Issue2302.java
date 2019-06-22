@@ -10,6 +10,7 @@ class Issue2302 {
 
     static class MyClass<VALUE> {}
 
+    @SuppressWarnings("return.type.incompatible")
     static StrangeConstructorTypeArgs getStrangeConstructorTypeArgs() {
         // Crash with the diamond operator.
         // Type inference chooses `Object` as the type argument.

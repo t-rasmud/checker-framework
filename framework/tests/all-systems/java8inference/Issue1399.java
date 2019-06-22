@@ -3,6 +3,7 @@
 
 public class Issue1399 {
     static class Box<T> {
+        @SuppressWarnings("return.type.incompatible")
         static <T> Box<T> box(Class<T> type) {
             return new Box<T>();
         }

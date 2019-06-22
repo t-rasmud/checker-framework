@@ -15,8 +15,17 @@ import org.checkerframework.framework.type.treeannotator.TreeAnnotator;
 /** A PropertyKeyATF that uses LocalizableKey to annotate the keys. */
 public class LocalizableKeyAnnotatedTypeFactory extends PropertyKeyAnnotatedTypeFactory {
 
+    /**
+     * Constructor.
+     *
+     * @param checker
+     */
     public LocalizableKeyAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker);
+        // Does not call postInit() because its superclass does.
+        // If we ever add code to this constructor, it needs to:
+        //   * call a superclass constructor that does not call postInit(), and
+        //   * call postInit() itself.
     }
 
     @Override

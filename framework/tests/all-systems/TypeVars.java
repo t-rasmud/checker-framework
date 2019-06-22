@@ -10,6 +10,7 @@ class TypeVars {
 
         class Inner1<X extends T> {}
 
+        @SuppressWarnings("return.type.incompatible")
         public Inner1<T> method1() {
             return new Inner1<>();
         }

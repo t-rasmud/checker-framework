@@ -55,17 +55,17 @@ public class CheckerDevelMain extends CheckerMain {
 
         assert (runtimeCp != null)
                 : RUNTIME_CP_PROP
-                        + " must specify a path entry to prepend to the Java classpath when running Javac"; // TODO: Fix the assert messages
+                        + " must specify a path entry to prepend to the Java classpath when running javac"; // TODO: Fix the assert messages
         assert (compileBcp != null)
                 : COMPILE_BCP_PROP
                         + " must specify a path entry to prepend to the compiler bootclasspath";
 
         // The location that checker.jar would be in if we have built it
         final File checkersLoc = new File(binDir, "checker.jar");
-        ArrayList<String> alargs = new ArrayList<>(args.length + 1);
-        alargs.addAll(Arrays.asList(args));
-        alargs.add("-J-ea");
-        final CheckerDevelMain program = new CheckerDevelMain(checkersLoc, alargs);
+        ArrayList<String> argsPlusEa = new ArrayList<>(args.length + 1);
+        argsPlusEa.addAll(Arrays.asList(args));
+        argsPlusEa.add("-J-ea");
+        final CheckerDevelMain program = new CheckerDevelMain(checkersLoc, argsPlusEa);
         final int exitStatus = program.invokeCompiler();
         System.exit(exitStatus);
     }

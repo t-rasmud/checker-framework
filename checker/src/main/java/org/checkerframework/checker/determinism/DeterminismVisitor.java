@@ -1,13 +1,17 @@
 package org.checkerframework.checker.determinism;
 
 import com.sun.source.tree.*;
+import com.sun.source.tree.Tree.Kind;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Modifier;
+import javax.lang.model.element.*;
+import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.compilermsgs.qual.CompilerMessageKey;
+import org.checkerframework.checker.determinism.qual.RequiresDetToString;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeValidator;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
@@ -19,8 +23,7 @@ import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedDeclared
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedPrimitiveType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedTypeVariable;
 import org.checkerframework.framework.util.AnnotatedTypes;
-import org.checkerframework.javacutil.AnnotationUtils;
-import org.checkerframework.javacutil.TreeUtils;
+import org.checkerframework.javacutil.*;
 
 /** Visitor for the determinism type-system. */
 public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedTypeFactory> {
@@ -46,6 +49,12 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     /** Error message key for assignment to a deterministic array at a non-deterministic index. */
     public static final @CompilerMessageKey String INVALID_ARRAY_ASSIGNMENT =
             "invalid.array.assignment";
+
+    /**
+     * Error message key for assignment to a deterministic field via a non-deterministic expression.
+     */
+    public static final @CompilerMessageKey String INVALID_FIELD_ASSIGNMENT =
+            "invalid.field.assignment";
     /**
      * Error message key for collections whose type is a subtype of the upper bound of their type
      * arguments, or whose type is {@code @NonDet} with element type {@code @Det} or
@@ -63,6 +72,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     /** Error message for expressions of the form "new @Det HashSet" */
     public static final @CompilerMessageKey String INVALID_COLLECTION_CONSTRUCTOR_INVOCATION =
             "invalid.collection.constructor.invocation";
+
+    private final ExecutableElement stringToString =
+            TreeUtils.getMethod("java.lang.Object", "toString", 0, atypeFactory.getProcessingEnv());
     /**
      * The lower bound for exception parameters is {@code @Det}.
      *
@@ -123,7 +135,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                             ((AnnotatedTypeVariable) argType).getUpperBound();
                     AnnotationMirror typevarAnnotation =
                             getUpperBound(atypeFactory, argTypeUpperBound);
-                    if (!isSubtype(
+                    if (!isSubtypeError(
                             typevarAnnotation,
                             baseAnnotation,
                             tree,
@@ -136,7 +148,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                             ((AnnotatedTypeMirror.AnnotatedWildcardType) argType).getExtendsBound();
                     AnnotationMirror typevarAnnotation =
                             getUpperBound(atypeFactory, argTypeExtendsBound);
-                    if (!isSubtype(
+                    if (!isSubtypeError(
                             typevarAnnotation,
                             baseAnnotation,
                             tree,
@@ -250,6 +262,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      *
      * The array access {@code x[i]} is flagged as an error.
      *
+     * <p>Also, reports error in case of invalid field access on the lhs of an assignment.
+     *
      * @param varTree the AST node for the lvalue
      * @param valueExp the AST node for the rvalue (the new value)
      * @param errorKey the error message to use if the check fails (must be a compiler message key)
@@ -257,19 +271,49 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     @Override
     protected void commonAssignmentCheck(
             Tree varTree, ExpressionTree valueExp, @CompilerMessageKey String errorKey) {
-        if (varTree.getKind() == Tree.Kind.ARRAY_ACCESS) {
-            ArrayAccessTree arrTree = (ArrayAccessTree) varTree;
-            AnnotatedTypeMirror arrExprType =
-                    atypeFactory.getAnnotatedType(arrTree.getExpression());
-            AnnotatedArrayType arrType = (AnnotatedArrayType) arrExprType;
-            AnnotationMirror arrTopType = arrType.getAnnotationInHierarchy(atypeFactory.NONDET);
-            AnnotationMirror indexType =
-                    atypeFactory
-                            .getAnnotatedType(arrTree.getIndex())
-                            .getAnnotationInHierarchy(atypeFactory.NONDET);
-            isSubtype(indexType, arrTopType, varTree, INVALID_ARRAY_ASSIGNMENT);
+        AnnotatedTypeMirror expressionType;
+        switch (varTree.getKind()) {
+            case ARRAY_ACCESS:
+                Tree indexTree = ((ArrayAccessTree) varTree).getIndex();
+                expressionType = atypeFactory.getAnnotatedType(indexTree);
+                break;
+            case MEMBER_SELECT:
+            case IDENTIFIER:
+                Element field = TreeUtils.elementFromUse((ExpressionTree) varTree);
+                if (field.getKind() == ElementKind.FIELD && !ElementUtils.isStatic(field)) {
+                    expressionType = atypeFactory.getReceiverType((ExpressionTree) varTree);
+                } else {
+                    expressionType = null;
+                }
+                break;
+            case VARIABLE:
+                Element fieldDecl = TreeUtils.elementFromDeclaration((VariableTree) varTree);
+                if (fieldDecl.getKind() == ElementKind.FIELD && !ElementUtils.isStatic(fieldDecl)) {
+                    expressionType = atypeFactory.getSelfType(varTree);
+                } else {
+                    expressionType = null;
+                }
+                break;
+            default:
+                expressionType = null;
         }
-        super.commonAssignmentCheck(varTree, valueExp, errorKey);
+        if (expressionType != null) {
+            AnnotationMirror NONDET = atypeFactory.NONDET;
+            AnnotationMirror exprAnno = expressionType.getEffectiveAnnotationInHierarchy(NONDET);
+            AnnotatedTypeMirror varType = atypeFactory.getAnnotatedTypeLhs(varTree);
+            AnnotationMirror varAnno = varType.getEffectiveAnnotationInHierarchy(NONDET);
+            if (atypeFactory.getQualifierHierarchy().isSubtype(exprAnno, varAnno)) {
+                super.commonAssignmentCheck(varTree, valueExp, errorKey);
+            } else if (varTree.getKind() == Kind.ARRAY_ACCESS) {
+                checker.report(
+                        Result.failure(INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno), varTree);
+            } else {
+                checker.report(
+                        Result.failure(INVALID_FIELD_ASSIGNMENT, varAnno, exprAnno), varTree);
+            }
+        } else {
+            super.commonAssignmentCheck(varTree, valueExp, errorKey);
+        }
     }
 
     /**
@@ -421,9 +465,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     }
 
     /**
-     * Reports an error if {@code @PolyDet("up")}, {@code @PolyDet("down")} or
-     * {@code @PolyDet("use")} is written on a formal parameter or a return type and none of the
-     * formal parameters or the receiver has the type {@code @PolyDet}.
+     * Reports an error if {@code @PolyDet("up")}, {@code @PolyDet("down")},
+     * {@code @PolyDet("use")}, or {@code @PolyDet("upDet")} is written on a formal parameter or a
+     * return type and none of the formal parameters or the receiver has the type {@code @PolyDet}.
      */
     @Override
     public Void visitMethod(MethodTree node, Void p) {
@@ -447,6 +491,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         boolean isPolyUpPresent = false;
         boolean isPolyDownPresent = false;
         boolean isPolyUsePresent = false;
+        boolean isPolyUpDetPresent = false;
         for (AnnotationMirror atm : polyAnnotations) {
             if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_UP)) {
                 isPolyUpPresent = true;
@@ -456,6 +501,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             }
             if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_USE)) {
                 isPolyUsePresent = true;
+            }
+            if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_UPDET)) {
+                isPolyUpDetPresent = true;
             }
             if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET)) {
                 isPolyPresent = true;
@@ -471,8 +519,67 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             if (isPolyUsePresent) {
                 checker.report(Result.failure("invalid.polydet.use"), node);
             }
+            if (isPolyUpDetPresent) {
+                checker.report(Result.failure("invalid.polydet.updet"), node);
+            }
         }
         return super.visitMethod(node, p);
+    }
+
+    /**
+     * If the declaration of {@code node} is annotated with {@code @RequiresDetToString}, checks
+     * that the declared type of every {@code Det} argument of {@code node} corresponding to a
+     * parameter of type {@code Object} (or {@code Object[]}) overrides {@code toString} returning a
+     * {@code @Det String} or {@code @PolyDet}. Otherwise issues an error.
+     */
+    @Override
+    public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
+        ExecutableElement methodElement = TreeUtils.elementFromUse(node);
+        AnnotationMirror declAnnotation =
+                atypeFactory.getDeclAnnotation(methodElement, RequiresDetToString.class);
+        if (declAnnotation == null) {
+            return super.visitMethodInvocation(node, p);
+        }
+
+        List<? extends VariableElement> params = methodElement.getParameters();
+        List<? extends ExpressionTree> args = node.getArguments();
+
+        for (int index = 0; index < args.size(); index++) {
+            ExpressionTree arg = args.get(index);
+            VariableElement param = params.get(index);
+
+            boolean isParamObjectArray = false;
+            TypeMirror paramType = param.asType();
+            if (paramType.getKind() == TypeKind.ARRAY) {
+                TypeMirror compType = ((ArrayType) paramType).getComponentType();
+                isParamObjectArray = TypesUtils.isObject(compType);
+            }
+            if (!TypesUtils.isObject(paramType) && !isParamObjectArray) {
+                continue;
+            }
+
+            AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+            if (argType.hasAnnotation(atypeFactory.DET)) {
+                Pair<AnnotatedDeclaredType, ExecutableElement> overriddenMethod =
+                        AnnotatedTypes.getOverriddenMethod(
+                                argType, stringToString, atypeFactory.getProcessingEnv());
+                if (!atypeFactory
+                                .getAnnotatedType(overriddenMethod.second)
+                                .getReturnType()
+                                .hasAnnotation(atypeFactory.DET)
+                        && !atypeFactory
+                                .getAnnotatedType(overriddenMethod.second)
+                                .getReturnType()
+                                .hasAnnotation(atypeFactory.POLYDET)) {
+                    checker.report(
+                            Result.failure(
+                                    "nondeterministic.tostring", argType.getUnderlyingType()),
+                            node);
+                    break;
+                }
+            }
+        }
+        return super.visitMethodInvocation(node, p);
     }
 
     /**
@@ -482,7 +589,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      * @return true if {@code subAnnotation} is a subtype of {@code superAnnotation}, false
      *     otherwise
      */
-    private boolean isSubtype(
+    private boolean isSubtypeError(
             AnnotationMirror subAnnotation,
             AnnotationMirror superAnnotation,
             Tree tree,
@@ -531,4 +638,47 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             protected void reportInvalidAnnotationsOnUse(AnnotatedTypeMirror type, Tree p) {}
         };
     }
+
+    /**
+     * Reports an error if {@code newClassTree} represents explicitly constructing a
+     *
+     * <ol>
+     *   <li>{@code @OrderNonDet TreeSet}
+     *   <li>{@code @OrderNonDet TreeMap}
+     * </ol>
+     *
+     * <p>Also reports an error if the result of the constructor would resolve to any variant of
+     * {@code @PolyDet}.
+     *
+     * @param invocation annotated declared type of constructor invocation
+     * @param constructor annotated executable type of the constructor
+     * @param newClassTree a tree representing instantiating a class
+     */
+    @Override
+    protected void checkConstructorInvocation(
+            AnnotatedDeclaredType invocation,
+            AnnotatedTypeMirror.AnnotatedExecutableType constructor,
+            NewClassTree newClassTree) {
+        AnnotatedTypeMirror constructorResultType = constructor.getReturnType();
+        AnnotationMirror explicitAnno = atypeFactory.getNewClassAnnotation(newClassTree);
+        if (atypeFactory.isTreeSet(constructorResultType)
+                || atypeFactory.isTreeMap(constructorResultType)) {
+            if (AnnotationUtils.areSame(explicitAnno, atypeFactory.ORDERNONDET)
+                    || AnnotationUtils.areSameByName(
+                            constructorResultType.getAnnotationInHierarchy(atypeFactory.NONDET),
+                            atypeFactory.POLYDET)) {
+                checker.report(
+                        Result.failure(
+                                DeterminismVisitor.INVALID_COLLECTION_CONSTRUCTOR_INVOCATION,
+                                constructorResultType),
+                        newClassTree);
+            }
+        }
+        super.checkConstructorInvocation(invocation, constructor, newClassTree);
+    }
+
+    @Override
+    protected void checkConstructorResult(
+            AnnotatedTypeMirror.AnnotatedExecutableType constructorType,
+            ExecutableElement constructorElement) {}
 }
