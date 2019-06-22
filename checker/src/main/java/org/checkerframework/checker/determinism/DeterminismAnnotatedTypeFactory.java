@@ -268,10 +268,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 }
             }
 
-            // Since the return type of Map.get() is annotated as "@PolyDet",
-            // replace the annotation on return type as "@Det" if the receiver is of
-            // type "@OrderNonDet", map's V(value) type argument of type "@Det",
-            // and the argument to get() of type "@Det".
+            // The return type of Map.get() is annotated as "@PolyDet".
+            // Replace the annotation on return type as "@Det" if
+            //  * the receiver is of type "@OrderNonDet",
+            //  * map's V (value) type argument is of type "@Det", and
+            //  * the argument to get() of type "@Det".
+            // Such an invocation would ordinarily have type "@OrderNonDet".
             if (isMap(receiverType)
                     && isMapGet(m)
                     && receiverType.hasAnnotation(ORDERNONDET)
