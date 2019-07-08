@@ -1955,33 +1955,6 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
     }
 
     /**
-     * Return whether or not casting the exprType to castType is legal.
-     *
-     * @param castType an invariant type
-     * @param exprType type of the expressions that is cast may or may not be invariant
-     * @param top
-     * @return whether or not casting the exprType to castType is legal.
-     */
-    private boolean isInvariantTypeCastSafe(
-            AnnotatedTypeMirror castType, AnnotatedTypeMirror exprType, AnnotationMirror top) {
-        if (!isTypeCastSafe(castType, exprType)) {
-            return false;
-        }
-        AnnotationMirror castTypeAnno = castType.getEffectiveAnnotationInHierarchy(top);
-        AnnotationMirror exprTypeAnno = exprType.getEffectiveAnnotationInHierarchy(top);
-        ;
-        if (atypeFactory.hasQualifierParameterInHierarchy(exprType, top)) {
-            // The isTypeCastSafe call above checked that the exprType is a subtype of castType,
-            // so just check the reverse to check that the qualifiers are equivalent.
-            return atypeFactory.getQualifierHierarchy().isSubtype(castTypeAnno, exprTypeAnno);
-        }
-        // Otherwise the cast is unsafe, unless the qualifiers on both cast and expr are bottom.
-        AnnotationMirror bottom = atypeFactory.getQualifierHierarchy().getBottomAnnotation(top);
-        return AnnotationUtils.areSame(castTypeAnno, bottom)
-                && AnnotationUtils.areSame(exprTypeAnno, bottom);
-    }
-
-    /**
      * Returns true if the cast is safe.
      *
      * <p>Only primary qualifiers are checked unless the command line option "checkCastElementType"
@@ -2073,6 +2046,33 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
             return qualifierHierarchy.isSubtype(
                     exprType.getEffectiveAnnotations(), castType.getEffectiveAnnotations());
         }
+    }
+
+    /**
+     * Return whether or not casting the exprType to castType is legal.
+     *
+     * @param castType an invariant type
+     * @param exprType type of the expressions that is cast may or may not be invariant
+     * @param top
+     * @return whether or not casting the exprType to castType is legal.
+     */
+    private boolean isInvariantTypeCastSafe(
+            AnnotatedTypeMirror castType, AnnotatedTypeMirror exprType, AnnotationMirror top) {
+        if (!isTypeCastSafe(castType, exprType)) {
+            return false;
+        }
+        AnnotationMirror castTypeAnno = castType.getEffectiveAnnotationInHierarchy(top);
+        AnnotationMirror exprTypeAnno = exprType.getEffectiveAnnotationInHierarchy(top);
+        ;
+        if (atypeFactory.hasQualifierParameterInHierarchy(exprType, top)) {
+            // The isTypeCastSafe call above checked that the exprType is a subtype of castType,
+            // so just check the reverse to check that the qualifiers are equivalent.
+            return atypeFactory.getQualifierHierarchy().isSubtype(castTypeAnno, exprTypeAnno);
+        }
+        // Otherwise the cast is unsafe, unless the qualifiers on both cast and expr are bottom.
+        AnnotationMirror bottom = atypeFactory.getQualifierHierarchy().getBottomAnnotation(top);
+        return AnnotationUtils.areSame(castTypeAnno, bottom)
+                && AnnotationUtils.areSame(exprTypeAnno, bottom);
     }
 
     @Override

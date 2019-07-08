@@ -1480,6 +1480,7 @@ public abstract class GenericAnnotatedTypeFactory<
                         + " root needs to be set when used on trees; factory: "
                         + this.getClass();
 
+        applyQualifierParameterDefaults(tree, type);
         addAnnotationsFromDefaultQualifierForUse(TreeUtils.elementFromTree(tree), type);
         applyQualifierParameterDefaults(tree, type);
         treeAnnotator.visit(tree, type);
@@ -1605,6 +1606,7 @@ public abstract class GenericAnnotatedTypeFactory<
 
     @Override
     public void addComputedTypeAnnotations(Element elt, AnnotatedTypeMirror type) {
+        applyQualifierParameterDefaults(elt, type);
         addAnnotationsFromDefaultQualifierForUse(elt, type);
         applyQualifierParameterDefaults(elt, type);
         typeAnnotator.visit(type, null);
@@ -1756,6 +1758,15 @@ public abstract class GenericAnnotatedTypeFactory<
         return cfgVisualizer;
     }
 
+    @Override
+    public void postAsMemberOf(
+            AnnotatedTypeMirror type, AnnotatedTypeMirror owner, Element element) {
+        super.postAsMemberOf(type, owner, element);
+        if (element.getKind() == ElementKind.FIELD) {
+            poly.resolve(((VariableElement) element), owner, type);
+        }
+    }
+
     /**
      * Adds default qualifiers bases on the underlying type of {@code type} to {@code type}. If
      * {@code element} is a local variable, then the defaults are not added.
@@ -1779,15 +1790,6 @@ public abstract class GenericAnnotatedTypeFactory<
             }
         } else {
             defaultQualifierForUseTypeAnnotator.visit(type);
-        }
-    }
-
-    @Override
-    public void postAsMemberOf(
-            AnnotatedTypeMirror type, AnnotatedTypeMirror owner, Element element) {
-        super.postAsMemberOf(type, owner, element);
-        if (element.getKind() == ElementKind.FIELD) {
-            poly.annotate(((VariableElement) element), owner, type);
         }
     }
 }
