@@ -51,10 +51,7 @@ ANNOTATED_CLASSES = \
   $(patsubst lock/build/%.class,annotated/%.class, \
   $(patsubst nullness/build/%.class,annotated/%.class, \
   $(patsubst optional/build/%.class,annotated/%.class, \
-<<<<<<< HEAD
-=======
   $(patsubst signedness/build/%.class,annotated/%.class, \
->>>>>>> d965f1062dadf3d1bef34f63abb209c0d5ef29e6
   $(ANNOTATED_CLASSES_BY_DIR))))))
 
 # Extract from $(CTSYM) an unannotated version of every file that will
