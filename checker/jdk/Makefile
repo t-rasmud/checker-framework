@@ -5,7 +5,7 @@
 # A version of the JDK with just headers/signatures: method bodies contain no bodies.
 CTSYM ?= $(JAVA_HOME)/lib/ct.sym
 
-CHECKER_DIRS = determinism index lock nullness optional
+CHECKER_DIRS = determinism index lock nullness optional signedness
 #CHECKER_DIRS =  determinism
 
 JAVA_FILES := $(shell find $(CHECKER_DIRS) -name '*.java' | sort)
@@ -51,6 +51,10 @@ ANNOTATED_CLASSES = \
   $(patsubst lock/build/%.class,annotated/%.class, \
   $(patsubst nullness/build/%.class,annotated/%.class, \
   $(patsubst optional/build/%.class,annotated/%.class, \
+<<<<<<< HEAD
+=======
+  $(patsubst signedness/build/%.class,annotated/%.class, \
+>>>>>>> d965f1062dadf3d1bef34f63abb209c0d5ef29e6
   $(ANNOTATED_CLASSES_BY_DIR))))))
 
 # Extract from $(CTSYM) an unannotated version of every file that will
