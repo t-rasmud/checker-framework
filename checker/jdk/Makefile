@@ -52,7 +52,7 @@ ANNOTATED_CLASSES = \
   $(patsubst nullness/build/%.class,annotated/%.class, \
   $(patsubst optional/build/%.class,annotated/%.class, \
   $(patsubst signedness/build/%.class,annotated/%.class, \
-  $(ANNOTATED_CLASSES_BY_DIR))))))
+  $(ANNOTATED_CLASSES_BY_DIR)))))))
 
 # Extract from $(CTSYM) an unannotated version of every file that will
 # eventually get any annotation.
