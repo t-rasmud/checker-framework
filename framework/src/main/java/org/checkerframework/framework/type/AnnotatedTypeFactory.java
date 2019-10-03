@@ -67,6 +67,7 @@ import org.checkerframework.framework.qual.FieldInvariant;
 import org.checkerframework.framework.qual.FromStubFile;
 import org.checkerframework.framework.qual.HasQualifierParameter;
 import org.checkerframework.framework.qual.InheritedAnnotation;
+import org.checkerframework.framework.qual.NoQualifierParameter;
 import org.checkerframework.framework.qual.PolymorphicQualifier;
 import org.checkerframework.framework.qual.SubtypeOf;
 import org.checkerframework.framework.source.Result;
@@ -3307,6 +3308,91 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
 
         List<Name> qualClasses =
                 AnnotationUtils.getElementValueClassNames(hasQualifierParam, "value", true);
+        for (Name qual : qualClasses) {
+            AnnotationMirror annotationMirror = AnnotationBuilder.fromName(elements, qual);
+            if (isSupportedQualifier(annotationMirror)) {
+                found.add(annotationMirror);
+            }
+        }
+        return found;
+    }
+
+    /**
+     * Whether or not the {@code annotatedTypeMirror} has an implicit qualifier parameter.
+     *
+     * @param annotatedTypeMirror AnnotatedTypeMirror to check
+     * @return true if the type has a qualifier parameter
+     */
+    public boolean hasNoQualifierParameterInHierarchy(
+            AnnotatedTypeMirror annotatedTypeMirror, AnnotationMirror top) {
+        return AnnotationUtils.containsSame(
+                getNoQualifierParameterHierarchies(annotatedTypeMirror), top);
+    }
+    /**
+     * Whether or not the {@code element} has an implicit qualifier parameter.
+     *
+     * @param element element to check
+     * @return true if the type has a qualifier parameter
+     */
+    public boolean hasNoQualifierParameterInHierarchy(
+            @Nullable Element element, AnnotationMirror top) {
+        return AnnotationUtils.containsSame(getNoQualifierParameterHierarchies(element), top);
+    }
+
+    /**
+     * Returns the set of top annotations representing all the hierarchies for which this type has a
+     * qualifier parameter.
+     *
+     * @param annotatedType AnnotatedTypeMirror to check
+     * @return the set of top annotations representing all the hierarchies for which this type has a
+     *     qualifier parameter
+     */
+    public Set<AnnotationMirror> getNoQualifierParameterHierarchies(
+            AnnotatedTypeMirror annotatedType) {
+        if (annotatedType.getKind() != TypeKind.DECLARED) {
+            return AnnotationUtils.createAnnotationSet();
+        }
+
+        AnnotatedDeclaredType declaredType = (AnnotatedDeclaredType) annotatedType;
+        Element element = declaredType.getUnderlyingType().asElement();
+        return getNoQualifierParameterHierarchies(element);
+    }
+
+    /**
+     * Returns the set of top annotations representing all the hierarchies for which this element
+     * has a qualifier parameter.
+     *
+     * @param element Element to check
+     * @return the set of top annotations representing all the hierarchies for which this element
+     *     has a qualifier parameter
+     */
+    public Set<AnnotationMirror> getNoQualifierParameterHierarchies(@Nullable Element element) {
+        return getSupportedAnnotationsInClassAnnotation(element, NoQualifierParameter.class);
+    }
+
+    /**
+     * Returns the set of top annotations representing all the hierarchies for which this element
+     * has a qualifier parameter.
+     *
+     * @param element Element to check
+     * @return the set of top annotations representing all the hierarchies for which this element
+     *     has a qualifier parameter
+     */
+    private Set<AnnotationMirror> getSupportedAnnotationsInClassAnnotation(
+            @Nullable Element element, Class<? extends Annotation> classAnnotation) {
+        Set<AnnotationMirror> found = AnnotationUtils.createAnnotationSet();
+
+        if (element == null || !ElementUtils.isTypeDeclaration(element)) {
+            return found;
+        }
+        // TODO: caching
+        AnnotationMirror annotation = getDeclAnnotation(element, classAnnotation);
+        if (annotation == null) {
+            return found;
+        }
+
+        List<Name> qualClasses =
+                AnnotationUtils.getElementValueClassNames(annotation, "value", true);
         for (Name qual : qualClasses) {
             AnnotationMirror annotationMirror = AnnotationBuilder.fromName(elements, qual);
             if (isSupportedQualifier(annotationMirror)) {
