@@ -1474,8 +1474,8 @@ public abstract class GenericAnnotatedTypeFactory<
     }
 
     /**
-     * Like {#addComputedTypeAnnotations(Tree, AnnotatedTypeMirror)}. Overriding implementations
-     * typically simply pass the boolean to calls to super.
+     * Like {@link #addComputedTypeAnnotations(Tree, AnnotatedTypeMirror)}. Overriding
+     * implementations typically simply pass the boolean to calls to super.
      */
     protected void addComputedTypeAnnotations(
             Tree tree, AnnotatedTypeMirror type, boolean iUseFlow) {
@@ -1608,6 +1608,13 @@ public abstract class GenericAnnotatedTypeFactory<
         }.visit(type);
     }
 
+    /* To add annotations to the type of method or constructor parameters, add a {@link
+     * TypeAnnotator} using {@link #createTypeAnnotator()} and see the comment in {@link
+     * TypeAnnotator#visitExecutable(AnnotatedExecutableType, Void)}.
+     *
+     * @param elt an element
+     * @param type the type obtained from {@code elt}
+     */
     @Override
     public void addComputedTypeAnnotations(Element elt, AnnotatedTypeMirror type) {
         applyQualifierParameterDefaults(elt, type);
