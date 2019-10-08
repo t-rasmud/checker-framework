@@ -23,7 +23,7 @@ class TestHashSet {
         @OrderNonDet Set<@Det String> s = new HashSet<@Det String>(c);
     }
 
-    void testConstructCollection6(@PolyDet("up") List<@Det String> c) {
+    void testConstructCollection6(@PolyDet List<@Det String> c) {
         // :: error: (assignment.type.incompatible)
         @PolyDet("up") Set<@Det String> s = new HashSet<@Det String>(c);
     }

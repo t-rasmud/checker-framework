@@ -5,9 +5,9 @@ public class TestPolyMethodSignature {
     // :: error: (invalid.polydet.up)
     static void testPolyUpInvalid(@PolyDet("up") Integer a) {}
 
-    void testPolyUpValid(@PolyDet TestPolyMethodSignature this, @PolyDet("up") Integer a) {}
+    void testPolyUpValid(@PolyDet TestPolyMethodSignature this, @PolyDet Integer a) {}
 
-    void testPolyUpValid1(@PolyDet("up") Integer a) {}
+    void testPolyUpValid1(@PolyDet Integer a) {}
 
     static @PolyDet("up") int checkListValid(@PolyDet List<@PolyDet Integer> lst) {
         return 0;

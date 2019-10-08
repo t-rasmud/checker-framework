@@ -44,10 +44,7 @@ public class PolyUpTest {
         return retPolyDownStatic(p);
     }
 
-    // Tests @PolyDet("up") conversion doesn't happen if @PolyDet("up") is passed rather than
-    // @PolyDet.
-    @PolyDet String testPolyUpParameter(@PolyDet("up") PolyUpTest p) {
-        // :: error: (return.type.incompatible)
+    @PolyDet String testPolyUpParameter(@PolyDet PolyUpTest p) {
         return p.retPolyUp();
     }
 }

@@ -32,20 +32,16 @@ class TestUpDet {
         return retDetUp(list);
     }
 
-    public void testSubtypes(@PolyDet List<@Det String> l1, @PolyDet("down") List<@Det String> l2) {
+    public void testSubtypes(@PolyDet List<@Det String> l1, @PolyDet List<@Det String> l2) {
         @PolyDet("upDet") List<@Det String> a = l1;
         @PolyDet("upDet") List<@Det String> b = l2;
     }
 
-    public void testSubtypesInvalid(
-            @PolyDet("upDet") List<@Det String> l1, @PolyDet("up") List<@Det String> l2) {
-        // :: error: (assignment.type.incompatible)
+    public void testSubtypesInvalid(@PolyDet List<@Det String> l1, @PolyDet List<@Det String> l2) {
         @PolyDet("up") List<@Det String> a = l1;
-        // :: error: (assignment.type.incompatible)
         @PolyDet List<@Det String> b = l1;
         // :: error: (assignment.type.incompatible)
         @PolyDet("down") List<@Det String> c = l1;
-        // :: error: (assignment.type.incompatible)
         @PolyDet("upDet") List<@Det String> d = l2;
     }
 }
