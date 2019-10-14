@@ -466,23 +466,27 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
 
     /**
      * Reports an error if {@code @PolyDet("up")}, {@code @PolyDet("down")},
-     * {@code @PolyDet("use")}, or {@code @PolyDet("upDet")} is written on a formal parameter or a
+     * {@code @PolyDet("upDet")}, or {@code @PolyDet("use")} is written on a formal parameter or a
      * return type and none of the formal parameters or the receiver has the type {@code @PolyDet}.
+     * The variants of {@code @PolyDet} should only be written on use sites (not instantiation
+     * sites). Without a corresponding {@code @PolyDet} on at least on of the formal parameters,
+     * {@code @PolyDet("up")}, {@code @PolyDet("down")}, {@code @PolyDet("upDet")}, or
+     * {@code @PolyDet("use")} cannot be instantiated correctly.
      */
     @Override
     public Void visitMethod(MethodTree node, Void p) {
-        HashSet<AnnotationMirror> polyAnnotations = new HashSet<>();
+        HashSet<AnnotationMirror> paramAnnotations = new HashSet<>();
         VariableTree receiverParam = node.getReceiverParameter();
         if (receiverParam != null) {
-            polyAnnotations.add(
+            paramAnnotations.add(
                     atypeFactory
                             .getAnnotatedType(receiverParam)
                             .getAnnotationInHierarchy(atypeFactory.NONDET));
         } else if (!node.getModifiers().getFlags().contains(Modifier.STATIC)) {
-            polyAnnotations.add(atypeFactory.POLYDET);
+            paramAnnotations.add(atypeFactory.POLYDET);
         }
         for (VariableTree param : node.getParameters()) {
-            polyAnnotations.add(
+            paramAnnotations.add(
                     atypeFactory
                             .getAnnotatedType(param)
                             .getAnnotationInHierarchy(atypeFactory.NONDET));
@@ -492,35 +496,43 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         boolean isPolyDownPresent = false;
         boolean isPolyUsePresent = false;
         boolean isPolyUpDetPresent = false;
-        for (AnnotationMirror atm : polyAnnotations) {
+        for (AnnotationMirror atm : paramAnnotations) {
             if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_UP)) {
                 isPolyUpPresent = true;
             }
             if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_DOWN)) {
                 isPolyDownPresent = true;
             }
-            if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_USE)) {
-                isPolyUsePresent = true;
-            }
             if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_UPDET)) {
                 isPolyUpDetPresent = true;
+            }
+            if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_USE)) {
+                isPolyUsePresent = true;
             }
             if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET)) {
                 isPolyPresent = true;
             }
         }
         if (!isPolyPresent) {
-            if (isPolyUpPresent) {
+            AnnotationMirror returnTypeAnno =
+                    atypeFactory
+                            .getAnnotatedType(node.getReturnType())
+                            .getAnnotationInHierarchy(atypeFactory.NONDET);
+            if (isPolyUpPresent
+                    || AnnotationUtils.areSame(returnTypeAnno, atypeFactory.POLYDET_UP)) {
                 checker.report(Result.failure("invalid.polydet.up"), node);
             }
-            if (isPolyDownPresent) {
+            if (isPolyDownPresent
+                    || AnnotationUtils.areSame(returnTypeAnno, atypeFactory.POLYDET_DOWN)) {
                 checker.report(Result.failure("invalid.polydet.down"), node);
             }
-            if (isPolyUsePresent) {
-                checker.report(Result.failure("invalid.polydet.use"), node);
-            }
-            if (isPolyUpDetPresent) {
+            if (isPolyUpDetPresent
+                    || AnnotationUtils.areSame(returnTypeAnno, atypeFactory.POLYDET_UPDET)) {
                 checker.report(Result.failure("invalid.polydet.updet"), node);
+            }
+            if (isPolyUsePresent
+                    || AnnotationUtils.areSame(returnTypeAnno, atypeFactory.POLYDET_USE)) {
+                checker.report(Result.failure("invalid.polydet.use"), node);
             }
         }
         return super.visitMethod(node, p);
