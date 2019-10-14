@@ -411,7 +411,16 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
                     checker.report(Result.failure("conflicting.qual.param", top), classTree);
                     hasConflictingQualifierParameter = true;
                 }
+            }
 
+            if (!hasConflictingQualifierParameter
+                    && atypeFactory.hasExplicitQualifierParameterInHierarchy(classElement, top)
+                    && atypeFactory.hasExplicitNoQualifierParameterInHierarchy(classElement, top)) {
+                checker.report(Result.failure("conflicting.qual.param", top), classTree);
+                hasConflictingQualifierParameter = true;
+            }
+
+            if (atypeFactory.hasQualifierParameterInHierarchy(classElement, top)) {
                 continue;
             }
             if (poly != null) {
