@@ -165,9 +165,9 @@ public class CollectionModifications {
 
     void listOrderNonDetRemove(
             @OrderNonDet List<@Det String> lst, @NonDet int nIndex, @Det int dIndex) {
-        // :: error: (argument.type.incompatible)
+        // :: error: (argument.type.incompatible) :: error: (method.invocation.invalid)
         lst.remove(nIndex);
-        // :: error: (argument.type.incompatible)
+        // :: error: (method.invocation.invalid)
         lst.remove(dIndex);
     }
 
