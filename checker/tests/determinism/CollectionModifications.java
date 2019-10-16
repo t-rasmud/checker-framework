@@ -158,20 +158,20 @@ public class CollectionModifications {
     }
 
     // Remove an element at a specific index
-    void listNonDetRemove(@NonDet Set<@NonDet String> lst, @NonDet int nIndex, @Det int dIndex) {
+    void listNonDetRemove(@NonDet List<@NonDet String> lst, @NonDet int nIndex, @Det int dIndex) {
         lst.remove(nIndex);
         lst.remove(dIndex);
     }
 
     void listOrderNonDetRemove(
-            @OrderNonDet Set<@Det String> lst, @NonDet int nIndex, @Det int dIndex) {
+            @OrderNonDet List<@Det String> lst, @NonDet int nIndex, @Det int dIndex) {
         // :: error: (argument.type.incompatible)
         lst.remove(nIndex);
         // :: error: (argument.type.incompatible)
         lst.remove(dIndex);
     }
 
-    void listDetRemove(@Det Set<@Det String> lst, @NonDet int nIndex, @Det int dIndex) {
+    void listDetRemove(@Det List<@Det String> lst, @NonDet int nIndex, @Det int dIndex) {
         // :: error: (argument.type.incompatible)
         lst.remove(nIndex);
         lst.remove(dIndex);

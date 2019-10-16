@@ -509,7 +509,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_USE)) {
                 isPolyUsePresent = true;
             }
-            if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET)) {
+            if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET)
+                    || AnnotationUtils.areSame(atm, atypeFactory.POLYDET_NOORDERNONDET)) {
                 isPolyPresent = true;
             }
         }

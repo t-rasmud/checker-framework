@@ -1,5 +1,8 @@
 package org.checkerframework.checker.determinism;
 
+import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.MethodInvocationTree;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -11,6 +14,7 @@ import org.checkerframework.framework.type.poly.DefaultQualifierPolymorphism;
 import org.checkerframework.framework.type.visitor.AnnotatedTypeScanner;
 import org.checkerframework.framework.util.AnnotationMirrorMap;
 import org.checkerframework.framework.util.AnnotationMirrorSet;
+import org.checkerframework.javacutil.AnnotationUtils;
 
 /**
  * Resolves polymorphic annotations at method invocations as follows:
@@ -41,6 +45,33 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
             ProcessingEnvironment env, DeterminismAnnotatedTypeFactory factory) {
         super(env, factory);
         this.factory = factory;
+    }
+
+    @Override
+    public void resolve(
+            MethodInvocationTree tree, AnnotatedTypeMirror.AnnotatedExecutableType type) {
+        List<AnnotatedTypeMirror> paramTypes = type.getParameterTypes();
+        List<? extends ExpressionTree> argTypes = tree.getArguments();
+        for (AnnotatedTypeMirror param : paramTypes) {
+            AnnotationMirror paramAnno = param.getAnnotationInHierarchy(factory.NONDET);
+            if (AnnotationUtils.areSame(paramAnno, factory.POLYDET_NOORDERNONDET)) {
+                int paramIndex = paramTypes.indexOf(param);
+                ExpressionTree argNoOrderNonDet = argTypes.get(paramIndex);
+                if (AnnotationUtils.areSame(
+                                factory.getAnnotatedType(argNoOrderNonDet)
+                                        .getAnnotationInHierarchy(factory.NONDET),
+                                factory.ORDERNONDET)
+                        || AnnotationUtils.areSame(
+                                factory.getAnnotatedType(argNoOrderNonDet)
+                                        .getAnnotationInHierarchy(factory.NONDET),
+                                factory.POLYDET)) {
+                    param.replaceAnnotation(factory.DET);
+                } else {
+                    param.replaceAnnotation(factory.POLYDET);
+                }
+            }
+        }
+        super.resolve(tree, type);
     }
 
     /**

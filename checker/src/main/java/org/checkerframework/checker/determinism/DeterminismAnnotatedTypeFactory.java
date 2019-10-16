@@ -56,6 +56,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     public final AnnotationMirror POLYDET_USE;
     /** The @PolyDet("upDet") annotation. */
     public final AnnotationMirror POLYDET_UPDET;
+    /** The @PolyDet("noOrderNonDet") annotation. */
+    public final AnnotationMirror POLYDET_NOORDERNONDET;
 
     /** The java.util.Set interface. */
     private final TypeMirror setInterfaceTypeMirror =
@@ -106,6 +108,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         POLYDET_DOWN = newPolyDet("down");
         POLYDET_USE = newPolyDet("use");
         POLYDET_UPDET = newPolyDet("upDet");
+        POLYDET_NOORDERNONDET = newPolyDet("noOrderNonDet");
 
         this.inputProperties = Collections.unmodifiableList(buildInputProperties());
 
