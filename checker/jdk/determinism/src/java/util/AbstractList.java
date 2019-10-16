@@ -510,7 +510,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @param o the object to be compared for equality with this list
      * @return {@code true} if the specified object is equal to this list
      */
-    public @PolyDet("up") boolean equals(@PolyDet AbstractList<E> this, @PolyDet("up") Object o) {
+    public @PolyDet("up") boolean equals(@PolyDet AbstractList<E> this, @PolyDet Object o) {
         if (o == this)
             return true;
         if (!(o instanceof List))
