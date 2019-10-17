@@ -48,6 +48,15 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
         this.factory = factory;
     }
 
+    /**
+     * NOTE: {@code @PolyDet("noOrderNonDet")} is a polymorphic type that can be instantiated as
+     * {@code @NonDet} or {@code @Det}, but not {@code OrderNonDet}.
+     *
+     * <p>Treats {@code @PolyDet("noOrderNonDet")} written on a formal parameter as {@code @Det} if
+     * the corresponding argument is of type type {@code @OrderNonDet}, {@code @PolyDet}, or
+     * {@code @PolyDet("upDet")}. Treats {@code @PolyDet("noOrderNonDet")} as {@code @PolyDet}
+     * otherwise.
+     */
     @Override
     public void resolve(
             MethodInvocationTree tree, AnnotatedTypeMirror.AnnotatedExecutableType type) {

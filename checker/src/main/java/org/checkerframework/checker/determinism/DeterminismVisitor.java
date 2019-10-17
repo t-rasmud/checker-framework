@@ -467,11 +467,15 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     /**
      * Reports an error if {@code @PolyDet("up")}, {@code @PolyDet("down")},
      * {@code @PolyDet("upDet")}, or {@code @PolyDet("use")} is written on a formal parameter or a
-     * return type and none of the formal parameters or the receiver has the type {@code @PolyDet}.
-     * The variants of {@code @PolyDet} should only be written on use sites (not instantiation
-     * sites). Without a corresponding {@code @PolyDet} on at least on of the formal parameters,
+     * return type and none of the formal parameters or the receiver has the type {@code @PolyDet}
+     * or {@code @PolyDet("noOrderNonDet")}. These variants of {@code @PolyDet} should only be
+     * written on use sites (not instantiation sites). Without a corresponding {@code @PolyDet} or
+     * {@code @PolyDet("noOrderNonDet")} on at least on of the formal parameters,
      * {@code @PolyDet("up")}, {@code @PolyDet("down")}, {@code @PolyDet("upDet")}, or
      * {@code @PolyDet("use")} cannot be instantiated correctly.
+     *
+     * <p>NOTE: {@code @PolyDet("noOrderNonDet")} is a polymorphic type that can resolve to
+     * {@code @NonDet} or {@code @Det}, but nor {@code @OrderNonDet}.
      */
     @Override
     public Void visitMethod(MethodTree node, Void p) {
