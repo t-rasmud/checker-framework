@@ -364,26 +364,6 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             }
             return super.visitMemberSelect(node, annotatedTypeMirror);
         }
-
-        /**
-         * If {@code @OrderNonDet} wasn't explicitly written on a {@code TreeSet} or a {@code
-         * TreeMap}, but the constructor would resolve to {@code @OrderNonDet}, inserts {@code @Det}
-         * instead.
-         *
-         * @param node a tree representing instantiating a class
-         * @param annotatedTypeMirror the type to modify if it represents an invalid constructor
-         *     call
-         * @return visitNewClass() of the super class
-         */
-        @Override
-        public Void visitNewClass(NewClassTree node, AnnotatedTypeMirror annotatedTypeMirror) {
-            if (isTreeSet(annotatedTypeMirror) || isTreeMap(annotatedTypeMirror)) {
-                if (annotatedTypeMirror.hasAnnotation(ORDERNONDET)) {
-                    annotatedTypeMirror.replaceAnnotation(DET);
-                }
-            }
-            return super.visitNewClass(node, annotatedTypeMirror);
-        }
     }
 
     /**

@@ -9,6 +9,7 @@ class Issue2781 {
         Wrapper(T t) {}
     }
 
+    @SuppressWarnings("determinism:return.type.incompatible")
     Stream<Wrapper<Function<String, String>>> getStreamOfWrappedFunctions1() {
         // inferred type in new
         return Stream.<Wrapper<Function<String, String>>>of(new Wrapper<>(e -> e));
