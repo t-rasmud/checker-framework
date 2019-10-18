@@ -378,7 +378,43 @@ is annotated as:
 E set(@PolyDet List<E> this, @PolyDet("use") int index, E element)
 \end{Verbatim}
 
+Whenever \<@PolyDet("up")>, \<@PolyDet("down")>, and \<@PolyDet("upDet")> are written on formal parameters,
+they are treated as \<@PolyDet("use")> sites that are instantiated with the corresponding \<@PolyDet> mappings.
+For instance, consider the following method signature:
 
+\begin{Verbatim}
+void set(@PolyDet List<E> this, @PolyDet("up") int index);
+\end{Verbatim}
+
+Only the following calls are legal:
+
+\begin{Verbatim}
+set(@NonDet List<E> , @NonDet int);
+set(@NonDet List<E> , @Det int);
+set(@OrderNonDet List<E> , @NonDet int);
+set(@OrderNonDet List<E> , @Det int);
+set(@Det List<E> , @Det int);
+\end{Verbatim}
+
+\subsectionAndLabel{Disallowing \<OrderNonDet> in polymorphic instantiations}{determinism-no-ordernondet}
+\begin{description}
+    \item[\refqualclass{checker/determinism/qual}{PolyDet}\<("noOrderNonDet")>] is the same as \<@PolyDet> except that it cannot be instantiated with \<OrderNonDet>.
+\end{description}
+
+The method signature:
+
+\begin{Verbatim}
+void remove(@PolyDet("noOrderNonDet") List<E> this);
+\end{Verbatim}
+
+allows the following calls:
+
+\begin{Verbatim}
+remove(@NonDet List<E>);
+remove(@Det List<E>);
+\end{Verbatim}
+
+The call \code{remove(@OrderNonDet List<E>);} is illegal.
 
 \sectionAndLabel{How to customize the Determinism Checker}{determinism-customization}
 
