@@ -364,6 +364,68 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             }
             return super.visitMemberSelect(node, annotatedTypeMirror);
         }
+
+        /**
+         * When an array of type {@code @OrderNonDet} or {@code @NonDet} is accessed, this method
+         * annotates the type of the array access expression (equivalently, the array element) as
+         * {@code @NonDet}. Example:
+         *
+         * <pre><code>
+         * &nbsp; @Det int @NonDet int[] arr;
+         * &nbsp; int val = arr[0];
+         * </code></pre>
+         *
+         * In the code above, type of val gets annotated as @NonDet.
+         *
+         * <p>Note: If we were to replace every array access with this rule, the checker would allow
+         * invalid assignments to array elements. Example:
+         *
+         * <pre><code>
+         * &nbsp; @Det int @OrderNonDet [] x;
+         * &nbsp; @NonDet int i;
+         * &nbsp; x[i] = y;
+         * </code></pre>
+         *
+         * Here, we expect the checker to flag the assignment {@code x[i] = y} as an error. Had we
+         * replaced the type of every {@code @OrderNonDet} and {@code @NonDet} array access with
+         * {@code @NonDet}, the array access {@code x[i]} would have the type {@code @NonDet} and
+         * this assignment would not be flagged as an error.
+         *
+         * <p>NOTE: We override {@code commonAssignmentCheck} and not {@code visitArrayAccess}
+         * because the checker framework treats x[i] as an lvalue like array access. It is possible
+         * to distinguish whether a "[]" operator is in an lvalue or an rvalue position. But, the
+         * {@code visitArrayAccess} method does not give access to valueType (the annotated type of
+         * rhs value) like in {@code commonAssignmentCheck} below, making it difficult to replace
+         * the annotation on the rvalue.
+         *
+         * @param node the annotated type of the variable
+         * @param annotatedTypeMirror the annotated type of the value
+         */
+        @Override
+        public Void visitArrayAccess(
+                ArrayAccessTree node, AnnotatedTypeMirror annotatedTypeMirror) {
+            if (!isLHS) {
+                AnnotationMirror arrTopType =
+                        atypeFactory
+                                .getAnnotatedType(node.getExpression())
+                                .getAnnotationInHierarchy(NONDET);
+                if (AnnotationUtils.areSame(arrTopType, ORDERNONDET)
+                        || AnnotationUtils.areSame(arrTopType, NONDET)) {
+                    annotatedTypeMirror.replaceAnnotation(NONDET);
+                } else if (AnnotationUtils.areSame(arrTopType, POLYDET)) {
+                    annotatedTypeMirror.replaceAnnotation(POLYDET_UP);
+                }
+
+                AnnotationMirror arrIndexType =
+                        atypeFactory
+                                .getAnnotatedType(node.getIndex())
+                                .getAnnotationInHierarchy(NONDET);
+                if (AnnotationUtils.areSame(arrIndexType, NONDET)) {
+                    annotatedTypeMirror.replaceAnnotation(NONDET);
+                }
+            }
+            return super.visitArrayAccess(node, annotatedTypeMirror);
+        }
     }
 
     /**

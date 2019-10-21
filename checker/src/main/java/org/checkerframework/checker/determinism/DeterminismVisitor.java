@@ -304,6 +304,14 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             AnnotationMirror varAnno = varType.getEffectiveAnnotationInHierarchy(NONDET);
             if (atypeFactory.getQualifierHierarchy().isSubtype(exprAnno, varAnno)) {
                 super.commonAssignmentCheck(varTree, valueExp, errorKey);
+                if (varTree.getKind() == Kind.ARRAY_ACCESS) {
+                    if (AnnotationUtils.areSame(varAnno, atypeFactory.ORDERNONDET)
+                            || AnnotationUtils.areSame(varAnno, atypeFactory.POLYDET)) {
+                        checker.report(
+                                Result.failure(INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno),
+                                varTree);
+                    }
+                }
             } else if (varTree.getKind() == Kind.ARRAY_ACCESS) {
                 checker.report(
                         Result.failure(INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno), varTree);
@@ -314,66 +322,6 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         } else {
             super.commonAssignmentCheck(varTree, valueExp, errorKey);
         }
-    }
-
-    /**
-     * When an array of type {@code @OrderNonDet} or {@code @NonDet} is accessed, this method
-     * annotates the type of the array access expression (equivalently, the array element) as
-     * {@code @NonDet}. Example:
-     *
-     * <pre><code>
-     * &nbsp; @Det int @NonDet int[] arr;
-     * &nbsp; int val = arr[0];
-     * </code></pre>
-     *
-     * In the code above, type of val gets annotated as @NonDet.
-     *
-     * <p>Note: If we were to replace every array access with this rule, the checker would allow
-     * invalid assignments to array elements. Example:
-     *
-     * <pre><code>
-     * &nbsp; @Det int @OrderNonDet [] x;
-     * &nbsp; @NonDet int i;
-     * &nbsp; x[i] = y;
-     * </code></pre>
-     *
-     * Here, we expect the checker to flag the assignment {@code x[i] = y} as an error. Had we
-     * replaced the type of every {@code @OrderNonDet} and {@code @NonDet} array access with
-     * {@code @NonDet}, the array access {@code x[i]} would have the type {@code @NonDet} and this
-     * assignment would not be flagged as an error.
-     *
-     * <p>NOTE: We override {@code commonAssignmentCheck} and not {@code visitArrayAccess} because
-     * the checker framework treats x[i] as an lvalue like array access. It is possible to
-     * distinguish whether a "[]" operator is in an lvalue or an rvalue position. But, the {@code
-     * visitArrayAccess} method does not give access to valueType (the annotated type of rhs value)
-     * like in {@code commonAssignmentCheck} below, making it difficult to replace the annotation on
-     * the rvalue.
-     *
-     * @param varType the annotated type of the variable
-     * @param valueType the annotated type of the value
-     * @param valueTree the location to use when reporting the error message
-     * @param errorKey the error message to use if the check fails (must be a compiler message key)
-     */
-    @Override
-    protected void commonAssignmentCheck(
-            AnnotatedTypeMirror varType,
-            AnnotatedTypeMirror valueType,
-            Tree valueTree,
-            @CompilerMessageKey String errorKey) {
-        if (valueTree.getKind() == Tree.Kind.ARRAY_ACCESS) {
-            ArrayAccessTree arrTree = (ArrayAccessTree) valueTree;
-            AnnotatedArrayType arrType =
-                    (AnnotatedArrayType) atypeFactory.getAnnotatedType(arrTree.getExpression());
-            AnnotationMirror arrTopType = arrType.getAnnotationInHierarchy(atypeFactory.NONDET);
-            if (AnnotationUtils.areSame(arrTopType, atypeFactory.ORDERNONDET)
-                    || AnnotationUtils.areSame(arrTopType, atypeFactory.NONDET)) {
-                valueType.replaceAnnotation(atypeFactory.NONDET);
-            }
-            if (AnnotationUtils.areSame(arrTopType, atypeFactory.POLYDET)) {
-                valueType.replaceAnnotation(atypeFactory.POLYDET_UP);
-            }
-        }
-        super.commonAssignmentCheck(varType, valueType, valueTree, errorKey);
     }
 
     // Hack: Remove this after it's fixed on the master branch.

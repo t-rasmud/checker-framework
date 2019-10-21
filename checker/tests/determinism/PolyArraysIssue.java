@@ -7,5 +7,6 @@ public class PolyArraysIssue {
         @PolyDet("up") Integer arrayVal = a[index];
         myPolyInt(arrayVal);
         myPolyInt(a[index]);
+        a[0] = 5;
     }
 }
