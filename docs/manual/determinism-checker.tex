@@ -381,40 +381,56 @@ E set(@PolyDet List<E> this, @PolyDet("use") int index, E element)
 Whenever \<@PolyDet("up")>, \<@PolyDet("down")>, and \<@PolyDet("upDet")> are written on formal parameters,
 they are treated as \<@PolyDet("use")> sites that are instantiated with the corresponding \<@PolyDet> mappings.
 For instance, consider the following method signature:
-
 \begin{Verbatim}
-void set(@PolyDet List<E> this, @PolyDet("up") int index);
+static void myMethod(@PolyDet List<E> lst, @PolyDet("up") int index);
 \end{Verbatim}
-
 Only the following calls are legal:
-
 \begin{Verbatim}
-set(@NonDet List<E> , @NonDet int);
-set(@NonDet List<E> , @Det int);
-set(@OrderNonDet List<E> , @NonDet int);
-set(@OrderNonDet List<E> , @Det int);
-set(@Det List<E> , @Det int);
+@NonDet List<...> ndList; @NonDet int index;
+myMethod(ndList , index);
+
+@NonDet List<...> ndList; @Det int index;
+myMethod(ndList , index);
+
+@OrderNonDet List<...> ondList; @NonDet int index;
+myMethod(ondList , index);
+
+@OrderNonDet List<...> ondList; @Det int index;
+myMethod(ondList , index);
+
+@Det List<...> detList; @Det int index;
+myMethod(detList , index);
 \end{Verbatim}
 
 \subsectionAndLabel{Disallowing \<OrderNonDet> in polymorphic instantiations}{determinism-no-ordernondet}
 \begin{description}
     \item[\refqualclass{checker/determinism/qual}{PolyDet}\<("noOrderNonDet")>] is the same as \<@PolyDet> except that it cannot be instantiated with \<OrderNonDet>.
 \end{description}
-
 The method signature:
-
 \begin{Verbatim}
-void remove(@PolyDet("noOrderNonDet") List<E> this);
+static void myMethodNoOrderNonDet(@PolyDet("noOrderNonDet") List<E> lst);
 \end{Verbatim}
-
 allows the following calls:
-
 \begin{Verbatim}
-remove(@NonDet List<E>);
-remove(@Det List<E>);
-\end{Verbatim}
+@NonDet List<...> ndList;
+myMethodNoOrderNonDet(ndList);
 
-The call \code{remove(@OrderNonDet List<E>);} is illegal.
+@Det List<...> detList;
+myMethodNoOrderNonDet(detList);
+\end{Verbatim}
+The call \code{myMethodNoOrderNonDet(ondList);} where \<ondList>  is of type \code{@OrderNonDet List<...>} is illegal.
+In the JDK, we annotate the \<remove> method of \<List> as follows:
+\begin{Verbatim}
+@PolyDet("up") E remove(@PolyDet("noOrderNonDet") List<E> this, @PolyDet("use") int index);
+\end{Verbatim}
+This method signature disallows removing elements at specific indices from an  \<OrderNonDet List>.
+Allowing such removals would be unsound. Consider the following example:
+\begin{Verbatim}
+@OrderNonDet List<@Det Integer> ondList;         // Suppose ondList contains elements: [1, 2, 3]
+ondList.remove(0);
+\end{Verbatim}
+Since the list is \<OrderNonDet>, removing an element at index 0 could remove any of its 3 elements in different runs
+making the resulting list \<NonDet> which is unsound.
 
 \sectionAndLabel{How to customize the Determinism Checker}{determinism-customization}
 
