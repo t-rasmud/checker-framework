@@ -80,9 +80,9 @@ public class CollectionModifications {
             @NonDet String str,
             @NonDet int nIndex,
             @Det int dIndex) {
-        // :: error: (argument.type.incompatible)
+        // :: error: (argument.type.incompatible) :: error: (method.invocation.invalid)
         lst.set(nIndex, str);
-        // :: error: (argument.type.incompatible)
+        // :: error: (argument.type.incompatible) :: error: (method.invocation.invalid)
         lst.set(dIndex, str);
     }
 
@@ -91,7 +91,7 @@ public class CollectionModifications {
             @OrderNonDet List<@Det String> str,
             @NonDet int nIndex,
             @Det int dIndex) {
-        // :: error: method.invocation.invalid
+        // :: error: argument.type.incompatible :: error: (method.invocation.invalid)
         lst.set(nIndex, str);
         // :: error: method.invocation.invalid
         lst.set(dIndex, str);
@@ -102,7 +102,7 @@ public class CollectionModifications {
             @Det String str,
             @NonDet int nIndex,
             @Det int dIndex) {
-        // :: error: argument.type.incompatible
+        // :: error: argument.type.incompatible :: error: (method.invocation.invalid)
         lst.set(nIndex, str);
         // :: error: method.invocation.invalid
         lst.set(dIndex, str);
