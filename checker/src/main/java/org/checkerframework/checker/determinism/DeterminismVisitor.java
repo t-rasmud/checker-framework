@@ -304,6 +304,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             AnnotationMirror varAnno = varType.getEffectiveAnnotationInHierarchy(NONDET);
             if (atypeFactory.getQualifierHierarchy().isSubtype(exprAnno, varAnno)) {
                 super.commonAssignmentCheck(varTree, valueExp, errorKey);
+                // Assigning to a specific index of an "OrderNonDet" array is invalid.
                 if (varTree.getKind() == Kind.ARRAY_ACCESS) {
                     if (AnnotationUtils.areSame(varAnno, atypeFactory.ORDERNONDET)
                             || AnnotationUtils.areSame(varAnno, atypeFactory.POLYDET)) {
