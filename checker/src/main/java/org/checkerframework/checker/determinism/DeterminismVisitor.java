@@ -11,6 +11,7 @@ import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.compilermsgs.qual.CompilerMessageKey;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.determinism.qual.RequiresDetToString;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeValidator;
@@ -501,21 +502,29 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         boolean isPolyUsePresent = false;
         boolean isPolyUpDetPresent = false;
         for (AnnotationMirror atm : paramAnnotations) {
-            if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_UP)) {
-                isPolyUpPresent = true;
+            // atm could ne null for type parameters.
+            if (atm == null) {
+                continue;
             }
-            if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_DOWN)) {
-                isPolyDownPresent = true;
-            }
-            if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_UPDET)) {
-                isPolyUpDetPresent = true;
-            }
-            if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET_USE)) {
-                isPolyUsePresent = true;
-            }
-            if (AnnotationUtils.areSame(atm, atypeFactory.POLYDET)
-                    || AnnotationUtils.areSame(atm, atypeFactory.POLYDET_NOORDERNONDET)) {
-                isPolyPresent = true;
+            if (AnnotationUtils.areSameByClass(atm, PolyDet.class)) {
+                String elemValue =
+                        AnnotationUtils.getElementValue(atm, "value", String.class, true);
+                switch (elemValue) {
+                    case "up":
+                        isPolyUpPresent = true;
+                        break;
+                    case "down":
+                        isPolyDownPresent = true;
+                        break;
+                    case "upDet":
+                        isPolyUpDetPresent = true;
+                        break;
+                    case "use":
+                        isPolyUsePresent = true;
+                        break;
+                    default:
+                        isPolyPresent = true;
+                }
             }
         }
         if (!isPolyPresent) {
