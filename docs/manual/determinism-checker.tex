@@ -152,6 +152,30 @@ Collection (or array)   & OrderNonDet &   invalid  &  valid      & valid  \\ \cl
   \label{fig-determinism-collections}
 \end{figure}
 
+\subsectionAndLabel{Accessing array elements}{determinism-access-array-elements}
+When an array of type \<@OrderNonDet> (or \<@PolyDet>) is accessed, we
+annotate the type of the array access expression (equivalently, the array element) as
+\<@NonDet> (or \<PolyDet("up")>). Example:
+\begin{Verbatim}
+@Det int @OrderNonDet [] arr;
+int val = arr[0];
+\end{Verbatim}
+In the code above, type of \<val> gets annotated as \<NonDet>.
+
+Note that we change the type of an array access as described above if
+the array access occurs on the rhs of an expression.
+If we were to replace every array access with this rule, the checker would allow
+invalid assignments to array elements. Example:
+\begin{Verbatim}
+@Det int @OrderNonDet [] x;
+@NonDet int i;
+x[i] = y;
+\end{Verbatim}
+Here, we expect the checker to flag the assignment \code{x[i] = y} as an error. Had we
+replaced the type of every \<@OrderNonDet> array access with
+\<@NonDet>, the array access \<x[i]> would have the type \<@NonDet> and
+this assignment would not be flagged as an error.
+
 \subsectionAndLabel{Valid user defined types}{determinism-valid-user-types}
 A user defined type may be annotated as \<@OrderNonDet> if and only if it
 is a subtype of Collection or Iterator.
