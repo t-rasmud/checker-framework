@@ -7,6 +7,7 @@ public class PolyArraysIssue {
         @PolyDet("up") Integer arrayVal = a[index];
         myPolyInt(arrayVal);
         myPolyInt(a[index]);
+        // :: error: (invalid.array.assignment)
         a[0] = 5;
     }
 }
