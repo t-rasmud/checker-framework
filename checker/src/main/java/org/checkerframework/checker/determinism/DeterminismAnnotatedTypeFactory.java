@@ -375,7 +375,18 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          * &nbsp; int val = arr[0];
          * </code></pre>
          *
-         * In the code above, type of val gets annotated as @NonDet.
+         * In the code above, type of arr[0] gets annotated as {@code @NonDet}.
+         *
+         * <p>This method also annotates the type of an rhs array expression as {@code @NonDet} if
+         * the index type is annotated as {@code @NonDet}. Example:
+         *
+         * <pre><code>
+         * &nbsp; @Det int @Det [] arr;
+         * &nbsp; @NonDet int index;
+         * &nbsp; int val = arr[index];
+         * </code></pre>
+         *
+         * In the code above, type of arr[index] gets annotated as {@code @NonDet}.
          *
          * @param node the annotated type of the variable
          * @param annotatedTypeMirror the annotated type of the value
@@ -389,7 +400,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                         atypeFactory
                                 .getAnnotatedType(node.getExpression())
                                 .getAnnotationInHierarchy(NONDET);
-                if (AnnotationUtils.areSame(arrTopType, ORDERNONDET)) {
+                AnnotationMirror indextype =
+                        atypeFactory
+                                .getAnnotatedType(node.getIndex())
+                                .getAnnotationInHierarchy(NONDET);
+                if (AnnotationUtils.areSame(arrTopType, ORDERNONDET)
+                        || AnnotationUtils.areSame(indextype, NONDET)) {
                     annotatedTypeMirror.replaceAnnotation(NONDET);
                 } else if (AnnotationUtils.areSame(arrTopType, POLYDET)) {
                     annotatedTypeMirror.replaceAnnotation(POLYDET_UP);
