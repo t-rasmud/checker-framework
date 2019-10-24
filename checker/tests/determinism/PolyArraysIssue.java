@@ -21,9 +21,11 @@ public class PolyArraysIssue {
         array[i] = "";
     }
 
-    @PolyDet boolean method2(@PolyDet int i, @Det String @Det [] array) {
+    @PolyDet boolean method2(@PolyDet int i, @Det String @Det [] array, @NonDet String @NonDet [] array1) {
         // :: error: (assignment.type.incompatible)
         @Det String s = array[i];
+        // :: error: (assignment.type.incompatible)
+        @Det String s1 = array1[i];
         // :: error: (invalid.array.assignment)
         array[i] = "";
         return true;
