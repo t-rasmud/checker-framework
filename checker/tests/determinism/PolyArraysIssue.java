@@ -19,4 +19,12 @@ public class PolyArraysIssue {
         // :: error: (invalid.array.assignment)
         array[i] = "";
     }
+
+    @PolyDet boolean method2(@PolyDet int i, @Det String @Det [] array) {
+        // :: error: (assignment.type.incompatible)
+        @Det String s = array[i];
+        // :: error: (invalid.array.assignment)
+        array[i] = "";
+        return true;
+    }
 }
