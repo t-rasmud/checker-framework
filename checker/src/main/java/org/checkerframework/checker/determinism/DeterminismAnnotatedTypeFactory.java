@@ -407,7 +407,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 if (AnnotationUtils.areSame(arrTopType, ORDERNONDET)
                         || AnnotationUtils.areSame(indextype, NONDET)) {
                     annotatedTypeMirror.replaceAnnotation(NONDET);
-                } else if (AnnotationUtils.areSame(arrTopType, POLYDET)) {
+                } else if (AnnotationUtils.areSameByName(arrTopType, POLYDET)) {
                     annotatedTypeMirror.replaceAnnotation(POLYDET_UP);
                 }
             }
