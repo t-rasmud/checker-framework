@@ -1,5 +1,6 @@
 import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 
 public class PolyArraysIssue {
@@ -27,4 +28,13 @@ public class PolyArraysIssue {
         array[i] = "";
         return true;
     }
+
+    // :: error: (invalid.array.component.type)
+    void polyIndex(@PolyDet int @NonDet [] a) {}
+
+    // :: error: (invalid.array.component.type)
+    void polyIndex1(@PolyDet int @Det [] a) {}
+
+    // :: error: (invalid.array.component.type)
+    void polyIndex2(@PolyDet int @OrderNonDet [] a) {}
 }
