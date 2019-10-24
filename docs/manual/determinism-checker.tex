@@ -154,10 +154,10 @@ Collection (or array)   & OrderNonDet &   invalid  &  valid      & valid  \\ \cl
 
 \subsectionAndLabel{Accessing array elements}{determinism-access-array-elements}
 When an array of type \<@OrderNonDet> (or \<@PolyDet>) is accessed on the rhs of an expression,
-we cannot guarantee that the same element will be returned in every execution. For instance,
+the Determinism Checker cannot guarantee that the same element will be returned in every execution. For instance,
 consider an \<@OrderNonDet> array \<a> with elements \code{[5,2,8]}. In one execution,
 \<a[0]> might return \<5> and in another execution, it could return \<8>.
-So we annotate the type of the array access expression (equivalently, the array element) as
+So the the type of the array access expression (equivalently, the array element) is
 \<@NonDet> (or \<PolyDet("up")>). Example:
 \begin{Verbatim}
 @Det int @OrderNonDet [] arr;
@@ -166,7 +166,7 @@ int val = arr[0];
 In the code above, type of \<arr[0]> gets annotated as \<NonDet>.
 
 Similarly, when a \code{@NonDet int} is used to index into an array,
-the type of the array access expression is \<@NonDet>. Example:
+the Determinism Checker annotates the type of the array access expression as \<@NonDet>. Example:
 \begin{Verbatim}
 @Det int @Det [] arr;
 @NonDet int index;
@@ -174,9 +174,9 @@ int val = arr[index];
 \end{Verbatim}
 In the code above, type of \<arr[index]> gets annotated as \<NonDet>.
 
-Note that we change the type of an array access as described above if
+Note that the Determinism Checker changes the type of an array access as described above if
 the array access occurs on the rhs of an expression.
-If we were to replace every array access with this rule, the checker would allow
+If it were to replace every array access with this rule, the checker would allow
 invalid assignments to array elements. Example:
 \begin{Verbatim}
 @Det int @OrderNonDet [] x;
@@ -192,7 +192,7 @@ consider an \<@OrderNonDet> array \<a> with elements \<[1,2,3]>. In one executio
 the statement \code{a[0] = 5} could result in the array \<[5,2,3]>. In another
 execution, the same statement could result in the array \<[5,1,2]>.
 Assigning values at a \<@NonDet> index in a \<@Det> array has a similar effect.
-Had we replaced the type of every \<@OrderNonDet> array access with
+Had the checker replaced the type of every \<@OrderNonDet> array access with
 \<@NonDet>, the array access \<x[i]> would have the type \<@NonDet> and
 this assignment would not be flagged as an error.
 
