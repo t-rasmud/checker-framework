@@ -8,15 +8,15 @@ jobs:
     fetchDepth: 25
   - bash: ./checker/bin-devel/test-all-tests.sh
     displayName: test-all-tests.sh
-- job: all_tests_jdk11
-  pool:
-    vmImage: 'ubuntu-16.04'
-  container: mdernst/cf-ubuntu-jdk11:latest
-  steps:
-  - checkout: self
-    fetchDepth: 25
-  - bash: ./checker/bin-devel/test-all-tests.sh
-    displayName: test-all-tests.sh
+#- job: all_tests_jdk11
+#  pool:
+#    vmImage: 'ubuntu-16.04'
+#  container: mdernst/cf-ubuntu-jdk11:latest
+#  steps:
+#  - checkout: self
+#    fetchDepth: 25
+#  - bash: ./checker/bin-devel/test-all-tests.sh
+#    displayName: test-all-tests.sh
 - job: jdk_jar_jdk8
   pool:
     vmImage: 'ubuntu-16.04'
@@ -80,15 +80,15 @@ jobs:
 #    fetchDepth: 25
 #  - bash: ./checker/bin-devel/test-daikon.sh
 #    displayName: test-daikon.sh
-- job: downstream_jdk11
-  pool:
-    vmImage: 'ubuntu-16.04'
-  container: mdernst/cf-ubuntu-jdk11:latest
-  steps:
-  - checkout: self
-    fetchDepth: 25
-  - bash: ./checker/bin-devel/test-downstream.sh
-    displayName: test-downstream.sh
+#- job: downstream_jdk11
+#  pool:
+#    vmImage: 'ubuntu-16.04'
+#  container: mdernst/cf-ubuntu-jdk11:latest
+#  steps:
+#  - checkout: self
+#    fetchDepth: 25
+#  - bash: ./checker/bin-devel/test-downstream.sh
+#    displayName: test-downstream.sh
 - job: downstream_jdk8
   pool:
     vmImage: 'ubuntu-16.04'
