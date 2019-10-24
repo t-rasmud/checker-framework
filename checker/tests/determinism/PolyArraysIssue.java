@@ -17,4 +17,7 @@ public class PolyArraysIssue {
         // :: error: (assignment.type.incompatible)
         @Det String s = array[i];
     }
+
+    // :: error: (invalid.array.component.type)
+    void polyIndex(@PolyDet int @NonDet [] a) {}
 }
