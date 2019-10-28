@@ -14,20 +14,41 @@ public class PolyArraysIssue {
         a[0] = 5;
     }
 
-    void method(@NonDet int i, @Det String @Det [] array) {
+    void method(@Det String @Det [] array, @NonDet int i, @Det int di, @PolyDet int pi) {
         // :: error: (assignment.type.incompatible)
         @Det String s = array[i];
         // :: error: (invalid.array.assignment)
         array[i] = "";
+
+        @Det String t = array[di];
+        array[di] = "";
+
+        // :: error: (assignment.type.incompatible)
+        @Det String p = array[pi];
+        // :: error: (invalid.array.assignment)
+        array[pi] = "";
     }
 
-    @PolyDet boolean method2(@PolyDet int i, @Det String @Det [] array, @NonDet String @NonDet [] array1) {
+    @PolyDet boolean method2(
+            @Det String @Det [] array,
+            @NonDet String @NonDet [] array1,
+            @PolyDet int i,
+            @Det int di,
+            @NonDet int ni) {
         // :: error: (assignment.type.incompatible)
         @Det String s = array[i];
         // :: error: (assignment.type.incompatible)
         @Det String s1 = array1[i];
         // :: error: (invalid.array.assignment)
         array[i] = "";
+
+        // :: error: (assignment.type.incompatible)
+        @Det String t1 = array1[di];
+        array1[di] = "";
+
+        // :: error: (assignment.type.incompatible)
+        @Det String p1 = array1[ni];
+        array1[ni] = "";
         return true;
     }
 
@@ -36,6 +57,23 @@ public class PolyArraysIssue {
         @PolyDet String s = array[i];
         array[i] = "";
         return true;
+    }
+
+    void method4(@PolyDet String @PolyDet [] array, @NonDet int i, @Det int di, @PolyDet int pi) {
+        // :: error: (assignment.type.incompatible)
+        @Det String s = array[i];
+        // :: error: (invalid.array.assignment)
+        array[i] = "";
+
+        // :: error: (assignment.type.incompatible)
+        @Det String t = array[di];
+        // :: error: (invalid.array.assignment)
+        array[di] = "";
+
+        // :: error: (assignment.type.incompatible)
+        @Det String p = array[pi];
+        // :: error: (invalid.array.assignment)
+        array[pi] = "";
     }
 
     // :: error: (invalid.array.component.type)
