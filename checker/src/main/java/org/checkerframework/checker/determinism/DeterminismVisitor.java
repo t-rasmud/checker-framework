@@ -551,14 +551,14 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     }
 
     /**
-     * Reports the given {@code errorMessage} if {@code subAnnotation} is not a valid element type
-     * of a collection or array with {@code collectionAnno}.
+     * Reports the given {@code errorMessage} if {@code elementAnno} is not a valid element type of
+     * a collection or array with {@code collectionAnno}.
      *
      * @param elementAnno the annotation of the element type of an array or collection
      * @param collectionAnno the annotation of an array or collection
      * @param tree the tree to report errors on
      * @param errorMessage the error message to report
-     * @return true if {@code elementAnno} is a subtype of {@code supperAnnotation} and it's not the
+     * @return true if {@code elementAnno} is a subtype of {@code collectionAnno} and it's not the
      *     case that {@code collectionAnno} is {@code @NonDet} and {@code elementAnno} is
      *     {@code @Det}, {@code @OrderNonDet}, or {@code @PolyDet}, false otherwise
      */
