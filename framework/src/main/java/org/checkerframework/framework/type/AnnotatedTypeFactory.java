@@ -63,7 +63,6 @@ import org.checkerframework.common.reflection.ReflectionResolver;
 import org.checkerframework.common.wholeprograminference.WholeProgramInference;
 import org.checkerframework.common.wholeprograminference.WholeProgramInferenceScenes;
 import org.checkerframework.dataflow.qual.SideEffectFree;
-import org.checkerframework.framework.qual.DefaultHasQualifierParameter;
 import org.checkerframework.framework.qual.FieldInvariant;
 import org.checkerframework.framework.qual.FromStubFile;
 import org.checkerframework.framework.qual.HasQualifierParameter;
@@ -374,6 +373,12 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     protected final ExecutableElement objectGetClass;
 
     /**
+     * Mapping from top annotations in hierarchies to regexes for which the {@code
+     * HasQualifierParameter} annotation should be on by default.
+     */
+    private final Map<AnnotationMirror, List<Pattern>> defaultHasQualifierParameterPatterns;
+
+    /**
      * Constructs a factory from the given {@link ProcessingEnvironment} instance and syntax tree
      * root. (These parameters are required so that the factory may conduct the appropriate
      * annotation-gathering analyses on certain tree types.)
@@ -437,6 +442,8 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         ignoreUninferredTypeArguments = !checker.hasOption("conservativeUninferredTypeArguments");
 
         objectGetClass = TreeUtils.getMethod("java.lang.Object", "getClass", 0, processingEnv);
+
+        defaultHasQualifierParameterPatterns = AnnotationUtils.createAnnotationMap();
     }
 
     /**
@@ -538,6 +545,8 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
 
         initializeReflectionResolution();
 
+        initializeDefaultHasQualifierParameter();
+
         if (this.getClass() == AnnotatedTypeFactory.class) {
             this.parseStubFiles();
         }
@@ -569,6 +578,35 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
                     (MethodValAnnotatedTypeFactory) methodValChecker.getAnnotationProvider();
 
             reflectionResolver = new DefaultReflectionResolver(checker, methodValATF, debug);
+        }
+    }
+
+    protected void initializeDefaultHasQualifierParameter() {
+        if (checker.hasOption("defaultHasQualifierParameter")) {
+            String defaultHasQualifierParameterOption =
+                    checker.getOption("defaultHasQualifierParameter");
+            if (defaultHasQualifierParameterOption != null) {
+                String[] quals = defaultHasQualifierParameterOption.split(";");
+                for (String qual : quals) {
+                    String[] components = qual.split(":");
+                    if (components.length != 2) {
+                        throw new UserError(
+                                "Each part of -AdefaultHasQualifierParameter should have exactly one colon");
+                    }
+
+                    AnnotationMirror anno = AnnotationBuilder.fromName(elements, components[0]);
+                    if (anno == null) {
+                        throw new UserError("Invalid annotation name: " + components[0]);
+                    }
+
+                    defaultHasQualifierParameterPatterns.put(anno, new ArrayList<>());
+                    for (String pattern : components[1].split(",")) {
+                        defaultHasQualifierParameterPatterns
+                                .get(anno)
+                                .add(Pattern.compile(pattern));
+                    }
+                }
+            }
         }
     }
 
@@ -3311,10 +3349,25 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         Set<AnnotationMirror> found =
                 getSupportedAnnotationsInClassAnnotation(element, HasQualifierParameter.class);
 
-        DefaultHasQualifierParameter defaultHasQualifierParam =
-                checker.getClass().getAnnotation(DefaultHasQualifierParameter.class);
-        if (defaultHasQualifierParam == null || !defaultHasQualifierParam.value()) {
-            return found;
+        Set<AnnotationMirror> noQualifierParamClasses =
+                getSupportedAnnotationsInClassAnnotation(element, NoQualifierParameter.class);
+        Set<AnnotationMirror> hasQualifierParameterTops = AnnotationUtils.createAnnotationSet();
+        for (AnnotationMirror anno : defaultHasQualifierParameterPatterns.keySet()) {
+            if (!isSupportedQualifier(anno)) {
+                continue;
+            }
+
+            CharSequence name = ElementUtils.getQualifiedClassName(element);
+            if (name == null) {
+                continue;
+            }
+
+            for (Pattern pattern : defaultHasQualifierParameterPatterns.get(anno)) {
+                if (pattern.matcher(name).matches()) {
+                    hasQualifierParameterTops.add(anno);
+                    break;
+                }
+            }
         }
 
         Set<AnnotationMirror> noQualifierParamClasses =
