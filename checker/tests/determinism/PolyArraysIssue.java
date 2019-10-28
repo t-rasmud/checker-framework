@@ -31,6 +31,13 @@ public class PolyArraysIssue {
         return true;
     }
 
+    @PolyDet boolean method3(@PolyDet int i, @NonDet String @NonDet [] array) {
+        // :: error: (assignment.type.incompatible)
+        @PolyDet String s = array[i];
+        array[i] = "";
+        return true;
+    }
+
     // :: error: (invalid.array.component.type)
     void polyIndex(@PolyDet int @NonDet [] a) {}
 
