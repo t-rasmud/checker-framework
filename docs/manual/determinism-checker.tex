@@ -83,7 +83,7 @@ Section~\ref{determinism-polymorphism} explains polymorphic qualifiers.
 The (determinism) type of a Collection or Iterator must be a supertype or equal to
 the type of the type parameter (see Figure~\ref{fig-determinism-collections}).
 If the Collection is \code{@NonDet}, then the type parameter may not be
-\code{@Det} or \code{@OrderNonDet}. Although such types could exist, they are
+\code{@Det}, \code{@OrderNonDet}, or \code{@PolyDet}. Although such types could exist, they are
 disallowed to prevent the following bug:
 
 \begin{Verbatim}
@@ -112,6 +112,7 @@ These types are invalid:
     \item \code{@NonDet\ \ \ \ \ \ List<@OrderNonDet Set<...>\relax >}
     \item \code{@NonDet\ \ \ \ \ \ List<@Det\ \ \ \ \ \ \ \ \ Integer>}
     \item \code{@NonDet\ \ \ \ \ \ List<T extends @Det Object>}
+    \item \code{@NonDet\ \ \ \ \ \ List<@PolyDet \ \ \ \ Set<...>\relax >}
     \item \code{@OrderNonDet List<@NonDet\ \ \ \ \ \ Integer>}
     \item \code{@Det\ \ \ \ \ \ \ \ \ List<@NonDet\ \ \ \ \ \ Integer>}
     \item \code{@Det\ \ \ \ \ \ \ \ \ List<@OrderNonDet Set<...>\relax >}
@@ -121,7 +122,7 @@ These types are invalid:
 Similarly, the (determinism) type of an array must be a supertype or equal to
 the type of the component type (see Figure~\ref{fig-determinism-collections}).
 As with collections, \code{@NonDet} arrays of \code{@Det} or \code{@OrderNonDet}
-elements are not allowed.
+or \code{@PolyDet} elements are not allowed.
 
 For example, these types are valid:
 \begin{itemize}
@@ -132,9 +133,10 @@ For example, these types are valid:
 
 These types are invalid:
 \begin{itemize}
-    \item \code{@NonDet int @OrderNonDet[]}
-    \item \code{@NonDet int @Det \ \ \ \ \ \ \ []}
-    \item \code{@Det \ \ \ int @NonDet \ \ \ \ []}
+    \item \code{@NonDet \ int @OrderNonDet[]}
+    \item \code{@NonDet \ int @Det \ \ \ \ \ \ \ []}
+    \item \code{@Det \ \ \ \ int @NonDet \ \ \ \ []}
+    \item \code{@PolyDet int @NonDet \ \ \ \ []}
 \end{itemize}
 
 \begin{figure}
