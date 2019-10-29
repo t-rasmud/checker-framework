@@ -364,6 +364,59 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             }
             return super.visitMemberSelect(node, annotatedTypeMirror);
         }
+
+        /**
+         * When an array of type {@code @OrderNonDet} (or {@code @PolyDet}) is accessed on the rhs,
+         * this method annotates the type of the array access expression (equivalently, the array
+         * element) as {@code @NonDet} (or {@code @PolyDet("up")}). Example:
+         *
+         * <pre><code>
+         * &nbsp; @Det int @OrderNonDet [] arr;
+         * &nbsp; int val = arr[0];
+         * </code></pre>
+         *
+         * In the code above, type of arr[0] gets annotated as {@code @NonDet}.
+         *
+         * <p>This method also annotates the type of an rhs array expression as {@code @NonDet} (or
+         * {@code @PolyDet}) if the index type is annotated as {@code @NonDet} (or
+         * {@code @PolyDet}). Example:
+         *
+         * <pre><code>
+         * &nbsp; @Det int @Det [] arr;
+         * &nbsp; @NonDet int index;
+         * &nbsp; int val = arr[index];
+         * </code></pre>
+         *
+         * In the code above, type of arr[index] gets annotated as {@code @NonDet}.
+         *
+         * @param node the annotated type of the variable
+         * @param annotatedTypeMirror the annotated type of the value
+         * @checker_framework.manual #﻿determinism-access-array-elements Access array elements
+         */
+        @Override
+        public Void visitArrayAccess(
+                ArrayAccessTree node, AnnotatedTypeMirror annotatedTypeMirror) {
+            if (!isLHS) {
+                AnnotationMirror arrTopType =
+                        atypeFactory
+                                .getAnnotatedType(node.getExpression())
+                                .getAnnotationInHierarchy(NONDET);
+                AnnotationMirror indextype =
+                        atypeFactory
+                                .getAnnotatedType(node.getIndex())
+                                .getAnnotationInHierarchy(NONDET);
+                if (AnnotationUtils.areSame(arrTopType, ORDERNONDET)
+                        || AnnotationUtils.areSame(arrTopType, NONDET)
+                        || AnnotationUtils.areSame(indextype, NONDET)) {
+                    annotatedTypeMirror.replaceAnnotation(NONDET);
+                } else if (AnnotationUtils.areSameByName(arrTopType, POLYDET)) {
+                    annotatedTypeMirror.replaceAnnotation(POLYDET_UP);
+                } else if (AnnotationUtils.areSame(indextype, POLYDET)) {
+                    annotatedTypeMirror.replaceAnnotation(POLYDET);
+                }
+            }
+            return super.visitArrayAccess(node, annotatedTypeMirror);
+        }
     }
 
     /**
