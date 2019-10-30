@@ -1,7 +1,6 @@
 import java.util.*;
 import org.checkerframework.checker.determinism.qual.*;
 
-// @skip-test
 public class Issue48 {
     static void testParams(@PolyDet Integer a) {}
 
