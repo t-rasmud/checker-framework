@@ -490,18 +490,16 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         // Errors that should be issued if @PolyDet or @PolyDet("noOrderNonDet") are not found.
         List<Pair<Result, Tree>> errors = new ArrayList<>();
         VariableTree receiver = methodTree.getReceiverParameter();
-        if (receiver != null) {
-            AnnotationMirror anno =
-                    atypeFactory
-                            .getAnnotatedType(receiver)
-                            .getAnnotationInHierarchy(atypeFactory.NONDET);
+        // receiverType is null for init constructors (public <init>()).
+        boolean isInitConstructor = methodTree.getName().contentEquals("<init>");
+        if (!ElementUtils.isStatic(TreeUtils.elementFromDeclaration(methodTree))
+                && !isInitConstructor) {
+            AnnotatedDeclaredType receiverType =
+                    atypeFactory.getAnnotatedType(methodTree).getReceiverType();
+            AnnotationMirror anno = receiverType.getAnnotationInHierarchy(atypeFactory.NONDET);
             if (addPolyDetError(anno, receiver, errors)) {
                 return; // found @PolyDet or @PolyDet("noOrderNonDet")
             }
-        } else if (!ElementUtils.isStatic(TreeUtils.elementFromDeclaration(methodTree))) {
-            // This is an instance method without explicit "this" parameter.
-            // TODO: this is what this method used to do, but I don't understand why.
-            return;
         }
 
         for (VariableTree param : methodTree.getParameters()) {
