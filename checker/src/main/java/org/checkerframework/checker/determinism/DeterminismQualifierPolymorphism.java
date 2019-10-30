@@ -1,12 +1,10 @@
 package org.checkerframework.checker.determinism;
 
-import com.sun.source.tree.ExpressionTree;
-import com.sun.source.tree.MethodInvocationTree;
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.TypeKind;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedArrayType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedDeclaredType;
@@ -15,7 +13,7 @@ import org.checkerframework.framework.type.visitor.AnnotatedTypeScanner;
 import org.checkerframework.framework.util.AnnotationMirrorMap;
 import org.checkerframework.framework.util.AnnotationMirrorSet;
 import org.checkerframework.javacutil.AnnotationUtils;
-import org.checkerframework.javacutil.TreeUtils;
+import org.checkerframework.javacutil.BugInCF;
 
 /**
  * Resolves polymorphic annotations at method invocations as follows:
@@ -46,125 +44,89 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
             ProcessingEnvironment env, DeterminismAnnotatedTypeFactory factory) {
         super(env, factory);
         this.factory = factory;
+        this.polyQuals.put(factory.POLYDET_NOORDERNONDET, factory.NONDET);
     }
 
     /**
-     * NOTE: {@code @PolyDet("noOrderNonDet")} is a polymorphic type that can be instantiated as
-     * {@code @NonDet} or {@code @Det}, but not {@code OrderNonDet}.
-     *
-     * <p>Treats {@code @PolyDet("noOrderNonDet")} written on a formal parameter as {@code @Det} if
-     * the corresponding argument is of type type {@code @OrderNonDet}, {@code @PolyDet}, or
-     * {@code @PolyDet("upDet")}. Treats {@code @PolyDet("noOrderNonDet")} as {@code @PolyDet}
-     * otherwise.
-     */
-    @Override
-    public void resolve(
-            MethodInvocationTree tree, AnnotatedTypeMirror.AnnotatedExecutableType type) {
-        List<AnnotatedTypeMirror> paramTypes = type.getParameterTypes();
-        List<? extends ExpressionTree> argTypes = tree.getArguments();
-
-        AnnotatedDeclaredType paramReceiver = type.getReceiverType();
-        if (paramReceiver != null) {
-            AnnotationMirror paramReceiverAnno =
-                    paramReceiver.getAnnotationInHierarchy(factory.NONDET);
-            ExpressionTree argReceiverTree = TreeUtils.getReceiverTree(tree);
-            if (argReceiverTree != null) {
-                AnnotationMirror argReceiverAnno =
-                        factory.getAnnotatedType(argReceiverTree)
-                                .getAnnotationInHierarchy(factory.NONDET);
-
-                if (AnnotationUtils.areSame(paramReceiverAnno, factory.POLYDET_NOORDERNONDET)) {
-                    if (AnnotationUtils.areSame(argReceiverAnno, factory.ORDERNONDET)
-                            || AnnotationUtils.areSame(argReceiverAnno, factory.POLYDET)
-                            || AnnotationUtils.areSame(argReceiverAnno, factory.POLYDET_UPDET)) {
-                        paramReceiver.replaceAnnotation(factory.DET);
-                    } else {
-                        paramReceiver.replaceAnnotation(factory.POLYDET);
-                    }
-                }
-            }
-        }
-
-        for (AnnotatedTypeMirror param : paramTypes) {
-            AnnotationMirror paramAnno = param.getAnnotationInHierarchy(factory.NONDET);
-            if (AnnotationUtils.areSame(paramAnno, factory.POLYDET_NOORDERNONDET)) {
-                int paramIndex = paramTypes.indexOf(param);
-                ExpressionTree argNoOrderNonDet = argTypes.get(paramIndex);
-                AnnotationMirror argAnno =
-                        factory.getAnnotatedType(argNoOrderNonDet)
-                                .getAnnotationInHierarchy(factory.NONDET);
-                if (AnnotationUtils.areSame(argAnno, factory.ORDERNONDET)
-                        || AnnotationUtils.areSame(argAnno, factory.POLYDET)
-                        || AnnotationUtils.areSame(argAnno, factory.POLYDET_UPDET)) {
-                    param.replaceAnnotation(factory.DET);
-                } else {
-                    param.replaceAnnotation(factory.POLYDET);
-                }
-            }
-        }
-        super.resolve(tree, type);
-    }
-
-    /**
-     * Replaces {@code @PolyDet} in {@code type} with the instantiations in {@code replacements}.
-     * Replaces {@code @PolyDet("up")} with {@code @NonDet} if it resolves to {@code OrderNonDet}.
-     * Replaces {@code @PolyDet("down")} with {@code @Det} if it resolves to {@code OrderNonDet}.
-     * Replaces {@code @PolyDet("use")} with the same annotation that {@code @PolyDet} resolves to.
-     * Replaces {@code @PolyDet("upDet")} with {@code @OrderNonDet} if it resolves to {@code @Det}.
+     * Replaces {@code @PolyDet} in {@code type} with the instantiations in {@code
+     * replacementsMapping}. Replaces {@code @PolyDet("up")} with {@code @NonDet} if it resolves to
+     * {@code OrderNonDet}. Replaces {@code @PolyDet("down")} with {@code @Det} if it resolves to
+     * {@code OrderNonDet}. Replaces {@code @PolyDet("use")} with the same annotation that
+     * {@code @PolyDet} resolves to. Replaces {@code @PolyDet("upDet")} with {@code @OrderNonDet} if
+     * it resolves to {@code @Det}.
      *
      * @param type annotated type whose poly annotations are replaced
-     * @param replacements mapping from polymorphic annotation to instantiation
+     * @param replacementsMapping mapping from polymorphic annotation to instantiation
      */
     @Override
     protected void replace(
-            AnnotatedTypeMirror type, AnnotationMirrorMap<AnnotationMirrorSet> replacements) {
-        if (type.hasAnnotation(factory.POLYDET)) {
-            AnnotationMirrorSet quals = replacements.get(factory.POLYDET);
-            type.replaceAnnotations(quals);
-        } else if (type.hasAnnotation(factory.POLYDET_USE)) {
-            AnnotationMirrorSet quals = replacements.get(factory.POLYDET);
-            if (!quals.contains(factory.POLYDET)
-                    && !quals.contains(factory.POLYDET_UP)
-                    && !quals.contains(factory.POLYDET_DOWN)
-                    && !quals.contains(factory.POLYDET_UPDET)) {
-                type.replaceAnnotations(quals);
-            }
-        } else if (type.hasAnnotation(factory.POLYDET_UP)) {
-            AnnotationMirrorSet quals = replacements.get(factory.POLYDET);
-            if (quals.contains(factory.DET)) {
-                type.replaceAnnotations(quals);
-            }
-            if (quals.contains(factory.ORDERNONDET)
-                    || replacements.get(factory.POLYDET).contains(factory.NONDET)) {
-                replaceForPolyWithModifier(type, factory.NONDET);
-            }
-        } else if (type.hasAnnotation(factory.POLYDET_DOWN)) {
-            AnnotationMirrorSet quals = replacements.get(factory.POLYDET);
-            if (quals.contains(factory.NONDET)) {
-                type.replaceAnnotations(quals);
-            }
-            if (quals.contains(factory.ORDERNONDET)
-                    || replacements.get(factory.POLYDET).contains(factory.DET)) {
-                replaceForPolyWithModifier(type, factory.DET);
-            }
-        } else if (type.hasAnnotation(factory.POLYDET_UPDET)) {
-            AnnotationMirrorSet quals = replacements.get(factory.POLYDET);
-            if (quals.contains(factory.NONDET) || quals.contains(factory.ORDERNONDET)) {
-                type.replaceAnnotations(quals);
-            }
-            if (quals.contains(factory.DET)) {
-                replaceForPolyWithModifier(type, factory.ORDERNONDET);
-            }
+            AnnotatedTypeMirror type,
+            AnnotationMirrorMap<AnnotationMirrorSet> replacementsMapping) {
+        AnnotationMirror anno = type.getAnnotation(PolyDet.class);
+        if (anno == null) {
+            return;
+        }
+        String value = AnnotationUtils.getElementValue(anno, "value", String.class, true);
+        AnnotationMirrorSet replacementsPolyDet = replacementsMapping.get(factory.POLYDET);
+        AnnotationMirrorSet replacementsPolyDetNoOND =
+                replacementsMapping.get(factory.POLYDET_NOORDERNONDET);
+        AnnotationMirrorSet replacements;
+        if (replacementsPolyDet == null) {
+            replacements = replacementsPolyDetNoOND;
+        } else if (replacementsPolyDetNoOND == null) {
+            replacements = replacementsPolyDet;
         } else {
-            for (Map.Entry<AnnotationMirror, AnnotationMirrorSet> pqentry :
-                    replacements.entrySet()) {
-                AnnotationMirror poly = pqentry.getKey();
-                if (type.hasAnnotation(poly)) {
-                    type.removeAnnotation(poly);
-                    AnnotationMirrorSet quals = pqentry.getValue();
-                    type.replaceAnnotations(quals);
+            Set<? extends AnnotationMirror> lub =
+                    qualHierarchy.leastUpperBounds(replacementsPolyDet, replacementsPolyDetNoOND);
+            replacements = new AnnotationMirrorSet(lub);
+        }
+
+        switch (value) {
+            case "":
+                type.replaceAnnotations(replacements);
+                return;
+            case "use":
+                if (!replacements.contains(factory.POLYDET)
+                        && !replacements.contains(factory.POLYDET_UP)
+                        && !replacements.contains(factory.POLYDET_DOWN)
+                        && !replacements.contains(factory.POLYDET_UPDET)) {
+                    type.replaceAnnotations(replacements);
                 }
-            }
+                return;
+            case "up":
+                if (replacements.contains(factory.DET)) {
+                    type.replaceAnnotations(replacements);
+                } else if (replacements.contains(factory.ORDERNONDET)
+                        || replacements.contains(factory.NONDET)) {
+                    replaceForPolyWithModifier(type, factory.NONDET);
+                }
+                return;
+            case "down":
+                if (replacements.contains(factory.NONDET)) {
+                    type.replaceAnnotations(replacements);
+                } else if (replacements.contains(factory.ORDERNONDET)
+                        || replacements.contains(factory.DET)) {
+                    replaceForPolyWithModifier(type, factory.DET);
+                }
+                return;
+            case "upDet":
+                if (replacements.contains(factory.NONDET)
+                        || replacements.contains(factory.ORDERNONDET)) {
+                    type.replaceAnnotations(replacements);
+                } else if (replacements.contains(factory.DET)) {
+                    replaceForPolyWithModifier(type, factory.ORDERNONDET);
+                }
+                return;
+            case "noOrderNonDet":
+                if (replacements.contains(factory.ORDERNONDET)
+                        || replacements.contains(factory.POLYDET)) {
+                    replaceForPolyWithModifier(type, factory.DET);
+                } else {
+                    type.replaceAnnotations(replacements);
+                }
+                return;
+            default:
+                throw new BugInCF("Unexpected value in @PolyDet: " + value);
         }
     }
 
