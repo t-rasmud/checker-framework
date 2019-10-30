@@ -1,8 +1,6 @@
 package org.checkerframework.checker.determinism;
 
-import com.sun.source.tree.ExpressionTree;
-import com.sun.source.tree.MethodInvocationTree;
-import java.util.List;
+import java.util.Set;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.TypeKind;
@@ -16,7 +14,6 @@ import org.checkerframework.framework.util.AnnotationMirrorMap;
 import org.checkerframework.framework.util.AnnotationMirrorSet;
 import org.checkerframework.javacutil.AnnotationUtils;
 import org.checkerframework.javacutil.BugInCF;
-import org.checkerframework.javacutil.TreeUtils;
 
 /**
  * Resolves polymorphic annotations at method invocations as follows:
@@ -47,63 +44,7 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
             ProcessingEnvironment env, DeterminismAnnotatedTypeFactory factory) {
         super(env, factory);
         this.factory = factory;
-    }
-
-    /**
-     * NOTE: {@code @PolyDet("noOrderNonDet")} is a polymorphic type that can be instantiated as
-     * {@code @NonDet} or {@code @Det}, but not {@code OrderNonDet}.
-     *
-     * <p>Treats {@code @PolyDet("noOrderNonDet")} written on a formal parameter as {@code @Det} if
-     * the corresponding argument is of type type {@code @OrderNonDet}, {@code @PolyDet}, or
-     * {@code @PolyDet("upDet")}. Treats {@code @PolyDet("noOrderNonDet")} as {@code @PolyDet}
-     * otherwise.
-     */
-    @Override
-    public void resolve(
-            MethodInvocationTree tree, AnnotatedTypeMirror.AnnotatedExecutableType type) {
-        List<AnnotatedTypeMirror> paramTypes = type.getParameterTypes();
-        List<? extends ExpressionTree> argTypes = tree.getArguments();
-
-        AnnotatedDeclaredType paramReceiver = type.getReceiverType();
-        if (paramReceiver != null) {
-            AnnotationMirror paramReceiverAnno =
-                    paramReceiver.getAnnotationInHierarchy(factory.NONDET);
-            ExpressionTree argReceiverTree = TreeUtils.getReceiverTree(tree);
-            if (argReceiverTree != null) {
-                AnnotationMirror argReceiverAnno =
-                        factory.getAnnotatedType(argReceiverTree)
-                                .getAnnotationInHierarchy(factory.NONDET);
-
-                if (AnnotationUtils.areSame(paramReceiverAnno, factory.POLYDET_NOORDERNONDET)) {
-                    if (AnnotationUtils.areSame(argReceiverAnno, factory.ORDERNONDET)
-                            || AnnotationUtils.areSame(argReceiverAnno, factory.POLYDET)
-                            || AnnotationUtils.areSame(argReceiverAnno, factory.POLYDET_UPDET)) {
-                        paramReceiver.replaceAnnotation(factory.DET);
-                    } else {
-                        paramReceiver.replaceAnnotation(factory.POLYDET);
-                    }
-                }
-            }
-        }
-
-        for (AnnotatedTypeMirror param : paramTypes) {
-            AnnotationMirror paramAnno = param.getAnnotationInHierarchy(factory.NONDET);
-            if (AnnotationUtils.areSame(paramAnno, factory.POLYDET_NOORDERNONDET)) {
-                int paramIndex = paramTypes.indexOf(param);
-                ExpressionTree argNoOrderNonDet = argTypes.get(paramIndex);
-                AnnotationMirror argAnno =
-                        factory.getAnnotatedType(argNoOrderNonDet)
-                                .getAnnotationInHierarchy(factory.NONDET);
-                if (AnnotationUtils.areSame(argAnno, factory.ORDERNONDET)
-                        || AnnotationUtils.areSame(argAnno, factory.POLYDET)
-                        || AnnotationUtils.areSame(argAnno, factory.POLYDET_UPDET)) {
-                    param.replaceAnnotation(factory.DET);
-                } else {
-                    param.replaceAnnotation(factory.POLYDET);
-                }
-            }
-        }
-        super.resolve(tree, type);
+        this.polyQuals.put(factory.POLYDET_NOORDERNONDET, factory.NONDET);
     }
 
     /**
@@ -126,7 +67,20 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
             return;
         }
         String value = AnnotationUtils.getElementValue(anno, "value", String.class, true);
-        AnnotationMirrorSet replacements = replacementsMapping.get(factory.POLYDET);
+        AnnotationMirrorSet replacementsPolyDet = replacementsMapping.get(factory.POLYDET);
+        AnnotationMirrorSet replacementsPolyDetNoOND =
+                replacementsMapping.get(factory.POLYDET_NOORDERNONDET);
+        AnnotationMirrorSet replacements;
+        if (replacementsPolyDet == null) {
+            replacements = replacementsPolyDetNoOND;
+        } else if (replacementsPolyDetNoOND == null) {
+            replacements = replacementsPolyDet;
+        } else {
+            Set<? extends AnnotationMirror> lub =
+                    qualHierarchy.leastUpperBounds(replacementsPolyDet, replacementsPolyDetNoOND);
+            replacements = new AnnotationMirrorSet(lub);
+        }
+
         switch (value) {
             case "":
                 type.replaceAnnotations(replacements);
@@ -161,6 +115,14 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                     type.replaceAnnotations(replacements);
                 } else if (replacements.contains(factory.DET)) {
                     replaceForPolyWithModifier(type, factory.ORDERNONDET);
+                }
+                return;
+            case "noOrderNonDet":
+                if (replacements.contains(factory.ORDERNONDET)
+                        || replacements.contains(factory.POLYDET)) {
+                    replaceForPolyWithModifier(type, factory.DET);
+                } else {
+                    type.replaceAnnotations(replacements);
                 }
                 return;
             default:
