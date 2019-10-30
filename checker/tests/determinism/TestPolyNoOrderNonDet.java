@@ -47,4 +47,16 @@ public class TestPolyNoOrderNonDet {
         // :: error: (argument.type.incompatible)
         testOnd(lst, index);
     }
+
+    static void testList(@PolyDet("noOrderNonDet") List<@PolyDet("use") String> lst) {}
+
+    void callerTestList(
+            @OrderNonDet List<@Det String> lst,
+            @Det List<@Det String> lst1,
+            @NonDet List<@NonDet String> lst2) {
+        // :: error: (argument.type.incompatible)
+        testList(lst);
+        testList(lst1);
+        testList(lst2);
+    }
 }
