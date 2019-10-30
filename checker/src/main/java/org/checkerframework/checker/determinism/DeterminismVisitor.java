@@ -559,22 +559,22 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     }
 
     /**
-     * If the declaration of {@code methodTree} is annotated with {@code @RequiresDetToString},
-     * checks that the declared type of every {@code Det} argument of {@code methodTree}
-     * corresponding to a parameter of type {@code Object} (or {@code Object[]}) overrides {@code
-     * toString} returning a {@code @Det String} or {@code @PolyDet}. Otherwise issues an error.
+     * If the declaration of {@code node} is annotated with {@code @RequiresDetToString}, checks
+     * that the declared type of every {@code Det} argument of {@code node} corresponding to a
+     * parameter of type {@code Object} (or {@code Object[]}) overrides {@code toString} returning a
+     * {@code @Det String} or {@code @PolyDet}. Otherwise issues an error.
      */
     @Override
-    public Void visitMethodInvocation(MethodInvocationTree methodTree, Void p) {
-        ExecutableElement methodElement = TreeUtils.elementFromUse(methodTree);
+    public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
+        ExecutableElement methodElement = TreeUtils.elementFromUse(node);
         AnnotationMirror declAnnotation =
                 atypeFactory.getDeclAnnotation(methodElement, RequiresDetToString.class);
         if (declAnnotation == null) {
-            return super.visitMethodInvocation(methodTree, p);
+            return super.visitMethodInvocation(node, p);
         }
 
         List<? extends VariableElement> params = methodElement.getParameters();
-        List<? extends ExpressionTree> args = methodTree.getArguments();
+        List<? extends ExpressionTree> args = node.getArguments();
 
         for (int index = 0; index < args.size(); index++) {
             ExpressionTree arg = args.get(index);
@@ -606,12 +606,12 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                     checker.report(
                             Result.failure(
                                     "nondeterministic.tostring", argType.getUnderlyingType()),
-                            methodTree);
+                            node);
                     break;
                 }
             }
         }
-        return super.visitMethodInvocation(methodTree, p);
+        return super.visitMethodInvocation(node, p);
     }
 
     /**
