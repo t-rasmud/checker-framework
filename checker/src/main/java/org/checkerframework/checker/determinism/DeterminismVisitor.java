@@ -2,8 +2,8 @@ package org.checkerframework.checker.determinism;
 
 import com.sun.source.tree.*;
 import com.sun.source.tree.Tree.Kind;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.*;
@@ -13,6 +13,7 @@ import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.compilermsgs.qual.CompilerMessageKey;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.determinism.qual.RequiresDetToString;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeValidator;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
@@ -465,110 +466,115 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         }
     }
 
-    /**
-     * Reports an error if {@code @PolyDet("up")}, {@code @PolyDet("down")},
-     * {@code @PolyDet("upDet")}, or {@code @PolyDet("use")} is written on a formal parameter or a
-     * return type and none of the formal parameters or the receiver has the type {@code @PolyDet}
-     * or {@code @PolyDet("noOrderNonDet")}. These variants of {@code @PolyDet} should only be
-     * written on use sites (not instantiation sites). Without a corresponding {@code @PolyDet} or
-     * {@code @PolyDet("noOrderNonDet")} on at least on of the formal parameters,
-     * {@code @PolyDet("up")}, {@code @PolyDet("down")}, {@code @PolyDet("upDet")}, or
-     * {@code @PolyDet("use")} cannot be instantiated correctly.
-     *
-     * <p>NOTE: {@code @PolyDet("noOrderNonDet")} is a polymorphic type that can resolve to
-     * {@code @NonDet} or {@code @Det}, but nor {@code @OrderNonDet}.
-     */
     @Override
     public Void visitMethod(MethodTree node, Void p) {
-        HashSet<AnnotationMirror> paramAnnotations = new HashSet<>();
-        VariableTree receiverParam = node.getReceiverParameter();
-        if (receiverParam != null) {
-            paramAnnotations.add(
-                    atypeFactory
-                            .getAnnotatedType(receiverParam)
-                            .getAnnotationInHierarchy(atypeFactory.NONDET));
-        } else if (!node.getModifiers().getFlags().contains(Modifier.STATIC)) {
-            paramAnnotations.add(atypeFactory.POLYDET);
-        }
-        for (VariableTree param : node.getParameters()) {
-            paramAnnotations.add(
-                    atypeFactory
-                            .getAnnotatedType(param)
-                            .getAnnotationInHierarchy(atypeFactory.NONDET));
-        }
-        boolean isPolyPresent = false;
-        boolean isPolyUpPresent = false;
-        boolean isPolyDownPresent = false;
-        boolean isPolyUsePresent = false;
-        boolean isPolyUpDetPresent = false;
-        for (AnnotationMirror atm : paramAnnotations) {
-            // atm could ne null for type parameters.
-            if (atm == null) {
-                continue;
-            }
-            if (AnnotationUtils.areSameByClass(atm, PolyDet.class)) {
-                String elemValue =
-                        AnnotationUtils.getElementValue(atm, "value", String.class, true);
-                switch (elemValue) {
-                    case "up":
-                        isPolyUpPresent = true;
-                        break;
-                    case "down":
-                        isPolyDownPresent = true;
-                        break;
-                    case "upDet":
-                        isPolyUpDetPresent = true;
-                        break;
-                    case "use":
-                        isPolyUsePresent = true;
-                        break;
-                    default:
-                        isPolyPresent = true;
-                }
-            }
-        }
-        if (!isPolyPresent) {
-            AnnotationMirror returnTypeAnno =
-                    atypeFactory
-                            .getAnnotatedType(node.getReturnType())
-                            .getAnnotationInHierarchy(atypeFactory.NONDET);
-            if (isPolyUpPresent
-                    || AnnotationUtils.areSame(returnTypeAnno, atypeFactory.POLYDET_UP)) {
-                checker.report(Result.failure("invalid.polydet.up"), node);
-            }
-            if (isPolyDownPresent
-                    || AnnotationUtils.areSame(returnTypeAnno, atypeFactory.POLYDET_DOWN)) {
-                checker.report(Result.failure("invalid.polydet.down"), node);
-            }
-            if (isPolyUpDetPresent
-                    || AnnotationUtils.areSame(returnTypeAnno, atypeFactory.POLYDET_UPDET)) {
-                checker.report(Result.failure("invalid.polydet.updet"), node);
-            }
-            if (isPolyUsePresent
-                    || AnnotationUtils.areSame(returnTypeAnno, atypeFactory.POLYDET_USE)) {
-                checker.report(Result.failure("invalid.polydet.use"), node);
-            }
-        }
+        checkMethodSignatureForPolyQuals(node);
         return super.visitMethod(node, p);
     }
 
     /**
-     * If the declaration of {@code node} is annotated with {@code @RequiresDetToString}, checks
-     * that the declared type of every {@code Det} argument of {@code node} corresponding to a
-     * parameter of type {@code Object} (or {@code Object[]}) overrides {@code toString} returning a
-     * {@code @Det String} or {@code @PolyDet}. Otherwise issues an error.
+     * Reports an error if polymorphic qualifier that does not affect instantiation is used in a
+     * method signature without a polymorphic qualifier that does affect instantiation. Without at
+     * least one qualifier that affects instantiation, the checker cannot resolve the other
+     * polymorphic qualifiers.
+     *
+     * <p>Polymorphic qualifiers that do not affect instantiation: any polymorphic qualifier on the
+     * return type and any of these annotations on a parameter or receiver type:
+     * {@code @PolyDet("up")}, {@code @PolyDet("down")}, {@code @PolyDet("upDet")}, and
+     * {@code @PolyDet("use")}.
+     *
+     * <p>Polymorphic qualifiers that do affect instantiation: {@code @PolyDet} and
+     * {@code @PolyDet("noOrderNonDet")} on a parameter or receiver type.
+     */
+    private void checkMethodSignatureForPolyQuals(MethodTree methodTree) {
+        // Errors that should be issued if @PolyDet or @PolyDet("noOrderNonDet") are not found.
+        List<Pair<Result, Tree>> errors = new ArrayList<>();
+        VariableTree receiver = methodTree.getReceiverParameter();
+        if (receiver != null) {
+            AnnotationMirror anno =
+                    atypeFactory
+                            .getAnnotatedType(receiver)
+                            .getAnnotationInHierarchy(atypeFactory.NONDET);
+            if (addPolyDetError(anno, receiver, errors)) {
+                return; // found @PolyDet or @PolyDet("noOrderNonDet")
+            }
+        } else if (!ElementUtils.isStatic(TreeUtils.elementFromDeclaration(methodTree))) {
+            // This is an instance method without explicit "this" parameter.
+            // TODO: this is what this method used to do, but I don't understand why.
+            return;
+        }
+
+        for (VariableTree param : methodTree.getParameters()) {
+            AnnotationMirror anno =
+                    atypeFactory
+                            .getAnnotatedType(param)
+                            .getAnnotationInHierarchy(atypeFactory.NONDET);
+            if (addPolyDetError(anno, param, errors)) {
+                return; // found @PolyDet or @PolyDet("noOrderNonDet")
+            }
+        }
+
+        if (methodTree.getReturnType() != null) {
+            AnnotationMirror returnTypeAnno =
+                    atypeFactory
+                            .getAnnotatedType(methodTree.getReturnType())
+                            .getAnnotationInHierarchy(atypeFactory.NONDET);
+            addPolyDetError(returnTypeAnno, methodTree.getReturnType(), errors);
+        }
+        // This point is only reached if @PolyDet or @PolyDet("noOrderNonDet") were not found on
+        // either the receiver or any parameter.
+        for (Pair<Result, Tree> pair : errors) {
+            checker.report(pair.first, pair.second);
+        }
+    }
+
+    /**
+     * Adds a pair of an Result and {@code tree} to {@code errors} if {@code anno} is
+     * {@code @PolyDet("up")}, {@code @PolyDet("down")}, {@code @PolyDet("upDet")}, or
+     * {@code @PolyDet("use")}. Returns true if {@code anno} is {@code @PolyDet} or
+     * {@code @PolyDet("noOrderNonDet")}; otherwise false.
+     *
+     * @param anno a possibly null annotation to check
+     * @param tree place to report error
+     * @param errors list to add pair of Result and {@code tree}
+     * @return true if {@code anno} is {@code @PolyDet} or{@code @PolyDet("noOrderNonDet")};
+     *     otherwise false
+     */
+    private boolean addPolyDetError(
+            @Nullable AnnotationMirror anno, Tree tree, List<Pair<Result, Tree>> errors) {
+        if (anno == null) {
+            return false;
+        }
+        if (AnnotationUtils.areSameByClass(anno, PolyDet.class)) {
+            String elemValue = AnnotationUtils.getElementValue(anno, "value", String.class, true);
+            if (elemValue.equals("") || elemValue.equals("noOrderNonDet")) {
+                // found @PolyDet or @PolyDet("noOrderNonDet"); no error
+                return true;
+            } else {
+                @CompilerMessageKey String errorKey = "invalid.polydet." + elemValue.toLowerCase();
+                errors.add(Pair.of(Result.failure(errorKey), tree));
+            }
+        }
+        return false;
+    }
+
+    /**
+     * If the declaration of {@code methodTree} is annotated with {@code @RequiresDetToString},
+     * checks that the declared type of every {@code Det} argument of {@code methodTree}
+     * corresponding to a parameter of type {@code Object} (or {@code Object[]}) overrides {@code
+     * toString} returning a {@code @Det String} or {@code @PolyDet}. Otherwise issues an error.
      */
     @Override
-    public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
-        ExecutableElement methodElement = TreeUtils.elementFromUse(node);
+    public Void visitMethodInvocation(MethodInvocationTree methodTree, Void p) {
+        ExecutableElement methodElement = TreeUtils.elementFromUse(methodTree);
         AnnotationMirror declAnnotation =
                 atypeFactory.getDeclAnnotation(methodElement, RequiresDetToString.class);
         if (declAnnotation == null) {
-            return super.visitMethodInvocation(node, p);
+            return super.visitMethodInvocation(methodTree, p);
         }
 
         List<? extends VariableElement> params = methodElement.getParameters();
-        List<? extends ExpressionTree> args = node.getArguments();
+        List<? extends ExpressionTree> args = methodTree.getArguments();
 
         for (int index = 0; index < args.size(); index++) {
             ExpressionTree arg = args.get(index);
@@ -600,12 +606,12 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                     checker.report(
                             Result.failure(
                                     "nondeterministic.tostring", argType.getUnderlyingType()),
-                            node);
+                            methodTree);
                     break;
                 }
             }
         }
-        return super.visitMethodInvocation(node, p);
+        return super.visitMethodInvocation(methodTree, p);
     }
 
     /**

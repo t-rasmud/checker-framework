@@ -18,8 +18,8 @@ public class TestPolyMethodSignature {
         return 0;
     }
 
-    // :: error: (invalid.polydet.up)
     static <T extends @PolyDet Object> @PolyDet("down") int checkListInvalid2(
+            // :: error: (invalid.polydet.up)
             @PolyDet("up") List<T> lst) {
         return 0;
     }
