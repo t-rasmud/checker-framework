@@ -549,8 +549,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 // found @PolyDet or @PolyDet("noOrderNonDet"); no error
                 return true;
             } else {
-                @CompilerMessageKey String errorKeyValue = elemValue.toLowerCase();
-                @CompilerMessageKey String errorKey = "invalid.polydet." + errorKeyValue;
+                @CompilerMessageKey String errorKey =
+                        "invalid.polydet." + (@CompilerMessageKey String) elemValue.toLowerCase();
                 errors.add(Pair.of(Result.failure(errorKey), tree));
             }
         }
