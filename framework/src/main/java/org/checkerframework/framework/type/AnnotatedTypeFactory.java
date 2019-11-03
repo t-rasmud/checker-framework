@@ -376,7 +376,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      * Mapping from top annotations in hierarchies to regexes for which the {@code
      * HasQualifierParameter} annotation should be on by default.
      */
-    private final Map<AnnotationMirror, List<Pattern>> defaultHasQualifierParameterPatterns;
+    private final Map<AnnotationMirror, List<String>> defaultHasQualifierParameterPackages;
 
     /**
      * Constructs a factory from the given {@link ProcessingEnvironment} instance and syntax tree
@@ -443,7 +443,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
 
         objectGetClass = TreeUtils.getMethod("java.lang.Object", "getClass", 0, processingEnv);
 
-        defaultHasQualifierParameterPatterns = AnnotationUtils.createAnnotationMap();
+        defaultHasQualifierParameterPackages = AnnotationUtils.createAnnotationMap();
     }
 
     /**
@@ -599,11 +599,9 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
                         throw new UserError("Invalid annotation name: " + components[0]);
                     }
 
-                    defaultHasQualifierParameterPatterns.put(anno, new ArrayList<>());
-                    for (String pattern : components[1].split(",")) {
-                        defaultHasQualifierParameterPatterns
-                                .get(anno)
-                                .add(Pattern.compile(pattern));
+                    defaultHasQualifierParameterPackages.put(anno, new ArrayList<>());
+                    for (String packageName : components[1].split(",")) {
+                        defaultHasQualifierParameterPackages.get(anno).add(packageName);
                     }
                 }
             }
@@ -3352,18 +3350,17 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         Set<AnnotationMirror> noQualifierParamClasses =
                 getSupportedAnnotationsInClassAnnotation(element, NoQualifierParameter.class);
         Set<AnnotationMirror> hasQualifierParameterTops = AnnotationUtils.createAnnotationSet();
-        for (AnnotationMirror anno : defaultHasQualifierParameterPatterns.keySet()) {
+        for (AnnotationMirror anno : defaultHasQualifierParameterPackages.keySet()) {
             if (!isSupportedQualifier(anno)) {
                 continue;
             }
 
-            CharSequence name = ElementUtils.getQualifiedClassName(element);
-            if (name == null) {
-                continue;
-            }
+            String name = ElementUtils.enclosingPackage(element).getQualifiedName().toString();
 
-            for (Pattern pattern : defaultHasQualifierParameterPatterns.get(anno)) {
-                if (pattern.matcher(name).matches()) {
+            for (String packageName : defaultHasQualifierParameterPackages.get(anno)) {
+                if (name.startsWith(packageName)
+                        && (name.length() == packageName.length()
+                                || name.charAt(packageName.length()) == '.')) {
                     hasQualifierParameterTops.add(anno);
                     break;
                 }
