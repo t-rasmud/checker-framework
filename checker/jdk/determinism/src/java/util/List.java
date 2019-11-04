@@ -305,7 +305,7 @@ public interface List<E> extends Collection<E> {
      *         specified collection prevents it from being added to this list
      * @see #add(Object)
      */
-    @PolyDet("down") boolean addAll(@PolyDet List<E> this, @PolyDet("use") Collection<? extends E> c);
+    @PolyDet("down") boolean addAll(@PolyDet List<E> this, @PolyDet("down") Collection<? extends E> c);
 
     /**
      * Inserts all of the elements in the specified collection into this
@@ -334,7 +334,7 @@ public interface List<E> extends Collection<E> {
      * @throws IndexOutOfBoundsException if the index is out of range
      *         (<tt>index &lt; 0 || index &gt; size()</tt>)
      */
-    @PolyDet("down") boolean addAll(@PolyDet List<E> this, @PolyDet("use") int index, @PolyDet("use") Collection<? extends E> c);
+    @PolyDet("down") boolean addAll(@PolyDet List<E> this, @PolyDet("use") int index, @PolyDet("down") Collection<? extends E> c);
 
     /**
      * Removes from this list all of its elements that are contained in the
