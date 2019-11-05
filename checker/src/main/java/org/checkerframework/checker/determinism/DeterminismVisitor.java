@@ -490,10 +490,10 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         // Errors that should be issued if @PolyDet or @PolyDet("noOrderNonDet") are not found.
         List<Pair<Result, Tree>> errors = new ArrayList<>();
         VariableTree receiver = methodTree.getReceiverParameter();
-        // receiverType is null for init constructors (public <init>()).
-        boolean isInitConstructor = methodTree.getName().contentEquals("<init>");
+        // Don't check receiver annotation for static methods and constructors
+        // as the receiver is null in these two cases.
         if (!ElementUtils.isStatic(TreeUtils.elementFromDeclaration(methodTree))
-                && !isInitConstructor) {
+                && !TreeUtils.isConstructor(methodTree)) {
             AnnotatedDeclaredType receiverType =
                     atypeFactory.getAnnotatedType(methodTree).getReceiverType();
             AnnotationMirror anno = receiverType.getAnnotationInHierarchy(atypeFactory.NONDET);
