@@ -306,6 +306,15 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             AnnotationMirror varAnno = varType.getEffectiveAnnotationInHierarchy(NONDET);
             if (atypeFactory.getQualifierHierarchy().isSubtype(exprAnno, varAnno)) {
                 super.commonAssignmentCheck(varTree, valueExp, errorKey);
+                // Assigning to a specific index of an "OrderNonDet" array is invalid.
+                if (varTree.getKind() == Kind.ARRAY_ACCESS) {
+                    if (AnnotationUtils.areSame(varAnno, atypeFactory.ORDERNONDET)
+                            || AnnotationUtils.areSame(varAnno, atypeFactory.POLYDET)) {
+                        checker.report(
+                                Result.failure(INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno),
+                                varTree);
+                    }
+                }
             } else if (varTree.getKind() == Kind.ARRAY_ACCESS) {
                 checker.report(
                         Result.failure(INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno), varTree);
@@ -316,66 +325,6 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         } else {
             super.commonAssignmentCheck(varTree, valueExp, errorKey);
         }
-    }
-
-    /**
-     * When an array of type {@code @OrderNonDet} or {@code @NonDet} is accessed, this method
-     * annotates the type of the array access expression (equivalently, the array element) as
-     * {@code @NonDet}. Example:
-     *
-     * <pre><code>
-     * &nbsp; @Det int @NonDet int[] arr;
-     * &nbsp; int val = arr[0];
-     * </code></pre>
-     *
-     * In the code above, type of val gets annotated as @NonDet.
-     *
-     * <p>Note: If we were to replace every array access with this rule, the checker would allow
-     * invalid assignments to array elements. Example:
-     *
-     * <pre><code>
-     * &nbsp; @Det int @OrderNonDet [] x;
-     * &nbsp; @NonDet int i;
-     * &nbsp; x[i] = y;
-     * </code></pre>
-     *
-     * Here, we expect the checker to flag the assignment {@code x[i] = y} as an error. Had we
-     * replaced the type of every {@code @OrderNonDet} and {@code @NonDet} array access with
-     * {@code @NonDet}, the array access {@code x[i]} would have the type {@code @NonDet} and this
-     * assignment would not be flagged as an error.
-     *
-     * <p>NOTE: We override {@code commonAssignmentCheck} and not {@code visitArrayAccess} because
-     * the checker framework treats x[i] as an lvalue like array access. It is possible to
-     * distinguish whether a "[]" operator is in an lvalue or an rvalue position. But, the {@code
-     * visitArrayAccess} method does not give access to valueType (the annotated type of rhs value)
-     * like in {@code commonAssignmentCheck} below, making it difficult to replace the annotation on
-     * the rvalue.
-     *
-     * @param varType the annotated type of the variable
-     * @param valueType the annotated type of the value
-     * @param valueTree the location to use when reporting the error message
-     * @param errorKey the error message to use if the check fails (must be a compiler message key)
-     */
-    @Override
-    protected void commonAssignmentCheck(
-            AnnotatedTypeMirror varType,
-            AnnotatedTypeMirror valueType,
-            Tree valueTree,
-            @CompilerMessageKey String errorKey) {
-        if (valueTree.getKind() == Tree.Kind.ARRAY_ACCESS) {
-            ArrayAccessTree arrTree = (ArrayAccessTree) valueTree;
-            AnnotatedArrayType arrType =
-                    (AnnotatedArrayType) atypeFactory.getAnnotatedType(arrTree.getExpression());
-            AnnotationMirror arrTopType = arrType.getAnnotationInHierarchy(atypeFactory.NONDET);
-            if (AnnotationUtils.areSame(arrTopType, atypeFactory.ORDERNONDET)
-                    || AnnotationUtils.areSame(arrTopType, atypeFactory.NONDET)) {
-                valueType.replaceAnnotation(atypeFactory.NONDET);
-            }
-            if (AnnotationUtils.areSame(arrTopType, atypeFactory.POLYDET)) {
-                valueType.replaceAnnotation(atypeFactory.POLYDET_UP);
-            }
-        }
-        super.commonAssignmentCheck(varType, valueType, valueTree, errorKey);
     }
 
     // Hack: Remove this after it's fixed on the master branch.
@@ -633,16 +582,16 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     }
 
     /**
-     * Reports the given {@code errorMessage} if {@code subAnnotation} is not a valid element type
-     * of a collection or array with {@code collectionAnno}.
+     * Reports the given {@code errorMessage} if {@code elementAnno} is not a valid element type of
+     * a collection or array with {@code collectionAnno}.
      *
      * @param elementAnno the annotation of the element type of an array or collection
      * @param collectionAnno the annotation of an array or collection
      * @param tree the tree to report errors on
      * @param errorMessage the error message to report
-     * @return true if {@code elementAnno} is a subtype of {@code supperAnnotation} and it's not the
+     * @return true if {@code elementAnno} is a subtype of {@code collectionAnno} and it's not the
      *     case that {@code collectionAnno} is {@code @NonDet} and {@code elementAnno} is
-     *     {@code @Det} or {@code @OrderNonDet}, false otherwise
+     *     {@code @Det}, {@code @OrderNonDet}, or {@code @PolyDet}, false otherwise
      */
     private boolean isValidElementType(
             AnnotationMirror elementAnno,
@@ -655,7 +604,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         }
         if (AnnotationUtils.areSame(collectionAnno, atypeFactory.NONDET)
                 && (AnnotationUtils.areSame(elementAnno, atypeFactory.DET)
-                        || AnnotationUtils.areSame(elementAnno, atypeFactory.ORDERNONDET))) {
+                        || AnnotationUtils.areSame(elementAnno, atypeFactory.ORDERNONDET)
+                        || AnnotationUtils.areSameByName(elementAnno, atypeFactory.POLYDET))) {
             checker.report(Result.failure(errorMessage, elementAnno, collectionAnno), tree);
             return false;
         }
