@@ -64,7 +64,7 @@ public class ToArrayNullness {
         for (@NonNull String o : nonnullCol.toArray(new @NonNull String[0])) ;
     }
 
-    void testHearusitics() {
+    void testHeuristics() {
         for (@Nullable String o : nonnullCol.toArray(new String[] {})) ;
         for (@NonNull String o : nonnullCol.toArray(new String[] {})) ;
         for (@Nullable String o : nonnullCol.toArray(new String[0])) ;
