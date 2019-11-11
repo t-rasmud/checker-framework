@@ -3347,6 +3347,10 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         Set<AnnotationMirror> found =
                 getSupportedAnnotationsInClassAnnotation(element, HasQualifierParameter.class);
 
+        if (element == null) {
+            return found;
+        }
+
         Set<AnnotationMirror> noQualifierParamClasses =
                 getSupportedAnnotationsInClassAnnotation(element, NoQualifierParameter.class);
         Set<AnnotationMirror> hasQualifierParameterTops = AnnotationUtils.createAnnotationSet();
