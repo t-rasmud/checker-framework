@@ -5,6 +5,7 @@ import org.checkerframework.framework.qual.HasQualifierParameter;
 
 @HasQualifierParameter(NonDet.class)
 public class DefaultField {
+    static Object staticField;
     Object field;
 
     @PolyDet Object getField(@PolyDet DefaultField this) {
@@ -19,5 +20,6 @@ public class DefaultField {
         // :: error: (assignment.type.incompatible)
         @Det Object o = field;
         @NonDet Object o2 = field;
+        @Det Object o3 = staticField;
     }
 }

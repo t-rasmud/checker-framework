@@ -967,7 +967,10 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
      */
     @Override
     protected void applyQualifierParameterDefaults(Element elt, AnnotatedTypeMirror type) {
-        if (elt == null || elt.getKind() != ElementKind.FIELD || type.isAnnotatedInHierarchy(DET)) {
+        if (elt == null
+                || elt.getKind() != ElementKind.FIELD
+                || ElementUtils.isStatic(elt)
+                || type.isAnnotatedInHierarchy(DET)) {
             super.applyQualifierParameterDefaults(elt, type);
             return;
         }
