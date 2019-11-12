@@ -57,7 +57,7 @@ public class Buffer {
             buffer.list.add(tainted);
             // :: error: (assignment.type.incompatible)
             buffer.someString = tainted;
-            // :: error: (method.invocation.invalid)
+            // :: error: (argument.type.incompatible)
             buffer.append(tainted);
         }
 
