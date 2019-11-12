@@ -524,7 +524,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         List<? extends VariableElement> params = methodElement.getParameters();
         List<? extends ExpressionTree> args = node.getArguments();
 
-        for (int index = 0; index < args.size(); index++) {
+        for (int index = 0; index < params.size(); index++) {
             ExpressionTree arg = args.get(index);
             VariableElement param = params.get(index);
 
