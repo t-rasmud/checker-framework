@@ -1483,8 +1483,6 @@ public abstract class GenericAnnotatedTypeFactory<
                 : "GenericAnnotatedTypeFactory.addComputedTypeAnnotations: "
                         + " root needs to be set when used on trees; factory: "
                         + this.getClass();
-
-        applyQualifierParameterDefaults(tree, type);
         addAnnotationsFromDefaultQualifierForUse(TreeUtils.elementFromTree(tree), type);
         applyQualifierParameterDefaults(tree, type);
         treeAnnotator.visit(tree, type);
@@ -1556,7 +1554,6 @@ public abstract class GenericAnnotatedTypeFactory<
                 new DefaultInferredTypesApplier(getQualifierHierarchy(), this);
         applier.applyInferredType(type, as.getAnnotations(), as.getUnderlyingType());
     }
-
     /**
      * Applies defaults for types in a class with an qualifier parameter.
      *
@@ -1608,7 +1605,8 @@ public abstract class GenericAnnotatedTypeFactory<
         }.visit(type);
     }
 
-    /* To add annotations to the type of method or constructor parameters, add a {@link
+    /**
+     * To add annotations to the type of method or constructor parameters, add a {@link
      * TypeAnnotator} using {@link #createTypeAnnotator()} and see the comment in {@link
      * TypeAnnotator#visitExecutable(org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedExecutableType,
      * Void)}.
@@ -1618,7 +1616,6 @@ public abstract class GenericAnnotatedTypeFactory<
      */
     @Override
     public void addComputedTypeAnnotations(Element elt, AnnotatedTypeMirror type) {
-        applyQualifierParameterDefaults(elt, type);
         addAnnotationsFromDefaultQualifierForUse(elt, type);
         applyQualifierParameterDefaults(elt, type);
         typeAnnotator.visit(type, null);
