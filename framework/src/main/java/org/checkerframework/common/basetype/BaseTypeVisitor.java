@@ -385,19 +385,28 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
 
     /**
      * Issues an error if {@code classTree} has polymorphic fields but is not annotated with
-     * {@code @HasQualifierParameter}.
+     * {@code @HasQualifierParameter}. Always issue a warning if the type of a static field is
+     * annotated with a polymorphic qualifier.
      *
      * <p>Issues an error if (@code classTree} extends or implements a class/interface that has a
      * qualifier parameter, but this class does not.
      */
     private void checkQualifierParam(ClassTree classTree) {
-        Set<AnnotationMirror> topsWithOutQualiferParam = AnnotationUtils.createAnnotationSet();
+        Set<AnnotationMirror> polyWithOutQualiferParam = AnnotationUtils.createAnnotationSet();
+        Set<AnnotationMirror> polys = AnnotationUtils.createAnnotationSet();
         for (AnnotationMirror top : atypeFactory.getQualifierHierarchy().getTopAnnotations()) {
             TypeElement classElement = TreeUtils.elementFromDeclaration(classTree);
+            AnnotationMirror poly =
+                    atypeFactory.getQualifierHierarchy().getPolymorphicAnnotation(top);
+            if (poly != null) {
+                polys.add(poly);
+            }
             if (atypeFactory.hasQualifierParameterInHierarchy(classElement, top)) {
                 continue;
             }
-            topsWithOutQualiferParam.add(top);
+            if (poly != null) {
+                polyWithOutQualiferParam.add(poly);
+            }
             Element extendsEle = TypesUtils.getTypeElement(classElement.getSuperclass());
             if (extendsEle != null
                     && atypeFactory.hasQualifierParameterInHierarchy(extendsEle, top)) {
@@ -412,20 +421,33 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
                 }
             }
         }
-        // Check for poly fields.
-        PolyTypeScanner polyScanner = new PolyTypeScanner();
+
         for (Tree mem : classTree.getMembers()) {
             if (mem.getKind() == Tree.Kind.VARIABLE) {
-                AnnotatedTypeMirror fieldAnno = atypeFactory.getAnnotatedType(mem);
-                if (polyScanner.visit(fieldAnno, topsWithOutQualiferParam)) {
+                AnnotatedTypeMirror fieldType = atypeFactory.getAnnotatedType(mem);
+                Set<AnnotationMirror> polyAnnos;
+                if (ElementUtils.isStatic(TreeUtils.elementFromDeclaration((VariableTree) mem))) {
+                    polyAnnos = polys;
+                } else {
+                    polyAnnos = polyWithOutQualiferParam;
+                }
+                if (polyScanner.visit(fieldType, polyAnnos)) {
                     checker.report(Result.failure("invalid.polymorphic.qualifier.use"), mem);
                 }
             }
         }
     }
 
-    /** A scanner that indicates whether any (sub-)types are annotated as polymorphic. */
-    class PolyTypeScanner extends SimpleAnnotatedTypeScanner<Boolean, Set<AnnotationMirror>> {
+    /**
+     * A scanner that indicates whether any part of an annotated type has a polymorphic annotation.
+     */
+    private final PolyTypeScanner polyScanner = new PolyTypeScanner();
+
+    /**
+     * A scanner that indicates whether any part of an annotated type has a polymorphic annotation.
+     */
+    static class PolyTypeScanner
+            extends SimpleAnnotatedTypeScanner<Boolean, Set<AnnotationMirror>> {
 
         @Override
         protected Boolean reduce(Boolean r1, Boolean r2) {
@@ -435,15 +457,13 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
         }
 
         @Override
-        protected Boolean defaultAction(AnnotatedTypeMirror type, Set<AnnotationMirror> tops) {
+        protected Boolean defaultAction(AnnotatedTypeMirror type, Set<AnnotationMirror> polys) {
             if (type == null) {
                 return false;
             }
 
-            for (AnnotationMirror top : tops) {
-                AnnotationMirror polyAnnoInHierarchy =
-                        atypeFactory.getQualifierHierarchy().getPolymorphicAnnotation(top);
-                if (type.hasAnnotationRelaxed(polyAnnoInHierarchy)) {
+            for (AnnotationMirror poly : polys) {
+                if (type.hasAnnotationRelaxed(poly)) {
                     return true;
                 }
             }
@@ -1081,14 +1101,23 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
         warnAboutTypeAnnotationsTooEarly(node, node.getModifiers());
 
         Pair<Tree, AnnotatedTypeMirror> preAssCtxt = visitorState.getAssignmentContext();
-        visitorState.setAssignmentContext(
-                Pair.of((Tree) node, atypeFactory.getAnnotatedType(node)));
+        AnnotatedTypeMirror variableType;
+        if (getCurrentPath().getParentPath() != null
+                && getCurrentPath().getParentPath().getLeaf().getKind()
+                        == Tree.Kind.LAMBDA_EXPRESSION) {
+            // Calling getAnnotatedTypeLhs on a lambda parameter node is possibly expensive
+            // because caching is turned off.  This should be fixed by #979.
+            // See https://github.com/typetools/checker-framework/issues/2853 for an
+            // example.
+            variableType = atypeFactory.getAnnotatedType(node);
+        } else {
+            variableType = atypeFactory.getAnnotatedTypeLhs(node);
+        }
+        visitorState.setAssignmentContext(Pair.of(node, variableType));
 
         try {
             if (atypeFactory.getDependentTypesHelper() != null) {
-                atypeFactory
-                        .getDependentTypesHelper()
-                        .checkType(atypeFactory.getAnnotatedTypeLhs(node), node);
+                atypeFactory.getDependentTypesHelper().checkType(variableType, node);
             }
             // If there's no assignment in this variable declaration, skip it.
             if (node.getInitializer() != null) {
@@ -3945,9 +3974,23 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
      */
     public boolean isValidUse(
             AnnotatedDeclaredType declarationType, AnnotatedDeclaredType useType, Tree tree) {
-        return atypeFactory
-                .getTypeHierarchy()
-                .isSubtype(useType.getErased(), declarationType.getErased());
+        Set<? extends AnnotationMirror> tops =
+                atypeFactory.getQualifierHierarchy().getTopAnnotations();
+        Set<AnnotationMirror> upperBounds =
+                atypeFactory
+                        .getQualifierUpperBounds()
+                        .getBoundQualifiers(declarationType.getUnderlyingType());
+        for (AnnotationMirror top : tops) {
+            AnnotationMirror upperBound =
+                    atypeFactory
+                            .getQualifierHierarchy()
+                            .findAnnotationInHierarchy(upperBounds, top);
+            AnnotationMirror qualifier = useType.getAnnotationInHierarchy(top);
+            if (!atypeFactory.getQualifierHierarchy().isSubtype(qualifier, upperBound)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
