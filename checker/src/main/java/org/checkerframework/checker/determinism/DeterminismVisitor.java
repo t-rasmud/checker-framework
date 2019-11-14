@@ -11,6 +11,7 @@ import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.compilermsgs.qual.CompilerMessageKey;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.determinism.qual.RequiresDetToString;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -524,7 +525,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         List<? extends VariableElement> params = methodElement.getParameters();
         List<? extends ExpressionTree> args = node.getArguments();
 
-        for (int index = 0; index < args.size(); index++) {
+        for (int index = 0; index < params.size(); index++) {
             ExpressionTree arg = args.get(index);
             VariableElement param = params.get(index);
 
@@ -647,18 +648,20 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             AnnotatedTypeMirror.AnnotatedExecutableType constructor,
             NewClassTree newClassTree) {
         AnnotatedTypeMirror constructorResultType = constructor.getReturnType();
-        AnnotationMirror explicitAnno = atypeFactory.getNewClassAnnotation(newClassTree);
         if (atypeFactory.isTreeSet(constructorResultType)
                 || atypeFactory.isTreeMap(constructorResultType)) {
-            if (AnnotationUtils.areSame(explicitAnno, atypeFactory.ORDERNONDET)
-                    || AnnotationUtils.areSameByName(
-                            constructorResultType.getAnnotationInHierarchy(atypeFactory.NONDET),
-                            atypeFactory.POLYDET)) {
-                checker.report(
-                        Result.failure(
-                                DeterminismVisitor.INVALID_COLLECTION_CONSTRUCTOR_INVOCATION,
-                                constructorResultType),
-                        newClassTree);
+            AnnotationMirror explicitAnno = atypeFactory.getNewClassAnnotation(newClassTree);
+            if (explicitAnno != null
+                    && AnnotationUtils.areSameByClass(explicitAnno, OrderNonDet.class)) {
+                AnnotationMirror constructorResult =
+                        constructorResultType.getAnnotationInHierarchy(atypeFactory.NONDET);
+                if (AnnotationUtils.areSameByClass(constructorResult, PolyDet.class)) {
+                    checker.report(
+                            Result.failure(
+                                    DeterminismVisitor.INVALID_COLLECTION_CONSTRUCTOR_INVOCATION,
+                                    constructorResultType),
+                            newClassTree);
+                }
             }
         }
         super.checkConstructorInvocation(invocation, constructor, newClassTree);
