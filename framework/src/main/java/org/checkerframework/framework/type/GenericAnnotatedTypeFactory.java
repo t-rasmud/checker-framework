@@ -1565,7 +1565,7 @@ public abstract class GenericAnnotatedTypeFactory<
     }
 
     /**
-     * Applies defaults for types in a class with an qualifier parameter.
+     * Applies defaults for types in a class with a qualifier parameter.
      *
      * @param elt Element whose type is {@code type}
      * @param type where the defaults are applied

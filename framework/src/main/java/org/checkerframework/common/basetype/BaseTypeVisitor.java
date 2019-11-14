@@ -390,6 +390,9 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
      *
      * <p>Issues an error if (@code classTree} extends or implements a class/interface that has a
      * qualifier parameter, but this class does not.
+     *
+     * <p>Issues an error if (@code classTree} is an enum and is annotated with
+     * {@code @HasQualifierParameter}.
      */
     private void checkQualifierParam(ClassTree classTree) {
         Set<AnnotationMirror> polyWithOutQualiferParam = AnnotationUtils.createAnnotationSet();
@@ -402,6 +405,9 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
                 polys.add(poly);
             }
             if (atypeFactory.hasQualifierParameterInHierarchy(classElement, top)) {
+                if (classTree.getKind() == Tree.Kind.ENUM) {
+                    checker.report(Result.failure("invalid.has.qual.param"), classTree);
+                }
                 continue;
             }
             if (poly != null) {
