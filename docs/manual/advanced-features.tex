@@ -680,9 +680,6 @@ for the cast.  For either syntax, the Checker Framework will issue a
 warning that it cannot verify that the cast is correct.  The programmer may
 suppress the warning if the code is correct.
 
-One exception to this is if the annotation on the result type is polymorphic.  In this case, any
-explicit annotation between \<new> and a class name is treated as a constraint for the instantiation
-for the polymorphic qualifier.
 
 \sectionAndLabel{Type refinement (flow-sensitive type qualifier inference)}{type-refinement}
 
@@ -1529,4 +1526,5 @@ class @Marsupial-Animal {
 % LocalWords:  AuseDefaultsForUncheckedcode EnsuresKeyFor EnsuresKeyForIf
 % LocalWords:  EnsuresLockHeld EnsuresLockHeldIf FieldInvariant fieldA
 % LocalWords:  fieldB myMethod SomeType runtime typedefs signedness
-%%  LocalWords:  Signedness MonotonicNonNull
+%%  LocalWords:  Signedness MonotonicNonNull UpperBoundFor
+% LocalWords:  getTypeDeclarationBounds identityHashCode
