@@ -13,6 +13,7 @@ class Issue137 {
         f("a", "b");
         // :: error: (nondeterministic.tostring)
         g(e);
+        f();
     }
 }
 
