@@ -525,10 +525,15 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         List<? extends VariableElement> params = methodElement.getParameters();
         List<? extends ExpressionTree> args = node.getArguments();
 
-        int indicesToCheck = Math.min(params.size(), args.size());
-        for (int index = 0; index < indicesToCheck; index++) {
+        int lastParamIndex = params.size() - 1;
+        for (int index = 0; index < args.size(); index++) {
             ExpressionTree arg = args.get(index);
-            VariableElement param = params.get(index);
+
+            // If the last parameter is a VarArg, then the number of arguments
+            // could be greater than the number of parameters.
+            // In this case, check all the arguments at indices greater than
+            // size of the paremeter list against the last parameter.
+            VariableElement param = params.get(Math.min(lastParamIndex, index));
 
             boolean isParamObjectArray = false;
             TypeMirror paramType = param.asType();
