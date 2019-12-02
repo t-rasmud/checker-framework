@@ -581,30 +581,34 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         }
     }
 
+    /** Parses -AdefaultHasQualifierParameter option if present. */
     protected void initializeDefaultHasQualifierParameter() {
-        if (checker.hasOption("defaultHasQualifierParameter")) {
-            String defaultHasQualifierParameterOption =
-                    checker.getOption("defaultHasQualifierParameter");
-            if (defaultHasQualifierParameterOption == null) {
-                return;
-            }
-            String[] quals = defaultHasQualifierParameterOption.split(";");
-            for (String qual : quals) {
-                int splitLocation = qual.indexOf(":");
-                if (splitLocation == -1) {
-                    throw new UserError(
-                            "Each part of -AdefaultHasQualifierParameter should have a colon");
-                }
+        if (!checker.hasOption("defaultHasQualifierParameter")) {
+            return;
+        }
 
-                String qualName = qual.substring(0, splitLocation);
-                String classPattern = qual.substring(splitLocation + 1);
-                AnnotationMirror anno = AnnotationBuilder.fromName(elements, qualName);
-                if (anno == null) {
-                    throw new UserError("Invalid annotation name: " + qualName);
-                }
+        String defaultHasQualifierParameterOption =
+                checker.getOption("defaultHasQualifierParameter");
+        if (defaultHasQualifierParameterOption == null) {
+            return;
+        }
 
-                defaultHasQualifierParameterPatterns.put(anno, Pattern.compile(classPattern));
+        String[] quals = defaultHasQualifierParameterOption.split(";");
+        for (String qual : quals) {
+            int splitLocation = qual.indexOf(":");
+            if (splitLocation == -1) {
+                throw new UserError(
+                        "Each part of -AdefaultHasQualifierParameter should have a colon");
             }
+
+            String qualName = qual.substring(0, splitLocation);
+            String classPattern = qual.substring(splitLocation + 1);
+            AnnotationMirror anno = AnnotationBuilder.fromName(elements, qualName);
+            if (anno == null) {
+                throw new UserError("Invalid annotation name: " + qualName);
+            }
+
+            defaultHasQualifierParameterPatterns.put(anno, Pattern.compile(classPattern));
         }
     }
 
@@ -3303,6 +3307,15 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         return AnnotationUtils.containsSame(getQualifierParameterHierarchies(element), top);
     }
 
+    /**
+     * Returns whether the {@code HasQualifierParameter} annotation was explicitly written on {@code
+     * element} for the hierarchy given by {@code top}.
+     *
+     * @param element Element to check
+     * @param top the top qualifier for the hierarchy to check
+     * @return whether the class given by {@code element} has been explicitly annotated with {@code
+     *     HasQualifierParameter} for the given hierarchy
+     */
     public boolean hasExplicitQualifierParameterInHierarchy(
             @Nullable Element element, AnnotationMirror top) {
         return AnnotationUtils.containsSame(
@@ -3310,6 +3323,15 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
                 top);
     }
 
+    /**
+     * Returns whether the {@code NoQualifierParameter} annotation was explicitly written on {@code
+     * element} for the hierarchy given by {@code top}.
+     *
+     * @param element Element to check
+     * @param top the top qualifier for the hierarchy to check
+     * @return whether the class given by {@code element} has been explicitly annotated with {@code
+     *     NoQualifierParameter} for the given hierarchy
+     */
     public boolean hasExplicitNoQualifierParameterInHierarchy(
             @Nullable Element element, AnnotationMirror top) {
         return AnnotationUtils.containsSame(
@@ -3381,12 +3403,15 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     }
 
     /**
-     * Returns the set of top annotations representing all the hierarchies for which this element
-     * has a qualifier parameter.
+     * Returns the set of supported annotations listed inside a specified annotation written on the
+     * class represented by the given element.
      *
      * @param element Element to check
-     * @return the set of top annotations representing all the hierarchies for which this element
-     *     has a qualifier parameter
+     * @param classAnnotation the class for an annotation that's written on classes, which takes as
+     *     its arguments other annotations
+     * @return the set of supported annotations written inside the {@code classAnnotation} on the
+     *     class or {@code element}. Returns an empty set if {@code classAnnotation} is not written
+     *     on {@code element}.
      */
     private Set<AnnotationMirror> getSupportedAnnotationsInClassAnnotation(
             @Nullable Element element, Class<? extends Annotation> classAnnotation) {

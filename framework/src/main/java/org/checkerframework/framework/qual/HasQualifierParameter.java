@@ -49,6 +49,11 @@ import java.lang.annotation.Target;
  *                              |
  *                    {@code @Untainted} MyStringBuffer
  * </pre>
+ *
+ * <p>This annotation may not be written on the same class as {@code NoQualifierParameter} for the
+ * same hierarchy.
+ *
+ * @see NoQualifierParameter
  */
 @Target(ElementType.TYPE)
 @Documented

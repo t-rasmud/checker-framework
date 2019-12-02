@@ -341,11 +341,10 @@ import org.checkerframework.javacutil.UserError;
     "atfDoNotCache",
 
     // Turns on @HasQualifierParameter for specified packages. Takes a semicolon separated list of
-    // strings, each with a top annotation followed by a colon and a comma separated list of package
-    // names. For example
-    // "Annotation1:package1,package2;Annotation2:package3" enables @HasQualifierParameter for the
-    // Annotation1 hierarchy on package1 and package2 and the hierarchy for Annotation2 on package
-    // 3.
+    // strings, each with a top annotation followed by a colon and a regular expression. For example
+    // "Annotation1:(package1|package2).*;Annotation2:package3.*" enables @HasQualifierParameter for
+    // the Annotation1 hierarchy on package1 and package2 and the hierarchy for Annotation2 on
+    // package3.
     "defaultHasQualifierParameter"
 })
 public abstract class SourceChecker extends AbstractTypeProcessor

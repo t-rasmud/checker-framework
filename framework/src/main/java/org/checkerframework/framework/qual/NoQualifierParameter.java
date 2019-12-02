@@ -5,6 +5,18 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
+/**
+ * This is a declaration annotation that applies to type declarations. Some classes conceptually
+ * take a type qualifier parameter. This annotations indicates that this class explicitly does not
+ * do so. If {@code HasQualifierParameter} is enabled by default, for example, with the
+ * -AdefaultHasQualifierParameter option then this annotation can disable it for a specific class.
+ *
+ * <p>One or more top qualifiers must be given for the hierarchies for which there are no qualifier
+ * parameters. This annotation may not be written on the same class as {@code HasQualifierParameter}
+ * for the same hierarchy.
+ *
+ * @see HasQualifierParameter
+ */
 @Target(ElementType.TYPE)
 @Documented
 public @interface NoQualifierParameter {
