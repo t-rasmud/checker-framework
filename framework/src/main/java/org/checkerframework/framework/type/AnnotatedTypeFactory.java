@@ -3386,7 +3386,6 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
             Pattern classPattern = defaultHasQualifierParameterPatterns.get(anno);
             if (classPattern.matcher(name).matches()) {
                 hasQualifierParameterTops.add(anno);
-                break;
             }
         }
 
