@@ -376,7 +376,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      * Mapping from top annotations in hierarchies to regexes for which the {@code
      * HasQualifierParameter} annotation should be on by default.
      */
-    private final Map<AnnotationMirror, List<String>> defaultHasQualifierParameterPackages;
+    private final Map<AnnotationMirror, Pattern> defaultHasQualifierParameterPatterns;
 
     /**
      * Constructs a factory from the given {@link ProcessingEnvironment} instance and syntax tree
@@ -443,7 +443,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
 
         objectGetClass = TreeUtils.getMethod("java.lang.Object", "getClass", 0, processingEnv);
 
-        defaultHasQualifierParameterPackages = AnnotationUtils.createAnnotationMap();
+        defaultHasQualifierParameterPatterns = AnnotationUtils.createAnnotationMap();
     }
 
     /**
@@ -585,25 +585,25 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         if (checker.hasOption("defaultHasQualifierParameter")) {
             String defaultHasQualifierParameterOption =
                     checker.getOption("defaultHasQualifierParameter");
-            if (defaultHasQualifierParameterOption != null) {
-                String[] quals = defaultHasQualifierParameterOption.split(";");
-                for (String qual : quals) {
-                    String[] components = qual.split(":");
-                    if (components.length != 2) {
-                        throw new UserError(
-                                "Each part of -AdefaultHasQualifierParameter should have exactly one colon");
-                    }
-
-                    AnnotationMirror anno = AnnotationBuilder.fromName(elements, components[0]);
-                    if (anno == null) {
-                        throw new UserError("Invalid annotation name: " + components[0]);
-                    }
-
-                    defaultHasQualifierParameterPackages.put(anno, new ArrayList<>());
-                    for (String packageName : components[1].split(",")) {
-                        defaultHasQualifierParameterPackages.get(anno).add(packageName);
-                    }
+            if (defaultHasQualifierParameterOption == null) {
+                return;
+            }
+            String[] quals = defaultHasQualifierParameterOption.split(";");
+            for (String qual : quals) {
+                int splitLocation = qual.indexOf(":");
+                if (splitLocation == -1) {
+                    throw new UserError(
+                            "Each part of -AdefaultHasQualifierParameter should have a colon");
                 }
+
+                String qualName = qual.substring(0, splitLocation);
+                String classPattern = qual.substring(splitLocation + 1);
+                AnnotationMirror anno = AnnotationBuilder.fromName(elements, qualName);
+                if (anno == null) {
+                    throw new UserError("Invalid annotation name: " + qualName);
+                }
+
+                defaultHasQualifierParameterPatterns.put(anno, Pattern.compile(classPattern));
             }
         }
     }
@@ -3354,20 +3354,17 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         Set<AnnotationMirror> noQualifierParamClasses =
                 getSupportedAnnotationsInClassAnnotation(element, NoQualifierParameter.class);
         Set<AnnotationMirror> hasQualifierParameterTops = AnnotationUtils.createAnnotationSet();
-        for (AnnotationMirror anno : defaultHasQualifierParameterPackages.keySet()) {
+        for (AnnotationMirror anno : defaultHasQualifierParameterPatterns.keySet()) {
             if (!isSupportedQualifier(anno)) {
                 continue;
             }
 
-            String name = ElementUtils.enclosingPackage(element).getQualifiedName().toString();
+            CharSequence name = ElementUtils.enclosingPackage(element).getQualifiedName();
 
-            for (String packageName : defaultHasQualifierParameterPackages.get(anno)) {
-                if (name.startsWith(packageName)
-                        && (name.length() == packageName.length()
-                                || name.charAt(packageName.length()) == '.')) {
-                    hasQualifierParameterTops.add(anno);
-                    break;
-                }
+            Pattern classPattern = defaultHasQualifierParameterPatterns.get(anno);
+            if (classPattern.matcher(name).matches()) {
+                hasQualifierParameterTops.add(anno);
+                break;
             }
         }
 
