@@ -3381,7 +3381,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
                 continue;
             }
 
-            CharSequence name = ElementUtils.enclosingPackage(element).getQualifiedName();
+            CharSequence name = ElementUtils.getQualifiedClassName(element);
 
             Pattern classPattern = defaultHasQualifierParameterPatterns.get(anno);
             if (classPattern.matcher(name).matches()) {
