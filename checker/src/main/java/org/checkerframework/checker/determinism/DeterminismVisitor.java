@@ -2,6 +2,7 @@ package org.checkerframework.checker.determinism;
 
 import com.sun.source.tree.*;
 import com.sun.source.tree.Tree.Kind;
+import com.sun.tools.javac.tree.JCTree;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -677,4 +678,111 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     protected void checkConstructorResult(
             AnnotatedTypeMirror.AnnotatedExecutableType constructorType,
             ExecutableElement constructorElement) {}
+
+    protected class DeterminismOverrideChecker extends OverrideChecker {
+
+        public DeterminismOverrideChecker(
+                Tree overriderTree,
+                AnnotatedTypeMirror.AnnotatedExecutableType overrider,
+                AnnotatedTypeMirror overridingType,
+                AnnotatedTypeMirror overridingReturnType,
+                AnnotatedTypeMirror.AnnotatedExecutableType overridden,
+                AnnotatedDeclaredType overriddenType,
+                AnnotatedTypeMirror overriddenReturnType) {
+            super(
+                    overriderTree,
+                    overrider,
+                    overridingType,
+                    overridingReturnType,
+                    overridden,
+                    overriddenType,
+                    overriddenReturnType);
+        }
+
+        /**
+         * Consider a method {@code m(@PolyDet ..., @PolyDet("use") ...)} that is overridden as
+         * {@code m(@PolyDet ..., @PolyDet("use") ...)}. Since {@code @PolyDet} is considered to be
+         * the same as {@code @polyDet("use)} in the determinism type hierarchy, this overriding
+         * relationship is valid. But this is incorrect as it allows the following instantiations:
+         * Overridden method could be {@code m(@NonDet ..., @Det ...)} and the overrider method
+         * could be {@code m(@Det ..., @NonDet ...)}. This method displays an error message when a
+         * parameter with type qualifier {@code @PolyDet} is overridden by a parameter qualified
+         * with {@code @PolyDet("use)}.
+         */
+        @Override
+        public boolean checkOverride() {
+            List<AnnotatedTypeMirror> overriderParams = overrider.getParameterTypes();
+            List<AnnotatedTypeMirror> overriddenParams = overridden.getParameterTypes();
+
+            // Fix up method reference parameters.
+            // See https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.13.1
+            if (methodReference) {
+                // The functional interface of an unbound member reference has an extra parameter
+                // (the receiver).
+                if (((JCTree.JCMemberReference) overriderTree)
+                        .hasKind(JCTree.JCMemberReference.ReferenceKind.UNBOUND)) {
+                    overriddenParams = new ArrayList<>(overriddenParams);
+                    overriddenParams.remove(0);
+                }
+                // Deal with varargs
+                if (overrider.isVarArgs() && !overridden.isVarArgs()) {
+                    overriderParams =
+                            AnnotatedTypes.expandVarArgsFromTypes(overrider, overriddenParams);
+                }
+            }
+
+            for (int index = 0; index < overriderParams.size(); index++) {
+                AnnotatedTypeMirror overriderParam = overriderParams.get(index);
+                AnnotatedTypeMirror overriddenParam = overriddenParams.get(index);
+                if (AnnotationUtils.areSame(
+                        overriddenParam.getEffectiveAnnotationInHierarchy(atypeFactory.NONDET),
+                        atypeFactory.POLYDET)) {
+                    if (AnnotationUtils.areSame(
+                            overriderParam.getEffectiveAnnotationInHierarchy(atypeFactory.NONDET),
+                            atypeFactory.POLYDET_USE)) {
+                        Tree posTree =
+                                overriderTree instanceof MethodTree
+                                        ? ((MethodTree) overriderTree).getParameters().get(index)
+                                        : overriderTree;
+                        checker.report(
+                                Result.failure(
+                                        "override.param.invalid",
+                                        overrider
+                                                .getElement()
+                                                .getParameters()
+                                                .get(index)
+                                                .toString(),
+                                        overriderMeth,
+                                        overriderTyp,
+                                        overriddenMeth,
+                                        overriddenTyp,
+                                        overriderParam,
+                                        overriddenParam),
+                                posTree);
+                        return false;
+                    }
+                }
+            }
+            return super.checkOverride();
+        }
+    }
+
+    @Override
+    protected OverrideChecker createOverrideChecker(
+            Tree overriderTree,
+            AnnotatedTypeMirror.AnnotatedExecutableType overrider,
+            AnnotatedTypeMirror overridingType,
+            AnnotatedTypeMirror overridingReturnType,
+            AnnotatedTypeMirror.AnnotatedExecutableType overridden,
+            AnnotatedTypeMirror.AnnotatedDeclaredType overriddenType,
+            AnnotatedTypeMirror overriddenReturnType) {
+        return new DeterminismOverrideChecker(
+                overriderTree,
+                overrider,
+                overridingType,
+                overridingReturnType,
+                overridden,
+                overriddenType,
+                overriddenReturnType);
+    }
 }
