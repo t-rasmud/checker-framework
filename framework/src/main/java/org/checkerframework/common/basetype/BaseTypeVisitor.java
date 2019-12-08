@@ -405,13 +405,6 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
             if (poly != null) {
                 polys.add(poly);
             }
-            if (atypeFactory.hasQualifierParameterInHierarchy(classElement, top)) {
-                if (atypeFactory.hasNoQualifierParameterInHierarchy(classElement, top)
-                        && !hasConflictingQualifierParameter) {
-                    checker.report(Result.failure("conflicting.qual.param", top), classTree);
-                    hasConflictingQualifierParameter = true;
-                }
-            }
 
             if (!hasConflictingQualifierParameter
                     && atypeFactory.hasExplicitQualifierParameterInHierarchy(classElement, top)
