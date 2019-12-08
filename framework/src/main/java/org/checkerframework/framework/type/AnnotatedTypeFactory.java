@@ -3389,8 +3389,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
 
         Set<AnnotationMirror> noQualifierParamClasses =
                 getSupportedAnnotationsInClassAnnotation(element, NoQualifierParameter.class);
-        Set<? extends AnnotationMirror> topAnnos = getQualifierHierarchy().getTopAnnotations();
-        for (AnnotationMirror anno : topAnnos) {
+        for (AnnotationMirror anno : hasQualifierParameterTops) {
             if (!AnnotationUtils.containsSame(noQualifierParamClasses, anno)) {
                 found.add(anno);
             }
