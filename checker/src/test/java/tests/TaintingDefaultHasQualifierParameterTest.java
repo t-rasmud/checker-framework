@@ -13,7 +13,7 @@ public class TaintingDefaultHasQualifierParameterTest extends CheckerFrameworkPe
                 org.checkerframework.checker.tainting.TaintingChecker.class,
                 "tainting-defaulthasqualifierparameter",
                 "-Anomsgtext",
-                "-AdefaultHasQualifierParameter=org.checkerframework.checker.tainting.qual.Tainted:(package1|package2).*");
+                "-AdefaultHasQualifierParameter=org.checkerframework.checker.tainting.qual.Tainted:^(package1|package2)\\..*");
     }
 
     @Parameters
