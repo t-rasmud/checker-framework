@@ -705,7 +705,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
          * the same as {@code @polyDet("use)} in the determinism type hierarchy, this overriding
          * relationship is valid. But this is incorrect as it allows the following instantiations:
          * Overridden method could be {@code m(@NonDet ..., @Det ...)} and the overrider method
-         * could be {@code m(@Det ..., @NonDet ...)}. To avaoid this unsoundness, the following
+         * could be {@code m(@Det ..., @NonDet ...)}. To avoid this unsoundness, the following
          * method displays an error message when a parameter with type qualifier {@code @PolyDet} is
          * overridden by a parameter qualified with {@code @PolyDet("use)}.
          */
