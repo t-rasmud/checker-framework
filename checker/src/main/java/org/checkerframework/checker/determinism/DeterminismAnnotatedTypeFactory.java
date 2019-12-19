@@ -957,4 +957,29 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             return super.isSubtype(subAnno, superAnno);
         }
     }
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Defaults all fields in a class with an implicit qualifier parameter to {@code PolyDet}.
+     *
+     * @param elt Element whose type is {@code type}
+     * @param type where the defaults are applied
+     */
+    @Override
+    protected void applyQualifierParameterDefaults(Element elt, AnnotatedTypeMirror type) {
+        if (elt == null
+                || elt.getKind() != ElementKind.FIELD
+                || ElementUtils.isStatic(elt)
+                || type.isAnnotatedInHierarchy(DET)) {
+            super.applyQualifierParameterDefaults(elt, type);
+            return;
+        }
+
+        TypeElement enclosingClass = ElementUtils.enclosingClass(elt);
+        Set<AnnotationMirror> tops = getQualifierParameterHierarchies(enclosingClass);
+        if (AnnotationUtils.containsSameByClass(tops, NonDet.class)) {
+            type.addAnnotation(POLYDET);
+        }
+        super.applyQualifierParameterDefaults(elt, type);
+    }
 }
