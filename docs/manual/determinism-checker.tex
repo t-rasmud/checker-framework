@@ -509,8 +509,9 @@ The default annotation for most unannotated types is \<@PolyDet>.
   \<@PolyDet> formal parameters (including the receiver) defaults to
   \<@Det>.
 \item
-  The default for fields is \<@PolyDet>. Thus, classes with fields will require
-  \<@HasQualifierParameter> by default.
+  The default for instance fields in classes annotated with
+  \<@HasQualifierParameter> is \<@PolyDet>. The default for other fields,
+  including all static fields, is \<@Det>.
 \end{itemize}
 
 These choices permit all possible arguments to an unannotated method.
@@ -525,27 +526,16 @@ with \code{@Det} elements. For example, in the following local declarations
 \end{Verbatim}
 the type of \code{list} would be \code{@NonDet List<@Det String>} and
 \code{arr} would be \code{@Det String @NonDet []}. These types are invalid (see
-Section~\ref{determinism-hash-set}). The Determinism Checker instead makes the
-default for local collections \code{@PolyDet}. Also, if a local collection is
-unannotated, or annotated with \code{@PolyDet}, then any unannotated component
-types are defaulted to \code{@PolyDet} as well. Otherwise it gets the regular
-\code{@Det} default. The \code{@PolyDet} default lines up with the default for
-method parameters and returns.
-This allows the user to spend less time
-annotating collection types. It also means that existing local collection and
-array declarations are valid by default.
+Section~\ref{determinism-hash-set}). For \code{Lists}, the Determinism Checker
+instead makes the default for local variables \code{@Det}. Also, if a local
+\code{List} variable is unannotated, then any unannotated component types are
+defaulted to \code{@Det} as well. For other collections and arrays, the default
+for the collection or array and all its components is \code{@NonDet}. This means
+that local collection and array declarations are valid by default.
 
 With the Determinism Checker's Rules, the type of \code{list} above is actually
-\code{@PolyDet List<@PolyDet String>} and the type of \code{arr} is \code{@PolyDet
-String @PolyDet []}, which are valid types. In the following declarations
-\begin{Verbatim}
-    @Det List<String> list1;
-    @PolyDet List<String> list2;
-\end{Verbatim}
-the type of \code{list1} is \code{@Det List<@Det String>}, and the type of
-\code{list2} is \code{@PolyDet List<@PolyDet String>}
-Notice, in both instances the
-default type was the correct choice.
+\code{@Det List<@Det String>} and the type of \code{arr} is \code{@NonDet
+String @NonDet []}, which are valid types.
 
 \sectionAndLabel{Implicit annotations}{determinism-implicits}
 The parameter type of the \code{main} method has an implicit annotation
