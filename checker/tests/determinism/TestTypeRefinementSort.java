@@ -54,6 +54,7 @@ public class TestTypeRefinementSort {
 
     void testSort8(@OrderNonDet List<@Det Integer> ondetList, @Det List<@Det Integer> check) {
         Collections.sort(ondetList);
+        // :: error: (nondeterministic.tostring)
         System.out.println(ondetList);
     }
 

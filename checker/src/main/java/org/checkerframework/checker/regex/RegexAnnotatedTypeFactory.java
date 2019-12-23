@@ -32,8 +32,8 @@ import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedIntersec
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedTypeVariable;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedWildcardType;
 import org.checkerframework.framework.type.QualifierHierarchy;
-import org.checkerframework.framework.type.treeannotator.ImplicitsTreeAnnotator;
 import org.checkerframework.framework.type.treeannotator.ListTreeAnnotator;
+import org.checkerframework.framework.type.treeannotator.LiteralTreeAnnotator;
 import org.checkerframework.framework.type.treeannotator.PropagationTreeAnnotator;
 import org.checkerframework.framework.type.treeannotator.TreeAnnotator;
 import org.checkerframework.framework.util.GraphQualifierHierarchy;
@@ -119,8 +119,6 @@ public class RegexAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     public RegexAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker);
 
-        addAliasedAnnotation(org.checkerframework.checker.regex.qual.PolyRegex.class, POLYREGEX);
-
         /*
         legalReferenceTypes = new TypeMirror[] {
             getTypeMirror("java.lang.CharSequence"),
@@ -134,7 +132,7 @@ public class RegexAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
     @Override
     protected Set<Class<? extends Annotation>> createSupportedTypeQualifiers() {
-        return getBundledTypeQualifiersWithPolyAll(
+        return getBundledTypeQualifiers(
                 Regex.class, PartialRegex.class,
                 RegexBottom.class, UnknownRegex.class);
     }
@@ -244,7 +242,7 @@ public class RegexAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         // Don't call super.createTreeAnnotator because the PropagationTreeAnnotator types binary
         // expressions as lub.
         return new ListTreeAnnotator(
-                new ImplicitsTreeAnnotator(this),
+                new LiteralTreeAnnotator(this).addStandardLiteralQualifiers(),
                 new RegexTreeAnnotator(this),
                 new RegexPropagationTreeAnnotator(this));
     }

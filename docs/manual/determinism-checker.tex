@@ -83,7 +83,7 @@ Section~\ref{determinism-polymorphism} explains polymorphic qualifiers.
 The (determinism) type of a Collection or Iterator must be a supertype or equal to
 the type of the type parameter (see Figure~\ref{fig-determinism-collections}).
 If the Collection is \code{@NonDet}, then the type parameter may not be
-\code{@Det} or \code{@OrderNonDet}. Although such types could exist, they are
+\code{@Det}, \code{@OrderNonDet}, or \code{@PolyDet}. Although such types could exist, they are
 disallowed to prevent the following bug:
 
 \begin{Verbatim}
@@ -112,6 +112,7 @@ These types are invalid:
     \item \code{@NonDet\ \ \ \ \ \ List<@OrderNonDet Set<...>\relax >}
     \item \code{@NonDet\ \ \ \ \ \ List<@Det\ \ \ \ \ \ \ \ \ Integer>}
     \item \code{@NonDet\ \ \ \ \ \ List<T extends @Det Object>}
+    \item \code{@NonDet\ \ \ \ \ \ List<@PolyDet \ \ \ \ Set<...>\relax >}
     \item \code{@OrderNonDet List<@NonDet\ \ \ \ \ \ Integer>}
     \item \code{@Det\ \ \ \ \ \ \ \ \ List<@NonDet\ \ \ \ \ \ Integer>}
     \item \code{@Det\ \ \ \ \ \ \ \ \ List<@OrderNonDet Set<...>\relax >}
@@ -121,7 +122,7 @@ These types are invalid:
 Similarly, the (determinism) type of an array must be a supertype or equal to
 the type of the component type (see Figure~\ref{fig-determinism-collections}).
 As with collections, \code{@NonDet} arrays of \code{@Det} or \code{@OrderNonDet}
-elements are not allowed.
+or \code{@PolyDet} elements are not allowed.
 
 For example, these types are valid:
 \begin{itemize}
@@ -132,9 +133,10 @@ For example, these types are valid:
 
 These types are invalid:
 \begin{itemize}
-    \item \code{@NonDet int @OrderNonDet[]}
-    \item \code{@NonDet int @Det \ \ \ \ \ \ \ []}
-    \item \code{@Det \ \ \ int @NonDet \ \ \ \ []}
+    \item \code{@NonDet \ int @OrderNonDet[]}
+    \item \code{@NonDet \ int @Det \ \ \ \ \ \ \ []}
+    \item \code{@Det \ \ \ \ int @NonDet \ \ \ \ []}
+    \item \code{@PolyDet int @NonDet \ \ \ \ []}
 \end{itemize}
 
 \begin{figure}
@@ -151,6 +153,50 @@ Collection (or array)   & OrderNonDet &   invalid  &  valid      & valid  \\ \cl
     must be a supertype or equal to the type argument (or array component type).}
   \label{fig-determinism-collections}
 \end{figure}
+
+\subsectionAndLabel{Accessing array elements}{determinism-access-array-elements}
+When an array of type \<@OrderNonDet> (or \<@PolyDet>) is accessed on the rhs of an expression,
+the Determinism Checker cannot guarantee that the same element will be returned in every execution. For instance,
+consider an \<@OrderNonDet> array \<a> with elements \code{[5,2,8]}. In one execution,
+\<a[0]> might return \<5> and in another execution, it could return \<8>.
+So the the type of the array access expression (equivalently, the array element) is
+\<@NonDet> (or \<PolyDet("up")>). Example:
+\begin{Verbatim}
+@Det int @OrderNonDet [] arr;
+int val = arr[0];
+\end{Verbatim}
+In the code above, type of \<arr[0]> gets annotated as \<NonDet>.
+
+Similarly, when a \code{@NonDet int} is used to index into an array,
+the Determinism Checker annotates the type of the array access expression as \<@NonDet>. Example:
+\begin{Verbatim}
+@Det int @Det [] arr;
+@NonDet int index;
+int val = arr[index];
+\end{Verbatim}
+In the code above, type of \<arr[index]> gets annotated as \<NonDet>.
+
+Note that the Determinism Checker changes the type of an array access as described above if
+the array access occurs on the rhs of an expression.
+If it were to replace every array access with this rule, the checker would allow
+invalid assignments to array elements. Example:
+\begin{Verbatim}
+@Det int @OrderNonDet [] x;
+@Det int index;
+@NonDet int y;
+x[index] = y;
+\end{Verbatim}
+Here, we expect the checker to flag the assignment \code{x[i] = y} as an error.
+The reason we expect this error is because assigning a value at a specific index
+of an \<@OrderNonDet> array is equivalent to removing an element at that index
+and assigning a new value which makes the resulting array \<@NonDet>. For instance,
+consider an \<@OrderNonDet> array \<a> with elements \<[1,2,3]>. In one execution,
+the statement \code{a[0] = 5} could result in the array \<[5,2,3]>. In another
+execution, the same statement could result in the array \<[5,1,2]>.
+Assigning values at a \<@NonDet> index in a \<@Det> array has a similar effect.
+Had the checker replaced the type of every \<@OrderNonDet> array access with
+\<@NonDet>, the array access \<x[i]> would have the type \<@NonDet> and
+this assignment would not be flagged as an error.
 
 \subsectionAndLabel{Valid user defined types}{determinism-valid-user-types}
 A user defined type may be annotated as \<@OrderNonDet> if and only if it
@@ -315,15 +361,15 @@ For example, consider the code below:
     a.equals(b);
 \end{Verbatim}
 
-Here, the return type of \<equals()> gets the annotation \<@NonDet>.
-But it would be more precise to annotate it as \<@Det>.
-To achieve this precision, the checker annotates the return type
-of \<equals()> called on a receiver of type \<Set> as \<@Det> if the
+Here, the type of \<a.equals(b)> is \<@NonDet>,
+but it is deterministic, so it could be more precisely annotated as \<@Det>.
+To achieve this precision, the checker annotates the type
+of \<equals()> invoked on a receiver of type \<Set> as \<@Det> if the
 following conditions are true:
 \begin{itemize}
-    \item the receiver does not have {@code List} or its subtype as a type parameter,
-    \item the argument to equals() is also an {@code @OrderNonDet Set}, and
-    \item the argument to equals() also does not have {@code List} or its subtype as a
+    \item the receiver does not have \<List> or its subtype as a type argument,
+    \item the argument to equals() is also an \<@OrderNonDet Set>, and
+    \item the argument to equals() also does not have \<List> or its subtype as a
     type parameter
 \end{itemize}
 
@@ -378,7 +424,59 @@ is annotated as:
 E set(@PolyDet List<E> this, @PolyDet("use") int index, E element)
 \end{Verbatim}
 
+Whenever \<@PolyDet("up")>, \<@PolyDet("down")>, and \<@PolyDet("upDet")> are written on formal parameters,
+they are treated as \<@PolyDet("use")> sites that are instantiated with the corresponding \<@PolyDet> mappings.
+For instance, consider the following method signature:
+\begin{Verbatim}
+static void myMethod(@PolyDet List<E> lst, @PolyDet("up") int index);
+\end{Verbatim}
+Only the following calls are legal:
+\begin{Verbatim}
+@NonDet List<...> ndList; @NonDet int index;
+myMethod(ndList , index);
 
+@NonDet List<...> ndList; @Det int index;
+myMethod(ndList , index);
+
+@OrderNonDet List<...> ondList; @NonDet int index;
+myMethod(ondList , index);
+
+@OrderNonDet List<...> ondList; @Det int index;
+myMethod(ondList , index);
+
+@Det List<...> detList; @Det int index;
+myMethod(detList , index);
+\end{Verbatim}
+
+\subsectionAndLabel{Disallowing \<OrderNonDet> in polymorphic instantiations}{determinism-no-ordernondet}
+\begin{description}
+    \item[\refqualclass{checker/determinism/qual}{PolyDet}\<("noOrderNonDet")>] is the same as \<@PolyDet> except that it cannot be instantiated with \<OrderNonDet>.
+\end{description}
+The method signature:
+\begin{Verbatim}
+static void myMethodNoOrderNonDet(@PolyDet("noOrderNonDet") List<E> lst);
+\end{Verbatim}
+allows the following calls:
+\begin{Verbatim}
+@NonDet List<...> ndList;
+myMethodNoOrderNonDet(ndList);
+
+@Det List<...> detList;
+myMethodNoOrderNonDet(detList);
+\end{Verbatim}
+The call \code{myMethodNoOrderNonDet(ondList);} where \<ondList>  is of type \code{@OrderNonDet List<...>} is illegal.
+In the JDK, we annotate the \<remove> method of \<List> as follows:
+\begin{Verbatim}
+@PolyDet("up") E remove(@PolyDet("noOrderNonDet") List<E> this, @PolyDet("use") int index);
+\end{Verbatim}
+This method signature disallows removing elements at specific indices from an  \<OrderNonDet List>.
+Allowing such removals would be unsound. Consider the following example:
+\begin{Verbatim}
+@OrderNonDet List<@Det Integer> ondList;         // Suppose ondList contains elements: [1, 2, 3]
+ondList.remove(0);
+\end{Verbatim}
+Since the list is \<OrderNonDet>, removing an element at index 0 could remove any of its 3 elements in different runs
+making the resulting list \<NonDet> which is unsound.
 
 \sectionAndLabel{How to customize the Determinism Checker}{determinism-customization}
 

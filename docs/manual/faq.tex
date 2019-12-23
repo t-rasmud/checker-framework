@@ -40,6 +40,7 @@ the answers, or other questions to include here.
 \faqtocpara{\ref{faq-warnings-section}: How to handle warnings}
 \\ \ref{faq-handling-warnings}: What should I do if a checker issues a warning about my code?
 \\ \ref{faq-interpreting-warnings}: What does a certain Checker Framework warning message mean?
+\\ \ref{faq-warnings-square-brackets}: What do square brackets mean in a Checker Framework warning message?
 \\ \ref{faq-no-absolute-guarantee}: Can a pluggable type-checker guarantee that my code is correct?
 \\ \ref{faq-concurrency}: What guarantee does the Checker Framework give for concurrent code?
 \\ \ref{faq-awarns}: How do I make compilation succeed even if a checker issues errors?
@@ -466,6 +467,19 @@ If nothing else explains it, then ask on the
 \href{https://groups.google.com/forum/#!forum/checker-framework-discuss}{mailing
   list}.  Be sure to say what you think it means or what specific part does
 not make sense to you, and what you have already done to try to understand it.
+
+
+\subsectionAndLabel{What do square brackets mean in a Checker Framework warning message?}{faq-warnings-square-brackets}
+
+In a message like this:
+
+\begin{Verbatim}
+  found   : ? extends T extends @UnknownKeyFor Object
+  required: [extends @UnknownKeyFor Object super @UnknownKeyFor null]
+\end{Verbatim}
+
+\noindent
+the square brackets enclose the upper and lower bounds that the type parameter needs to be within.
 
 
 \subsectionAndLabel{Can a pluggable type-checker guarantee that my code is correct?}{faq-no-absolute-guarantee}
@@ -1086,7 +1100,7 @@ applies to the element type. The annotation documents that the method takes an a
 
 \subsectionAndLabel{What is the meaning of a type qualifier at a class declaration?}{faq-type-qualifier-on-class-declaration}
 
-See Section~\ref{annotations-on-classes-and-constructors}.
+See Section~\ref{upper-bound-for-use}.
 
 
 \subsectionAndLabel{How are type qualifiers written on upper and lower bounds?}{faq-type-qualifier-on-bounds}
@@ -1316,7 +1330,7 @@ Here are some style guidelines:
 
 Annotations such as \refqualclass{checker/nullness/qual}{NonNull} are
 declared with
-\<\sunjavadocanno{java/lang/annotation/Retention.html}{Retention}(RetentionPolicy.\sunjavadoc{java/lang/annotation/RetentionPolicy.html\#RUNTIME}{RUNTIME})>.  In other words,
+\<\sunjavadocanno{java.base/java/lang/annotation/Retention.html}{Retention}(RetentionPolicy.\sunjavadoc{java.base/java/lang/annotation/RetentionPolicy.html\#RUNTIME}{RUNTIME})>.  In other words,
 these type annotations are available to tools at run time.  Such run-time
 tools could check the annotations (like an \<assert> statement), type-check
 dynamically-loaded code, check casts and \<instanceof> operations, resolve
@@ -1328,9 +1342,9 @@ accommodate them in the future.
 increase in heap size).
 
 For the purpose of static checking at compile time,
-\sunjavadoc{java/lang/annotation/RetentionPolicy.html\#CLASS}{CLASS}
+\sunjavadoc{java.base/java/lang/annotation/RetentionPolicy.html\#CLASS}{CLASS}
 retention would be sufficient.  Note that
-\sunjavadoc{java/lang/annotation/RetentionPolicy.html\#SOURCE}{SOURCE}
+\sunjavadoc{java.base/java/lang/annotation/RetentionPolicy.html\#SOURCE}{SOURCE}
 retention would not be sufficient, because of separate compilation: when
 type-checking a class, the compiler needs to read the annotations on
 libraries that it uses, and separately-compiled libraries are available to
@@ -1388,7 +1402,7 @@ in special cases.
 
 A type system implementer can declaratively specify the type qualifier
 hierarchy (Section~\ref{creating-declarative-hierarchy}) and the type introduction rules
-(Section~\ref{creating-declarative-type-introduction}).  However, the Checker
+(Section~\ref{creating-type-introduction}).  However, the Checker
 Framework uses a procedural syntax for specifying type-checking
 rules (Section~\ref{creating-extending-visitor}).
 A declarative syntax might be more concise, more readable, and more
@@ -1514,7 +1528,7 @@ variety (for details about the guarantee, see
 Section~\ref{checker-guarantees}).
 
 An alternate approach is to use a bug detector such as
-\href{https://errorprone.info//}{Error Prone},
+\href{https://errorprone.info/}{Error Prone},
 \href{http://findbugs.sourceforge.net/}{FindBugs}~\cite{HovemeyerP2004,HovemeyerSP2005},
 \href{http://jlint.sourceforge.net/}{Jlint}~\cite{Artho2001}, or
 \href{https://pmd.github.io/}{PMD}~\cite{Copeland2005}, or the
@@ -1656,7 +1670,7 @@ than the Nullness Checker.
 
 \subsectionAndLabel{How does the Checker Framework compare with the JDK's \<Optional> type?}{faq-optional}
 
-JDK 8 introduced the \sunjavadoc{java/util/Optional.html}{\code{Optional}}
+JDK 8 introduced the \sunjavadoc{java.base/java/util/Optional.html}{\code{Optional}}
 class, a container that is either empty or contains a non-null value.
 The Optional Checker (see Chapter~\ref{optional-checker}) guarantees that
 programmers use \<Optional> correctly.
@@ -1667,7 +1681,7 @@ nullness and \<Optional> and the benefits of each.
 
 \subsectionAndLabel{How does pluggable type-checking compare with JML?}{faq-jml}
 
-\href{http://www.eecs.ucf.edu/~leavens/JML//index.shtml}{JML}, the Java Modeling
+\href{http://www.eecs.ucf.edu/~leavens/JML/index.shtml}{JML}, the Java Modeling
 Language~\cite{LeavensBR2006:JML}, is a language for writing formal
 specifications.
 

@@ -4,8 +4,9 @@
 This chapter describes support for Java generics (also known as
 ``parametric polymorphism'') and polymorphism over type qualifiers.
 
-Section~\ref{qualifier-polymorphism} describes support for polymorphism over
-type qualifiers.
+Section~\ref{method-qualifier-polymorphism} describes support for polymorphism over
+type qualifiers for methods. Section~\ref{class-qualifier-polymorphism} describes
+support for polymorphism over type qualifiers for classes.
 
 
 \sectionAndLabel{Generics (parametric polymorphism or type polymorphism)}{generics}
@@ -34,13 +35,10 @@ type-checker does, and makes the Checker Framework's warnings easier to
 understand.
 
 If your code uses raw types, then the Checker Framework will do its best to
-infer the Java type parameters and the type qualifiers.  If it infers
-imprecise types that lead to type-checking warnings elsewhere, then you have
-two options.  You can convert the raw types such as \code{List} to
-parameterized types such as \code{List<String>}, or you can supply the
-\<-AignoreRawTypeArguments> command-line option.  That option causes the
-Checker Framework to ignore all subtype tests for type arguments that
-were inferred for a raw type.
+infer the Java type arguments and the type qualifiers.  By default these
+inferred types are ignored in subtyping checks. If you supply the
+command-line option \<-AignoreRawTypeArguments=false> you will see errors
+from raw types.
 
 
 \subsectionAndLabel{Restricting instantiation of a generic class}{generics-instantiation}
@@ -279,7 +277,7 @@ some unknown subtype of \<CharSequence>:
 For more details about wildcards, see the
 \href{https://docs.oracle.com/javase/tutorial/java/generics/wildcards.html}{Java
   tutorial on wildcards} or
-\href{https://docs.oracle.com/javase/specs/jls/se10/html/jls-4.html#jls-4.5.1}{JLS
+\href{https://docs.oracle.com/javase/specs/jls/se11/html/jls-4.html#jls-4.5.1}{JLS
   \S 4.5.1}.
 
 You can write a type annotation on the bound of a wildcard:
@@ -311,7 +309,7 @@ For an unbounded wildcard (\code{<?>}, with neither
 bound specified), the annotation in front of a wildcard applies
 to both bounds.  The following three declarations are equivalent (except
 that you cannot write the bottom type \<void>; note that
-\sunjavadoc{java/lang/Void.html}{Void} does not denote the bottom type):
+\sunjavadoc{java.base/java/lang/Void.html}{Void} does not denote the bottom type):
 
 \begin{Verbatim}
   List<@NonNull ?> lnn;
@@ -504,7 +502,8 @@ public static void addNumbers(List<? super @SignednessBottom Integer> list) { ..
 \end{Verbatim}
 
 
-\sectionAndLabel{Qualifier polymorphism}{qualifier-polymorphism}
+\sectionAndLabel{Qualifier polymorphism for methods}{method-qualifier-polymorphism}
+%\label{qualifier-polymorphism}
 
 The Checker Framework supports type \emph{qualifier} polymorphism for
 methods, which permits a single method to have multiple different qualified
@@ -516,7 +515,7 @@ To \emph{use} a polymorphic qualifier, just write it on a type.
 For example, you can write \<@PolyNull> anywhere in a method that you would write
 \<@NonNull> or \<@Nullable>.
 A polymorphic qualifier can be used in a method signature or body.
-It may not be used on a class or field.
+It may not be used on a class. (It may be used on fields, see Section~\ref{class-qualifier-polymorphism}.)
 
 A method written using a polymorphic qualifier conceptually has multiple
 versions, somewhat like the generics feature of Java or a template in C++.
@@ -545,15 +544,11 @@ qualifier for the Nullness type system:
   public @interface PolyNull {}
 \end{Verbatim}
 
-\noindent
-See Section~\ref{polyall} for a way you can sometimes avoid defining a new
-polymorphic qualifier.
-
 
 \subsectionAndLabel{Examples of using polymorphic qualifiers}{qualifier-polymorphism-examples}
 
 As an example of the use of \<@PolyNull>, method
-\sunjavadoc{java/lang/Class.html\#cast-java.lang.Object-}{Class.cast}
+\sunjavadoc{java.base/java/lang/Class.html\#cast(java.lang.Object)}{Class.cast}
 returns null if and only if its argument is \<null>:
 
 \begin{Verbatim}
@@ -631,34 +626,8 @@ already provides the needed functionality.
 that is declared to take a \<String> parameter can also be called on an
 \<@Interned String> argument.
 
-
-\subsectionAndLabel{The \code{@PolyAll} qualifier applies to every type system}{polyall}
-
-Each type system may have its own polymorphic type qualifier.
-If some method is qualifier-polymorphic over every type qualifier
-hierarchy, then you can use \refqualclass{framework/qual}{PolyAll}.
-This is better than trying to write every \<@Poly*> qualifier on that method.
-
-For example, a method that only performs \<==> on array elements will work
-no matter what the array's element types are:
-
-\begin{Verbatim}
-  /**
-   * Searches for the first occurrence of the given element in the array,
-   * testing for equality using == (not the equals method).
-   */
-  public static int indexOfEq(@PolyAll Object[] a, @Nullable Object elt) {
-    for (int i=0; i<a.length; i++) {
-      if (elt == a[i]) {
-        return i;
-      }
-    }
-    return -1;
-  }
-\end{Verbatim}
-
-
-%% TODO: Polymorphic qualifiers such as @PolyAll do not yet take an optional argument.
+%% TODO: Polymorphic qualifiers do not yet take an optional argument.
+% PolyAll in the section below should be changed to any poly qualifier.
 %
 % \subsectionAndLabel{Multiple instances of polymorphic qualifiers (the index argument)}{qualifier-polymorphism-multiple-instances}
 %
@@ -813,7 +782,7 @@ It is unusual, but permitted, to write just one polymorphic qualifier, on a retu
 This is just like it is unusual, but permitted, to write just one
 occurrence of a generic type parameter, on a return type.  An example of
 such a method is
-\sunjavadoc{java/util/Collections.html\#emptyList--}{Collections.emptyList()}.
+\sunjavadoc{java.base/java/util/Collections.html\#emptyList()}{Collections.emptyList()}.
 
 
 \subsubsectionAndLabel{Using a single polymorphic qualifier on an element type}{qualifier-polymorphism-element-types}
@@ -883,58 +852,95 @@ type-check) than writing just
   void m(@Nullable Object obj)
 \end{Verbatim}
 
+\sectionAndLabel{Classes with implicit qualifier parameters}{class-qualifier-polymorphism}
 
-\subsubsectionAndLabel{Using a single \<@PolyAll> qualifier to indicate all arguments are legal}{qualifier-polymorphism-top-type}
+The Checker Framework supports type \emph{qualifier} polymorphism for classes.  This is similar to
+Java's generic classes, but is used in situations where you cannot use Java generics.
 
-A single \<@PolyAll> annotation can indicate that any possible value is
-permitted to be passed.  For example:
-
-\begin{Verbatim}
-  boolean eq(@PolyAll Object other) {
-    return this == other;
-  }
-\end{Verbatim}
-
-\noindent
-The \<@PolyAll> annotation applies to all type systems.
-It would be infeasible to write the top qualifier for every possible type
-system and to update this method's annotation whenever a new type system is
-defined.
-
-By contrast, a declaration of \<eq> without \<@PolyAll>:
+To add a qualifier parameter to a class, annotate its declaration with \refqualclass{framework/qual}{HasQualifierParameter}.
 
 \begin{Verbatim}
-  boolean eq(Object other) {
-    return this == other;
-  }
+@HasQualifierParameter(Tainted.class)
+class StringBuffer { ... }
 \end{Verbatim}
 
-\noindent
-would reject some calls, in type systems where the default type qualifier
-applied to \<Object> is not the top type.
+\<@HasQualifierParameter> analogizes StringBuffer to a
+generic collection.  A qualifier on a use of StringBuffer itself is treated as
+appearing both on the StringBuffer and on its conceptual type argument.  That
+is:\\
+\begin{tt}
+  @Tainted StringBuffer $\approx$ @Tainted Collection<@Tainted Character>\\
+  @Untainted StringBuffer $\approx$ @Untainted Collection<@Untainted Character>
+\end{tt}
 
-A related use of a single polymorphic qualifier is to override a generic
-type.  For example, the annotation on
-\sunjavadoc{java/lang/Comparable.html\#compareTo-T-}{Comparable.compareTo()}
-is:
+Also, like a generic collection, invariant subtyping is used for occurrences of
+a type with a qualifier parameter:  no two occurrences of the type with
+different qualifiers have a subtyping relationship.
+
+In a type cast, if both the cast type and the type of casted expression have
+qualifier parameters, and if the qualifiers on the types are not equivalent,
+then the checker will issue an \<invariant.cast.unsafe> error.
+
+If a class extends a \<@HasQualifierParameter> class (or implements a
+\<@HasQualifierParameter> interface), then that class must also be marked
+\<@HasQualifierParameter>.
+
+\subsectionAndLabel{Using class qualifier parameters in method signatures}{class-qual-param-method}
+
+In classes with class qualifier parameters, a formal parameter type should
+sometimes have the same qualifier as the class qualifier parameter.  To express
+this, annotate both the receiver type and the parameter type with the
+polymorphic qualifier for the type system. For example,
+\begin{Verbatim}
+@@HasQualifierParameter(Tainted.class)
+class Buffer {
+  void append(@PolyTainted Buffer this, @PolyTainted String s) { ... }
+}
+\end{Verbatim}
+Because \<@PolyTainted> applies to a type with a qualifier parameter, then all
+other uses of \<@PolyTainted> are instantiated to the instantiation of
+\<@PolyTainted>.
+
+\subsectionAndLabel{Using class qualifier parameters in the type of a field}{class-qual-param-field}
+
+In classes with a class qualifier parameter, sometimes the type of a field
+should have the same qualifier as the class qualifier parameter. To express
+this, annotate the field as with the polymorphic qualifier for the type system.
 
 \begin{Verbatim}
-  public interface Comparable<T extends @NonNull Object> {
-    @Pure int compareTo(@PolyAll @NonNull T a1);
-  }
+@HasQualifierParameter(Tainted.class)
+class Buffer {
+  List<@PolyTainted String> strings;
+}
 \end{Verbatim}
 
-\noindent
-which indicates that, for every type system other than the nullness type
-system, every value is permitted as an argument, regardless of how the
-\<Comparable> type was instantiated.  For example, this call is legal:
+At a field access where the declared type of the field has a polymorphic
+qualifier, that polymorphic qualifier is instantiated to the qualifier on the
+type of the receiver of the field access (or in the case of type variables, the
+qualifier on the upper bound).
 
-\begin{Verbatim}
-  Comparable<@MyBottom String> cble;
-  @MyTop String s;
-  ...
-  cble.compareTo(s);
-\end{Verbatim}
+%% TODO: implement this.
+%\subsectionAndLabel{Inheritance of classes with a qualifier parameter}{class-qual-param-inheritance}
+%
+%If a class extends a \<@HasQualifierParameter> class (or implements a
+%\<@HasQualifierParameter> interface), then that class must also be marked
+%\<@HasQualifierParameter>. A particular subclass can specify which qualifier
+%parameter should be used for the super class.  (This is similar to \<class
+%StringList implements List<String> \{...\}>.) For example,
+%
+%\begin{Verbatim}
+%  @HasQualifierParameter(Tainted.class)
+%  class Buffer {
+%  void append(@PolyTainted Buffer this, @PolyTainted String s) { ... }
+%  }
+%  @HasQualifierParameter(Tainted.class)
+%  @Tainted class TaintedBuffer extends @Tainted Buffer {
+%  @Override
+%  void append(@Tainted TaintedBuffer this, @Tainted String s) { ... } // legal override
+%  }
+%\end{Verbatim}
+
+\<@Untainted TaintedBuffer> is an invalid type.
 
 
 % LocalWords:  nullable MyList nble nn Nullness DefaultQualifier MyClass quals

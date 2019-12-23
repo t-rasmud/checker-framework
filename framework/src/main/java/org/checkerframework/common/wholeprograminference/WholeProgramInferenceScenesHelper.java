@@ -18,7 +18,6 @@ import javax.lang.model.type.TypeMirror;
 import org.checkerframework.framework.qual.DefaultFor;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.checkerframework.framework.qual.DefaultQualifierInHierarchy;
-import org.checkerframework.framework.qual.ImplicitFor;
 import org.checkerframework.framework.qual.InvisibleQualifier;
 import org.checkerframework.framework.qual.TypeUseLocation;
 import org.checkerframework.framework.type.AnnotatedTypeFactory;
@@ -126,15 +125,23 @@ public class WholeProgramInferenceScenesHelper {
         modifiedScenes.clear();
     }
 
-    /** Returns the String representing the .jaif path of a class given its name. */
+    /**
+     * Returns the String representing the .jaif path of a class given its name.
+     *
+     * @param className the basename of a class
+     * @return the .jaif file path
+     */
     protected String getJaifPath(String className) {
         String jaifPath = JAIF_FILES_PATH + className + ".jaif";
         return jaifPath;
     }
 
     /**
-     * Returns the Scene stored in a .jaif file path passed as input. If the file does not exist, an
-     * empty Scene is created.
+     * Reads a Scene from the given .jaif file, or returns an empty Scene if the file does not
+     * exist.
+     *
+     * @param jaifPath the .jaif file
+     * @return the Scene read from the file, or an empty Scene if the file does not exist
      */
     protected AScene getScene(String jaifPath) {
         AScene scene;
@@ -372,20 +379,20 @@ public class WholeProgramInferenceScenesHelper {
             }
         }
 
-        // Checks if am is an implicit annotation.
-        // This case checks if it is meta-annotated with @ImplicitFor.
-        // TODO: Handle cases of implicit annotations added via an
-        // org.checkerframework.framework.type.treeannotator.ImplicitsTreeAnnotator.
-        ImplicitFor implicitFor = elt.getAnnotation(ImplicitFor.class);
-        if (implicitFor != null) {
-            org.checkerframework.framework.qual.TypeKind[] types = implicitFor.types();
+        // Checks if am is a default annotation.
+        // This case checks if it is meta-annotated with @DefaultFor.
+        // TODO: Handle cases of annotations added via an
+        // org.checkerframework.framework.type.treeannotator.LiteralTreeAnnotator.
+        DefaultFor defaultFor = elt.getAnnotation(DefaultFor.class);
+        if (defaultFor != null) {
+            org.checkerframework.framework.qual.TypeKind[] types = defaultFor.typeKinds();
             TypeKind atmKind = atm.getUnderlyingType().getKind();
             if (hasMatchingTypeKind(atmKind, types)) {
                 return true;
             }
 
             try {
-                Class<?>[] names = implicitFor.typeNames();
+                Class<?>[] names = defaultFor.types();
                 for (Class<?> c : names) {
                     TypeMirror underlyingtype = atm.getUnderlyingType();
                     while (underlyingtype instanceof javax.lang.model.type.ArrayType) {

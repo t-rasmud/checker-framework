@@ -41,6 +41,7 @@ class Super {
     }
 }
 
+@SuppressWarnings("determinism")
 class SuperWithArg<U> {
 
     void func1(U o) {}
@@ -98,6 +99,7 @@ class Static {
 
 /** Expr # instMethod. */
 // BOUND(ReferenceMode.INVOKE, false),
+@SuppressWarnings("determinism")
 class Bound {
     <T> T func1(T o) {
         return o;
@@ -113,6 +115,7 @@ class Bound {
     }
 }
 
+@SuppressWarnings("determinism")
 class BoundWithArg<U> {
     void func1(U param) {}
 

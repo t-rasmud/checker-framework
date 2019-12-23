@@ -441,7 +441,7 @@ public class ArrayList<E> extends AbstractList<E>
      * @return the element previously at the specified position
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
-    public @PolyDet("up") E set(@PolyDet ArrayList<E> this, @PolyDet("use") int index, E element) {
+    public @PolyDet("up") E set(@PolyDet("noOrderNonDet") ArrayList<E> this, @PolyDet("use") int index, E element) {
         rangeCheck(index);
 
         E oldValue = elementData(index);
@@ -489,7 +489,7 @@ public class ArrayList<E> extends AbstractList<E>
      * @return the element that was removed from the list
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
-    public @PolyDet("up") E remove(@PolyDet ArrayList<E> this, @PolyDet("use") int index) {
+    public @PolyDet("up") E remove(@PolyDet("noOrderNonDet") ArrayList<E> this, @PolyDet("use") int index) {
         rangeCheck(index);
 
         modCount++;
@@ -574,7 +574,7 @@ public class ArrayList<E> extends AbstractList<E>
      * @return <tt>true</tt> if this list changed as a result of the call
      * @throws NullPointerException if the specified collection is null
      */
-    public @PolyDet("down") boolean addAll(@PolyDet ArrayList<E> this, @PolyDet("use") Collection<? extends E> c) {
+    public @PolyDet("down") boolean addAll(@PolyDet ArrayList<E> this, @PolyDet("down") Collection<? extends E> c) {
         Object[] a = c.toArray();
         int numNew = a.length;
         ensureCapacityInternal(size + numNew);  // Increments modCount

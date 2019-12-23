@@ -14,8 +14,7 @@ import org.checkerframework.framework.source.SupportedOptions;
  */
 @SupportedLintOptions({
     // Enables "invalid.type.on.conditional" errors. This is currently disabled and should be
-    // enabled
-    // once we fix type refinement of every statement after a conditional check.
+    // enabled once we fix type refinement of every statement after a conditional check.
     "enableconditionaltypecheck"
 })
 @SupportedOptions({
