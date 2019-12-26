@@ -711,7 +711,7 @@ public final class Class<T> implements java.io.Serializable,
      * @since 1.5
      */
     @SuppressWarnings("unchecked")
-    public @PolyDet TypeVariable<Class<T>> @PolyDet("upDet") [] getTypeParameters(@PolyDet Class<T> this) {
+    public @PolyDet TypeVariable<Class<T>> @PolyDet [] getTypeParameters(@PolyDet Class<T> this) {
         ClassRepository info = getGenericInfo();
         if (info != null)
             return (TypeVariable<Class<T>>[])info.getTypeParameters();
