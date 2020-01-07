@@ -91,7 +91,7 @@ public interface Iterator<E> {
      *         been called after the last call to the {@code next}
      *         method
      */
-    default void remove(@PolyDet Iterator<E> this) {
+    default void remove(@PolyDet("noOrderNonDet") Iterator<E> this) {
         throw new UnsupportedOperationException("remove");
     }
 
