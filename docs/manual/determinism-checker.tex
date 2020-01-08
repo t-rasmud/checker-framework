@@ -509,7 +509,7 @@ The default annotation for most unannotated types is \<@PolyDet>.
   \<@PolyDet> formal parameters (including the receiver) defaults to
   \<@Det>.
 \item
-  The default for instance fields in classes annotated with
+  The default type qualifier for instance fields in classes annotated with
   \<@HasQualifierParameter> is \<@PolyDet>. The default for other fields,
   including all static fields, is \<@Det>.
 \end{itemize}
@@ -527,7 +527,7 @@ with \code{@Det} elements. For example, in the following local declarations
 the type of \code{list} would be \code{@NonDet List<@Det String>} and
 \code{arr} would be \code{@Det String @NonDet []}. These types are invalid (see
 Section~\ref{determinism-hash-set}). For \code{Lists}, the Determinism Checker
-instead makes the default for local variables \code{@Det}. Also, if a local
+instead makes the default qualifier for local variables \code{@Det}. Also, if a local
 \code{List} variable is unannotated, then any unannotated component types are
 defaulted to \code{@Det} as well. For other collections and arrays, the default
 for the collection or array and all its components is \code{@NonDet}. This means
