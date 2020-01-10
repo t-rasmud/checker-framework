@@ -478,8 +478,25 @@ ondList.remove(0);
 Since the list is \<@OrderNonDet>, removing an element at index 0 could remove any of its 3 elements in different runs
 making the resulting list \<@NonDet> which is unsound.
 
-\subsectionAndLabel{Type qualifier hierarchy among \<PolyDet> variants}{determinism-poly-hierarchy}
-
+\subsectionAndLabel{Type qualifier hierarchy among \<@PolyDet> variants}{determinism-poly-hierarchy}
+\begin{figure}
+    \begin{center}
+        \includeimage{poly-hierarchy}{6cm}
+    \end{center}
+    \caption{\<@PolyDet> type hierarchy}
+    \label{fig-poly-hierarchy}
+\end{figure}
+Figure~\ref{fig-poly-hierarchy} shows the type qualifier hierarchy among all the
+variants of \<@PolyDet>. Notice that \<@PolyDet> and \<@PolyDet("use")> are considered
+to be same in this hierarchy.
+Consider a method \code{m(@PolyDet ..., @PolyDet("use") ...)} that is overridden as
+\code{m(@PolyDet ..., @PolyDet("use") ...)}. Since \code{@PolyDet} is considered to be
+the same as \code{@polyDet("use)} in the determinism type hierarchy, this overriding
+relationship is valid. But this is incorrect as it allows the following instantiations:
+Overridden method could be \code{m(@NonDet ..., @Det ...)} and the overrider method
+could be \code{m(@Det ..., @NonDet ...)}. To avoid this unsoundness, the determimisn checker
+displays an error message when a parameter with type qualifier \code{@PolyDet} is
+overridden by a parameter qualified with \code{@PolyDet("use)}.
 
 \sectionAndLabel{How to customize the Determinism Checker}{determinism-customization}
 

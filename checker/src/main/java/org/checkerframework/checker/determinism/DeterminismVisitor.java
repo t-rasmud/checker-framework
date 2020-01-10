@@ -679,8 +679,10 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             AnnotatedTypeMirror.AnnotatedExecutableType constructorType,
             ExecutableElement constructorElement) {}
 
+    /** Creates OverrideChecker for DeterminismChecker */
     protected class DeterminismOverrideChecker extends OverrideChecker {
 
+        /** Constructor for DeterminismOverrideChecker */
         public DeterminismOverrideChecker(
                 Tree overriderTree,
                 AnnotatedTypeMirror.AnnotatedExecutableType overrider,
@@ -708,6 +710,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
          * could be {@code m(@Det ..., @NonDet ...)}. To avoid this unsoundness, the following
          * method displays an error message when a parameter with type qualifier {@code @PolyDet} is
          * overridden by a parameter qualified with {@code @PolyDet("use)}.
+         *
+         * @checker_framework.manual #﻿determinism-poly-hierarchy Type qualifier hierarchy among
+         *     \<@PolyDet> variants
          */
         @Override
         public boolean checkOverride() {
