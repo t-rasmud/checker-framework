@@ -16,6 +16,7 @@ import org.checkerframework.framework.type.AnnotationClassLoader;
 import org.checkerframework.framework.util.defaults.QualifierDefaults;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.UserError;
+import org.plumelib.reflection.Signatures;
 
 /** Defines {@link #createSupportedTypeQualifiers}. */
 public class SubtypingAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
@@ -49,15 +50,34 @@ public class SubtypingAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         // load individually named qualifiers
         if (qualNames != null) {
             for (String qualName : qualNames.split(",")) {
-                qualSet.add(loader.loadExternalAnnotationClass(qualName));
+                if (!Signatures.isBinaryName(qualName)) {
+                    throw new UserError(
+                            "Malformed qualifier \"%s\" in -Aquals=%s", qualName, qualNames);
+                }
+                Class<? extends Annotation> anno = loader.loadExternalAnnotationClass(qualName);
+                if (anno == null) {
+                    throw new UserError("Qualifier specified in -Aquals not found: " + qualName);
+                }
+                qualSet.add(anno);
             }
         }
 
         // load directories of qualifiers
         if (qualDirectories != null) {
             for (String dirName : qualDirectories.split(":")) {
-                qualSet.addAll(loader.loadExternalAnnotationClassesFromDirectory(dirName));
+                Set<Class<? extends Annotation>> annos =
+                        loader.loadExternalAnnotationClassesFromDirectory(dirName);
+                if (annos.isEmpty()) {
+                    throw new UserError(
+                            "Directory specified in -AqualsDir contains no qualifiers: " + dirName);
+                }
+                qualSet.addAll(annos);
             }
+        }
+
+        if (qualSet.isEmpty()) {
+            throw new UserError(
+                    "SubtypingChecker: no qualifiers specified via -Aquals or -AqualDirs");
         }
 
         // check for subtype meta-annotation

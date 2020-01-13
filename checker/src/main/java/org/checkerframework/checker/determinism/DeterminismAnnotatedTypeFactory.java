@@ -19,7 +19,6 @@ import org.checkerframework.framework.flow.CFAnalysis;
 import org.checkerframework.framework.flow.CFStore;
 import org.checkerframework.framework.flow.CFTransfer;
 import org.checkerframework.framework.flow.CFValue;
-import org.checkerframework.framework.qual.PolyAll;
 import org.checkerframework.framework.source.Result;
 import org.checkerframework.framework.type.AnnotatedTypeFactory;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
@@ -57,6 +56,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     public final AnnotationMirror POLYDET_USE;
     /** The @PolyDet("upDet") annotation. */
     public final AnnotationMirror POLYDET_UPDET;
+    /** The @PolyDet("noOrderNonDet") annotation. */
+    public final AnnotationMirror POLYDET_NOORDERNONDET;
 
     /** The java.util.Set interface. */
     private final TypeMirror setInterfaceTypeMirror =
@@ -101,6 +102,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         POLYDET_DOWN = newPolyDet("down");
         POLYDET_USE = newPolyDet("use");
         POLYDET_UPDET = newPolyDet("upDet");
+        POLYDET_NOORDERNONDET = newPolyDet("noOrderNonDet");
 
         this.inputProperties = Collections.unmodifiableList(buildInputProperties());
 
@@ -147,8 +149,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     @Override
     protected Set<Class<? extends Annotation>> createSupportedTypeQualifiers() {
         return new LinkedHashSet<>(
-                Arrays.asList(
-                        Det.class, OrderNonDet.class, NonDet.class, PolyDet.class, PolyAll.class));
+                Arrays.asList(Det.class, OrderNonDet.class, NonDet.class, PolyDet.class));
     }
 
     @Override
@@ -361,23 +362,56 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
 
         /**
-         * If {@code @OrderNonDet} wasn't explicitly written on a {@code TreeSet} or a {@code
-         * TreeMap}, but the constructor would resolve to {@code @OrderNonDet}, inserts {@code @Det}
-         * instead.
+         * When an array of type {@code @OrderNonDet} (or {@code @PolyDet}) is accessed on the rhs,
+         * this method annotates the type of the array access expression (equivalently, the array
+         * element) as {@code @NonDet} (or {@code @PolyDet("up")}). Example:
          *
-         * @param node a tree representing instantiating a class
-         * @param annotatedTypeMirror the type to modify if it represents an invalid constructor
-         *     call
-         * @return visitNewClass() of the super class
+         * <pre><code>
+         * &nbsp; @Det int @OrderNonDet [] arr;
+         * &nbsp; int val = arr[0];
+         * </code></pre>
+         *
+         * In the code above, type of arr[0] gets annotated as {@code @NonDet}.
+         *
+         * <p>This method also annotates the type of an rhs array expression as {@code @NonDet} (or
+         * {@code @PolyDet}) if the index type is annotated as {@code @NonDet} (or
+         * {@code @PolyDet}). Example:
+         *
+         * <pre><code>
+         * &nbsp; @Det int @Det [] arr;
+         * &nbsp; @NonDet int index;
+         * &nbsp; int val = arr[index];
+         * </code></pre>
+         *
+         * In the code above, type of arr[index] gets annotated as {@code @NonDet}.
+         *
+         * @param node the annotated type of the variable
+         * @param annotatedTypeMirror the annotated type of the value
+         * @checker_framework.manual #﻿determinism-access-array-elements Access array elements
          */
         @Override
-        public Void visitNewClass(NewClassTree node, AnnotatedTypeMirror annotatedTypeMirror) {
-            if (isTreeSet(annotatedTypeMirror) || isTreeMap(annotatedTypeMirror)) {
-                if (annotatedTypeMirror.hasAnnotation(ORDERNONDET)) {
-                    annotatedTypeMirror.replaceAnnotation(DET);
+        public Void visitArrayAccess(
+                ArrayAccessTree node, AnnotatedTypeMirror annotatedTypeMirror) {
+            if (!isLHS) {
+                AnnotationMirror arrTopType =
+                        atypeFactory
+                                .getAnnotatedType(node.getExpression())
+                                .getAnnotationInHierarchy(NONDET);
+                AnnotationMirror indextype =
+                        atypeFactory
+                                .getAnnotatedType(node.getIndex())
+                                .getAnnotationInHierarchy(NONDET);
+                if (AnnotationUtils.areSame(arrTopType, ORDERNONDET)
+                        || AnnotationUtils.areSame(arrTopType, NONDET)
+                        || AnnotationUtils.areSame(indextype, NONDET)) {
+                    annotatedTypeMirror.replaceAnnotation(NONDET);
+                } else if (AnnotationUtils.areSameByName(arrTopType, POLYDET)) {
+                    annotatedTypeMirror.replaceAnnotation(POLYDET_UP);
+                } else if (AnnotationUtils.areSame(indextype, POLYDET)) {
+                    annotatedTypeMirror.replaceAnnotation(POLYDET);
                 }
             }
-            return super.visitNewClass(node, annotatedTypeMirror);
+            return super.visitArrayAccess(node, annotatedTypeMirror);
         }
     }
 
@@ -899,5 +933,30 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             }
             return super.isSubtype(subAnno, superAnno);
         }
+    }
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Defaults all fields in a class with an implicit qualifier parameter to {@code PolyDet}.
+     *
+     * @param elt Element whose type is {@code type}
+     * @param type where the defaults are applied
+     */
+    @Override
+    protected void applyQualifierParameterDefaults(Element elt, AnnotatedTypeMirror type) {
+        if (elt == null
+                || elt.getKind() != ElementKind.FIELD
+                || ElementUtils.isStatic(elt)
+                || type.isAnnotatedInHierarchy(DET)) {
+            super.applyQualifierParameterDefaults(elt, type);
+            return;
+        }
+
+        TypeElement enclosingClass = ElementUtils.enclosingClass(elt);
+        Set<AnnotationMirror> tops = getQualifierParameterHierarchies(enclosingClass);
+        if (AnnotationUtils.containsSameByClass(tops, NonDet.class)) {
+            type.addAnnotation(POLYDET);
+        }
+        super.applyQualifierParameterDefaults(elt, type);
     }
 }

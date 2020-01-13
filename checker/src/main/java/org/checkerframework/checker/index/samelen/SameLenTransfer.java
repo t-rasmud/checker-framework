@@ -1,17 +1,23 @@
 package org.checkerframework.checker.index.samelen;
 
+import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.VariableTree;
 import com.sun.source.util.TreePath;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
 import org.checkerframework.checker.index.IndexUtil;
 import org.checkerframework.checker.index.qual.SameLen;
+import org.checkerframework.common.value.ValueCheckerUtils;
 import org.checkerframework.dataflow.analysis.ConditionalTransferResult;
 import org.checkerframework.dataflow.analysis.FlowExpressions;
 import org.checkerframework.dataflow.analysis.FlowExpressions.Receiver;
 import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
+import org.checkerframework.dataflow.cfg.UnderlyingAST;
 import org.checkerframework.dataflow.cfg.node.ArrayCreationNode;
 import org.checkerframework.dataflow.cfg.node.AssignmentNode;
 import org.checkerframework.dataflow.cfg.node.FieldAccessNode;
@@ -21,8 +27,9 @@ import org.checkerframework.framework.flow.CFAnalysis;
 import org.checkerframework.framework.flow.CFStore;
 import org.checkerframework.framework.flow.CFTransfer;
 import org.checkerframework.framework.flow.CFValue;
+import org.checkerframework.framework.type.AnnotatedTypeFactory;
+import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.util.FlowExpressionParseUtil;
-import org.checkerframework.javacutil.AnnotationUtils;
 
 /**
  * The transfer function for the SameLen checker. Contains three cases:
@@ -124,8 +131,7 @@ public class SameLenTransfer extends CFTransfer {
                 FlowExpressions.internalReprOf(analysis.getTypeFactory(), node.getExpression());
 
         if (IndexUtil.isSequenceType(node.getTarget().getType())
-                || (rightAnno != null
-                        && AnnotationUtils.areSameByClass(rightAnno, SameLen.class))) {
+                || (rightAnno != null && aTypeFactory.areSameByClass(rightAnno, SameLen.class))) {
 
             AnnotationMirror rightAnnoOrUnknown = rightAnno == null ? UNKNOWN : rightAnno;
 
@@ -155,7 +161,7 @@ public class SameLenTransfer extends CFTransfer {
         if (currentPath == null) {
             return;
         }
-        for (String expr : IndexUtil.getValueOfAnnotationWithStringArgument(sameLenAnno)) {
+        for (String expr : ValueCheckerUtils.getValueOfAnnotationWithStringArgument(sameLenAnno)) {
             Receiver recS;
             try {
                 recS = aTypeFactory.getReceiverFromJavaExpressionString(expr, currentPath);
@@ -248,5 +254,62 @@ public class SameLenTransfer extends CFTransfer {
         }
 
         return new ConditionalTransferResult<>(result.getResultValue(), thenStore, elseStore);
+    }
+
+    /** Overridden to ensure that SameLen annotations on method parameters are symmetric. */
+    @Override
+    protected void addInformationFromPreconditions(
+            CFStore info,
+            AnnotatedTypeFactory factory,
+            UnderlyingAST.CFGMethod method,
+            MethodTree methodTree,
+            ExecutableElement methodElement) {
+        super.addInformationFromPreconditions(info, factory, method, methodTree, methodElement);
+
+        List<? extends VariableTree> paramTrees = methodTree.getParameters();
+        List<String> paramNames = new ArrayList<>();
+        List<AnnotatedTypeMirror> params = new ArrayList<>();
+
+        for (VariableTree tree : paramTrees) {
+            paramNames.add(tree.getName().toString());
+            params.add(aTypeFactory.getAnnotatedType(tree));
+        }
+
+        for (int index = 0; index < params.size(); index++) {
+
+            // if the parameter has a samelen annotation, then look
+            // for other parameters in that annotation and propagate
+            // default the other annotation so that it is symmetric
+            AnnotatedTypeMirror atm = params.get(index);
+            AnnotationMirror anm = atm.getAnnotation(SameLen.class);
+            if (anm == null) {
+                continue;
+            }
+
+            List<String> values = ValueCheckerUtils.getValueOfAnnotationWithStringArgument(anm);
+            for (String value : values) {
+                int otherParamIndex = paramNames.indexOf(value);
+                if (otherParamIndex == -1) {
+                    continue;
+                }
+
+                // the SameLen value is in the list of params, so modify the type of
+                // that param in the store
+                AnnotationMirror newSameLen =
+                        aTypeFactory.createSameLen(
+                                Collections.singletonList(paramNames.get(index)));
+                Receiver otherParamRec = null;
+                try {
+                    otherParamRec =
+                            FlowExpressionParseUtil.internalReprOfVariable(
+                                    aTypeFactory, paramTrees.get(otherParamIndex));
+                } catch (FlowExpressionParseUtil.FlowExpressionParseException e) {
+                    // do nothing
+                }
+                if (otherParamRec != null) {
+                    info.insertValue(otherParamRec, newSameLen);
+                }
+            }
+        }
     }
 }

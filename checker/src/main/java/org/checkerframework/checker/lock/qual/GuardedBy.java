@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 import org.checkerframework.framework.qual.DefaultFor;
 import org.checkerframework.framework.qual.DefaultInUncheckedCodeFor;
 import org.checkerframework.framework.qual.DefaultQualifierInHierarchy;
-import org.checkerframework.framework.qual.ImplicitFor;
 import org.checkerframework.framework.qual.JavaExpression;
 import org.checkerframework.framework.qual.SubtypeOf;
 import org.checkerframework.framework.qual.TypeKind;
@@ -35,13 +34,17 @@ import org.checkerframework.framework.qual.TypeUseLocation;
  * @checker_framework.manual #lock-checker Lock Checker
  * @checker_framework.manual #lock-examples-guardedby Example use of @GuardedBy
  */
-@SubtypeOf(GuardedByUnknown.class)
 @Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})
+@SubtypeOf(GuardedByUnknown.class)
 @DefaultQualifierInHierarchy
-@DefaultFor({TypeUseLocation.EXCEPTION_PARAMETER, TypeUseLocation.UPPER_BOUND})
 @DefaultInUncheckedCodeFor({TypeUseLocation.PARAMETER})
-@ImplicitFor(
-        types = {
+// These are required because the default for local variables is @GuardedByUnknown, but if the local
+// variable is one of these type kinds, the default should be @GuardedByUnknown.
+@DefaultFor(
+        value = {TypeUseLocation.EXCEPTION_PARAMETER, TypeUseLocation.UPPER_BOUND},
+        typeKinds = {
             TypeKind.BOOLEAN,
             TypeKind.BYTE,
             TypeKind.CHAR,
@@ -51,9 +54,7 @@ import org.checkerframework.framework.qual.TypeUseLocation;
             TypeKind.LONG,
             TypeKind.SHORT
         },
-        typeNames = {java.lang.String.class})
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})
+        types = {java.lang.String.class, Void.class})
 public @interface GuardedBy {
     /**
      * The Java value expressions that need to be held.

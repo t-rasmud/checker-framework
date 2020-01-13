@@ -360,7 +360,7 @@ public interface Collection<E> extends Iterable<E> {
      *         this time due to insertion restrictions
      * @see #add(Object)
      */
-    @PolyDet("down") boolean addAll(@PolyDet Collection<E> this, @PolyDet("use") Collection<? extends E> c);
+    @PolyDet("down") boolean addAll(@PolyDet Collection<E> this, @PolyDet("down") Collection<? extends E> c);
 
     /**
      * Removes all of this collection's elements that are also contained in the

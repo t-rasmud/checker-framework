@@ -129,7 +129,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws IllegalArgumentException      {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public @PolyDet("up") E set(@PolyDet AbstractList<E> this, @PolyDet("use") int index, E element) {
+    public @PolyDet("up") E set(@PolyDet("noOrderNonDet") AbstractList<E> this, @PolyDet("use") int index, E element) {
         throw new UnsupportedOperationException();
     }
 
@@ -158,7 +158,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws UnsupportedOperationException {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public @PolyDet("up") E remove(@PolyDet AbstractList<E> this, @PolyDet("use") int index) {
+    public @PolyDet("up") E remove(@PolyDet("noOrderNonDet") AbstractList<E> this, @PolyDet("use") int index) {
         throw new UnsupportedOperationException();
     }
 
@@ -254,7 +254,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws IllegalArgumentException      {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public @PolyDet("down") boolean addAll(@PolyDet AbstractList<E> this, @PolyDet("use") int index, @PolyDet("use") Collection<? extends E> c) {
+    public @PolyDet("down") boolean addAll(@PolyDet AbstractList<E> this, @PolyDet("use") int index, @PolyDet("down") Collection<? extends E> c) {
         rangeCheckForAdd(index);
         boolean modified = false;
         for (E e : c) {
@@ -510,7 +510,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @param o the object to be compared for equality with this list
      * @return {@code true} if the specified object is equal to this list
      */
-    public @PolyDet("up") boolean equals(@PolyDet AbstractList<E> this, @PolyDet("up") Object o) {
+    public @PolyDet("up") boolean equals(@PolyDet AbstractList<E> this, @PolyDet Object o) {
         if (o == this)
             return true;
         if (!(o instanceof List))

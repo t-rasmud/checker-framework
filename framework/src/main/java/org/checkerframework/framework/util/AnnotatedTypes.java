@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -365,7 +364,7 @@ public class AnnotatedTypes {
             final AnnotatedTypeFactory atypeFactory,
             final AnnotatedTypeMirror of,
             final Element member) {
-        final AnnotatedTypeMirror memberType = atypeFactory.getAnnotatedType(member);
+        AnnotatedTypeMirror memberType = atypeFactory.getAnnotatedType(member);
 
         if (ElementUtils.isStatic(member)) {
             return memberType;
@@ -383,12 +382,22 @@ public class AnnotatedTypes {
                 return asMemberOf(
                         types, atypeFactory, ((AnnotatedTypeVariable) of).getUpperBound(), member);
             case WILDCARD:
+                if (((AnnotatedWildcardType) of).isUninferredTypeArgument()) {
+                    return substituteUninferredTypeArgs(atypeFactory, member, memberType);
+                }
                 return asMemberOf(
                         types,
                         atypeFactory,
                         ((AnnotatedWildcardType) of).getExtendsBound().deepCopy(),
                         member);
             case INTERSECTION:
+                for (AnnotatedDeclaredType superType :
+                        ((AnnotatedIntersectionType) of).directSuperTypes()) {
+                    memberType =
+                            substituteTypeVariables(
+                                    types, atypeFactory, superType, member, memberType);
+                }
+                return memberType;
             case UNION:
             case DECLARED:
                 return substituteTypeVariables(types, atypeFactory, of, member, memberType);
@@ -484,6 +493,34 @@ public class AnnotatedTypes {
         }
     }
 
+    /** Substitutes uninferred type arguments for type variables in {@code memberType}. */
+    private static AnnotatedTypeMirror substituteUninferredTypeArgs(
+            AnnotatedTypeFactory atypeFactory, Element member, AnnotatedTypeMirror memberType) {
+        TypeElement enclosingClassOfMember = ElementUtils.enclosingClass(member);
+        final Map<TypeVariable, AnnotatedTypeMirror> mappings = new HashMap<>();
+
+        while (enclosingClassOfMember != null) {
+            if (!enclosingClassOfMember.getTypeParameters().isEmpty()) {
+                AnnotatedDeclaredType enclosingType =
+                        atypeFactory.getAnnotatedType(enclosingClassOfMember);
+                for (final AnnotatedTypeMirror type : enclosingType.getTypeArguments()) {
+                    AnnotatedTypeVariable typeParameter = (AnnotatedTypeVariable) type;
+                    mappings.put(
+                            typeParameter.getUnderlyingType(),
+                            atypeFactory.getUninferredWildcardType(typeParameter));
+                }
+            }
+            enclosingClassOfMember =
+                    ElementUtils.enclosingClass(enclosingClassOfMember.getEnclosingElement());
+        }
+
+        if (!mappings.isEmpty()) {
+            return atypeFactory.getTypeVarSubstitutor().substitute(mappings, memberType);
+        }
+
+        return memberType;
+    }
+
     /**
      * Returns the iterated type of the passed iterable type, and throws {@link
      * IllegalArgumentException} if the passed type is not iterable.
@@ -569,7 +606,7 @@ public class AnnotatedTypes {
     }
 
     /**
-     * Returns all the super types of the given declared type.
+     * Returns all the supertypes (direct or indirect) of the given declared type.
      *
      * @param type a declared type
      * @return all the supertypes of the given type
@@ -604,12 +641,10 @@ public class AnnotatedTypes {
     }
 
     /**
-     * A utility method that takes a Method element and returns a set of all elements that this
-     * method overrides (as {@link ExecutableElement}s).
+     * Given a method, return the methods that it overrides.
      *
      * @param method the overriding method
-     * @return an unmodifiable set of {@link ExecutableElement}s representing the elements that
-     *     method overrides
+     * @return a map from types to methods that {@code method} overrides
      */
     public static Map<AnnotatedDeclaredType, ExecutableElement> overriddenMethods(
             Elements elements, AnnotatedTypeFactory atypeFactory, ExecutableElement method) {
@@ -620,15 +655,13 @@ public class AnnotatedTypes {
     }
 
     /**
-     * A utility method that takes the element for a method and the set of all supertypes of the
-     * method's containing class and returns the set of all elements that method overrides (as
-     * {@link ExecutableElement}s).
+     * Given a method and all supertypes (recursively) of the method's containing class, returns the
+     * methods that the method overrides.
      *
      * @param method the overriding method
      * @param supertypes the set of supertypes to check for methods that are overridden by {@code
      *     method}
-     * @return an unmodified set of {@link ExecutableElement}s representing the elements that {@code
-     *     method} overrides among {@code supertypes}
+     * @return a map from types to methods that {@code method} overrides
      */
     public static Map<AnnotatedDeclaredType, ExecutableElement> overriddenMethods(
             Elements elements,
@@ -1025,20 +1058,21 @@ public class AnnotatedTypes {
         return found;
     }
 
-    private static Map<TypeElement, Boolean> isTypeAnnotationCache = new IdentityHashMap<>();
-
+    /**
+     * Returns true if the given annotation mirror targets {@link ElementType#TYPE_USE}, false
+     * otherwise.
+     *
+     * @param anno the {@link AnnotationMirror}
+     * @param cls the annotation class being tested; used for diagnostic messages only
+     * @return true iff the give array contains {@link ElementType#TYPE_USE}
+     * @throws RuntimeException if the anno targets both {@link ElementType#TYPE_USE} and something
+     *     besides {@link ElementType#TYPE_PARAMETER}
+     * @deprecated Use {@link AnnotationUtils#hasTypeQualifierElementTypes(ElementType[], Class)}.
+     */
+    @Deprecated
     public static boolean isTypeAnnotation(AnnotationMirror anno, Class<?> cls) {
         TypeElement elem = (TypeElement) anno.getAnnotationType().asElement();
-        if (isTypeAnnotationCache.containsKey(elem)) {
-            return isTypeAnnotationCache.get(elem);
-        }
-
-        // the annotation is a type annotation if it has the proper ElementTypes in the @Target
-        // meta-annotation
-        boolean result =
-                hasTypeQualifierElementTypes(elem.getAnnotation(Target.class).value(), cls);
-        isTypeAnnotationCache.put(elem, result);
-        return result;
+        return hasTypeQualifierElementTypes(elem.getAnnotation(Target.class).value(), cls);
     }
 
     /**
@@ -1049,29 +1083,11 @@ public class AnnotatedTypes {
      * @return true iff the give array contains {@link ElementType#TYPE_USE}
      * @throws RuntimeException if the array contains both {@link ElementType#TYPE_USE} and
      *     something besides {@link ElementType#TYPE_PARAMETER}
+     * @deprecated use {@link AnnotationUtils#hasTypeQualifierElementTypes(ElementType[], Class)}.
      */
+    @Deprecated
     public static boolean hasTypeQualifierElementTypes(ElementType[] elements, Class<?> cls) {
-        // True if the array contains TYPE_USE
-        boolean hasTypeUse = false;
-        // Non-null if the array contains an element other than TYPE_USE or TYPE_PARAMETER
-        ElementType otherElementType = null;
-
-        for (ElementType element : elements) {
-            if (element.equals(ElementType.TYPE_USE)) {
-                hasTypeUse = true;
-            } else if (!element.equals(ElementType.TYPE_PARAMETER)) {
-                otherElementType = element;
-            }
-            if (hasTypeUse && otherElementType != null) {
-                throw new BugInCF(
-                        "@Target meta-annotation should not contain both TYPE_USE and "
-                                + otherElementType
-                                + ", for annotation "
-                                + cls.getName());
-            }
-        }
-
-        return hasTypeUse;
+        return AnnotationUtils.hasTypeQualifierElementTypes(elements, cls);
     }
 
     private static String annotationClassName =

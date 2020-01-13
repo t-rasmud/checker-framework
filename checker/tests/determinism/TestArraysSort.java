@@ -38,7 +38,7 @@ public class TestArraysSort {
             @OrderNonDet List<@Det Integer> @OrderNonDet [] a,
             @Det Comparator<@OrderNonDet List<@Det Integer>> c) {
         Arrays.sort(a, c);
-        // ::error: argument.type.incompatible
+        // :: error: argument.type.incompatible :: error: invalid.element.type
         System.out.println(a[0]);
     }
 

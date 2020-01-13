@@ -22,7 +22,6 @@ import org.checkerframework.checker.nullness.qual.UnknownKeyFor;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.dataflow.util.NodeUtils;
-import org.checkerframework.framework.qual.PolyAll;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.DefaultTypeHierarchy;
 import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
@@ -49,6 +48,9 @@ public class KeyForAnnotatedTypeFactory
     protected final AnnotationMirror KEYFORBOTTOM =
             AnnotationBuilder.fromClass(elements, KeyForBottom.class);
 
+    /** The canonical name of the KeyFor class. */
+    protected final String KEYFOR_NAME = KeyFor.class.getCanonicalName();
+
     /** The Map.containsKey method. */
     private final ExecutableElement mapContainsKey =
             TreeUtils.getMethod("java.util.Map", "containsKey", 1, processingEnv);
@@ -66,8 +68,10 @@ public class KeyForAnnotatedTypeFactory
         super(checker, true);
 
         // Add compatibility annotations:
-        addAliasedAnnotation("org.checkerframework.checker.nullness.compatqual.KeyForDecl", KEYFOR);
-        addAliasedAnnotation("org.checkerframework.checker.nullness.compatqual.KeyForType", KEYFOR);
+        addAliasedAnnotation(
+                "org.checkerframework.checker.nullness.compatqual.KeyForDecl", KeyFor.class, true);
+        addAliasedAnnotation(
+                "org.checkerframework.checker.nullness.compatqual.KeyForType", KeyFor.class, true);
 
         this.postInit();
     }
@@ -76,11 +80,7 @@ public class KeyForAnnotatedTypeFactory
     protected Set<Class<? extends Annotation>> createSupportedTypeQualifiers() {
         return new LinkedHashSet<>(
                 Arrays.asList(
-                        KeyFor.class,
-                        UnknownKeyFor.class,
-                        KeyForBottom.class,
-                        PolyKeyFor.class,
-                        PolyAll.class));
+                        KeyFor.class, UnknownKeyFor.class, KeyForBottom.class, PolyKeyFor.class));
     }
 
     @Override
@@ -209,21 +209,82 @@ public class KeyForAnnotatedTypeFactory
 
         @Override
         public boolean isSubtype(AnnotationMirror subAnno, AnnotationMirror superAnno) {
-            if (AnnotationUtils.areSameByName(superAnno, KEYFOR)
-                    && AnnotationUtils.areSameByName(subAnno, KEYFOR)) {
+            if (AnnotationUtils.areSameByName(superAnno, KEYFOR_NAME)
+                    && AnnotationUtils.areSameByName(subAnno, KEYFOR_NAME)) {
                 List<String> lhsValues = extractValues(superAnno);
                 List<String> rhsValues = extractValues(subAnno);
 
                 return rhsValues.containsAll(lhsValues);
             }
             // Ignore annotation values to ensure that annotation is in supertype map.
-            if (AnnotationUtils.areSameByName(superAnno, KEYFOR)) {
+            if (AnnotationUtils.areSameByName(superAnno, KEYFOR_NAME)) {
                 superAnno = KEYFOR;
             }
-            if (AnnotationUtils.areSameByName(subAnno, KEYFOR)) {
+            if (AnnotationUtils.areSameByName(subAnno, KEYFOR_NAME)) {
                 subAnno = KEYFOR;
             }
+            // TODO: the erased TypeMirror will be used.  Can we store that already here?
             return super.isSubtype(subAnno, superAnno);
+        }
+
+        @Override
+        public AnnotationMirror leastUpperBound(AnnotationMirror a1, AnnotationMirror a2) {
+            if (AnnotationUtils.areSameByName(a1, UNKNOWNKEYFOR)) {
+                return a1;
+            } else if (AnnotationUtils.areSameByName(a2, UNKNOWNKEYFOR)) {
+                return a2;
+            } else if (AnnotationUtils.areSameByName(a1, KEYFORBOTTOM)) {
+                return a2;
+            } else if (AnnotationUtils.areSameByName(a2, KEYFORBOTTOM)) {
+                return a1;
+            } else if (AnnotationUtils.areSameByName(a1, KEYFOR)
+                    && AnnotationUtils.areSameByName(a2, KEYFOR)) {
+                List<String> a1Values = extractValues(a1);
+                List<String> a2Values = extractValues(a2);
+                LinkedHashSet<String> set = new LinkedHashSet<>(a1Values);
+                set.retainAll(a2Values);
+                return createKeyForAnnotationMirrorWithValue(set);
+            }
+            // a1 or a2 is @PolyKeyFor.
+            // Ignore annotation values to ensure that annotation is in supertype map.
+            if (AnnotationUtils.areSameByName(a1, KEYFOR)) {
+                a1 = KEYFOR;
+            }
+            if (AnnotationUtils.areSameByName(a2, KEYFOR)) {
+                a2 = KEYFOR;
+            }
+            // Let super handle @PolyKeyFor.
+            return super.leastUpperBound(a1, a2);
+        }
+
+        @Override
+        public AnnotationMirror greatestLowerBound(AnnotationMirror a1, AnnotationMirror a2) {
+            if (AnnotationUtils.areSameByName(a1, UNKNOWNKEYFOR)) {
+                return a2;
+            } else if (AnnotationUtils.areSameByName(a2, UNKNOWNKEYFOR)) {
+                return a1;
+            } else if (AnnotationUtils.areSameByName(a1, KEYFORBOTTOM)) {
+                return a1;
+            } else if (AnnotationUtils.areSameByName(a2, KEYFORBOTTOM)) {
+                return a2;
+            } else if (AnnotationUtils.areSameByName(a1, KEYFOR)
+                    && AnnotationUtils.areSameByName(a2, KEYFOR)) {
+                List<String> a1Values = extractValues(a1);
+                List<String> a2Values = extractValues(a2);
+                LinkedHashSet<String> set = new LinkedHashSet<>(a1Values);
+                set.addAll(a2Values);
+                return createKeyForAnnotationMirrorWithValue(set);
+            }
+            // a1 or a2 is @PolyKeyFor.
+            // Ignore annotation values to ensure that annotation is in supertype map.
+            if (AnnotationUtils.areSameByName(a1, KEYFOR)) {
+                a1 = KEYFOR;
+            }
+            if (AnnotationUtils.areSameByName(a2, KEYFOR)) {
+                a2 = KEYFOR;
+            }
+            // Let super handle @PolyKeyFor.
+            return super.greatestLowerBound(a1, a2);
         }
     }
 
@@ -255,5 +316,11 @@ public class KeyForAnnotatedTypeFactory
     /** Returns true if the node is an invocation of Map.put. */
     boolean isMapPut(Node node) {
         return NodeUtils.isMethodInvocation(node, mapPut, getProcessingEnv());
+    }
+
+    /** Returns false. Redundancy in the KeyFor hierarchy is not worth warning about. */
+    @Override
+    public boolean shouldWarnIfStubRedundantWithBytecode() {
+        return false;
     }
 }

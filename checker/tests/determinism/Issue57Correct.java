@@ -1,8 +1,7 @@
-// @skip-test
 import java.util.*;
 import org.checkerframework.checker.determinism.qual.*;
 
-public class Issue57Correct<T extends @NonDet Object> implements @NonDet Iterator<T> {
+public @NonDet class Issue57Correct<T extends @NonDet Object> implements @NonDet Iterator<T> {
     public Issue57Correct() {}
 
     public @PolyDet("down") boolean hasNext() {
@@ -10,7 +9,6 @@ public class Issue57Correct<T extends @NonDet Object> implements @NonDet Iterato
     }
 
     public T next() {
-        // :: error: (override.return.invalid)
         return null;
     }
 }

@@ -1,11 +1,141 @@
-Version 2.9.0, July 2, 2019
+Implementation details:
+ * Deprecated QualifierHierarchy#getTypeQualifiers.
+
+---------------------------------------------------------------------------
+
+Version 3.1.0, January 3, 2020
+
+Command-line option -AprintGitProperties prints information about the git
+repository from which the Checker Framework was compiled.
+
+Implementation details:
+ * Removed static cache in AnnotationUtils#areSameByClass and added
+   AnnotatedTypeFactory#areSameByClass that uses an instance cache.
+ * Removed static cache in AnnotationBuilder#fromName and #fromClass.
+ * ContractsUtils#getPreconditions takes an ExecutableElement as an argument.
+ * ContractsUtils#getContracts returns a Set.
+ * Moved ContractUtils.Contract to outer level.
+ * Renamed ConditionalPostcondition#annoResult to ConditionalPostcondition#resultValue.
+
+Closed issues:
+
+2867, 2897, 2972.
+
+---------------------------------------------------------------------------
+
+Version 3.0.1, December 2, 2019
+
+New command-line option for the Constant Value Checker
+`-AnoNullStringsConcatenation` unsoundly assumes that every operand of a String
+concatenation is non-null.
+
+Implementation details:
+ * Moved AnnotatedTypes#hasTypeQualifierElementTypes to AnnotationUtils.
+ * Deprecated AnnotatedTypes#isTypeAnnotation and AnnotatedTypes#hasTypeQualifierElementTypes.
+
+Closed issues:
+
+945, 1224, 2024, 2744, 2809, 2815, 2818, 2830, 2840, 2853, 2854, 2865, 2873,
+2874, 2878, 2880, 2886, 2888, 2900, 2905, 2919, 2923.
+
+---------------------------------------------------------------------------
+
+Version 3.0.0, November 1, 2019
+
+The Checker Framework works on both JDK 8 and JDK 11.
+ * Type annotations for JDK 8 remain in jdk8.jar.
+ * Type annotations for JDK 11 appear in stub files in checker.jar.
+
+Removed the @PolyAll annotation.
+
+Implementation details:
+ * Removed all previously deprecated methods.
+ * AnnotatedTypeFactory#getFnInterfaceFromTree now returns an AnnotatedExecutableType.
+ * AnnotationUtils#areSame and #areSameByName now only accept non-null
+   AnnotationMirrors
+
+Closed issues:
+1169, 1654, 2081, 2703, 2739, 2749, 2779, 2781, 2798, 2820, 2824, 2829, 2842,
+2845, 2848.
+
+---------------------------------------------------------------------------
+
+Version 2.11.1, October 1, 2019
+
+The manual links to the Object Construction Checker.
+
+Closed issues:
+1635, 2718, 2767.
+
+---------------------------------------------------------------------------
+
+Version 2.11.0, August 30, 2019
+
+The Checker Framework now uses the Java 9 javac API. The manual describes
+how to satisfy this dependency, in a way that works on a Java 8 JVM.
+Running the Checker Framework on a Java 9 JVM is not yet supported.
+
+---------------------------------------------------------------------------
+
+Version 2.10.1, August 22, 2019
+
+Closed issues:
+1152, 1614, 2031, 2482, 2543, 2587, 2678, 2686, 2690, 2712, 2717, 2713, 2721,
+2725, 2729.
+
+---------------------------------------------------------------------------
+
+Version 2.10.0, August 1, 2019
+
+Removed the NullnessRawnessChecker.  Use the NullnessChecker instead.
+
+Closed issues:
+435, 939, 1430, 1687, 1771, 1902, 2173, 2345, 2470, 2534, 2606, 2613, 2619,
+2633, 2638.
+
+---------------------------------------------------------------------------
+
+Version 2.9.0, July 3, 2019
 
 Renamed the Signedness Checker's @Constant annotation to @SignednessGlb.
-
-Improved the diagnostic text for uninitialized static fields.  The new
-error key is initialization.static.fields.uninitialized.
+Introduced an alias, @SignedPositive, for use by programmers.
 
 Annotated the first argument of Opt.get and Opt.orElseThrow as @NonNull.
+
+Removed meta-annotation @ImplicitFor:
+ * Use the new meta-annotation @QualifierForLiteral to replace
+   @ImplicitFor(literals, stringpatterns).
+ * Use the meta-annotation @DefaultFor to replace @ImplicitFor(typeKinds,
+   types).
+ * Use the new meta-annotation @UpperBoundFor to specify a qualifier upper
+   bound for certain types.
+ * You can completely remove
+     @ImplicitFor(typeNames = Void.class, literals = LiteralKind.NULL)
+   on bottom qualifiers.
+     @DefaultFor(types = Void.class)
+   and
+     @QualifierForLiterals(literals = LiteralKind.NULL)
+   are added to the bottom qualifier by default.
+
+Add @DefaultQualifierOnUse and @NoDefaultQualifierOnUse type declaration annotations
+
+New/changed error message keys:
+ * initialization.static.fields.uninitialized for uninitialized static fields
+ * unary.increment.type.incompatible and unary.decrement.type.incompatible
+   replace some occurrences of compound.assignment.type.incompatible
+
+Implementation details:
+ * Renamed QualifierPolymorphism#annotate methods to resolve
+ * Renamed ImplicitsTreeAnnotator to LiteralTreeAnnotator
+ * Renamed ImplicitsTypeAnnotator to DefaultForTypeAnnotator
+ * Removed TypeUseLocation.TYPE_DECLARATION
+ * Removed InheritedFromClassAnnotator, replace with DefaultQualifierForUseTypeAnnotator
+ * Rename TreeUtils.isSuperCall and TreeUtils.isThisCall to
+ isSuperConstructorCall and isThisConstructorCall
+
+Closed issues:
+2247, 2391, 2409, 2434, 2451, 2457, 2468, 2484, 2485, 2493, 2505, 2536, 2537,
+2540, 2541, 2564, 2565, 2585.
 
 ---------------------------------------------------------------------------
 
@@ -22,8 +152,7 @@ Implementation detail: deprecated TreeUtils.skipParens in favor of
 TreeUtils.withoutParens which has the same specification.
 
 Closed issues:
-2291, 2291, 2406, 2406, 2469, 2469, 2477, 2477, 2479, 2479, 2480, 2480, 2494,
-2494, 2499, 2499.
+2291, 2406, 2469, 2477, 2479, 2480, 2494, 2499.
 
 ---------------------------------------------------------------------------
 

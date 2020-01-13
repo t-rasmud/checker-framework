@@ -47,12 +47,12 @@ all: manual.pdf manual.html
 figures-all:
 	${MAKE} -C figures all
 
-manual.pdf: bib-update figures-all check-labels
+manual.pdf: ${TEX_FILES} bib-update figures-all check-labels
 	latexmk -silent -pdf -interaction=nonstopmode manual.tex || latexmk -gg -pdf -interaction=nonstopmode manual.tex
 
 html: manual.html
 manual.html: manual.pdf CFLogo.png favicon-checkerframework.png ../api
-	hevea -fix -exec xxdate.exe manual.tex
+	hevea -fix svg.hva -exec xxdate.exe manual.tex
 # I'm not sure why this is necessary; "hevea -fix" should run it automatically.
 # Also, you need ImageMagick 6.8.0-2 Beta or later to avoid a bug.
 	imagen manual
@@ -106,7 +106,19 @@ very_clean: clean
 
 .PHONY: checklink
 checklink:
+	checklink-via-http
+
+.PHONY: checklink-via-file
+checklink-via-file:
 	${CHECKLINK}/checklink -q -e `grep -v '^#' ${CHECKLINK}/checklink-args.txt` manual.html
+
+# Example invocation:
+#   CHECKLINK=$HOME/bin/src/checklink make checklink-via-http
+.PHONY: checklink-via-http
+checklink-via-http: manual.html
+	rm -rf ${HOME}/public_html/tmp-cf-manual
+	(cd .. && cp -prf manual ${HOME}/public_html/tmp-cf-manual)
+	${CHECKLINK}/checklink -q -e `grep -v '^#' ${CHECKLINK}/checklink-args.txt` https://homes.cs.washington.edu/~mernst/tmp-cf-manual/manual.html
 
 .PHONY: tags
 tags: TAGS

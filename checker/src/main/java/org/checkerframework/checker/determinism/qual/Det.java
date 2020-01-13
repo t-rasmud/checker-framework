@@ -20,14 +20,13 @@ import org.checkerframework.framework.qual.*;
 @SubtypeOf({OrderNonDet.class})
 @DefaultQualifierInHierarchy
 @DefaultFor({TypeUseLocation.EXCEPTION_PARAMETER, TypeUseLocation.LOWER_BOUND})
-@ImplicitFor(
-        literals = {
-            LiteralKind.STRING,
-            LiteralKind.INT,
-            LiteralKind.BOOLEAN,
-            LiteralKind.CHAR,
-            LiteralKind.DOUBLE,
-            LiteralKind.FLOAT,
-            LiteralKind.LONG
-        })
+@QualifierForLiterals({
+    LiteralKind.STRING,
+    LiteralKind.INT,
+    LiteralKind.BOOLEAN,
+    LiteralKind.CHAR,
+    LiteralKind.DOUBLE,
+    LiteralKind.FLOAT,
+    LiteralKind.LONG
+})
 public @interface Det {}

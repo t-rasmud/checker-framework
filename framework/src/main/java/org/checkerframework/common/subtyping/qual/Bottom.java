@@ -1,5 +1,6 @@
 package org.checkerframework.common.subtyping.qual;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import org.checkerframework.framework.qual.SubtypeOf;
@@ -18,11 +19,13 @@ import org.checkerframework.framework.qual.TypeUseLocation;
  *
  * <p>To use this qualifier, the type system designer needs to use methods like {@code
  * org.checkerframework.framework.type.treeannotator.ImplicitsTreeAnnotator#addTreeKind(com.sun.source.tree.Tree.Kind,
- * javax.lang.model.element.AnnotationMirror)} to add implicit annotations and needs to manually add
+ * javax.lang.model.element.AnnotationMirror)} to add default annotations and needs to manually add
  * the bottom qualifier to the qualifier hierarchy.
  *
  * @see org.checkerframework.framework.type.QualifierHierarchy#getBottomAnnotations()
+ * @checker_framework.manual #subtyping-checker Subtyping Checker
  */
+@Documented
 @SubtypeOf({})
 @Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})
 @TargetLocations({TypeUseLocation.EXPLICIT_LOWER_BOUND, TypeUseLocation.EXPLICIT_UPPER_BOUND})

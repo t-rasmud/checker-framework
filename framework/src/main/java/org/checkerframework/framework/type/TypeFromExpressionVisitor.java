@@ -27,7 +27,6 @@ import com.sun.source.tree.WildcardTree;
 import java.util.List;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -135,17 +134,13 @@ class TypeFromExpressionVisitor extends TypeFromTreeVisitor {
     @Override
     public AnnotatedTypeMirror visitMemberReference(
             MemberReferenceTree node, AnnotatedTypeFactory f) {
-        AnnotatedDeclaredType type =
-                (AnnotatedDeclaredType) f.toAnnotatedType(TreeUtils.typeOf(node), false);
-        return type;
+        return f.toAnnotatedType(TreeUtils.typeOf(node), false);
     }
 
     @Override
     public AnnotatedTypeMirror visitLambdaExpression(
             LambdaExpressionTree node, AnnotatedTypeFactory f) {
-        AnnotatedDeclaredType type =
-                (AnnotatedDeclaredType) f.toAnnotatedType(TreeUtils.typeOf(node), false);
-        return type;
+        return f.toAnnotatedType(TreeUtils.typeOf(node), false);
     }
 
     @Override
@@ -207,7 +202,9 @@ class TypeFromExpressionVisitor extends TypeFromTreeVisitor {
         }
 
         if (node.getIdentifier().contentEquals("this")) {
-            // TODO: why don't we use getSelfType here?
+            // TODO: Both of these don't work.  See https://tinyurl.com/cfissue/2208
+            // return f.getSelfType(node.getExpression());
+            // return f.getSelfType(node);
             return f.getEnclosingType(
                     (TypeElement) TreeUtils.elementFromTree(node.getExpression()), node);
         } else {
@@ -296,7 +293,7 @@ class TypeFromExpressionVisitor extends TypeFromTreeVisitor {
      *   <li>an explicit annotation on the new class expression ({@code new @HERE MyClass()}), or
      *   <li>an explicit annotation on the declaration of the class ({@code @HERE class MyClass
      *       {}}), or
-     *   <li>an explicit or implicit annotation on the declaration of the constructor ({@code @HERE
+     *   <li>an explicit or default annotation on the declaration of the constructor ({@code @HERE
      *       public MyClass() {}}).
      * </ul>
      *
@@ -306,16 +303,10 @@ class TypeFromExpressionVisitor extends TypeFromTreeVisitor {
      */
     @Override
     public AnnotatedTypeMirror visitNewClass(NewClassTree node, AnnotatedTypeFactory f) {
-        // constructorFromUse return type has implicits
+        // constructorFromUse return type has default annotations
         // so use fromNewClass which does diamond inference and only
         // contains explicit annotations.
         AnnotatedDeclaredType type = f.fromNewClass(node);
-
-        // Enum constructors lead to trouble.
-        // TODO: is there more to check? Can one annotate them?
-        if (isNewEnum(type)) {
-            return type;
-        }
 
         // Add annotations that are on the constructor declaration.
         AnnotatedExecutableType ex = f.constructorFromUse(node).executableType;
@@ -329,10 +320,6 @@ class TypeFromExpressionVisitor extends TypeFromTreeVisitor {
             MethodInvocationTree node, AnnotatedTypeFactory f) {
         AnnotatedExecutableType ex = f.methodFromUse(node).executableType;
         return ex.getReturnType().asUse();
-    }
-
-    private boolean isNewEnum(AnnotatedDeclaredType type) {
-        return type.getUnderlyingType().asElement().getKind() == ElementKind.ENUM;
     }
 
     @Override
