@@ -481,12 +481,12 @@ making the resulting list \<@NonDet> which is unsound.
 \subsectionAndLabel{Type qualifier hierarchy among \<@PolyDet> variants}{determinism-poly-hierarchy}
 \begin{figure}
     \begin{center}
-        \includeimage{poly-hierarchy}{6cm}
+        \includeimage{determinism-poly-hierarchy}{6cm}
     \end{center}
     \caption{\<@PolyDet> type hierarchy}
-    \label{fig-poly-hierarchy}
+    \label{fig-determinism-poly-hierarchy}
 \end{figure}
-Figure~\ref{fig-poly-hierarchy} shows the type qualifier hierarchy among all the
+Figure~\ref{fig-determinism-poly-hierarchy} shows the type qualifier hierarchy among all the
 variants of \<@PolyDet>. Notice that \<@PolyDet> and \<@PolyDet("use")> are considered
 to be same in this hierarchy.
 Consider a method \code{m(@PolyDet ..., @PolyDet("use") ...)} that is overridden as
