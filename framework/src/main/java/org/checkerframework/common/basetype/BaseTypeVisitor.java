@@ -101,11 +101,14 @@ import org.checkerframework.framework.type.TypeHierarchy;
 import org.checkerframework.framework.type.VisitorState;
 import org.checkerframework.framework.type.poly.QualifierPolymorphism;
 import org.checkerframework.framework.type.visitor.SimpleAnnotatedTypeScanner;
-import org.checkerframework.framework.util.*;
-import org.checkerframework.framework.util.ContractsUtils.ConditionalPostcondition;
-import org.checkerframework.framework.util.ContractsUtils.Contract;
-import org.checkerframework.framework.util.ContractsUtils.Postcondition;
-import org.checkerframework.framework.util.ContractsUtils.Precondition;
+import org.checkerframework.framework.util.AnnotatedTypes;
+import org.checkerframework.framework.util.Contract;
+import org.checkerframework.framework.util.Contract.ConditionalPostcondition;
+import org.checkerframework.framework.util.Contract.Postcondition;
+import org.checkerframework.framework.util.Contract.Precondition;
+import org.checkerframework.framework.util.ContractsUtils;
+import org.checkerframework.framework.util.FieldInvariants;
+import org.checkerframework.framework.util.FlowExpressionParseUtil;
 import org.checkerframework.framework.util.FlowExpressionParseUtil.FlowExpressionContext;
 import org.checkerframework.framework.util.FlowExpressionParseUtil.FlowExpressionParseException;
 import org.checkerframework.framework.util.dependenttypes.DependentTypesHelper;
@@ -247,15 +250,10 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
         // Try to reflectively load the type factory.
         Class<?> checkerClass = checker.getClass();
         while (checkerClass != BaseTypeChecker.class) {
-            final String classToLoad =
-                    checkerClass
-                            .getName()
-                            .replace("Checker", "AnnotatedTypeFactory")
-                            .replace("Subchecker", "AnnotatedTypeFactory");
-
             AnnotatedTypeFactory result =
                     BaseTypeChecker.invokeConstructorFor(
-                            classToLoad,
+                            BaseTypeChecker.getRelatedClassName(
+                                    checkerClass, "AnnotatedTypeFactory"),
                             new Class<?>[] {BaseTypeChecker.class},
                             new Object[] {checker});
             if (result != null) {
@@ -389,6 +387,8 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
      *
      * <p>Issues an error if (@code classTree} extends or implements a class/interface that has a
      * qualifier parameter, but this class does not.
+     *
+     * @param classTree the ClassTree to check foor polymorphic fields
      */
     private void checkQualifierParam(ClassTree classTree) {
         Set<AnnotationMirror> polyWithOutQualiferParam = AnnotationUtils.createAnnotationSet();
@@ -840,7 +840,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
         }
     }
 
-    /** Reports single purity error. * */
+    /** Reports single purity error. */
     private void reportPurityError(String msgPrefix, Pair<Tree, String> r) {
         String reason = r.second;
         @SuppressWarnings("CompilerMessages")
@@ -859,7 +859,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
             List<String> formalParamNames,
             boolean abstractMethod) {
         FlowExpressionContext flowExprContext = null;
-        List<Contract> contracts = contractsUtils.getContracts(methodElement);
+        Set<Contract> contracts = contractsUtils.getContracts(methodElement);
 
         for (Contract contract : contracts) {
             String expression = contract.expression;
@@ -890,16 +890,16 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
             }
             if (expr != null && !abstractMethod) {
                 switch (contract.kind) {
-                    case POSTCONDTION:
+                    case POSTCONDITION:
                         checkPostcondition(node, annotation, contract.contractAnnotation, expr);
                         break;
-                    case CONDITIONALPOSTCONDTION:
+                    case CONDITIONALPOSTCONDITION:
                         checkConditionalPostcondition(
                                 node,
                                 annotation,
                                 contract.contractAnnotation,
                                 expr,
-                                ((ConditionalPostcondition) contract).annoResult);
+                                ((ConditionalPostcondition) contract).resultValue);
                         break;
                     case PRECONDITION:
                         // Preconditions are checked at method invocations, not declarations
@@ -1506,7 +1506,8 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
             return;
         }
 
-        for (Precondition p : preconditions) {
+        for (Contract c : preconditions) {
+            Precondition p = (Precondition) c;
             String expression = p.expression;
             AnnotationMirror anno = p.annotation;
 
@@ -2080,7 +2081,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
      *
      * @param castType an invariant type
      * @param exprType type of the expressions that is cast may or may not be invariant
-     * @param top
+     * @param top the top qualifier of the hierarchy to check
      * @return whether or not casting the exprType to castType is legal.
      */
     private boolean isInvariantTypeCastSafe(
@@ -3768,12 +3769,17 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
      * then the following {@code @EnsuresNonNullIf} conditional postcondition would match:<br>
      * {@code @EnsuresNonNullIf(expression="#1", result=true)}<br>
      * {@code boolean equals(@Nullable Object o)}
+     *
+     * @param conditionalPostconditions each is a ConditionalPostcondition
+     * @param b the value required for the {@code result} element
+     * @return all the given conditional postconditions whose {@code result} is {@code b}
      */
     private Set<Postcondition> filterConditionalPostconditions(
             Set<ConditionalPostcondition> conditionalPostconditions, boolean b) {
         Set<Postcondition> result = new LinkedHashSet<>();
-        for (ConditionalPostcondition p : conditionalPostconditions) {
-            if (p.annoResult == b) {
+        for (Contract c : conditionalPostconditions) {
+            ConditionalPostcondition p = (ConditionalPostcondition) c;
+            if (p.resultValue == b) {
                 result.add(new Postcondition(p.expression, p.annotation, p.contractAnnotation));
             }
         }
@@ -4113,7 +4119,10 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
             return;
         }
         checkedJDK = true;
-        if (PluginUtil.getJreVersion() != 8 || checker.hasOption("nocheckjdk")) {
+        if (PluginUtil.getJreVersion() != 8
+                || checker.hasOption("permitMissingJdk")
+                // temporary, for backward compatibility
+                || checker.hasOption("nocheckjdk")) {
             return;
         }
         TypeElement objectTE = elements.getTypeElement("java.lang.Object");
