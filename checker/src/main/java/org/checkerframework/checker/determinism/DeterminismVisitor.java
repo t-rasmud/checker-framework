@@ -711,8 +711,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
          * method displays an error message when a parameter with type qualifier {@code @PolyDet} is
          * overridden by a parameter qualified with {@code @PolyDet("use)}.
          *
-         * @checker_framework.manual #﻿determinism-poly-hierarchy Type qualifier hierarchy among
-         *     \<@PolyDet> variants
+         * @checker_framework.manual #﻿determinism-poly-overriding Special overriding rule
          */
         @Override
         public boolean checkOverride() {
