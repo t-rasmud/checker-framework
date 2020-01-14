@@ -703,7 +703,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
 
         /**
          * Consider a method {@code m(@PolyDet ..., @PolyDet("use") ...)} that is overridden as
-         * {@code m(@PolyDet ..., @PolyDet("use") ...)}. Since {@code @PolyDet} is considered to be
+         * {@code m(@PolyDet("use") ..., @PolyDet ...)}. Since {@code @PolyDet} is considered to be
          * the same as {@code @polyDet("use)} in the determinism type hierarchy, this overriding
          * relationship is valid. But this is incorrect as it allows the following instantiations:
          * Overridden method could be {@code m(@NonDet ..., @Det ...)} and the overrider method
