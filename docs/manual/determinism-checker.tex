@@ -469,14 +469,13 @@ In the JDK, we annotate the \<remove> method of \<List> as follows:
 \begin{Verbatim}
 @PolyDet("up") E remove(@PolyDet("noOrderNonDet") List<E> this, @PolyDet("use") int index);
 \end{Verbatim}
-This method signature disallows removing elements at specific indices from an \<@OrderNonDet List>.
+This method signature disallows removing elements at specific indices from an  \<@OrderNonDet List>.
 Allowing such removals would be unsound. Consider the following example:
 \begin{Verbatim}
 @OrderNonDet List<@Det Integer> ondList;         // Suppose ondList contains elements: [1, 2, 3]
 ondList.remove(0);
 \end{Verbatim}
 Since the list is \<@OrderNonDet>, removing an element at index 0 could remove any of its 3 elements in different runs
-making the resulting list \<@NonDet> which is unsound.
 
 \subsectionAndLabel{Type qualifier hierarchy among \<@PolyDet> variants}{determinism-poly-hierarchy}
 \begin{figure}
