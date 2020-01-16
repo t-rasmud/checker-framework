@@ -3136,9 +3136,10 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      *     inherited.
      */
     public Set<AnnotationMirror> getDeclAnnotations(Element elt) {
-        if (cacheDeclAnnos.containsKey(elt)) {
+        Set<AnnotationMirror> cachedValue = cacheDeclAnnos.get(elt);
+        if (cachedValue != null) {
             // Found in cache, return result.
-            return cacheDeclAnnos.get(elt);
+            return cachedValue;
         }
 
         Set<AnnotationMirror> results = AnnotationUtils.createAnnotationSet();
