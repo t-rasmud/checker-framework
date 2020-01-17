@@ -16,8 +16,8 @@ class TestIteratorRemove {
         iter.remove();
     }
 
-    static void testRemovePolyNoOND(@PolyDet("noOrderNonDet") List<@PolyDet String> list) {
-        @PolyDet("noOrderNonDet") Iterator<@PolyDet String> iter = list.iterator();
+    static void testRemovePolyNoOND(@PolyDet("noOrderNonDet") List<@PolyDet("use") String> list) {
+        @PolyDet("noOrderNonDet") Iterator<@PolyDet("use") String> iter = list.iterator();
         iter.next();
         iter.remove();
     }

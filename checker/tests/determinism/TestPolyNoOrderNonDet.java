@@ -23,7 +23,8 @@ public class TestPolyNoOrderNonDet {
     }
 
     static void testOnd(
-            @PolyDet("noOrderNonDet") List<@PolyDet String> lst, @PolyDet("use") int index) {}
+            @PolyDet("noOrderNonDet") List<@PolyDet("use") String> lst,
+            @PolyDet("use") int index) {}
 
     void callerLst(@OrderNonDet List<@Det String> lst, @Det int index) {
         // :: error: (argument.type.incompatible)
@@ -58,5 +59,13 @@ public class TestPolyNoOrderNonDet {
         testList(lst);
         testList(lst1);
         testList(lst2);
+    }
+
+    void checkSubtyping(
+            @PolyDet("noOrderNonDet") List<@PolyDet("use") String> lst,
+            @PolyDet List<@PolyDet("use") String> lst1) {
+        @PolyDet List<@PolyDet("use") String> local = lst;
+        // :: error: (assignment.type.incompatible)
+        @PolyDet("noOrderNonDet") List<@PolyDet("use") String> local1 = lst1;
     }
 }
