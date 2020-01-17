@@ -2938,6 +2938,7 @@ public final class String
      * @see  java.util.Formatter
      * @since  1.5
      */
+    @RequiresDetToString
     public static @PolyDet String format(@PolyDet String format, @PolyDet Object... args) {
         return new Formatter().format(format, args).toString();
     }
@@ -2979,6 +2980,7 @@ public final class String
      * @see  java.util.Formatter
      * @since  1.5
      */
+    @RequiresDetToString
     public static @PolyDet String format(@PolyDet Locale l, @PolyDet String format, @PolyDet Object... args) {
         return new Formatter(l).format(format, args).toString();
     }
