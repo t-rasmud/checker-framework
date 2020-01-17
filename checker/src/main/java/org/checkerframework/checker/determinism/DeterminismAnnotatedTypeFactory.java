@@ -643,6 +643,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /**
      * If {@code type} is a Collection type that is not explicitly annotated, defaults all its
      * nested component types as {@code annotation}.
+     *
+     * @param type annotated type
+     * @param annotation annotation to add to the type
      */
     void defaultCollectionComponentType(AnnotatedTypeMirror type, AnnotationMirror annotation) {
         if ((isCollectionType(type) && type.getKind() != TypeKind.ARRAY)
@@ -810,12 +813,6 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     private boolean isSubClassOf(AnnotatedTypeMirror subClass, TypeMirror superClass) {
         return types.isSubtype(
                 types.erasure(subClass.getUnderlyingType()), types.erasure(superClass));
-    }
-
-    /** @return true if {@code tm} is Map or a subtype of Map */
-    public boolean isMap(AnnotatedTypeMirror tm) {
-        return types.isSubtype(
-                types.erasure(tm.getUnderlyingType()), types.erasure(mapInterfaceTypeMirror));
     }
 
     /** @return true if {@code tm} is a TreeSet or a subtype of TreeSet */

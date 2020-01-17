@@ -3185,6 +3185,9 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     /**
      * Adds into {@code results} the declaration annotations found in all elements of the super
      * types of {@code typeMirror}. (Both superclasses and superinterfaces.)
+     *
+     * @param typeMirror type
+     * @param results set of AnnotationMirrors to which this method adds declarations annotations
      */
     private void inheritOverriddenDeclAnnosFromTypeDecl(
             TypeMirror typeMirror, Set<AnnotationMirror> results) {
