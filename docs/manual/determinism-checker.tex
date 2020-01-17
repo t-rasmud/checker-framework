@@ -57,9 +57,9 @@ The Determinism type system uses the following type qualifiers (see Figure~\ref{
 \item[\refqualclass{checker/determinism/qual}{NonDet}] indicates
   that the expression might have different values in two different executions on the same machine.
 \item[\refqualclass{checker/determinism/qual}{OrderNonDet}] indicates that
-  a collection or an array will have the same elements in every execution, but in a
+  a collection, iterator, or array will have the same elements in every execution, but in a
   possibly different order.  \<@OrderNonDet> may only be written on
-  types whose declaration is annotated with \refqualclass{checker/determinism/qual}{CollectionType} and arrays.
+  collection types.
   An \<@OrderNonDet> Map indicates that the its keySet is \<@OrderNonDet>.
 \item[\refqualclass{checker/determinism/qual}{Det}] indicates that
   the expression evaluates to the same value (with respect to \<.equals()>) in all

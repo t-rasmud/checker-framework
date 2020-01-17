@@ -477,7 +477,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         return false;
     }
 
-    /** Returns true if the underlying type of {@code atm} is a collection type. */
+    /**
+     * Returns true if the underlying type of {@code atm} is a collection type.
+     *
+     * @param atm annotated type mirror
+     * @return true if the underlying type of {@code atm} is a collection type
+     */
     public boolean isCollectionType(AnnotatedTypeMirror atm) {
         if (atm.getKind() == TypeKind.ARRAY) {
             return true;
