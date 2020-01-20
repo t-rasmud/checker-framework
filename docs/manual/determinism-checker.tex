@@ -478,7 +478,7 @@ ondList.remove(0);
 Since the list is \<@OrderNonDet>, removing an element at index 0 could remove any of its 3 elements in different runs
 making the resulting list \<@NonDet> which is unsound.
 
-\subsectionAndLabel{Type qualifier hierarchy among \<@PolyDet> variants}{determinism-poly-hierarchy}
+\subsectionAndLabel{Type qualifier hierarchy}{determinism-hierarchy}
 \begin{figure}
     \begin{center}
         \includeimage{determinism-poly-hierarchy}{6cm}
@@ -489,6 +489,16 @@ making the resulting list \<@NonDet> which is unsound.
 Figure~\ref{fig-determinism-poly-hierarchy} shows the type qualifier hierarchy among all the
 variants of \<@PolyDet>. Notice that \<@PolyDet> and \<@PolyDet("use")> are considered
 to be same in this hierarchy.
+
+\begin{figure}
+    \begin{center}
+        \includeimage{determinism-all-hierarchy}{8cm}
+    \end{center}
+    \caption{Determinism type hierarchy}
+    \label{fig-determinism-all-hierarchy}
+\end{figure}
+Figure~\ref{fig-determinism-all-hierarchy} shows the type qualifier hierarchy among all the
+type qualifiers in the Determinism Checker.
 
 \sectionAndLabel{How to customize the Determinism Checker}{determinism-customization}
 
