@@ -488,34 +488,7 @@ Allowing such removals would be unsound. Consider the following example:
 ondList.remove(0);
 \end{Verbatim}
 Since the list is \<@OrderNonDet>, removing an element at index 0 could remove any of its 3 elements in different runs
-
-\subsectionAndLabel{Special overriding rule}{determinism-poly-overriding}
-Consider the following code:
-\begin{Verbatim}
-    class Super {
-        void m(@PolyDet String a, @PolyDet("use") String b) {...}
-    }
-    class Sub extends Super {
-        @Override
-        void m(@PolyDet("use") String a, @PolyDet String b) {...}
-    }
-\end{Verbatim}
-Since \code{@PolyDet} is considered to be
-the same as \code{@polyDet("use)} in the determinism type hierarchy, this overriding
-relationship is valid. However, it allows the following unsound instantiations:
-\begin{Verbatim}
-    void caller(@NonDet String nStr, @Det String dStr) {
-        Super superObj = new Super();
-        Sub subObj = new Sub();
-        superObj.m(nStr, dStr);
-        subObj.m(dStr, nStr);
-    }
-\end{Verbatim}
-The first argument of \code{subObj.m} is not a supertype of the
-first argument of \code{superObj.m}.
-To avoid this unsoundness, the determimisn checker
-displays an error message when a parameter with type qualifier \code{@PolyDet} is
-overridden by a parameter qualified with \code{@PolyDet("use)}.
+making the resulting list \<@NonDet> which is unsound.
 
 \sectionAndLabel{How to customize the Determinism Checker}{determinism-customization}
 
