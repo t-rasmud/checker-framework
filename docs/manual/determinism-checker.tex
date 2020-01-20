@@ -448,18 +448,6 @@ myMethod(ondList , index);
 myMethod(detList , index);
 \end{Verbatim}
 
-\subsectionAndLabel{Type qualifier hierarchy among \<@PolyDet> variants}{determinism-poly-hierarchy}
-\begin{figure}
-    \begin{center}
-        \includeimage{determinism-poly-hierarchy}{6cm}
-    \end{center}
-    \caption{\<@PolyDet> type hierarchy}
-    \label{fig-determinism-poly-hierarchy}
-\end{figure}
-Figure~\ref{fig-determinism-poly-hierarchy} shows the type qualifier hierarchy among all the
-variants of \<@PolyDet>. Notice that \<@PolyDet> and \<@PolyDet("use")> are considered
-to be same in this hierarchy.
-
 \subsectionAndLabel{Disallowing \<@OrderNonDet> in polymorphic instantiations}{determinism-no-ordernondet}
 \begin{description}
     \item[\refqualclass{checker/determinism/qual}{PolyDet}\<("noOrderNonDet")>] is the same as \<@PolyDet> except that it cannot be instantiated with \<@OrderNonDet>.
@@ -489,6 +477,18 @@ ondList.remove(0);
 \end{Verbatim}
 Since the list is \<@OrderNonDet>, removing an element at index 0 could remove any of its 3 elements in different runs
 making the resulting list \<@NonDet> which is unsound.
+
+\subsectionAndLabel{Type qualifier hierarchy among \<@PolyDet> variants}{determinism-poly-hierarchy}
+\begin{figure}
+    \begin{center}
+        \includeimage{determinism-poly-hierarchy}{6cm}
+    \end{center}
+    \caption{\<@PolyDet> type hierarchy}
+    \label{fig-determinism-poly-hierarchy}
+\end{figure}
+Figure~\ref{fig-determinism-poly-hierarchy} shows the type qualifier hierarchy among all the
+variants of \<@PolyDet>. Notice that \<@PolyDet> and \<@PolyDet("use")> are considered
+to be same in this hierarchy.
 
 \sectionAndLabel{How to customize the Determinism Checker}{determinism-customization}
 
