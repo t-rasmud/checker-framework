@@ -892,9 +892,10 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          * Adds the following subtyping rules for {@code @PolyDet}:
          *
          * <ol>
-         *   <li>{@code @PolyDet("down")} <: {@code @PolyDet} <: {@code @PolyDet("up")}.
-         *   <li>{@code @PolyDet} <: {@code @PolyDet("upDet")}.
-         *   <li>{@code @PolyDet("noOrderNonDet")} <: {@code @PolyDet}.
+         *   <li>{@code @PolyDet("down")} {@literal <}: {@code @PolyDet} {@literal <}:
+         *       {@code @PolyDet("up")}.
+         *   <li>{@code @PolyDet} {@literal <}: {@code @PolyDet("upDet")}.
+         *   <li>{@code @PolyDet("noOrderNonDet")} {@literal <}: {@code @PolyDet}.
          *   <li>{@code @PolyDet("use")} and {@code @PolyDet} are considered to be equal.
          *   <li>Treats {@code @PolyDet("up")} and {@code @PolyDet("down")} as {@code @PolyDet} when
          *       they are compared with {@code @NonDet}, {@code @OrderNonDet}, or {@code @Det}.
