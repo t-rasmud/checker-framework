@@ -72,7 +72,7 @@ public class TestPolyNoOrderNonDet {
     static void checkSubtyping1(
             @PolyDet List<@PolyDet("use") String> lt,
             @PolyDet("noOrderNonDet") List<@PolyDet("use") String> lst) {
-        // :: error: (assignment.type.incompatible)
+        // :: error: (assignment.type.incompatible) :: error: (invalid.element.type)
         @PolyDet("down") List<@PolyDet("use") String> local = lst;
         lt = lst;
     }
