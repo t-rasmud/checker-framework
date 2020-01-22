@@ -884,7 +884,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
     /** Defines LUB and subtyping relationships. */
     class DeterminismQualifierHierarchy extends GraphQualifierHierarchy {
-        /** DeterminismQualifierHierarchy constructor. */
+        /**
+         * DeterminismQualifierHierarchy constructor.
+         *
+         * @param f MultiGraphFactory
+         * @param bottom AnnotationMirror
+         */
         public DeterminismQualifierHierarchy(MultiGraphFactory f, AnnotationMirror bottom) {
             super(f, bottom);
         }
