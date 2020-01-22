@@ -98,17 +98,17 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1440"
-     inkscape:window-height="781"
+     inkscape:window-width="2288"
+     inkscape:window-height="1158"
      id="namedview114"
      showgrid="false"
      inkscape:zoom="2.3166763"
-     inkscape:cx="19.051791"
+     inkscape:cx="-60.372339"
      inkscape:cy="86.221152"
      inkscape:window-x="0"
      inkscape:window-y="1"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="g24-3"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g24"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
@@ -119,17 +119,17 @@
      style="stroke-width:1.217237" />
   <g
      id="g24"
-     transform="matrix(0.47023364,0,0,0.60580492,184.92867,38.31324)"
-     style="stroke-width:1.87359953">
+     transform="matrix(0.43702151,0,0,0.60580492,196.89344,38.31324)"
+     style="stroke-width:1.94348955">
     <rect
-       style="fill:#ffffff;stroke-width:1.87359953"
+       style="fill:#ffffff;stroke-width:1.94348955"
        x="360"
        y="280"
        width="201"
        height="44"
        id="rect26" />
     <rect
-       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:3.74719906"
+       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:3.8869791"
        x="360"
        y="280"
        width="201"
@@ -137,7 +137,7 @@
        id="rect28" />
     <text
        font-size="15.8044"
-       style="font-style:normal;font-weight:normal;font-size:15.80440044px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#000000;stroke-width:1.87359953"
+       style="font-style:normal;font-weight:normal;font-size:15.80440044px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#000000;stroke-width:1.94348955"
        x="460.5"
        y="306.772"
        id="text30">
@@ -145,7 +145,7 @@
          x="460.5"
          y="306.772"
          id="tspan32"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.71231842px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.87359953">@PolyDet(&quot;down&quot;)</tspan>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.98984814px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.94348955">@PolyDet(&quot;down&quot;)</tspan>
     </text>
   </g>
   <g
@@ -168,15 +168,16 @@
        id="rect38" />
     <text
        font-size="15.8044"
-       style="font-style:normal;font-weight:normal;font-size:15.80440044px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#000000;stroke-width:1.20421588"
-       x="460.5"
-       y="226.772"
-       id="text40">
+       style="font-style:normal;font-weight:normal;font-size:17.52161026px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#000000;stroke-width:1.20421588"
+       x="510.53513"
+       y="204.12126"
+       id="text40"
+       transform="scale(0.90199474,1.1086539)">
       <tspan
-         x="460.5"
-         y="226.772"
+         x="510.53513"
+         y="204.12126"
          id="tspan42"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.71231842px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.20421588">@PolyDet,@PolyDet(&quot;use&quot;)</tspan>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.98404884px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.20421588">@PolyDet,@PolyDet(&quot;use&quot;)</tspan>
     </text>
   </g>
   <text
@@ -218,17 +219,17 @@
      inkscape:connector-curvature="0" />
   <g
      id="g24-2"
-     transform="matrix(0.45332301,0,0,0.61581565,301.13193,35.068037)"
-     style="stroke-width:1.89265203">
+     transform="matrix(0.49352445,0,0,0.61581565,278.49135,35.068037)"
+     style="stroke-width:1.81392908">
     <rect
-       style="fill:#ffffff;stroke-width:1.89265203"
+       style="fill:#ffffff;stroke-width:1.81392908"
        x="360"
        y="280"
        width="201"
        height="44"
        id="rect26-2" />
     <rect
-       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:3.78530407"
+       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:3.62785816"
        x="344.19876"
        y="280"
        width="216.82655"
@@ -236,7 +237,7 @@
        id="rect28-7" />
     <text
        font-size="15.8044"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.80442619px;line-height:0%;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#000000;stroke-width:1.89265203"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.80442619px;line-height:0%;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#000000;stroke-width:1.81392908"
        x="453.64517"
        y="306.05115"
        id="text30-1">
@@ -245,7 +246,7 @@
          id="tspan1334"
          x="453.64517"
          y="306.05115"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12.97632313px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.89265203">@PolyDet(&quot;noOrderNonDet&quot;)</tspan>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14.92390442px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.81392908">@PolyDet(&quot;noOrderNonDet&quot;)</tspan>
     </text>
   </g>
   <path
@@ -281,7 +282,8 @@
          sodipodi:role="line"
          id="tspan1369"
          x="460.5"
-         y="306.772">@PolyDet(&quot;up&quot;)</tspan>
+         y="306.772"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.41483593px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;writing-mode:lr-tb;text-anchor:middle">@PolyDet(&quot;up&quot;)</tspan>
     </text>
   </g>
   <g
@@ -310,7 +312,10 @@
        id="text30-2">
       <tspan
          sodipodi:role="line"
-         id="tspan1419">@PolyDet(&quot;upDet&quot;)</tspan>
+         id="tspan1419"
+         x="460.5"
+         y="306.772"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.41483593px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle">@PolyDet(&quot;upDet&quot;)</tspan>
     </text>
   </g>
 </svg>
