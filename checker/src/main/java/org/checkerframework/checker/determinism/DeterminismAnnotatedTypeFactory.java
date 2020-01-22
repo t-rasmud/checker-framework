@@ -882,82 +882,26 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         return fromNewClass(tree).getAnnotationInHierarchy(NONDET);
     }
 
+    /** Defines LUB and subtyping relationships. */
     class DeterminismQualifierHierarchy extends GraphQualifierHierarchy {
-        @Override
-        public AnnotationMirror leastUpperBound(AnnotationMirror a1, AnnotationMirror a2) {
-            if (!AnnotationUtils.areSameByClass(a1, PolyDet.class)
-                    && !AnnotationUtils.areSameByClass(a2, PolyDet.class)) {
-                return super.leastUpperBound(a1, a2);
-            }
-            if (AnnotationUtils.areSameByClass(a1, PolyDet.class)
-                    && !AnnotationUtils.areSameByClass(a2, PolyDet.class)) {
-                if (AnnotationUtils.areSame(a2, DET)) {
-                    return a1;
-                }
-                return NONDET;
-            }
-            if (!AnnotationUtils.areSameByClass(a1, PolyDet.class)
-                    && AnnotationUtils.areSameByClass(a2, PolyDet.class)) {
-                if (AnnotationUtils.areSame(a1, DET)) {
-                    return a2;
-                }
-                return NONDET;
-            }
-            String a1Value = AnnotationUtils.getElementValue(a1, "value", String.class, true);
-            String a2Value = AnnotationUtils.getElementValue(a2, "value", String.class, true);
-            switch (a1Value) {
-                case "":
-                    switch (a2Value) {
-                        case "use":
-                        case "down":
-                        case "noOrderNonDet":
-                            return a1;
-                        default:
-                            return a2;
-                    }
-                case "up":
-                    switch (a2Value) {
-                        case "upDet":
-                            return NONDET;
-                        default:
-                            return a1;
-                    }
-                case "down":
-                    switch (a2Value) {
-                        case "noOrderNonDet":
-                            return POLYDET;
-                        default:
-                            return a2;
-                    }
-                case "upDet":
-                    switch (a2Value) {
-                        case "up":
-                            return NONDET;
-                        default:
-                            return a1;
-                    }
-                case "noOrderNonDet":
-                    switch (a2Value) {
-                        case "down":
-                            return POLYDET;
-                        default:
-                            return a2;
-                    }
-                case "use":
-                    switch (a2Value) {
-                        case "down":
-                        case "noOrderNonDet":
-                            return a1;
-                        default:
-                            return a2;
-                    }
-                default:
-                    return super.leastUpperBound(a1, a2);
-            }
-        }
-
+        /** DeterminismQualifierHierarchy constructor. */
         public DeterminismQualifierHierarchy(MultiGraphFactory f, AnnotationMirror bottom) {
             super(f, bottom);
+        }
+
+        /**
+         * LUB of {@code @PolyDet("down")} and {@code @PolyDet("noOrderNonDet")} is {@code @PolyDet}
+         * since they are unrelated to each other and are subtypes of {@code @PolyDet}.
+         */
+        @Override
+        public AnnotationMirror leastUpperBound(AnnotationMirror a1, AnnotationMirror a2) {
+            if ((AnnotationUtils.areSame(a1, POLYDET_DOWN)
+                            && AnnotationUtils.areSame(a2, POLYDET_NOORDERNONDET))
+                    || (AnnotationUtils.areSame(a1, POLYDET_NOORDERNONDET)
+                            && AnnotationUtils.areSame(a2, POLYDET_DOWN))) {
+                return POLYDET;
+            }
+            return super.leastUpperBound(a1, a2);
         }
 
         /**
