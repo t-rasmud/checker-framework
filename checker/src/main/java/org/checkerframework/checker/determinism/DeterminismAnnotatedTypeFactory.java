@@ -816,7 +816,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 types.erasure(subClass.getUnderlyingType()), types.erasure(superClass));
     }
 
-    /** @return true if {@code tm} is a TreeSet or a subtype of TreeSet */
+    /**
+     * Returns true if {@code tm} is a TreeSet or a subtype of TreeSet
+     *
+     * @param tm AnnotatedTypeMirror
+     * @return true if {@code tm} is a TreeSet or a subtype of TreeSet
+     */
     public boolean isTreeSet(AnnotatedTypeMirror tm) {
         return types.isSubtype(
                 types.erasure(tm.getUnderlyingType()), types.erasure(treeSetTypeMirror));
