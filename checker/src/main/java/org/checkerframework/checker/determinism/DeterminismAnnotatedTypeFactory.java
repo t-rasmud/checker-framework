@@ -478,7 +478,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
-     * Returns true if the underlying type of {@code atm} is a collection type.
+     * Returns true if the underlying type of {@code atm} or any of its super types is annotated
+     * with {@link CollectionType}.
      *
      * @param atm annotated type mirror
      * @return true if the underlying type of {@code atm} is a collection type
