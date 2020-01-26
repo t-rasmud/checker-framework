@@ -143,6 +143,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @since 1.2
  */
 
+@CollectionType
 public interface Collection<E> extends Iterable<E> {
     // Query Operations
 

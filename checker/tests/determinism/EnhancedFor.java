@@ -5,7 +5,7 @@ import org.checkerframework.checker.determinism.qual.*;
 
 public class EnhancedFor {
     void test(@OrderNonDet HashMap<@Det String, @Det String> map) {
-        for (Iterator<Entry<String, String>> entries = map.entrySet().iterator();
+        for (@OrderNonDet Iterator<Entry<String, String>> entries = map.entrySet().iterator();
                 entries.hasNext(); ) {
             // :: error: (assignment.type.incompatible)
             @Det Entry<@Det String, @Det String> item = entries.next();
