@@ -1,10 +1,12 @@
 import java.util.*;
 import org.checkerframework.checker.determinism.qual.*;
 
-// @skip-test until https://github.com/t-rasmud/checker-framework/issues/68 is fixed. Causes an
-// issue in newList.
 public class TestOverride {
-    protected @PolyDet int mult(@PolyDet int a) {
+    protected @PolyDet int mult(@PolyDet TestOverride this, @PolyDet int a) {
+        return a * a;
+    }
+
+    protected @PolyDet int mult1(@PolyDet int a) {
         return a * a;
     }
 
@@ -29,7 +31,7 @@ class Child extends TestOverride {
 
     @Override
     protected @Det ArrayList<@Det Integer> newList(@NonDet int a) {
-        // :: error: (return.type.incompatible)
+        // :: warning: (cast.unsafe.constructor.invocation)
         return new @Det ArrayList<Integer>(a);
     }
 
@@ -37,5 +39,18 @@ class Child extends TestOverride {
     // :: error: (override.param.invalid)
     protected @PolyDet int getList(@Det ArrayList<Integer> a) {
         return a.get(0);
+    }
+
+    @Override
+    protected @Det int mult1(@NonDet Child this, @NonDet int a) {
+        return 5;
+    }
+}
+
+class SecondChild extends TestOverride {
+    @Override
+    protected @Det int mult1(@NonDet SecondChild this, @NonDet int a) {
+        // :: error: (return.type.incompatible)
+        return a;
     }
 }
