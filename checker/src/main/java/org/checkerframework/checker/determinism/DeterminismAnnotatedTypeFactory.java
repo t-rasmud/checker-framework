@@ -930,10 +930,18 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             }
             if (AnnotationUtils.areSameByClass(subAnno, PolyDet.class)
                     && !AnnotationUtils.areSameByClass(superAnno, PolyDet.class)) {
+                if (AnnotationUtils.areSame(subAnno, POLYDET_UPDET)
+                        && AnnotationUtils.areSame(superAnno, ORDERNONDET)) {
+                    return false;
+                }
                 return super.isSubtype(POLYDET, superAnno);
             }
             if (!AnnotationUtils.areSameByClass(subAnno, PolyDet.class)
                     && AnnotationUtils.areSameByClass(superAnno, PolyDet.class)) {
+                if (AnnotationUtils.areSame(subAnno, ORDERNONDET)
+                        && AnnotationUtils.areSame(superAnno, POLYDET_UPDET)) {
+                    return true;
+                }
                 return super.isSubtype(subAnno, POLYDET);
             }
             String subAnnoValue =
