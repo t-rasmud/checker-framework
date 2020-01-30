@@ -7,6 +7,7 @@ import javax.lang.model.element.*;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.CollectionType;
 import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
@@ -64,15 +65,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** The java.util.List interface. */
     private final TypeMirror listInterfaceTypeMirror =
             TypesUtils.typeFromClass(List.class, types, processingEnv.getElementUtils());
-    /** The java.util.Collection class. */
-    private final TypeMirror collectionInterfaceTypeMirror =
-            TypesUtils.typeFromClass(Collection.class, types, processingEnv.getElementUtils());
     /** The java.util.Map class. */
     private final TypeMirror mapInterfaceTypeMirror =
-            TypesUtils.typeFromClass(Map.class, types, processingEnv.getElementUtils());
-    /** The java.util.Iterator class. */
-    private final TypeMirror iteratorTypeMirror =
-            TypesUtils.typeFromClass(Iterator.class, types, processingEnv.getElementUtils());
+            TypesUtils.typeFromClass(Map.class, types, processingEnv.getElementUtils());;
     /** The java.util.Arrays class. */
     private final TypeMirror arraysTypeMirror =
             TypesUtils.typeFromClass(Arrays.class, types, processingEnv.getElementUtils());
@@ -200,7 +195,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             ExecutableElement m = TreeUtils.elementFromUse(node);
 
             if (methodInvocationType.hasAnnotation(ORDERNONDET)
-                    && !mayBeOrderNonDet(methodInvocationType)) {
+                    && !isCollectionType(methodInvocationType)) {
                 methodInvocationType.replaceAnnotation(NONDET);
             }
             refinePolyUp(node, methodInvocationType, receiverType, m);
@@ -445,7 +440,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 AnnotatedTypeMirror argType = getAnnotatedType(argTree);
                 if (argType.hasAnnotation(POLYDET)) {
                     hasPolyArg = true;
-                    if (mayBeOrderNonDet(argType)) {
+                    if (isCollectionType(argType)) {
                         hasPolyONDArg = true;
                         break;
                     }
@@ -457,7 +452,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     && !ElementUtils.isStatic(m)
                     && receiverType.hasAnnotation(POLYDET)) {
                 hasPolyArg = true;
-                if (mayBeOrderNonDet(receiverType)) {
+                if (isCollectionType(receiverType)) {
                     hasPolyONDArg = true;
                 }
             }
@@ -483,17 +478,18 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
-     * Returns true if {@code javaType} may be annotated as {@code @OrderNonDet}.
+     * Returns true if the underlying type of {@code atm} or any of its super types is annotated
+     * with {@link CollectionType}.
      *
-     * @param javaType the type to be checked
-     * @return true if {@code javaType} is Collection (or a subtype), Iterator (or a subtype), or an
-     *     array
+     * @param atm annotated type mirror
+     * @return true if the underlying type of {@code atm} is a collection type
      */
-    public boolean mayBeOrderNonDet(AnnotatedTypeMirror javaType) {
-        return (javaType.getKind() == TypeKind.ARRAY
-                || isCollection(javaType)
-                || isIterator(javaType)
-                || isMap(javaType));
+    public boolean isCollectionType(AnnotatedTypeMirror atm) {
+        if (atm.getKind() == TypeKind.ARRAY) {
+            return true;
+        }
+        TypeElement typeElement = TypesUtils.getTypeElement(atm.getErased().getUnderlyingType());
+        return getDeclAnnotation(typeElement, CollectionType.class) != null;
     }
 
     /**
@@ -648,9 +644,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /**
      * If {@code type} is a Collection type that is not explicitly annotated, defaults all its
      * nested component types as {@code annotation}.
+     *
+     * @param type annotated type
+     * @param annotation annotation to add to the type
      */
     void defaultCollectionComponentType(AnnotatedTypeMirror type, AnnotationMirror annotation) {
-        if ((isCollection(type) || isMap(type) || isIterator(type))
+        if ((isCollectionType(type) && type.getKind() != TypeKind.ARRAY)
                 && (type.getAnnotations().isEmpty() || type.hasExplicitAnnotation(NONDET))) {
             AnnotatedDeclaredType annoCollectionType = (AnnotatedDeclaredType) type;
             recursiveDefaultCollectionComponentType(annoCollectionType, annotation);
@@ -672,7 +671,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     && argType.getKind() != TypeKind.WILDCARD
                     && argType.getAnnotations().isEmpty()) {
                 argType.replaceAnnotation(annotation);
-                if (isCollection(argType) || isMap(argType) || isIterator(argType)) {
+                if (isCollectionType(argType) && argType.getKind() != TypeKind.ARRAY) {
                     recursiveDefaultCollectionComponentType(
                             (AnnotatedDeclaredType) argType, annotation);
                 }
@@ -817,26 +816,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 types.erasure(subClass.getUnderlyingType()), types.erasure(superClass));
     }
 
-    /** @return true if {@code tm} is Collection or a subtype of Collection */
-    public boolean isCollection(AnnotatedTypeMirror tm) {
-        return types.isSubtype(
-                types.erasure(tm.getUnderlyingType()),
-                types.erasure(collectionInterfaceTypeMirror));
-    }
-
-    /** @return true if {@code tm} is Map or a subtype of Map */
-    public boolean isMap(AnnotatedTypeMirror tm) {
-        return types.isSubtype(
-                types.erasure(tm.getUnderlyingType()), types.erasure(mapInterfaceTypeMirror));
-    }
-
-    /** @return true if {@code tm} is Iterator or a subtype of Iterator */
-    public boolean isIterator(AnnotatedTypeMirror tm) {
-        return types.isSubtype(
-                types.erasure(tm.getUnderlyingType()), types.erasure(iteratorTypeMirror));
-    }
-
-    /** @return true if {@code tm} is a TreeSet or a subtype of TreeSet */
+    /**
+     * Returns true if {@code tm} is a TreeSet or a subtype of TreeSet
+     *
+     * @param tm AnnotatedTypeMirror
+     * @return true if {@code tm} is a TreeSet or a subtype of TreeSet
+     */
     public boolean isTreeSet(AnnotatedTypeMirror tm) {
         return types.isSubtype(
                 types.erasure(tm.getUnderlyingType()), types.erasure(treeSetTypeMirror));

@@ -18,6 +18,7 @@ import com.sun.source.tree.NewArrayTree;
 import com.sun.source.tree.NewClassTree;
 import com.sun.source.tree.ReturnTree;
 import com.sun.source.tree.Tree;
+import com.sun.source.tree.Tree.Kind;
 import com.sun.source.tree.TypeCastTree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.TreePath;
@@ -25,6 +26,7 @@ import com.sun.source.util.Trees;
 import com.sun.tools.javac.code.Type;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1668,6 +1670,18 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
                             "AnnotatedTypeFactory.getImplicitReceiver: enclosingClass()==null for element: "
                                     + element);
                 }
+                if (tree.getKind() == Kind.NEW_CLASS) {
+                    if (typeElt.getEnclosingElement() != null) {
+                        typeElt = ElementUtils.enclosingClass(typeElt.getEnclosingElement());
+                    } else {
+                        typeElt = null;
+                    }
+                    if (typeElt == null) {
+                        // If the typeElt does not have an enclosing class, then the NewClassTree
+                        // does not have an implicit receiver.
+                        return null;
+                    }
+                }
                 // TODO: method receiver annotations on outer this
                 return getEnclosingType(typeElt, tree);
             }
@@ -2178,7 +2192,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         if (newClassTree.getEnclosingExpression() != null) {
             enclosingType = (AnnotatedDeclaredType) getReceiverType(newClassTree);
         } else {
-            enclosingType = null;
+            enclosingType = getImplicitReceiverType(newClassTree);
         }
         // Diamond trees that are not anonymous classes.
         if (TreeUtils.isDiamondTree(newClassTree) && newClassTree.getClassBody() == null) {
@@ -2996,8 +3010,15 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     }
 
     /**
-     * Returns the actual annotation mirror used to annotate this element, whose name equals the
-     * passed annotation class (or is an alias for it). Returns null if none exists.
+     * Returns all of the declaration annotations whose name equals the passed annotation class (or
+     * is an alias for it) including annotations:
+     *
+     * <ul>
+     *   <li>on the element
+     *   <li>written in stubfiles
+     *   <li>inherited from overriden methods, (see {@link InheritedAnnotation})
+     *   <li>inherited from superclasses or super interfaces (see {@link Inherited})
+     * </ul>
      *
      * @see #getDeclAnnotationNoAliases
      * @param elt the element to retrieve the declaration annotation from
@@ -3111,11 +3132,21 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     }
 
     /**
-     * Returns all of the actual annotation mirrors used to annotate this element (includes stub
-     * files and declaration annotations from overridden methods).
+     * Returns all of the declaration annotations on this element including annotations
+     *
+     * <ul>
+     *   <li>on the element
+     *   <li>written in stubfiles
+     *   <li>inherited from overriden methods, (see {@link InheritedAnnotation})
+     *   <li>inherited from superclasses or super interfaces (see {@link Inherited})
+     * </ul>
+     *
+     * <p>This method returns the actual annotations not their aliases. {@link
+     * #getDeclAnnotation(Element, Class)} returns aliases.
      *
      * @param elt the element for which to determine annotations
-     * @return declaration annotations on this element
+     * @return all of the declaration annotations on this element, written in stub files, or
+     *     inherited.
      */
     public Set<AnnotationMirror> getDeclAnnotations(Element elt) {
         Set<AnnotationMirror> cachedValue = cacheDeclAnnos.get(elt);
@@ -3126,6 +3157,8 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
 
         Set<AnnotationMirror> results = AnnotationUtils.createAnnotationSet();
         // Retrieving the annotations from the element.
+        // This includes annotation inherited from superclasses, but not superinterfaces or
+        // overriden methods.
         List<? extends AnnotationMirror> fromEle = elements.getAllAnnotationMirrors(elt);
         for (AnnotationMirror annotation : fromEle) {
             try {
@@ -3151,6 +3184,8 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
             if (elt.getKind() == ElementKind.METHOD) {
                 // Retrieve the annotations from the overridden method's element.
                 inheritOverriddenDeclAnnos((ExecutableElement) elt, results);
+            } else if (ElementUtils.isTypeDeclaration(elt)) {
+                inheritOverriddenDeclAnnosFromTypeDecl(elt.asType(), results);
             }
 
             // Add the element and its annotations to the cache.
@@ -3158,6 +3193,46 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         }
 
         return results;
+    }
+
+    /**
+     * Adds into {@code results} the declaration annotations found in all elements of the super
+     * types of {@code typeMirror}. (Both superclasses and superinterfaces.)
+     *
+     * @param typeMirror type
+     * @param results set of AnnotationMirrors to which this method adds declarations annotations
+     */
+    private void inheritOverriddenDeclAnnosFromTypeDecl(
+            TypeMirror typeMirror, Set<AnnotationMirror> results) {
+        List<? extends TypeMirror> superTypes = types.directSupertypes(typeMirror);
+        for (TypeMirror superType : superTypes) {
+            TypeElement elt = TypesUtils.getTypeElement(superType);
+            if (elt == null) {
+                continue;
+            }
+            Set<AnnotationMirror> superAnnos = getDeclAnnotations(elt);
+            for (AnnotationMirror annotation : superAnnos) {
+                List<? extends AnnotationMirror> annotationsOnAnnotation;
+                try {
+                    annotationsOnAnnotation =
+                            annotation.getAnnotationType().asElement().getAnnotationMirrors();
+                } catch (com.sun.tools.javac.code.Symbol.CompletionFailure cf) {
+                    // Fix for Issue 348: If a CompletionFailure occurs,
+                    // issue a warning.
+                    checker.report(
+                            Result.warning(
+                                    "annotation.not.completed",
+                                    ElementUtils.getVerboseName(elt),
+                                    annotation),
+                            annotation.getAnnotationType().asElement());
+                    continue;
+                }
+                if (AnnotationUtils.containsSameByClass(annotationsOnAnnotation, Inherited.class)
+                        || AnnotationUtils.containsSameByName(inheritedAnnotations, annotation)) {
+                    addOrMerge(results, annotation);
+                }
+            }
+        }
     }
 
     /**

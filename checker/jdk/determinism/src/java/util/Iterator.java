@@ -53,6 +53,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @see Iterable
  * @since 1.2
  */
+@CollectionType
 public interface Iterator<E> {
     /**
      * Returns {@code true} if the iteration has more elements.
