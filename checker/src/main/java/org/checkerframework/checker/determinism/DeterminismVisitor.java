@@ -5,6 +5,7 @@ import com.sun.source.tree.Tree.Kind;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.*;
 import javax.lang.model.type.ArrayType;
@@ -419,6 +420,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     @Override
     public Void visitMethod(MethodTree node, Void p) {
         checkMethodSignatureForPolyQuals(node);
+        checkRequiresDetToString(node);
         return super.visitMethod(node, p);
     }
 
@@ -473,6 +475,36 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         // either the receiver or any parameter.
         for (Pair<Result, Tree> pair : errors) {
             checker.report(pair.first, pair.second);
+        }
+    }
+
+    /**
+     * Reports an error if {@code methodTree} represents a method annotated with
+     * {@code @RequiresDetToString} but it overrides a method that is not annotated with
+     * {@code @RequiresDetToString}.
+     *
+     * @param methodTree the method to check
+     */
+    private void checkRequiresDetToString(MethodTree methodTree) {
+        ExecutableElement methodElement = TreeUtils.elementFromDeclaration(methodTree);
+        AnnotationMirror declAnnotation =
+                atypeFactory.getDeclAnnotation(methodElement, RequiresDetToString.class);
+        if (declAnnotation == null) {
+            return;
+        }
+
+        Map<AnnotatedDeclaredType, ExecutableElement> overridden =
+                AnnotatedTypes.overriddenMethods(elements, atypeFactory, methodElement);
+        for (Map.Entry<AnnotatedDeclaredType, ExecutableElement> entry : overridden.entrySet()) {
+            AnnotationMirror overiddenAnnotation =
+                    atypeFactory.getDeclAnnotation(entry.getValue(), RequiresDetToString.class);
+            if (overiddenAnnotation == null) {
+                checker.report(
+                        Result.failure(
+                                "invalid.requiresdettostring",
+                                ElementUtils.enclosingClass(entry.getValue()).asType()),
+                        methodTree);
+            }
         }
     }
 
