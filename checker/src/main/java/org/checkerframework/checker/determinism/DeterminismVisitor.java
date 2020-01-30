@@ -483,7 +483,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      * {@code @RequiresDetToString} but it overrides a method that is not annotated with
      * {@code @RequiresDetToString}.
      *
-     * @param methodTree the method to check
+     * @param methodTree tree for the method to check
      */
     private void checkRequiresDetToString(MethodTree methodTree) {
         ExecutableElement methodElement = TreeUtils.elementFromDeclaration(methodTree);
