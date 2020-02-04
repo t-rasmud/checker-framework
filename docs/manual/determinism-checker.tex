@@ -497,9 +497,8 @@ making the resulting list \<@NonDet> which is unsound.
 Figure~\ref{fig-determinism-poly-hierarchy} shows the type qualifier hierarchy among all the
 variants of \<@PolyDet>. Notice that \<@PolyDet> and \<@PolyDet("use")> are considered
 to be same in this hierarchy.
-At method signatures, \<@PolyDet("use")> gets replaced by the type qualifier that \<@PolyDet>
-resolves to. As a result, one could imagine a qualifier hierarchy without \<@PolyDet("use")>
-for method signatures.
+At method call sites, \<@PolyDet("use")> gets replaced by the type qualifier that \<@PolyDet>
+resolves to.
 
 \begin{figure}
     \begin{center}
