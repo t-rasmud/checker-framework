@@ -981,6 +981,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 case "use":
                     switch (superAnnoValue) {
                         case "down":
+                        case "noOrderNonDet":
                             return false;
                         default:
                             return true;
