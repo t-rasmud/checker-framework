@@ -613,8 +613,10 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 && (AnnotationUtils.areSame(elementAnno, atypeFactory.DET)
                         || AnnotationUtils.areSame(elementAnno, atypeFactory.ORDERNONDET)
                         || AnnotationUtils.areSameByName(elementAnno, atypeFactory.POLYDET))) {
-            checker.report(Result.failure(errorMessage, elementAnno, collectionAnno), tree);
-            return false;
+            //            checker.report(Result.failure(errorMessage, elementAnno, collectionAnno),
+            // tree);
+            //            return false;
+            return true;
         }
         return true;
     }
