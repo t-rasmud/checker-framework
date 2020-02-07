@@ -58,6 +58,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     public final AnnotationMirror POLYDET_UPDET;
     /** The @PolyDet("noOrderNonDet") annotation. */
     public final AnnotationMirror POLYDET_NOORDERNONDET;
+    /** The @PolyDet("useNoOrderNonDet") annotation. */
+    public final AnnotationMirror POLYDET_USENOORDERNONDET;
 
     /** The java.util.Set interface. */
     private final TypeMirror setInterfaceTypeMirror =
@@ -103,6 +105,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         POLYDET_USE = newPolyDet("use");
         POLYDET_UPDET = newPolyDet("upDet");
         POLYDET_NOORDERNONDET = newPolyDet("noOrderNonDet");
+        POLYDET_USENOORDERNONDET = newPolyDet("useNoOrderNonDet");
 
         this.inputProperties = Collections.unmodifiableList(buildInputProperties());
 
@@ -940,6 +943,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     switch (superAnnoValue) {
                         case "down":
                         case "noOrderNonDet":
+                        case "useNoOrderNonDet":
                             return false;
                         default:
                             return true;
@@ -951,6 +955,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                         case "upDet":
                         case "noOrderNonDet":
                         case "use":
+                        case "useNoOrderNonDet":
                             return false;
                         default:
                             return true;
@@ -969,6 +974,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                         case "down":
                         case "noOrderNonDet":
                         case "use":
+                        case "useNoOrderNonDet":
                             return false;
                         default:
                             return true;
@@ -983,6 +989,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 case "use":
                     switch (superAnnoValue) {
                         case "down":
+                        case "noOrderNonDet":
+                        case "useNoOrderNonDet":
                             return false;
                         default:
                             return true;
