@@ -2031,6 +2031,11 @@ public abstract class AnnotatedTypeMirror {
         }
 
         @Override
+        public IntersectionType getUnderlyingType() {
+            return (IntersectionType) super.getUnderlyingType();
+        }
+
+        @Override
         public AnnotatedIntersectionType deepCopy(boolean copyAnnotations) {
             return (AnnotatedIntersectionType) new AnnotatedTypeCopier(copyAnnotations).visit(this);
         }
