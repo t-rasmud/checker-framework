@@ -906,8 +906,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          *   <li>{@code @PolyDet} {@literal <}: {@code @PolyDet("upDet")}.
          *   <li>{@code @PolyDet("noOrderNonDet")} {@literal <}: {@code @PolyDet}.
          *   <li>{@code @PolyDet("use")} and {@code @PolyDet} are considered to be equal.
-         *   <li>{@code @PolyDet("use")} and {@code @PolyDet("noOrderNonDet")} are also considered
-         *       to be equal.
+         *   <li>{@code @PolyDet("useNoOrderNonDet")} and {@code @PolyDet("noOrderNonDet")} are also
+         *       considered to be equal.
+         *   <li>{@code @PolyDet("upDet")} {@literal <}: {@code @OrderNonDet}.
          *   <li>Treats {@code @PolyDet("up")} and {@code @PolyDet("down")} as {@code @PolyDet} when
          *       they are compared with {@code @NonDet}, {@code @OrderNonDet}, or {@code @Det}.
          * </ol>
