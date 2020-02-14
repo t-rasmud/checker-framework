@@ -60,15 +60,14 @@ public class FieldAccess {
         staticDetField = detObj;
         switch (x) {
             case 0:
-                // :: error: (invalid.field.assignment)
+                // :: error: (assignment.type.incompatible)
                 detField = nonDetObj;
                 break;
             case 1:
-                // :: error: (invalid.field.assignment)
                 detField = detObj;
                 break;
             case 2:
-                // :: error: (invalid.field.assignment)
+                // :: error: (assignment.type.incompatible)
                 detField = polyDet;
                 break;
             default:
@@ -85,15 +84,14 @@ public class FieldAccess {
         staticDetField = detObj;
         switch (x) {
             case 0:
-                // :: error: (invalid.field.assignment)
+                // :: error: (assignment.type.incompatible)
                 detField = nonDetObj;
                 break;
             case 1:
-                // :: error: (invalid.field.assignment)
                 detField = detObj;
                 break;
             case 2:
-                // :: error: (invalid.field.assignment)
+                // :: error: (assignment.type.incompatible)
                 detField = polyDet;
                 break;
             default:
@@ -106,7 +104,6 @@ public class FieldAccess {
     void method(@NonDet FieldAccess this) {
         // :: error: (assignment.type.incompatible)
         @Det Object o = this.fieldAccess.detField;
-        // :: error: (invalid.field.assignment)
         this.fieldAccess.detField = new Object();
     }
 }
