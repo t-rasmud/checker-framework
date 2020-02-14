@@ -53,7 +53,8 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
      * {@code OrderNonDet}. Replaces {@code @PolyDet("use")} with the same annotation that
      * {@code @PolyDet} resolves to. Replaces {@code @PolyDet("upDet")} with {@code @OrderNonDet} if
      * it resolves to {@code @Det}. Replaces {@code @PolyDet("noOrderNonDet")} with {@code @Det} if
-     * it resolves to {@code OrderNonDet}.
+     * it resolves to {@code OrderNonDet}. Replaces {@code @PolyDet("useNoOrderNonDet")} with the
+     * same annotation that {@code @PolyDet("noOrderNonDet")} resolves to.
      *
      * @param type annotated type whose poly annotations are replaced
      * @param replacementsMapping mapping from polymorphic annotation to instantiation
