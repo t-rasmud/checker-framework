@@ -207,7 +207,7 @@ public interface Collection<E> extends Iterable<E> {
      *
      * @return an array containing all of the elements in this collection
      */
-    @PolyDet Object @PolyDet[] toArray(@PolyDet Collection<E> this);
+    @PolyDet("down") Object @PolyDet[] toArray(@PolyDet Collection<E> this);
 
     /**
      * Returns an array containing all of the elements in this collection;

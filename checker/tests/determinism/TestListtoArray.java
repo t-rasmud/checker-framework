@@ -14,6 +14,12 @@ public class TestListtoArray {
         @Det String @Det [] objArr = detList.toArray(new @Det String @Det [10]);
     }
 
+    void ListToObjectArray3(@OrderNonDet List<@OrderNonDet List<@Det String>> ondList) {
+        @Det Object @OrderNonDet [] objArr = ondList.toArray();
+        // :: warning: [unchecked] unchecked cast :: warning: (cast.unsafe)
+        @Det List<@Det String> elem = (@Det List<@Det String>) objArr[0];
+    }
+
     void ListToObjectArray4(@OrderNonDet List<@Det String> ondetList) {
         @Det String @OrderNonDet [] arg = new @Det String @OrderNonDet [10];
         @NonDet String @NonDet [] objArr = ondetList.toArray(arg);
