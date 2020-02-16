@@ -101,7 +101,6 @@ public class PolyFieldAccess {
     void method(@NonDet PolyFieldAccess this) {
         // :: error: (assignment.type.incompatible)
         @Det Object o = this.PolyFieldAccess.polyField;
-        // :: error: (invalid.field.assignment)
         this.PolyFieldAccess.polyField = new Object();
     }
 }
