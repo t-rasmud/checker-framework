@@ -7,7 +7,6 @@ public class TestMapValidity {
     // :: error: (invalid.element.type)
     void testValid4(@Det Map<@NonDet Integer, @NonDet String> map) {}
 
-    // :: error: (invalid.element.type)
     void testValid7(@NonDet Map<@NonDet Integer, @Det String> map) {}
 
     void testValid8(@NonDet Map<@NonDet Integer, @NonDet String> map) {}

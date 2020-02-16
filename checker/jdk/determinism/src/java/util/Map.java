@@ -31,6 +31,7 @@ import java.util.function.Function;
 import java.io.Serializable;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
  * An object that maps keys to values.  A map cannot contain duplicate keys;
@@ -129,6 +130,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @since 1.2
  */
 @CollectionType
+@HasQualifierParameter(NonDet.class)
 public interface Map<K,V> {
     // Query Operations
 
@@ -546,7 +548,7 @@ public interface Map<K,V> {
      * @param o object to be compared for equality with this map
      * @return <tt>true</tt> if the specified object is equal to this map
      */
-    @PolyDet("up") boolean equals(@PolyDet Map<K,V> this, @PolyDet Object o);
+    @PolyDet("up") boolean equals(@PolyDet Map<K,V> this, @PolyDet("upDet") Object o);
 
     /**
      * Returns the hash code value for this map.  The hash code of a map is

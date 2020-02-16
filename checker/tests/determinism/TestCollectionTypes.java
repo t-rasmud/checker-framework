@@ -9,7 +9,7 @@ public class TestCollectionTypes {
     void ondDet(@OrderNonDet List<@Det Integer> a) {}
     // :: error: (invalid.element.type)
     void ondNd(@OrderNonDet List<@NonDet Integer> a) {}
-    // :: error: (invalid.element.type)
+
     void ndDet(@NonDet List<@Det Integer> a) {}
 
     void ndDd(@NonDet List<@NonDet Integer> a) {}

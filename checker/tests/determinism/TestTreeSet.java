@@ -3,7 +3,7 @@ import org.checkerframework.checker.determinism.qual.*;
 
 public class TestTreeSet {
     void testNewTreeSet(@OrderNonDet TreeSet<@Det Integer> treeSet) {
-        Iterator it = treeSet.iterator();
+        @Det Iterator<@Det Integer> it = treeSet.iterator();
         while (it.hasNext()) {
             System.out.println((Integer) it.next());
         }

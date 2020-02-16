@@ -76,7 +76,6 @@ public class PolyArraysIssue {
         array[pi] = "";
     }
 
-    // :: error: (invalid.array.component.type)
     void polyIndex(@PolyDet int @NonDet [] a) {}
 
     // :: error: (invalid.array.component.type)

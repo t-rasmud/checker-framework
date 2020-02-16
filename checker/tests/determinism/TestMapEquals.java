@@ -39,4 +39,10 @@ public class TestMapEquals {
             @Det Map<@Det String, @Det String> m1, @OrderNonDet Map<@Det String, @Det String> m2) {
         return m1.equals(m2);
     }
+
+    @Det boolean testEqualsND(
+            @Det Map<@Det String, @Det String> m1, @NonDet Map<@Det String, @Det String> m2) {
+        // :: error: (argument.type.incompatible)
+        return m1.equals(m2);
+    }
 }
