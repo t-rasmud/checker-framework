@@ -53,7 +53,8 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
      * {@code OrderNonDet}. Replaces {@code @PolyDet("use")} with the same annotation that
      * {@code @PolyDet} resolves to. Replaces {@code @PolyDet("upDet")} with {@code @OrderNonDet} if
      * it resolves to {@code @Det}. Replaces {@code @PolyDet("noOrderNonDet")} with {@code @Det} if
-     * it resolves to {@code OrderNonDet}.
+     * it resolves to {@code OrderNonDet}. Replaces {@code @PolyDet("useNoOrderNonDet")} with the
+     * same annotation that {@code @PolyDet("noOrderNonDet")} resolves to.
      *
      * @param type annotated type whose poly annotations are replaced
      * @param replacementsMapping mapping from polymorphic annotation to instantiation
@@ -86,11 +87,13 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                 type.replaceAnnotations(replacements);
                 return;
             case "use":
-                if (!replacements.contains(factory.POLYDET)
-                        && !replacements.contains(factory.POLYDET_UP)
-                        && !replacements.contains(factory.POLYDET_DOWN)
-                        && !replacements.contains(factory.POLYDET_UPDET)) {
-                    type.replaceAnnotations(replacements);
+                if (replacementsPolyDet != null
+                        && !replacementsPolyDet.contains(factory.POLYDET)
+                        && !replacementsPolyDet.contains(factory.POLYDET_NOORDERNONDET)
+                        && !replacementsPolyDet.contains(factory.POLYDET_UP)
+                        && !replacementsPolyDet.contains(factory.POLYDET_DOWN)
+                        && !replacementsPolyDet.contains(factory.POLYDET_UPDET)) {
+                    type.replaceAnnotations(replacementsPolyDet);
                 }
                 return;
             case "up":
@@ -123,6 +126,16 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                     replaceForPolyWithModifier(type, factory.DET);
                 } else {
                     type.replaceAnnotations(replacements);
+                }
+                return;
+            case "useNoOrderNonDet":
+                if (replacementsPolyDetNoOND != null
+                        && !replacementsPolyDetNoOND.contains(factory.POLYDET)
+                        && !replacementsPolyDetNoOND.contains(factory.POLYDET_NOORDERNONDET)
+                        && !replacementsPolyDetNoOND.contains(factory.POLYDET_UP)
+                        && !replacementsPolyDetNoOND.contains(factory.POLYDET_DOWN)
+                        && !replacementsPolyDetNoOND.contains(factory.POLYDET_UPDET)) {
+                    type.replaceAnnotations(replacementsPolyDetNoOND);
                 }
                 return;
             default:
