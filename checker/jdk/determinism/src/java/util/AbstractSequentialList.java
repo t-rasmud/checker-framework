@@ -211,7 +211,7 @@ public abstract class AbstractSequentialList<E> extends AbstractList<E> {
      * @throws IllegalArgumentException      {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public @PolyDet("down") boolean addAll(@PolyDet AbstractSequentialList<E> this, @PolyDet("use") int index, @PolyDet("down") Collection<? extends E> c) {
+    public @PolyDet("down") boolean addAll(@PolyDet AbstractSequentialList<E> this, @PolyDet("use") int index, @PolyDet("use") Collection<? extends E> c) {
         try {
             boolean modified = false;
             ListIterator<E> e1 = listIterator(index);
