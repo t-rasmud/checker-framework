@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
  * The root interface in the <i>collection hierarchy</i>.  A collection
@@ -144,6 +145,7 @@ import org.checkerframework.checker.determinism.qual.*;
  */
 
 @CollectionType
+@HasQualifierParameter(NonDet.class)
 public interface Collection<E> extends Iterable<E> {
     // Query Operations
 

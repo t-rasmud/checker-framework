@@ -628,9 +628,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      * @param collectionAnno the annotation of an array or collection
      * @param tree the tree to report errors on
      * @param errorMessage the error message to report
-     * @return true if {@code elementAnno} is a subtype of {@code collectionAnno} and it's not the
-     *     case that {@code collectionAnno} is {@code @NonDet} and {@code elementAnno} is
-     *     {@code @Det}, {@code @OrderNonDet}, or {@code @PolyDet}, false otherwise
+     * @return true if {@code elementAnno} is a subtype of {@code collectionAnno}
      */
     private boolean isValidElementType(
             AnnotationMirror elementAnno,
@@ -640,15 +638,6 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         if (!atypeFactory.getQualifierHierarchy().isSubtype(elementAnno, collectionAnno)) {
             checker.report(Result.failure(errorMessage, elementAnno, collectionAnno), tree);
             return false;
-        }
-        if (AnnotationUtils.areSame(collectionAnno, atypeFactory.NONDET)
-                && (AnnotationUtils.areSame(elementAnno, atypeFactory.DET)
-                        || AnnotationUtils.areSame(elementAnno, atypeFactory.ORDERNONDET)
-                        || AnnotationUtils.areSameByName(elementAnno, atypeFactory.POLYDET))) {
-            //            checker.report(Result.failure(errorMessage, elementAnno, collectionAnno),
-            // tree);
-            //            return false;
-            return true;
         }
         return true;
     }

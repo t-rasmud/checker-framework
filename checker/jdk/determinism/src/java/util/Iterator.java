@@ -28,6 +28,7 @@ package java.util;
 import java.util.function.Consumer;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
  * An iterator over a collection.  {@code Iterator} takes the place of
@@ -54,6 +55,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @since 1.2
  */
 @CollectionType
+@HasQualifierParameter(NonDet.class)
 public interface Iterator<E> {
     /**
      * Returns {@code true} if the iteration has more elements.

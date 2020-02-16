@@ -31,6 +31,7 @@ import java.util.function.Function;
 import java.io.Serializable;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
  * An object that maps keys to values.  A map cannot contain duplicate keys;
@@ -129,6 +130,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @since 1.2
  */
 @CollectionType
+@HasQualifierParameter(NonDet.class)
 public interface Map<K,V> {
     // Query Operations
 
