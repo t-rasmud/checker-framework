@@ -26,6 +26,8 @@
 package java.util;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
+
 /**
  * This class provides a skeletal implementation of the {@link List}
  * interface to minimize the effort required to implement this interface
@@ -69,6 +71,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @since 1.2
  */
 
+@HasQualifierParameter(NonDet.class)
 public abstract class AbstractList<E> extends AbstractCollection<E> implements List<E> {
     /**
      * Sole constructor.  (For invocation by subclass constructors, typically

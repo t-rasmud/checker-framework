@@ -3,7 +3,7 @@ import java.util.Calendar;
 
 class Component {}
 
-@SuppressWarnings("determinism:invalid.upper.bound.on.type.argument")
+@SuppressWarnings({"determinism:invalid.upper.bound.on.type.argument", "missing.has.qual.param"})
 class Components extends ArrayList {}
 
 // If we include a type parameter in the superclass, then there

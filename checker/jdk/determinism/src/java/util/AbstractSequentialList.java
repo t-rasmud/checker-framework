@@ -26,6 +26,7 @@
 package java.util;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
  * This class provides a skeletal implementation of the <tt>List</tt>
@@ -68,6 +69,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @since 1.2
  */
 
+@HasQualifierParameter(NonDet.class)
 public abstract class AbstractSequentialList<E> extends AbstractList<E> {
     /**
      * Sole constructor.  (For invocation by subclass constructors, typically

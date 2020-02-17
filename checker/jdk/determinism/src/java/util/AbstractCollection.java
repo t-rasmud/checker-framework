@@ -26,6 +26,8 @@
 package java.util;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
+
 /**
  * This class provides a skeletal implementation of the <tt>Collection</tt>
  * interface, to minimize the effort required to implement this interface. <p>
@@ -59,6 +61,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @since 1.2
  */
 
+@HasQualifierParameter(NonDet.class)
 public abstract class AbstractCollection<E> implements Collection<E> {
     /**
      * Sole constructor.  (For invocation by subclass constructors, typically

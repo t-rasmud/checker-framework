@@ -27,6 +27,7 @@ package java.util;
 import java.util.Map.Entry;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
  * This class provides a skeletal implementation of the <tt>Map</tt>
@@ -67,6 +68,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @since 1.2
  */
 
+@HasQualifierParameter(NonDet.class)
 public abstract class AbstractMap<K,V> implements Map<K,V> {
     /**
      * Sole constructor.  (For invocation by subclass constructors, typically

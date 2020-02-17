@@ -31,6 +31,7 @@ import java.util.function.BiFunction;
 import java.io.IOException;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
  * <p>Hash table and linked list implementation of the <tt>Map</tt> interface,
@@ -162,6 +163,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @see     Hashtable
  * @since   1.4
  */
+@HasQualifierParameter(NonDet.class)
 public class LinkedHashMap<K,V>
     extends HashMap<K,V>
     implements Map<K,V>

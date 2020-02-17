@@ -28,6 +28,7 @@ package java.util;
 import java.util.function.Consumer;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
  * Doubly-linked list implementation of the {@code List} and {@code Deque}
@@ -81,7 +82,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @since 1.2
  * @param <E> the type of elements held in this collection
  */
-
+@HasQualifierParameter(NonDet.class)
 public class LinkedList<E>
     extends AbstractSequentialList<E>
     implements List<E>, Deque<E>, Cloneable, java.io.Serializable

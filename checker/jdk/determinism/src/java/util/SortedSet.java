@@ -26,6 +26,7 @@
 package java.util;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
  * A {@link Set} that further provides a <i>total ordering</i> on its elements.
@@ -106,7 +107,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @see ClassCastException
  * @since 1.2
  */
-
+@HasQualifierParameter(NonDet.class)
 public interface SortedSet<E> extends Set<E> {
     /**
      * Returns the comparator used to order the elements in this set,

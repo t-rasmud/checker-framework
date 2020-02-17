@@ -64,6 +64,7 @@ public class TestPolyNoOrderNonDet {
     void checkSubtyping(
             @PolyDet("noOrderNonDet") List<@PolyDet("useNoOrderNonDet") String> lst,
             @PolyDet List<@PolyDet("use") String> lst1) {
+        // :: error: (assignment.type.incompatible)
         @PolyDet List<@PolyDet("useNoOrderNonDet") String> local = lst;
         // :: error: (assignment.type.incompatible)
         @PolyDet("noOrderNonDet") List<@PolyDet("useNoOrderNonDet") String> local1 = lst1;

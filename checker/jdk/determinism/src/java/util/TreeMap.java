@@ -31,6 +31,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
  * A Red-Black tree based {@link NavigableMap} implementation.
@@ -109,7 +110,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @see Collection
  * @since 1.2
  */
-
+@HasQualifierParameter(NonDet.class)
 public class TreeMap<K,V>
     extends AbstractMap<K,V>
     implements NavigableMap<K,V>, Cloneable, java.io.Serializable

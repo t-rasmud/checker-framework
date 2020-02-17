@@ -25,6 +25,9 @@
 
 package java.util;
 
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.framework.qual.HasQualifierParameter;
+
 /**
  * A {@link Map} that further provides a <em>total ordering</em> on its keys.
  * The map is ordered according to the {@linkplain Comparable natural
@@ -109,7 +112,7 @@ package java.util;
  * @see ClassCastException
  * @since 1.2
  */
-
+@HasQualifierParameter(NonDet.class)
 public interface SortedMap<K,V> extends Map<K,V> {
     /**
      * Returns the comparator used to order the keys in this map, or

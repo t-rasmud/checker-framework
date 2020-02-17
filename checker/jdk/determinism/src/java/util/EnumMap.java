@@ -26,6 +26,9 @@
 package java.util;
 
 import java.util.Map.Entry;
+
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.framework.qual.HasQualifierParameter;
 import sun.misc.SharedSecrets;
 
 /**
@@ -76,6 +79,7 @@ import sun.misc.SharedSecrets;
  * @see EnumSet
  * @since 1.5
  */
+@HasQualifierParameter(NonDet.class)
 public class EnumMap<K extends Enum<K>, V> extends AbstractMap<K, V>
     implements java.io.Serializable, Cloneable
 {

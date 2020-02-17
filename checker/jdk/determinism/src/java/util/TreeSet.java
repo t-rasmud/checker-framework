@@ -26,6 +26,7 @@
 package java.util;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
  * A {@link NavigableSet} implementation based on a {@link TreeMap}.
@@ -90,7 +91,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @see     TreeMap
  * @since   1.2
  */
-
+@HasQualifierParameter(NonDet.class)
 public class TreeSet<E> extends AbstractSet<E>
     implements NavigableSet<E>, Cloneable, java.io.Serializable
 {

@@ -35,6 +35,9 @@
 
 package java.util;
 
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.framework.qual.HasQualifierParameter;
+
 /**
  * A {@link SortedMap} extended with navigation methods returning the
  * closest matches for given search targets. Methods
@@ -92,6 +95,7 @@ package java.util;
  * @param <V> the type of mapped values
  * @since 1.6
  */
+@HasQualifierParameter(NonDet.class)
 public interface NavigableMap<K,V> extends SortedMap<K,V> {
     /**
      * Returns a key-value mapping associated with the greatest key
@@ -102,7 +106,8 @@ public interface NavigableMap<K,V> extends SortedMap<K,V> {
      * @return an entry with the greatest key less than {@code key},
      *         or {@code null} if there is no such key
      * @throws ClassCastException if the specified key cannot be compared
-     *         with the keys currently in the map
+     *
+     * with the keys currently in the map
      * @throws NullPointerException if the specified key is null
      *         and this map does not permit null keys
      */

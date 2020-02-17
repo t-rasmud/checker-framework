@@ -36,6 +36,7 @@
 package java.util;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
  * A {@link SortedSet} extended with navigation methods reporting
@@ -85,6 +86,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @param <E> the type of elements maintained by this set
  * @since 1.6
  */
+@HasQualifierParameter(NonDet.class)
 public interface NavigableSet<E> extends SortedSet<E> {
     /**
      * Returns the greatest element in this set strictly less than the

@@ -14,6 +14,7 @@ public class CollectionModifications {
             @NonDet List<@NonDet List<@NonDet String>> lst, @OrderNonDet List<@Det String> str) {
         // :: error: (argument.type.incompatible)
         lst.add(str);
+        // :: error: (invariant.cast.unsafe)
         lst.add((@NonDet List<@NonDet String>) str);
     }
 

@@ -36,6 +36,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
  * Hash table based implementation of the <tt>Map</tt> interface.  This
@@ -136,6 +137,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @see     Hashtable
  * @since   1.2
  */
+@HasQualifierParameter(NonDet.class)
 public class HashMap<K,V> extends AbstractMap<K,V>
         implements Map<K,V>, Cloneable, Serializable {
 

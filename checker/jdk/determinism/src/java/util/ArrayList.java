@@ -30,6 +30,7 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
  * Resizable-array implementation of the <tt>List</tt> interface.  Implements
@@ -104,6 +105,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @see     Vector
  * @since   1.2
  */
+@HasQualifierParameter(NonDet.class)
 public class ArrayList<E> extends AbstractList<E>
         implements List<E>, RandomAccess, Cloneable, java.io.Serializable
 {
@@ -993,7 +995,7 @@ public class ArrayList<E> extends AbstractList<E>
      * @throws IndexOutOfBoundsException {@inheritDoc}
      * @throws IllegalArgumentException {@inheritDoc}
      */
-    public @PolyDet List<E> subList(@PolyDet ArrayList<E> this, @PolyDet int fromIndex, @PolyDet int toIndex) {
+    public @PolyDet("up") List<E> subList(@PolyDet ArrayList<E> this, @PolyDet int fromIndex, @PolyDet int toIndex) {
         subListRangeCheck(fromIndex, toIndex, size);
         return new SubList(this, 0, fromIndex, toIndex);
     }

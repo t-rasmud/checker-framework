@@ -28,6 +28,8 @@ package java.util;
 import java.util.function.UnaryOperator;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
+
 /**
  * An ordered collection (also known as a <i>sequence</i>).  The user of this
  * interface has precise control over where in the list each element is
@@ -108,7 +110,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @see AbstractSequentialList
  * @since 1.2
  */
-
+@HasQualifierParameter(NonDet.class)
 public interface List<E> extends Collection<E> {
     // Query Operations
 
@@ -510,7 +512,7 @@ public interface List<E> extends Collection<E> {
      * @param o the object to be compared for equality with this list
      * @return <tt>true</tt> if the specified object is equal to this list
      */
-    @PolyDet("up") boolean equals(@PolyDet List<E> this, @PolyDet("use") Object o);
+    @PolyDet("up") boolean equals(@PolyDet List<E> this, @PolyDet Object o);
 
     /**
      * Returns the hash code value for this list.  The hash code of a list
@@ -542,7 +544,7 @@ public interface List<E> extends Collection<E> {
      * @throws IndexOutOfBoundsException if the index is out of range
      *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
      */
-    @PolyDet("up") E get(@PolyDet List<E> this, @PolyDet int index);
+    @PolyDet("up") E get(@PolyDet List<E> this, @PolyDet("use") int index);
 
     /**
      * Replaces the element at the specified position in this list with the

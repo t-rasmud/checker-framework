@@ -15,7 +15,7 @@ public class TestPolyReplace {
         return arr;
     }
 
-    @PolyDet("up") List<List<Integer>> polyList(@PolyDet List<List<Integer>> list) {
+    @PolyDet List<List<Integer>> polyList(@PolyDet List<List<Integer>> list) {
         return list;
     }
 }

@@ -5,7 +5,7 @@ import org.checkerframework.checker.determinism.qual.*;
 
 class TestUpDet {
     static @PolyDet("upDet") List<@Det String> retDetUp(@PolyDet List<@Det String> list) {
-        return new ArrayList<>();
+        return new @PolyDet("upDet") ArrayList<>();
     }
 
     public @Det List<@Det String> testReturnTypeResolve1(@Det List<@Det String> list) {
@@ -33,7 +33,9 @@ class TestUpDet {
     }
 
     public void testSubtypes(@PolyDet List<@Det String> l1, @PolyDet("down") List<@Det String> l2) {
+        // :: error: (assignment.type.incompatible)
         @PolyDet("upDet") List<@Det String> a = l1;
+        // :: error: (assignment.type.incompatible)
         @PolyDet("upDet") List<@Det String> b = l2;
     }
 

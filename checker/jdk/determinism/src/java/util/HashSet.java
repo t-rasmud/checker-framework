@@ -27,6 +27,7 @@ package java.util;
 
 import java.io.InvalidObjectException;
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
  * This class implements the <tt>Set</tt> interface, backed by a hash table
@@ -86,7 +87,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @see     HashMap
  * @since   1.2
  */
-
+@HasQualifierParameter(NonDet.class)
 public class HashSet<E>
     extends AbstractSet<E>
     implements Set<E>, Cloneable, java.io.Serializable
