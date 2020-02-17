@@ -386,7 +386,7 @@ public class LinkedList<E>
      * @return {@code true} if this list changed as a result of the call
      * @throws NullPointerException if the specified collection is null
      */
-    public @PolyDet("down") boolean addAll(@PolyDet LinkedList<E> this, @PolyDet("down") Collection<? extends E> c) {
+    public @PolyDet("down") boolean addAll(@PolyDet LinkedList<E> this, @PolyDet("use") Collection<? extends E> c) {
         return addAll(size, c);
     }
 
@@ -405,7 +405,7 @@ public class LinkedList<E>
      * @throws IndexOutOfBoundsException {@inheritDoc}
      * @throws NullPointerException if the specified collection is null
      */
-    public @PolyDet("down") boolean addAll(@PolyDet LinkedList<E> this, @PolyDet("use") int index, @PolyDet("down") Collection<? extends E> c) {
+    public @PolyDet("down") boolean addAll(@PolyDet LinkedList<E> this, @PolyDet("use") int index, @PolyDet("use") Collection<? extends E> c) {
         checkPositionIndex(index);
 
         Object[] a = c.toArray();

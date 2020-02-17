@@ -13,7 +13,6 @@ public class TestRemoveAddAll {
             @OrderNonDet LinkedList<@Det String> lst,
             @OrderNonDet LinkedList<@Det String> lst1,
             @Det LinkedList<@Det String> lst2) {
-        // :: error: (argument.type.incompatible)
         lst.addAll(lst1);
         lst.addAll(lst2);
     }

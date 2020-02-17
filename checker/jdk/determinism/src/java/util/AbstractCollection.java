@@ -342,7 +342,7 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      *
      * @see #add(Object)
      */
-    public @PolyDet("down") boolean addAll(@PolyDet AbstractCollection<E> this, @PolyDet("down") Collection<? extends E> c) {
+    public @PolyDet("down") boolean addAll(@PolyDet AbstractCollection<E> this, @PolyDet("use") Collection<? extends E> c) {
         boolean modified = false;
         for (E e : c)
             if (add(e))

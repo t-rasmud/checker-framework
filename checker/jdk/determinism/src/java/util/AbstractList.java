@@ -257,7 +257,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws IllegalArgumentException      {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public @PolyDet("down") boolean addAll(@PolyDet AbstractList<E> this, @PolyDet("use") int index, @PolyDet("down") Collection<? extends E> c) {
+    public @PolyDet("down") boolean addAll(@PolyDet AbstractList<E> this, @PolyDet("use") int index, @PolyDet("use") Collection<? extends E> c) {
         rangeCheckForAdd(index);
         boolean modified = false;
         for (E e : c) {

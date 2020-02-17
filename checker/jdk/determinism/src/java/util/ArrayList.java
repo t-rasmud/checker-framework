@@ -576,7 +576,7 @@ public class ArrayList<E> extends AbstractList<E>
      * @return <tt>true</tt> if this list changed as a result of the call
      * @throws NullPointerException if the specified collection is null
      */
-    public @PolyDet("down") boolean addAll(@PolyDet ArrayList<E> this, @PolyDet("down") Collection<? extends E> c) {
+    public @PolyDet("down") boolean addAll(@PolyDet ArrayList<E> this, @PolyDet("use") Collection<? extends E> c) {
         Object[] a = c.toArray();
         int numNew = a.length;
         ensureCapacityInternal(size + numNew);  // Increments modCount
