@@ -22,8 +22,9 @@ public class PolyAssignment {
         ndObj.ndField = ndArg;
         ndObj.polyField = ndArg;
         ndObj.polyField = detArg;
-        // :: error: (assignment.type.incompatible)
+        // :: error: (invalid.field.assignment)
         ndObj.detField = ndArg;
+        // :: error: (invalid.field.assignment)
         ndObj.detField = detArg;
     }
 }

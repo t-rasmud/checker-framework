@@ -54,7 +54,11 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     /** Error message key for assignment to a deterministic array at a non-deterministic index. */
     public static final @CompilerMessageKey String INVALID_ARRAY_ASSIGNMENT =
             "invalid.array.assignment";
-
+    /**
+     * Error message key for assignment to a deterministic field via a non-deterministic expression.
+     */
+    public static final @CompilerMessageKey String INVALID_FIELD_ASSIGNMENT =
+            "invalid.field.assignment";
     /**
      * Error message key for collections whose type is a subtype of the upper bound of their type
      * arguments, or whose type is {@code @NonDet} with element type {@code @Det} or
@@ -262,6 +266,23 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      *
      * The array access {@code x[i]} is flagged as an error.
      *
+     * <p>Also, reports error in case of invalid field access on the lhs of an assignment. Accessing
+     * {@code @Det} field of a {@code @NonDet} or {@code @PolyDet Object} on the lhs of an
+     * assignment is illegal. Example:
+     *
+     * <pre><code>
+     * &nbsp; class MyClass {
+     * &nbsp; &nbsp; @Det df;
+     * &nbsp; }
+     *
+     * &nbsp; @Det d1 = ...;
+     * &nbsp; @Det d2 = ...;
+     * &nbsp; Set s = new HashSet<>();
+     * &nbsp; s.add(d1); s.add(d2);
+     * &nbsp; @NonDet nd = s.iterator().next();
+     * &nbsp; nd.df = 22;
+     * </code></pre>
+     *
      * @param varTree the AST node for the lvalue
      * @param valueExp the AST node for the rvalue (the new value)
      * @param errorKey the error message to use if the check fails (must be a compiler message key)
@@ -314,9 +335,13 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             } else if (varTree.getKind() == Kind.ARRAY_ACCESS) {
                 checker.report(
                         Result.failure(INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno), varTree);
+            } else {
+                checker.report(
+                        Result.failure(INVALID_FIELD_ASSIGNMENT, varAnno, exprAnno), varTree);
             }
+        } else {
+            super.commonAssignmentCheck(varTree, valueExp, errorKey);
         }
-        super.commonAssignmentCheck(varTree, valueExp, errorKey);
     }
 
     // Hack: Remove this after it's fixed on the master branch.

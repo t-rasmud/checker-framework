@@ -16,6 +16,7 @@ public class PolyArrayLength {
 
     void assignArrLength(@PolyDet int @PolyDet [] arr) {
         polySize = arr.length;
+        // :: error: (invalid.field.assignment)
         size = myArr.length;
     }
 }

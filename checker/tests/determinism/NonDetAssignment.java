@@ -7,6 +7,7 @@ public @NonDet class NonDetAssignment {
 
     void test(@NonDet int ndArg, @Det int detArg) {
         this.ndField = ndArg;
+        // :: error: (invalid.field.assignment)
         this.detField = detArg;
     }
 }
