@@ -93,6 +93,7 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                         && !replacementsPolyDet.contains(factory.POLYDET_UP)
                         && !replacementsPolyDet.contains(factory.POLYDET_DOWN)
                         && !replacementsPolyDet.contains(factory.POLYDET_UPDET)) {
+
                     type.replaceAnnotations(replacementsPolyDet);
                 }
                 return;

@@ -27,6 +27,7 @@
 package java.util;
 
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
  * A collection that contains no duplicate elements.  More formally, sets
@@ -84,7 +85,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @see Collections#EMPTY_SET
  * @since 1.2
  */
-
+@HasQualifierParameter(NonDet.class)
 public interface Set<E> extends Collection<E> {
     // Query Operations
 
@@ -369,7 +370,7 @@ public interface Set<E> extends Collection<E> {
      * @param o object to be compared for equality with this set
      * @return <tt>true</tt> if the specified object is equal to this set
      */
-    @PolyDet("up") boolean equals(@PolyDet Set<E> this, @PolyDet Object o);
+    @PolyDet("up") boolean equals(@PolyDet Set<E> this, @PolyDet("upDet") Object o);
 
     /**
      * Returns the hash code value for this set.  The hash code of a set is

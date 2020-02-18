@@ -441,7 +441,7 @@ public interface Map<K,V> {
          * @return <tt>true</tt> if the specified object is equal to this map
          *         entry
          */
-        @PolyDet("up") boolean equals(@PolyDet Entry<K,V> this, @PolyDet Object o);
+        @PolyDet("up") boolean equals(@PolyDet Entry<K,V> this, @PolyDet("upDet") Object o);
 
         /**
          * Returns the hash code value for this map entry.  The hash code
