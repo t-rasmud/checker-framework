@@ -7,12 +7,12 @@ public class TestListSetEquals {
     }
 
     void testListEquals2(@Det List<@Det Integer> aList, @OrderNonDet List<@Det Integer> bList) {
-        // :: error: (argument.type.incompatible)
+        // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
 
     void testListEquals3(@Det List<@Det Integer> aList, @NonDet List<@NonDet Integer> bList) {
-        // :: error: (argument.type.incompatible)
+        // :: error: (assignment.type.incompatible)
         @Det boolean ret = aList.equals(bList);
     }
 

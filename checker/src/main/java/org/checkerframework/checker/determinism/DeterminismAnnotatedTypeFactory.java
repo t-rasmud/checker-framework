@@ -221,7 +221,6 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             if (receiverUnderlyingType == null) {
                 return super.visitMethodInvocation(node, methodInvocationType);
             }
-
             refineResultOfEquals(node, methodInvocationType, receiverType);
             refineSystemGet(node, methodInvocationType);
             refineMapGet(node, methodInvocationType, receiverType);
@@ -290,6 +289,15 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
             if (isEqualsMethod(node)) {
                 AnnotatedTypeMirror argument = getAnnotatedType(node.getArguments().get(0));
+
+                TypeMirror receiverErasedType = types.erasure(receiverType.getUnderlyingType());
+                TypeMirror argumentErasedType = types.erasure(argument.getUnderlyingType());
+
+                if (!types.isSameType(receiverErasedType, argumentErasedType)) {
+                    methodInvocationType.replaceAnnotation(DET);
+                    return;
+                }
+
                 boolean bothSets =
                         isSubClassOf(receiverType, setInterfaceTypeMirror)
                                 && isSubClassOf(argument, setInterfaceTypeMirror);
