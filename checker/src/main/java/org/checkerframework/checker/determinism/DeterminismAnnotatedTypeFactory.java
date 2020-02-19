@@ -525,12 +525,21 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                         return false;
                     }
 
-                    if (((AnnotatedDeclaredType) typeArg1).getTypeArguments().size() != 0) {
-                        typeArg1 =
-                                ((AnnotatedDeclaredType) typeArg1).getTypeArguments().get(argIndex);
-                        typeArg2 =
-                                ((AnnotatedDeclaredType) typeArg2).getTypeArguments().get(argIndex);
-                        argIndex++;
+                    if (typeArg1.getKind() == TypeKind.DECLARED
+                            && typeArg2.getKind() == TypeKind.DECLARED) {
+                        if (((AnnotatedDeclaredType) typeArg1).getTypeArguments().size() != 0) {
+                            typeArg1 =
+                                    ((AnnotatedDeclaredType) typeArg1)
+                                            .getTypeArguments()
+                                            .get(argIndex);
+                            typeArg2 =
+                                    ((AnnotatedDeclaredType) typeArg2)
+                                            .getTypeArguments()
+                                            .get(argIndex);
+                            argIndex++;
+                        } else {
+                            done = true;
+                        }
                     } else {
                         done = true;
                     }
