@@ -511,12 +511,11 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             AnnotatedDeclaredType declaredType2 = (AnnotatedDeclaredType) atm2;
 
             for (int index = 0; index < declaredType1.getTypeArguments().size(); index++) {
-                boolean done = false;
-
                 AnnotatedTypeMirror typeArg1 = declaredType1.getTypeArguments().get(index);
                 AnnotatedTypeMirror typeArg2 = declaredType2.getTypeArguments().get(index);
 
                 int argIndex = 0;
+                boolean done = false;
                 while (!done) {
                     TypeMirror erasedTypeArg1 = types.erasure(typeArg1.getUnderlyingType());
                     TypeMirror erasedTypeArg2 = types.erasure(typeArg2.getUnderlyingType());
