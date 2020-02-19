@@ -275,6 +275,14 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 AnnotatedTypeMirror methodInvocationType,
                 AnnotatedTypeMirror receiverType) {
 
+            boolean isList = isSubClassOf(receiverType, listInterfaceTypeMirror);
+            boolean isSet = isSubClassOf(receiverType, setInterfaceTypeMirror);
+            boolean isMap = isSubClassOf(receiverType, mapInterfaceTypeMirror);
+
+            if (!isList && !isSet && !isMap) {
+                return;
+            }
+
             // Annotates the return type of "equals()" method called on a Set or Map receiver
             // as described in the specification of this method.
 
@@ -503,14 +511,29 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             AnnotatedDeclaredType declaredType2 = (AnnotatedDeclaredType) atm2;
 
             for (int index = 0; index < declaredType1.getTypeArguments().size(); index++) {
+                boolean done = false;
+
                 AnnotatedTypeMirror typeArg1 = declaredType1.getTypeArguments().get(index);
                 AnnotatedTypeMirror typeArg2 = declaredType2.getTypeArguments().get(index);
 
-                TypeMirror erasedTypeArg1 = types.erasure(typeArg1.getUnderlyingType());
-                TypeMirror erasedTypeArg2 = types.erasure(typeArg2.getUnderlyingType());
+                int argIndex = 0;
+                while (!done) {
+                    TypeMirror erasedTypeArg1 = types.erasure(typeArg1.getUnderlyingType());
+                    TypeMirror erasedTypeArg2 = types.erasure(typeArg2.getUnderlyingType());
 
-                if (!types.isSameType(erasedTypeArg1, erasedTypeArg2)) {
-                    return false;
+                    if (!types.isSameType(erasedTypeArg1, erasedTypeArg2)) {
+                        return false;
+                    }
+
+                    if (((AnnotatedDeclaredType) typeArg1).getTypeArguments().size() != 0) {
+                        typeArg1 =
+                                ((AnnotatedDeclaredType) typeArg1).getTypeArguments().get(argIndex);
+                        typeArg2 =
+                                ((AnnotatedDeclaredType) typeArg2).getTypeArguments().get(argIndex);
+                        argIndex++;
+                    } else {
+                        done = true;
+                    }
                 }
             }
         }
