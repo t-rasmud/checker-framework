@@ -277,7 +277,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      *
      * &nbsp; @Det d1 = ...;
      * &nbsp; @Det d2 = ...;
-     * &nbsp; Set s = new HashSet<>();
+     * &nbsp; Set s = new HashSet{@literal <} {@literal >}();
      * &nbsp; s.add(d1); s.add(d2);
      * &nbsp; @NonDet nd = s.iterator().next();
      * &nbsp; nd.df = 22;
