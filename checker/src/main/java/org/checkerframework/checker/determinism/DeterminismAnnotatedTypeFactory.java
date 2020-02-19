@@ -275,11 +275,11 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 AnnotatedTypeMirror methodInvocationType,
                 AnnotatedTypeMirror receiverType) {
 
-            boolean isList = isSubClassOf(receiverType, listInterfaceTypeMirror);
-            boolean isSet = isSubClassOf(receiverType, setInterfaceTypeMirror);
-            boolean isMap = isSubClassOf(receiverType, mapInterfaceTypeMirror);
+            boolean receiverIsList = isSubClassOf(receiverType, listInterfaceTypeMirror);
+            boolean receiverIsSet = isSubClassOf(receiverType, setInterfaceTypeMirror);
+            boolean receiverIsMap = isSubClassOf(receiverType, mapInterfaceTypeMirror);
 
-            if (!isList && !isSet && !isMap) {
+            if (!receiverIsList && !receiverIsSet && !receiverIsMap) {
                 return;
             }
 
@@ -314,12 +314,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     return;
                 }
 
-                boolean bothSets =
-                        isSubClassOf(receiverType, setInterfaceTypeMirror)
-                                && isSubClassOf(argument, setInterfaceTypeMirror);
-                boolean bothMaps =
-                        isSubClassOf(receiverType, mapInterfaceTypeMirror)
-                                && isSubClassOf(argument, mapInterfaceTypeMirror);
+                boolean bothSets = receiverIsSet && isSubClassOf(argument, setInterfaceTypeMirror);
+                boolean bothMaps = receiverIsMap && isSubClassOf(argument, mapInterfaceTypeMirror);
                 if ((bothSets || bothMaps)
                         && getQualifierHierarchy()
                                 .isSubtype(
@@ -516,6 +512,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
                 int argIndex = 0;
                 boolean done = false;
+                // Iteratively checks all nested type arguments.
                 while (!done) {
                     TypeMirror erasedTypeArg1 = types.erasure(typeArg1.getUnderlyingType());
                     TypeMirror erasedTypeArg2 = types.erasure(typeArg2.getUnderlyingType());
