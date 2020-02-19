@@ -266,6 +266,10 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          *   <li>its type argument is not {@code @OrderNonDet List} or a subtype
          * </ol>
          *
+         * OR
+         *
+         * <p>The receiver and the argument do not have the same declared type.
+         *
          * @param node method invocation tree
          * @param methodInvocationType AnnotatedTypeMirror for a method invocation
          * @param receiverType receiver type of the invoked method
