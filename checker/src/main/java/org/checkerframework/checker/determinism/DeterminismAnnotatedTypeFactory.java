@@ -321,9 +321,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                         isSubClassOf(receiverType, mapInterfaceTypeMirror)
                                 && isSubClassOf(argument, mapInterfaceTypeMirror);
                 if ((bothSets || bothMaps)
-                        && (getQualifierHierarchy()
+                        && getQualifierHierarchy()
                                 .isSubtype(
-                                        receiverType.getAnnotationInHierarchy(NONDET), ORDERNONDET))
+                                        receiverType.getAnnotationInHierarchy(NONDET), ORDERNONDET)
                         && !hasOrderNonDetListAsTypeArgument(receiverType)
                         && getQualifierHierarchy()
                                 .isSubtype(argument.getAnnotationInHierarchy(NONDET), ORDERNONDET)
