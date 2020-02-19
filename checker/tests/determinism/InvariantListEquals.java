@@ -57,7 +57,7 @@ public class InvariantListEquals {
     }
 
     void testDetList(@Det List<@Det String> lst, @NonDet List<@Det String> lst1) {
-        // :: error: (argument.type.incompatible) :: error: (method.invocation.invalid)
+        // :: error: (assignment.type.incompatible) :: error: (method.invocation.invalid)
         @Det boolean result = lst.equals(lst1);
     }
 

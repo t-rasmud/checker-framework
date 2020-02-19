@@ -35,7 +35,7 @@ public class TestListEquals {
     }
 
     void TestList5(@NonDet ArrayList<@NonDet Integer> inList, @Det ArrayList<@Det Integer> myList) {
-        // :: error: (assignment.type.incompatible)
+        // :: error: (assignment.type.incompatible) :: error: (method.invocation.invalid)
         @Det boolean isEqual = myList.equals(inList);
     }
 

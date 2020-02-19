@@ -2,7 +2,7 @@ ext {
     // See instructions for updating jdk8.jar at
     // https://github.com/typetools/annotated-libraries/blob/master/README.md .
     // Set jdkShaHash to 'local' to use a locally-built version of jdk8.jar .
-    jdkShaHash = '65da4c513b3523259259ad98990a980b3131d291'
+    jdkShaHash = '280522ad314f84131b9a8860c2cfc5ad1246b080'
     if (rootProject.hasProperty("useLocalJdk")) {
         jdkShaHash = 'local'
     }
