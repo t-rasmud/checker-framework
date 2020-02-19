@@ -266,7 +266,22 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      *
      * The array access {@code x[i]} is flagged as an error.
      *
-     * <p>Also, reports error in case of invalid field access on the lhs of an assignment.
+     * <p>Also, reports error in case of invalid field access on the lhs of an assignment. Accessing
+     * {@code @Det} field of a {@code @NonDet} or {@code @PolyDet Object} on the lhs of an
+     * assignment is illegal. Example:
+     *
+     * <pre><code>
+     * &nbsp; class MyClass {
+     * &nbsp; &nbsp; @Det df;
+     * &nbsp; }
+     *
+     * &nbsp; @Det d1 = ...;
+     * &nbsp; @Det d2 = ...;
+     * &nbsp; Set s = new HashSet<>();
+     * &nbsp; s.add(d1); s.add(d2);
+     * &nbsp; @NonDet nd = s.iterator().next();
+     * &nbsp; nd.df = 22;
+     * </code></pre>
      *
      * @param varTree the AST node for the lvalue
      * @param valueExp the AST node for the rvalue (the new value)
