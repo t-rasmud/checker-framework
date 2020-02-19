@@ -148,4 +148,10 @@ public class TestListSetEquals {
             @OrderNonDet Set<@OrderNonDet List<@Det Integer>> setList) {
         @Det boolean ret = setSet.equals(setList);
     }
+
+    void testDifferentTypes(
+            @NonDet List<@NonDet List<@NonDet Integer>> lst,
+            @NonDet List<@NonDet List<@NonDet String>> lst1) {
+        @Det boolean ret = lst.equals(lst1);
+    }
 }
