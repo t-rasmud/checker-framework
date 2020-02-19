@@ -486,6 +486,10 @@ ondList.remove(0);
 Since the list is \<@OrderNonDet>, removing an element at index 0 could remove any of its 3 elements in different runs
 making the resulting list \<@NonDet> which is unsound.
 
+Similar to \<@PolyDet("use")>, \<@PolyDet("useNoOrderNonDet")>
+annotation is given the same instantiation as all of the
+\<@PolyDet("noOrderNonDet")> annotations, but does not affect the instantiation.
+
 \subsectionAndLabel{Type qualifier hierarchy}{determinism-hierarchy}
 \begin{figure}
     \begin{center}
@@ -496,8 +500,11 @@ making the resulting list \<@NonDet> which is unsound.
 \end{figure}
 Figure~\ref{fig-determinism-poly-hierarchy} shows the type qualifier hierarchy among all the
 variants of \<@PolyDet>. Notice that \<@PolyDet> and \<@PolyDet("use")> are considered
-to be same in this hierarchy.
+to be same in this hierarchy. Similarly, \<@PolyDet("noOrderNonDet")> and \<@PolyDet("useNoOrderNonDet")> are considered
+to be the same.
 At method call sites, \<@PolyDet("use")> gets replaced by the type qualifier that \<@PolyDet>
+resolves to.
+\<@PolyDet("useNoOrderNonDet")> gets replaced by the type qualifier that \<@PolyDet("noOrderNonDet")>
 resolves to.
 
 \begin{figure}
