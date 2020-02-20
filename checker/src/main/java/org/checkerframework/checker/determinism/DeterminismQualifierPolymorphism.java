@@ -44,6 +44,7 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
         super(env, factory);
         this.factory = factory;
         this.polyQuals.put(factory.POLYDET_NOORDERNONDET, factory.NONDET);
+        this.polyQuals.put(factory.POLYDET_USE, factory.NONDET);
     }
 
     /**
@@ -93,7 +94,20 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                         && !replacementsPolyDet.contains(factory.POLYDET_UP)
                         && !replacementsPolyDet.contains(factory.POLYDET_DOWN)
                         && !replacementsPolyDet.contains(factory.POLYDET_UPDET)) {
-                    type.replaceAnnotations(replacementsPolyDet);
+                    AnnotationMirrorSet replacementsPolyDetUse =
+                            replacementsMapping.get(factory.POLYDET_USE);
+                    if ((AnnotationUtils.containsSame(replacementsPolyDet, factory.ORDERNONDET)
+                                    && AnnotationUtils.containsSame(
+                                            replacementsPolyDetUse, factory.NONDET))
+                            || (AnnotationUtils.containsSame(replacementsPolyDet, factory.DET)
+                                            && (AnnotationUtils.containsSame(
+                                                    replacementsPolyDetUse, factory.NONDET))
+                                    || AnnotationUtils.containsSame(
+                                            replacementsPolyDetUse, factory.ORDERNONDET))) {
+                        type.replaceAnnotations(replacementsPolyDet);
+                    } else {
+                        type.replaceAnnotations(replacementsPolyDetUse);
+                    }
                 }
                 return;
             case "up":

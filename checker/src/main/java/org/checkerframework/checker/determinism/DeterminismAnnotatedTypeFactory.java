@@ -221,7 +221,6 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             if (receiverUnderlyingType == null) {
                 return super.visitMethodInvocation(node, methodInvocationType);
             }
-
             refineResultOfEquals(node, methodInvocationType, receiverType);
             refineSystemGet(node, methodInvocationType);
             refineMapGet(node, methodInvocationType, receiverType);
@@ -290,6 +289,19 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
             if (isEqualsMethod(node)) {
                 AnnotatedTypeMirror argument = getAnnotatedType(node.getArguments().get(0));
+
+                TypeMirror receiverErasedType = types.erasure(receiverType.getUnderlyingType());
+                TypeMirror argumentErasedType = types.erasure(argument.getUnderlyingType());
+
+                if (!types.isSameType(receiverErasedType, argumentErasedType)) {
+                    methodInvocationType.replaceAnnotation(DET);
+                    return;
+                }
+                if (!haveSameTypeArguments(receiverType, argument)) {
+                    methodInvocationType.replaceAnnotation(DET);
+                    return;
+                }
+
                 boolean bothSets =
                         isSubClassOf(receiverType, setInterfaceTypeMirror)
                                 && isSubClassOf(argument, setInterfaceTypeMirror);
@@ -478,6 +490,27 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             }
         }
         return false;
+    }
+
+    /** Returns true if {@code atm1} and {@code atm2} have the same type arguments. */
+    private boolean haveSameTypeArguments(AnnotatedTypeMirror atm1, AnnotatedTypeMirror atm2) {
+        if (atm1.getKind() == TypeKind.DECLARED && atm2.getKind() == TypeKind.DECLARED) {
+            AnnotatedDeclaredType declaredType1 = (AnnotatedDeclaredType) atm1;
+            AnnotatedDeclaredType declaredType2 = (AnnotatedDeclaredType) atm2;
+
+            for (int index = 0; index < declaredType1.getTypeArguments().size(); index++) {
+                AnnotatedTypeMirror typeArg1 = declaredType1.getTypeArguments().get(index);
+                AnnotatedTypeMirror typeArg2 = declaredType2.getTypeArguments().get(index);
+
+                TypeMirror erasedTypeArg1 = types.erasure(typeArg1.getUnderlyingType());
+                TypeMirror erasedTypeArg2 = types.erasure(typeArg2.getUnderlyingType());
+
+                if (!types.isSameType(erasedTypeArg1, erasedTypeArg2)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
