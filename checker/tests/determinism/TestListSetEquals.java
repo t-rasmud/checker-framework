@@ -7,12 +7,12 @@ public class TestListSetEquals {
     }
 
     void testListEquals2(@Det List<@Det Integer> aList, @OrderNonDet List<@Det Integer> bList) {
-        // :: error: (assignment.type.incompatible)
+        // :: error: (assignment.type.incompatible) :: error: (method.invocation.invalid)
         @Det boolean ret = aList.equals(bList);
     }
 
     void testListEquals3(@Det List<@Det Integer> aList, @NonDet List<@NonDet Integer> bList) {
-        // :: error: (assignment.type.incompatible)
+        // :: error: (assignment.type.incompatible) :: error: (method.invocation.invalid)
         @Det boolean ret = aList.equals(bList);
     }
 
@@ -54,7 +54,7 @@ public class TestListSetEquals {
     }
 
     void testListSetEquals3(@OrderNonDet List<@Det Integer> aList, @Det Set<@Det Integer> bList) {
-        // :: error: (assignment.type.incompatible)
+        // :: error: (assignment.type.incompatible) :: error: (method.invocation.invalid)
         @Det boolean ret = aList.equals(bList);
     }
 

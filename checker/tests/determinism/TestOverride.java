@@ -19,6 +19,7 @@ public class TestOverride {
     }
 
     protected @NonDet int getList1(@Det ArrayList<Integer> a, @NonDet int b) {
+        // :: error: (method.invocation.invalid)
         return a.get(b);
     }
 }
