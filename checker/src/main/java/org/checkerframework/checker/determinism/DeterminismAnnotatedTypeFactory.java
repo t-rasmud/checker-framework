@@ -504,7 +504,11 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         return false;
     }
 
-    /** Returns true if {@code atm1} and {@code atm2} have the same type arguments. */
+    /**
+     * @param atm1 AnnotatedTypeMirror
+     * @param atm2 AnnotatedTypeMirror
+     * @return true if {@code atm1} and {@code atm2} have the same type argument types.
+     */
     private boolean haveSameTypeArguments(AnnotatedTypeMirror atm1, AnnotatedTypeMirror atm2) {
         if (atm1.getKind() == TypeKind.DECLARED && atm2.getKind() == TypeKind.DECLARED) {
             AnnotatedDeclaredType declaredType1 = (AnnotatedDeclaredType) atm1;
