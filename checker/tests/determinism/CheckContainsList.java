@@ -8,7 +8,7 @@ public class CheckContainsList {
         for (int i = 0; i < 6; i++) {
             lst.add(i);
         }
-        // :: error: (argument.type.incompatible)
+        // :: error: (argument.type.incompatible) :: error: (method.invocation.invalid)
         System.out.println(lst.contains(o));
     }
 
