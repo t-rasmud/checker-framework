@@ -166,4 +166,11 @@ public class TestListSetEquals {
             @NonDet List<@NonDet List<@NonDet List<@NonDet String>>> lst1) {
         @Det boolean ret = lst1.equals(lst);
     }
+
+    void testDifferentTypes3(
+            @NonDet List<@NonDet ArrayList<@NonDet Integer>> lst,
+            @NonDet List<@NonDet LinkedList<@NonDet Integer>> lst1) {
+        // :: error: (assignment.type.incompatible)
+        @Det boolean ret = lst1.equals(lst);
+    }
 }

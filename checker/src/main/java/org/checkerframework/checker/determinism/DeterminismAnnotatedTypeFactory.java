@@ -283,6 +283,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             boolean receiverIsSet = isSubClassOf(receiverType, setInterfaceTypeMirror);
             boolean receiverIsMap = isSubClassOf(receiverType, mapInterfaceTypeMirror);
 
+            // Don't refine for equals() called on non-collections.
             if (!receiverIsList && !receiverIsSet && !receiverIsMap) {
                 return;
             }
@@ -306,10 +307,15 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     return;
                 }
 
-                TypeMirror receiverErasedType = types.erasure(receiverType.getUnderlyingType());
-                TypeMirror argumentErasedType = types.erasure(argument.getUnderlyingType());
+                boolean bothLists =
+                        receiverIsList && isSubClassOf(argument, listInterfaceTypeMirror);
+                boolean bothSets = receiverIsSet && isSubClassOf(argument, setInterfaceTypeMirror);
+                boolean bothMaps = receiverIsMap && isSubClassOf(argument, mapInterfaceTypeMirror);
 
-                if (!types.isSameType(receiverErasedType, argumentErasedType)) {
+                // If the receiver is a List and the argument isn't, then the return type is @Det
+                // (always false).
+                // Similarly for a Set and a Map.
+                if (!(bothLists || bothSets || bothMaps)) {
                     methodInvocationType.replaceAnnotation(DET);
                     return;
                 }
@@ -318,8 +324,6 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     return;
                 }
 
-                boolean bothSets = receiverIsSet && isSubClassOf(argument, setInterfaceTypeMirror);
-                boolean bothMaps = receiverIsMap && isSubClassOf(argument, mapInterfaceTypeMirror);
                 if ((bothSets || bothMaps)
                         && getQualifierHierarchy()
                                 .isSubtype(
@@ -522,10 +526,24 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 boolean done = false;
                 // Iteratively checks all nested type arguments.
                 while (!done) {
+
                     TypeMirror erasedTypeArg1 = types.erasure(typeArg1.getUnderlyingType());
                     TypeMirror erasedTypeArg2 = types.erasure(typeArg2.getUnderlyingType());
 
-                    if (!types.isSameType(erasedTypeArg1, erasedTypeArg2)) {
+                    boolean bothLists =
+                            isSubClassOf(typeArg1, listInterfaceTypeMirror)
+                                    && isSubClassOf(typeArg2, listInterfaceTypeMirror);
+                    boolean bothSets =
+                            isSubClassOf(typeArg1, setInterfaceTypeMirror)
+                                    && isSubClassOf(typeArg2, setInterfaceTypeMirror);
+                    boolean bothMaps =
+                            isSubClassOf(typeArg1, mapInterfaceTypeMirror)
+                                    && isSubClassOf(typeArg2, mapInterfaceTypeMirror);
+
+                    if (!bothLists
+                            && !bothSets
+                            && !bothMaps
+                            && !types.isSameType(erasedTypeArg1, erasedTypeArg2)) {
                         return false;
                     }
 
