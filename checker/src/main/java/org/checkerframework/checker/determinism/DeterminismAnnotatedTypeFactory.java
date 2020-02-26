@@ -183,6 +183,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          *   <li>Type is {@code @PolyDet("up")}
          *   <li>The invoked method is {@code equals} and the receiver is a {@code Set} or {@code
          *       Map}.
+         *   <li>The invoked method is {@code equals} and the receiver and the argument do not have
+         *       the same declared type}.
          *   <li>The invoked method is {@code System.get}
          *   <li>The invoked method is {@code Map.get}
          * </ol>
@@ -266,6 +268,10 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          *   <li>its type argument is not {@code @OrderNonDet List} or a subtype
          * </ol>
          *
+         * OR
+         *
+         * <p>The receiver and the argument do not have the same declared type.
+         *
          * @param node method invocation tree
          * @param methodInvocationType AnnotatedTypeMirror for a method invocation
          * @param receiverType receiver type of the invoked method
@@ -274,6 +280,15 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 MethodInvocationTree node,
                 AnnotatedTypeMirror methodInvocationType,
                 AnnotatedTypeMirror receiverType) {
+
+            boolean receiverIsList = isSubClassOf(receiverType, listInterfaceTypeMirror);
+            boolean receiverIsSet = isSubClassOf(receiverType, setInterfaceTypeMirror);
+            boolean receiverIsMap = isSubClassOf(receiverType, mapInterfaceTypeMirror);
+
+            // Don't refine for equals() called on non-collections.
+            if (!receiverIsList && !receiverIsSet && !receiverIsMap) {
+                return;
+            }
 
             // Annotates the return type of "equals()" method called on a Set or Map receiver
             // as described in the specification of this method.
@@ -285,15 +300,24 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             // Example 2: @OrderNonDet Set<@Det List<@Det Integer>> s1;
             //            @OrderNonDet Set<@Det List<@Det Integer>> s2;
             // s1.equals(s2) is @Det
-            // TODO-rashmi: this can be more precise (@Det receiver and @OrderNonDet argument)
 
             if (isEqualsMethod(node)) {
                 AnnotatedTypeMirror argument = getAnnotatedType(node.getArguments().get(0));
 
-                TypeMirror receiverErasedType = types.erasure(receiverType.getUnderlyingType());
-                TypeMirror argumentErasedType = types.erasure(argument.getUnderlyingType());
+                if (AnnotationUtils.areSameByName(
+                        methodInvocationType.getAnnotationInHierarchy(NONDET), DET)) {
+                    return;
+                }
 
-                if (!types.isSameType(receiverErasedType, argumentErasedType)) {
+                boolean bothLists =
+                        receiverIsList && isSubClassOf(argument, listInterfaceTypeMirror);
+                boolean bothSets = receiverIsSet && isSubClassOf(argument, setInterfaceTypeMirror);
+                boolean bothMaps = receiverIsMap && isSubClassOf(argument, mapInterfaceTypeMirror);
+
+                // If the receiver is a List and the argument isn't, then the return type is @Det
+                // (always false).
+                // Similarly for a Set and a Map.
+                if (!(bothLists || bothSets || bothMaps)) {
                     methodInvocationType.replaceAnnotation(DET);
                     return;
                 }
@@ -302,12 +326,6 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     return;
                 }
 
-                boolean bothSets =
-                        isSubClassOf(receiverType, setInterfaceTypeMirror)
-                                && isSubClassOf(argument, setInterfaceTypeMirror);
-                boolean bothMaps =
-                        isSubClassOf(receiverType, mapInterfaceTypeMirror)
-                                && isSubClassOf(argument, mapInterfaceTypeMirror);
                 if ((bothSets || bothMaps)
                         && getQualifierHierarchy()
                                 .isSubtype(
@@ -492,7 +510,11 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         return false;
     }
 
-    /** Returns true if {@code atm1} and {@code atm2} have the same type arguments. */
+    /**
+     * @param atm1 AnnotatedTypeMirror
+     * @param atm2 AnnotatedTypeMirror
+     * @return true if {@code atm1} and {@code atm2} have the same type argument types.
+     */
     private boolean haveSameTypeArguments(AnnotatedTypeMirror atm1, AnnotatedTypeMirror atm2) {
         if (atm1.getKind() == TypeKind.DECLARED && atm2.getKind() == TypeKind.DECLARED) {
             AnnotatedDeclaredType declaredType1 = (AnnotatedDeclaredType) atm1;
@@ -502,11 +524,49 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 AnnotatedTypeMirror typeArg1 = declaredType1.getTypeArguments().get(index);
                 AnnotatedTypeMirror typeArg2 = declaredType2.getTypeArguments().get(index);
 
-                TypeMirror erasedTypeArg1 = types.erasure(typeArg1.getUnderlyingType());
-                TypeMirror erasedTypeArg2 = types.erasure(typeArg2.getUnderlyingType());
+                int argIndex = 0;
+                boolean done = false;
+                // Iteratively checks all nested type arguments.
+                while (!done) {
 
-                if (!types.isSameType(erasedTypeArg1, erasedTypeArg2)) {
-                    return false;
+                    TypeMirror erasedTypeArg1 = types.erasure(typeArg1.getUnderlyingType());
+                    TypeMirror erasedTypeArg2 = types.erasure(typeArg2.getUnderlyingType());
+
+                    boolean bothLists =
+                            isSubClassOf(typeArg1, listInterfaceTypeMirror)
+                                    && isSubClassOf(typeArg2, listInterfaceTypeMirror);
+                    boolean bothSets =
+                            isSubClassOf(typeArg1, setInterfaceTypeMirror)
+                                    && isSubClassOf(typeArg2, setInterfaceTypeMirror);
+                    boolean bothMaps =
+                            isSubClassOf(typeArg1, mapInterfaceTypeMirror)
+                                    && isSubClassOf(typeArg2, mapInterfaceTypeMirror);
+
+                    if (!bothLists
+                            && !bothSets
+                            && !bothMaps
+                            && !types.isSameType(erasedTypeArg1, erasedTypeArg2)) {
+                        return false;
+                    }
+
+                    if (typeArg1.getKind() == TypeKind.DECLARED
+                            && typeArg2.getKind() == TypeKind.DECLARED) {
+                        if (((AnnotatedDeclaredType) typeArg1).getTypeArguments().size() != 0) {
+                            typeArg1 =
+                                    ((AnnotatedDeclaredType) typeArg1)
+                                            .getTypeArguments()
+                                            .get(argIndex);
+                            typeArg2 =
+                                    ((AnnotatedDeclaredType) typeArg2)
+                                            .getTypeArguments()
+                                            .get(argIndex);
+                            argIndex++;
+                        } else {
+                            done = true;
+                        }
+                    } else {
+                        done = true;
+                    }
                 }
             }
         }
