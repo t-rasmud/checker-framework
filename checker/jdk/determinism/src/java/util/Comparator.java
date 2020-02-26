@@ -149,7 +149,7 @@ public interface Comparator<T> {
      * @throws ClassCastException if the arguments' types prevent them from
      *         being compared by this comparator.
      */
-    @NonDet int compare(T o1, T o2);
+    @NonDet int compare(@PolyDet Comparator<T> this, @PolyDet T o1, @PolyDet T o2);
 
     /**
      * Indicates whether some other object is &quot;equal to&quot; this
