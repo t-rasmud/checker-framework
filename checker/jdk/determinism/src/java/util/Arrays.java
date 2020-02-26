@@ -70,6 +70,7 @@ import org.checkerframework.checker.determinism.qual.*;
  * @author John Rose
  * @since  1.2
  */
+@SuppressWarnings("determinism:throw.type.invalid")
 public class Arrays {
 
     /**
@@ -468,7 +469,7 @@ public class Arrays {
             DualPivotQuicksort.sort(a, 0, n - 1);
         else
             new ArraysParallelSortHelpers.FJByte.Sorter
-                (null, a, new byte[n], 0, n, 0,
+                (null, a, new @PolyDet byte @PolyDet [n], 0, n, 0,
                  ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ?
                  MIN_ARRAY_SORT_GRAN : g).invoke();
     }
@@ -508,7 +509,7 @@ public class Arrays {
             DualPivotQuicksort.sort(a, fromIndex, toIndex - 1);
         else
             new ArraysParallelSortHelpers.FJByte.Sorter
-                (null, a, new byte[n], fromIndex, n, 0,
+                (null, a, new @PolyDet byte @PolyDet [n], fromIndex, n, 0,
                  ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ?
                  MIN_ARRAY_SORT_GRAN : g).invoke();
     }
@@ -538,7 +539,7 @@ public class Arrays {
             DualPivotQuicksort.sort(a, 0, n - 1, null, 0, 0);
         else
             new ArraysParallelSortHelpers.FJChar.Sorter
-                (null, a, new char[n], 0, n, 0,
+                (null, a, new @PolyDet char @PolyDet [n], 0, n, 0,
                  ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ?
                  MIN_ARRAY_SORT_GRAN : g).invoke();
     }
@@ -578,7 +579,7 @@ public class Arrays {
             DualPivotQuicksort.sort(a, fromIndex, toIndex - 1, null, 0, 0);
         else
             new ArraysParallelSortHelpers.FJChar.Sorter
-                (null, a, new char[n], fromIndex, n, 0,
+                (null, a, new @PolyDet char @PolyDet [n], fromIndex, n, 0,
                  ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ?
                  MIN_ARRAY_SORT_GRAN : g).invoke();
     }
@@ -608,7 +609,7 @@ public class Arrays {
             DualPivotQuicksort.sort(a, 0, n - 1, null, 0, 0);
         else
             new ArraysParallelSortHelpers.FJShort.Sorter
-                (null, a, new short[n], 0, n, 0,
+                (null, a, new @PolyDet short @PolyDet [n], 0, n, 0,
                  ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ?
                  MIN_ARRAY_SORT_GRAN : g).invoke();
     }
@@ -648,7 +649,7 @@ public class Arrays {
             DualPivotQuicksort.sort(a, fromIndex, toIndex - 1, null, 0, 0);
         else
             new ArraysParallelSortHelpers.FJShort.Sorter
-                (null, a, new short[n], fromIndex, n, 0,
+                (null, a, new @PolyDet short @PolyDet [n], fromIndex, n, 0,
                  ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ?
                  MIN_ARRAY_SORT_GRAN : g).invoke();
     }
@@ -678,7 +679,7 @@ public class Arrays {
             DualPivotQuicksort.sort(a, 0, n - 1, null, 0, 0);
         else
             new ArraysParallelSortHelpers.FJInt.Sorter
-                (null, a, new int[n], 0, n, 0,
+                (null, a, new @PolyDet int @PolyDet [n], 0, n, 0,
                  ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ?
                  MIN_ARRAY_SORT_GRAN : g).invoke();
     }
@@ -718,7 +719,7 @@ public class Arrays {
             DualPivotQuicksort.sort(a, fromIndex, toIndex - 1, null, 0, 0);
         else
             new ArraysParallelSortHelpers.FJInt.Sorter
-                (null, a, new int[n], fromIndex, n, 0,
+                (null, a, new @PolyDet int @PolyDet [n], fromIndex, n, 0,
                  ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ?
                  MIN_ARRAY_SORT_GRAN : g).invoke();
     }
@@ -748,7 +749,7 @@ public class Arrays {
             DualPivotQuicksort.sort(a, 0, n - 1, null, 0, 0);
         else
             new ArraysParallelSortHelpers.FJLong.Sorter
-                (null, a, new long[n], 0, n, 0,
+                (null, a, new @PolyDet long @PolyDet [n], 0, n, 0,
                  ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ?
                  MIN_ARRAY_SORT_GRAN : g).invoke();
     }
@@ -788,7 +789,7 @@ public class Arrays {
             DualPivotQuicksort.sort(a, fromIndex, toIndex - 1, null, 0, 0);
         else
             new ArraysParallelSortHelpers.FJLong.Sorter
-                (null, a, new long[n], fromIndex, n, 0,
+                (null, a, new @PolyDet long @PolyDet [n], fromIndex, n, 0,
                  ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ?
                  MIN_ARRAY_SORT_GRAN : g).invoke();
     }
@@ -826,7 +827,7 @@ public class Arrays {
             DualPivotQuicksort.sort(a, 0, n - 1, null, 0, 0);
         else
             new ArraysParallelSortHelpers.FJFloat.Sorter
-                (null, a, new float[n], 0, n, 0,
+                (null, a, new @PolyDet float @PolyDet [n], 0, n, 0,
                  ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ?
                  MIN_ARRAY_SORT_GRAN : g).invoke();
     }
@@ -874,7 +875,7 @@ public class Arrays {
             DualPivotQuicksort.sort(a, fromIndex, toIndex - 1, null, 0, 0);
         else
             new ArraysParallelSortHelpers.FJFloat.Sorter
-                (null, a, new float[n], fromIndex, n, 0,
+                (null, a, new @PolyDet float @PolyDet [n], fromIndex, n, 0,
                  ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ?
                  MIN_ARRAY_SORT_GRAN : g).invoke();
     }
@@ -912,7 +913,7 @@ public class Arrays {
             DualPivotQuicksort.sort(a, 0, n - 1, null, 0, 0);
         else
             new ArraysParallelSortHelpers.FJDouble.Sorter
-                (null, a, new double[n], 0, n, 0,
+                (null, a, new @PolyDet double @PolyDet [n], 0, n, 0,
                  ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ?
                  MIN_ARRAY_SORT_GRAN : g).invoke();
     }
@@ -960,7 +961,7 @@ public class Arrays {
             DualPivotQuicksort.sort(a, fromIndex, toIndex - 1, null, 0, 0);
         else
             new ArraysParallelSortHelpers.FJDouble.Sorter
-                (null, a, new double[n], fromIndex, n, 0,
+                (null, a, new @PolyDet double @PolyDet [n], fromIndex, n, 0,
                  ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ?
                  MIN_ARRAY_SORT_GRAN : g).invoke();
     }
@@ -1000,7 +1001,7 @@ public class Arrays {
      * @since 1.8
      */
     @SuppressWarnings("unchecked")
-    public static <@PolyDet T extends Comparable<? super T>> void parallelSort(T @PolyDet[] a) {
+    public static <T extends @PolyDet("use") Comparable<? super T>> void parallelSort(T @PolyDet[] a) {
         int n = a.length, p, g;
         if (n <= MIN_ARRAY_SORT_GRAN ||
             (p = ForkJoinPool.getCommonPoolParallelism()) == 1)
@@ -1057,7 +1058,7 @@ public class Arrays {
      * @since 1.8
      */
     @SuppressWarnings("unchecked")
-    public static <@PolyDet T extends Comparable<? super T>>
+    public static <T extends @PolyDet("use") Comparable<? super T>>
     void parallelSort(T @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex) {
         rangeCheck(a.length, fromIndex, toIndex);
         int n = toIndex - fromIndex, p, g;
@@ -1250,7 +1251,7 @@ public class Arrays {
 
     /** To be removed in a future release. */
     private static void legacyMergeSort(Object[] a) {
-        Object[] aux = a.clone();
+        @PolyDet Object @PolyDet [] aux = a.clone();
         mergeSort(aux, a, 0, a.length, 0);
     }
 
@@ -1315,9 +1316,9 @@ public class Arrays {
     }
 
     /** To be removed in a future release. */
-    private static void legacyMergeSort(Object[] a,
-                                        int fromIndex, int toIndex) {
-        Object[] aux = copyOfRange(a, fromIndex, toIndex);
+    private static void legacyMergeSort(@PolyDet("use") Object @PolyDet [] a,
+                                        @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex) {
+        @PolyDet("up") Object @PolyDet("up") [] aux = copyOfRange(a, fromIndex, toIndex);
         mergeSort(aux, a, fromIndex, toIndex, -fromIndex);
     }
 
@@ -3439,7 +3440,7 @@ public class Arrays {
      * @since 1.6
      */
     @SuppressWarnings("unchecked")
-    public static <T> T @PolyDet[] copyOfRange(T @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
+    public static <T extends @PolyDet("use") Object> @PolyDet("use") T @PolyDet("up")[] copyOfRange(T @PolyDet[] original, @PolyDet("use") int from, @PolyDet("use") int to) {
         return copyOfRange(original, from, to, (Class<? extends T[]>) original.getClass());
     }
 
