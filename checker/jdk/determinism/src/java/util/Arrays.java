@@ -1338,7 +1338,7 @@ public class Arrays {
      * off is the offset to generate corresponding low, high in src
      * To be removed in a future release.
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes", "determinism:assignment.type.incompatible"})
     private static void mergeSort(@PolyDet("use") Object @PolyDet [] src,
                                   @PolyDet("use") Object @PolyDet("up") [] dest,
                                   @PolyDet("use") int low,
@@ -1383,6 +1383,7 @@ public class Arrays {
     /**
      * Swaps x[a] with x[b].
      */
+    @SuppressWarnings("determinism:assignment.type.incompatible")
     private static void swap(@PolyDet("use") Object @PolyDet [] x, @PolyDet("use") int a, @PolyDet("use") int b) {
         Object t = x[a];
         x[a] = x[b];
@@ -1520,7 +1521,7 @@ public class Arrays {
     /** To be removed in a future release. */
     private static <T extends @PolyDet("use") Object> void legacyMergeSort(T @PolyDet [] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
                                                                            @PolyDet("use") Comparator<? super T> c) {
-        @PolyDet("up") T @PolyDet("up") [] aux = copyOfRange(a, fromIndex, toIndex);
+        @PolyDet("use") T @PolyDet("up") [] aux = copyOfRange(a, fromIndex, toIndex);
         if (c==null)
             mergeSort(aux, a, fromIndex, toIndex, -fromIndex);
         else
@@ -1535,9 +1536,9 @@ public class Arrays {
      * off is the offset into src corresponding to low in dest
      * To be removed in a future release.
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked", "determinism:assignment.type.incompatible"})
     private static void mergeSort(@PolyDet("use") Object @PolyDet [] src,
-                                  @PolyDet("use") Object @PolyDet("use") [] dest,
+                                  @PolyDet("use") Object @PolyDet("up") [] dest,
                                   @PolyDet("use") int low, @PolyDet("use") int high, @PolyDet("use") int off,
                                   @PolyDet("use") Comparator c) {
         int length = high - low;
@@ -1783,7 +1784,7 @@ public class Arrays {
      *         that this guarantees that the return value will be &gt;= 0 if
      *         and only if the key is found.
      */
-    public static @PolyDet("down") int binarySearch(@PolyDet("use") long @PolyDet[] a, @PolyDet long key) {
+    public static @PolyDet("down") int binarySearch(@PolyDet("useNoOrderNonDet") long @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") long key) {
         return binarySearch0(a, 0, a.length, key);
     }
 
@@ -1819,15 +1820,15 @@ public class Arrays {
      *         if {@code fromIndex < 0 or toIndex > a.length}
      * @since 1.6
      */
-    public static @PolyDet("down") int binarySearch(@PolyDet("use") long @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
-                                                    @PolyDet long key) {
+    public static @PolyDet("down") int binarySearch(@PolyDet("useNoOrderNonDet") long @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
+                                                    @PolyDet("useNoOrderNonDet") long key) {
         rangeCheck(a.length, fromIndex, toIndex);
         return binarySearch0(a, fromIndex, toIndex, key);
     }
 
     // Like public version, but without range checks.
-    private static @PolyDet("down") int binarySearch0(@PolyDet("use") long @PolyDet [] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
-                                                      @PolyDet long key) {
+    private static @PolyDet("down") int binarySearch0(@PolyDet("useNoOrderNonDet") long @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
+                                                      @PolyDet("useNoOrderNonDet") long key) {
         int low = fromIndex;
         int high = toIndex - 1;
 
@@ -1864,7 +1865,7 @@ public class Arrays {
      *         that this guarantees that the return value will be &gt;= 0 if
      *         and only if the key is found.
      */
-    public static @PolyDet("down") int binarySearch(@PolyDet("use") int @PolyDet[] a, @PolyDet int key) {
+    public static @PolyDet("down") int binarySearch(@PolyDet("useNoOrderNonDet") int @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int key) {
         return binarySearch0(a, 0, a.length, key);
     }
 
@@ -1900,15 +1901,15 @@ public class Arrays {
      *         if {@code fromIndex < 0 or toIndex > a.length}
      * @since 1.6
      */
-    public static @PolyDet("down") int binarySearch(@PolyDet("use") int @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
-                                                    @PolyDet int key) {
+    public static @PolyDet("down") int binarySearch(@PolyDet("useNoOrderNonDet") int @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
+                                                    @PolyDet("useNoOrderNonDet") int key) {
         rangeCheck(a.length, fromIndex, toIndex);
         return binarySearch0(a, fromIndex, toIndex, key);
     }
 
     // Like public version, but without range checks.
-    private static @PolyDet("down") int binarySearch0(@PolyDet("use") int @PolyDet [] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
-                                                      @PolyDet int key) {
+    private static @PolyDet("down") int binarySearch0(@PolyDet("useNoOrderNonDet") int @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
+                                                      @PolyDet("useNoOrderNonDet") int key) {
         int low = fromIndex;
         int high = toIndex - 1;
 
@@ -1945,7 +1946,7 @@ public class Arrays {
      *         that this guarantees that the return value will be &gt;= 0 if
      *         and only if the key is found.
      */
-    public static @PolyDet("down") int binarySearch(@PolyDet("use") short @PolyDet[] a, @PolyDet short key) {
+    public static @PolyDet("down") int binarySearch(@PolyDet("useNoOrderNonDet") short @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") short key) {
         return binarySearch0(a, 0, a.length, key);
     }
 
@@ -1981,15 +1982,15 @@ public class Arrays {
      *         if {@code fromIndex < 0 or toIndex > a.length}
      * @since 1.6
      */
-    public static @PolyDet("down") int binarySearch(@PolyDet("use") short @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
-                                                    @PolyDet short key) {
+    public static @PolyDet("down") int binarySearch(@PolyDet("useNoOrderNonDet") short @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
+                                                    @PolyDet("useNoOrderNonDet") short key) {
         rangeCheck(a.length, fromIndex, toIndex);
         return binarySearch0(a, fromIndex, toIndex, key);
     }
 
     // Like public version, but without range checks.
-    private static @PolyDet("down") int binarySearch0(@PolyDet("use") short @PolyDet [] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
-                                                      @PolyDet short key) {
+    private static @PolyDet("down") int binarySearch0(@PolyDet("useNoOrderNonDet") short @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
+                                                      @PolyDet("useNoOrderNonDet") short key) {
         int low = fromIndex;
         int high = toIndex - 1;
 
@@ -2026,7 +2027,7 @@ public class Arrays {
      *         that this guarantees that the return value will be &gt;= 0 if
      *         and only if the key is found.
      */
-    public static @PolyDet("down") int binarySearch(@PolyDet("use") char @PolyDet[] a, @PolyDet char key) {
+    public static @PolyDet("down") int binarySearch(@PolyDet("useNoOrderNonDet") char @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") char key) {
         return binarySearch0(a, 0, a.length, key);
     }
 
@@ -2062,15 +2063,15 @@ public class Arrays {
      *         if {@code fromIndex < 0 or toIndex > a.length}
      * @since 1.6
      */
-    public static @PolyDet("down") int binarySearch(@PolyDet("use") char @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
-                                                    @PolyDet char key) {
+    public static @PolyDet("down") int binarySearch(@PolyDet("useNoOrderNonDet") char @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
+                                                    @PolyDet("useNoOrderNonDet") char key) {
         rangeCheck(a.length, fromIndex, toIndex);
         return binarySearch0(a, fromIndex, toIndex, key);
     }
 
     // Like public version, but without range checks.
-    private static @PolyDet("down") int binarySearch0(@PolyDet("use") char @PolyDet [] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
-                                                      @PolyDet char key) {
+    private static @PolyDet("down") int binarySearch0(@PolyDet("useNoOrderNonDet") char @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
+                                                      @PolyDet("useNoOrderNonDet") char key) {
         int low = fromIndex;
         int high = toIndex - 1;
 
@@ -2107,7 +2108,7 @@ public class Arrays {
      *         that this guarantees that the return value will be &gt;= 0 if
      *         and only if the key is found.
      */
-    public static @PolyDet("down") int binarySearch(@PolyDet("use") byte @PolyDet[] a, @PolyDet byte key) {
+    public static @PolyDet("down") int binarySearch(@PolyDet("useNoOrderNonDet") byte @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") byte key) {
         return binarySearch0(a, 0, a.length, key);
     }
 
@@ -2143,15 +2144,15 @@ public class Arrays {
      *         if {@code fromIndex < 0 or toIndex > a.length}
      * @since 1.6
      */
-    public static @PolyDet("down") int binarySearch(@PolyDet("use") byte @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
-                                                    @PolyDet byte key) {
+    public static @PolyDet("down") int binarySearch(@PolyDet("useNoOrderNonDet") byte @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
+                                                    @PolyDet("useNoOrderNonDet") byte key) {
         rangeCheck(a.length, fromIndex, toIndex);
         return binarySearch0(a, fromIndex, toIndex, key);
     }
 
     // Like public version, but without range checks.
-    private static @PolyDet("down") int binarySearch0(@PolyDet("use") byte @PolyDet [] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
-                                                      @PolyDet byte key) {
+    private static @PolyDet("down") int binarySearch0(@PolyDet("useNoOrderNonDet") byte @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
+                                                      @PolyDet("useNoOrderNonDet") byte key) {
         int low = fromIndex;
         int high = toIndex - 1;
 
@@ -2189,7 +2190,7 @@ public class Arrays {
      *         that this guarantees that the return value will be &gt;= 0 if
      *         and only if the key is found.
      */
-    public static @PolyDet("down") int binarySearch(@PolyDet("use") double @PolyDet[] a, @PolyDet double key) {
+    public static @PolyDet("down") int binarySearch(@PolyDet("useNoOrderNonDet") double @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") double key) {
         return binarySearch0(a, 0, a.length, key);
     }
 
@@ -2226,14 +2227,14 @@ public class Arrays {
      *         if {@code fromIndex < 0 or toIndex > a.length}
      * @since 1.6
      */
-    public static @PolyDet("down") int binarySearch(@PolyDet("use") double @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
-                                                    @PolyDet double key) {
+    public static @PolyDet("down") int binarySearch(@PolyDet("useNoOrderNonDet") double @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
+                                                    @PolyDet("useNoOrderNonDet") double key) {
         rangeCheck(a.length, fromIndex, toIndex);
         return binarySearch0(a, fromIndex, toIndex, key);
     }
 
     // Like public version, but without range checks.
-    private static @PolyDet("down") int binarySearch0(@PolyDet("use") double @PolyDet [] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
+    private static @PolyDet("down") int binarySearch0(@PolyDet("useNoOrderNonDet") double @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
                                                       @PolyDet double key) {
         int low = fromIndex;
         int high = toIndex - 1;
@@ -2280,7 +2281,7 @@ public class Arrays {
      *         that this guarantees that the return value will be &gt;= 0 if
      *         and only if the key is found.
      */
-    public static @PolyDet("down") int binarySearch(@PolyDet("use") float @PolyDet[] a, @PolyDet float key) {
+    public static @PolyDet("down") int binarySearch(@PolyDet("useNoOrderNonDet") float @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") float key) {
         return binarySearch0(a, 0, a.length, key);
     }
 
@@ -2317,14 +2318,14 @@ public class Arrays {
      *         if {@code fromIndex < 0 or toIndex > a.length}
      * @since 1.6
      */
-    public static @PolyDet("down") int binarySearch(@PolyDet("use") float @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
-                                                    @PolyDet float key) {
+    public static @PolyDet("down") int binarySearch(@PolyDet("useNoOrderNonDet") float @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
+                                                    @PolyDet("useNoOrderNonDet") float key) {
         rangeCheck(a.length, fromIndex, toIndex);
         return binarySearch0(a, fromIndex, toIndex, key);
     }
 
     // Like public version, but without range checks.
-    private static @PolyDet("down") int binarySearch0(@PolyDet("use") float @PolyDet [] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
+    private static @PolyDet("down") int binarySearch0(@PolyDet("useNoOrderNonDet") float @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
                                                       @PolyDet float key) {
         int low = fromIndex;
         int high = toIndex - 1;
@@ -2379,7 +2380,7 @@ public class Arrays {
      * @throws ClassCastException if the search key is not comparable to the
      *         elements of the array.
      */
-    public static @PolyDet("down") int binarySearch(@PolyDet("use") Object @PolyDet[] a, @PolyDet Object key) {
+    public static @PolyDet("down") int binarySearch(@PolyDet("useNoOrderNonDet") Object @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") Object key) {
         return binarySearch0(a, 0, a.length, key);
     }
 
@@ -2423,15 +2424,15 @@ public class Arrays {
      *         if {@code fromIndex < 0 or toIndex > a.length}
      * @since 1.6
      */
-    public static @PolyDet("down") int binarySearch(@PolyDet("use") Object @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
-                                                    @PolyDet Object key) {
+    public static @PolyDet("down") int binarySearch(@PolyDet("useNoOrderNonDet") Object @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
+                                                    @PolyDet("useNoOrderNonDet") Object key) {
         rangeCheck(a.length, fromIndex, toIndex);
         return binarySearch0(a, fromIndex, toIndex, key);
     }
 
     // Like public version, but without range checks.
-    private static @PolyDet("down") int binarySearch0(@PolyDet("use") Object @PolyDet [] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
-                                                      @PolyDet Object key) {
+    private static @PolyDet("down") int binarySearch0(@PolyDet("useNoOrderNonDet") Object @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
+                                                      @PolyDet("useNoOrderNonDet") Object key) {
         int low = fromIndex;
         int high = toIndex - 1;
 
@@ -2482,7 +2483,7 @@ public class Arrays {
      *         or the search key is not comparable to the
      *         elements of the array using this comparator.
      */
-    public static <T extends @PolyDet("use") Object> @PolyDet("down") int binarySearch(T @PolyDet[] a, T key, @PolyDet("use") Comparator<? super T> c) {
+    public static <T extends @PolyDet("useNoOrderNonDet") Object> @PolyDet("down") int binarySearch(T @PolyDet("noOrderNonDet") [] a, T key, @PolyDet("useNoOrderNonDet") Comparator<? super T> c) {
         return binarySearch0(a, 0, a.length, key, c);
     }
 
@@ -2528,15 +2529,15 @@ public class Arrays {
      *         if {@code fromIndex < 0 or toIndex > a.length}
      * @since 1.6
      */
-    public static <T extends @PolyDet("use") Object> @PolyDet("down") int binarySearch(T @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
-                                                                                       T key, @PolyDet("use") Comparator<? super T> c) {
+    public static <T extends @PolyDet("useNoOrderNonDet") Object> @PolyDet("down") int binarySearch(T @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
+                                                                                       T key, @PolyDet("useNoOrderNonDet") Comparator<? super T> c) {
         rangeCheck(a.length, fromIndex, toIndex);
         return binarySearch0(a, fromIndex, toIndex, key, c);
     }
 
     // Like public version, but without range checks.
-    private static <T extends @PolyDet("use") Object> @PolyDet("down") int binarySearch0(T @PolyDet [] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
-                                                                                         T key, @PolyDet("use") Comparator<? super T> c) {
+    private static <T extends @PolyDet("useNoOrderNonDet") Object> @PolyDet("down") int binarySearch0(T @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
+                                                                                         T key, @PolyDet("useNoOrderNonDet") Comparator<? super T> c) {
         if (c == null) {
             return binarySearch0(a, fromIndex, toIndex, key);
         }
@@ -3236,7 +3237,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
-    public static @PolyDet("down") byte @PolyDet[] copyOf(@PolyDet byte @PolyDet[] original, @PolyDet int newLength) {
+    public static @PolyDet("use") byte @PolyDet[] copyOf(@PolyDet("use") byte @PolyDet[] original, @PolyDet int newLength) {
         @PolyDet("use") byte @PolyDet [] copy = new @PolyDet("use") byte @PolyDet [newLength];
         System.arraycopy(original, 0, copy, 0,
                 Math.min(original.length, newLength));
@@ -3260,7 +3261,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
-    public static @PolyDet("down") short @PolyDet[] copyOf(@PolyDet short @PolyDet[] original, @PolyDet int newLength) {
+    public static @PolyDet("use") short @PolyDet[] copyOf(@PolyDet("use") short @PolyDet[] original, @PolyDet int newLength) {
         @PolyDet("use") short @PolyDet [] copy = new @PolyDet("use") short @PolyDet [newLength];
         System.arraycopy(original, 0, copy, 0,
                 Math.min(original.length, newLength));
@@ -3284,7 +3285,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
-    public static @PolyDet("down") int @PolyDet[] copyOf(@PolyDet int @PolyDet[] original, @PolyDet int newLength) {
+    public static @PolyDet("use") int @PolyDet[] copyOf(@PolyDet("use") int @PolyDet[] original, @PolyDet int newLength) {
         @PolyDet("use") int @PolyDet [] copy = new @PolyDet("use") int @PolyDet [newLength];
         System.arraycopy(original, 0, copy, 0,
                 Math.min(original.length, newLength));
@@ -3308,7 +3309,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
-    public static @PolyDet("down") long @PolyDet[] copyOf(@PolyDet long @PolyDet[] original, @PolyDet int newLength) {
+    public static @PolyDet("use") long @PolyDet[] copyOf(@PolyDet("use") long @PolyDet[] original, @PolyDet int newLength) {
         @PolyDet("use") long @PolyDet [] copy = new @PolyDet("use") long @PolyDet [newLength];
         System.arraycopy(original, 0, copy, 0,
                 Math.min(original.length, newLength));
@@ -3332,7 +3333,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
-    public static @PolyDet("down") char @PolyDet[] copyOf(@PolyDet char @PolyDet[] original, @PolyDet int newLength) {
+    public static @PolyDet("use") char @PolyDet[] copyOf(@PolyDet("use") char @PolyDet[] original, @PolyDet int newLength) {
         @PolyDet("use") char @PolyDet [] copy = new @PolyDet("use") char @PolyDet [newLength];
         System.arraycopy(original, 0, copy, 0,
                 Math.min(original.length, newLength));
@@ -3356,7 +3357,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
-    public static @PolyDet("down") float @PolyDet[] copyOf(@PolyDet float @PolyDet[] original, @PolyDet int newLength) {
+    public static @PolyDet("use") float @PolyDet[] copyOf(@PolyDet("use") float @PolyDet[] original, @PolyDet int newLength) {
         @PolyDet("use") float @PolyDet [] copy = new @PolyDet("use") float @PolyDet [newLength];
         System.arraycopy(original, 0, copy, 0,
                 Math.min(original.length, newLength));
@@ -3380,7 +3381,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
-    public static @PolyDet("down") double @PolyDet[] copyOf(@PolyDet double @PolyDet [] original, @PolyDet int newLength) {
+    public static @PolyDet("use") double @PolyDet[] copyOf(@PolyDet("use") double @PolyDet [] original, @PolyDet int newLength) {
         @PolyDet("use") double @PolyDet [] copy = new @PolyDet("use") double @PolyDet [newLength];
         System.arraycopy(original, 0, copy, 0,
                 Math.min(original.length, newLength));
@@ -3404,7 +3405,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
-    public static @PolyDet("down") boolean @PolyDet[] copyOf(@PolyDet boolean @PolyDet[] original, @PolyDet int newLength) {
+    public static @PolyDet("use") boolean @PolyDet[] copyOf(@PolyDet("use") boolean @PolyDet[] original, @PolyDet int newLength) {
         @PolyDet("use") boolean @PolyDet [] copy = new @PolyDet("use") boolean @PolyDet [newLength];
         System.arraycopy(original, 0, copy, 0,
                 Math.min(original.length, newLength));
@@ -3441,7 +3442,7 @@ public class Arrays {
      * @since 1.6
      */
     @SuppressWarnings("unchecked")
-    public static <T extends @PolyDet("use") Object> T @PolyDet("up")[] copyOfRange(T @PolyDet[] original, @PolyDet("use") int from, @PolyDet("use") int to) {
+    public static <T extends @PolyDet("use") Object> T @PolyDet[] copyOfRange(T @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
         return copyOfRange(original, from, to, (Class<? extends T[]>) original.getClass());
     }
 
@@ -3478,7 +3479,7 @@ public class Arrays {
      *     an array of class <tt>newType</tt>.
      * @since 1.6
      */
-    public static <@PolyDet T, @PolyDet U> T @PolyDet[] copyOfRange(U @PolyDet[] original, @PolyDet int from, @PolyDet int to, @PolyDet("use") Class<? extends @PolyDet("use") T @PolyDet("use") []> newType) {
+    public static <T extends @PolyDet("use") Object, U extends @PolyDet("use") Object> T @PolyDet[] copyOfRange(U @PolyDet[] original, @PolyDet int from, @PolyDet int to, @PolyDet("use") Class<? extends @PolyDet("use") T @PolyDet("use") []> newType) {
         int newLength = to - from;
         if (newLength < 0)
             throw new IllegalArgumentException(from + " > " + to);
@@ -3517,7 +3518,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
-    public static @PolyDet("down") byte @PolyDet[] copyOfRange(@PolyDet byte @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
+    public static @PolyDet("use") byte @PolyDet[] copyOfRange(@PolyDet("use") byte @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
         int newLength = to - from;
         if (newLength < 0)
             throw new IllegalArgumentException(from + " > " + to);
@@ -3553,7 +3554,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
-    public static @PolyDet("down") short @PolyDet[] copyOfRange(@PolyDet short @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
+    public static @PolyDet("use") short @PolyDet[] copyOfRange(@PolyDet("use") short @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
         int newLength = to - from;
         if (newLength < 0)
             throw new IllegalArgumentException(from + " > " + to);
@@ -3589,7 +3590,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
-    public static @PolyDet("down") int @PolyDet[] copyOfRange(@PolyDet int @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
+    public static @PolyDet("use") int @PolyDet[] copyOfRange(@PolyDet("use") int @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
         int newLength = to - from;
         if (newLength < 0)
             throw new IllegalArgumentException(from + " > " + to);
@@ -3625,7 +3626,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
-    public static @PolyDet("down") long @PolyDet[] copyOfRange(@PolyDet long @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
+    public static @PolyDet("use") long @PolyDet[] copyOfRange(@PolyDet("use") long @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
         int newLength = to - from;
         if (newLength < 0)
             throw new IllegalArgumentException(from + " > " + to);
@@ -3661,7 +3662,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
-    public static @PolyDet("down") char @PolyDet[] copyOfRange(@PolyDet("use") char @PolyDet[] original, @PolyDet("use") int from, @PolyDet("use") int to) {
+    public static @PolyDet("use") char @PolyDet[] copyOfRange(@PolyDet("use") char @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
         int newLength = to - from;
         if (newLength < 0)
             throw new IllegalArgumentException(from + " > " + to);
@@ -3697,7 +3698,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
-    public static @PolyDet("down") float @PolyDet[] copyOfRange(@PolyDet float @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
+    public static @PolyDet("use") float @PolyDet[] copyOfRange(@PolyDet("use") float @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
         int newLength = to - from;
         if (newLength < 0)
             throw new IllegalArgumentException(from + " > " + to);
@@ -3733,7 +3734,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
-    public static @PolyDet("down") double @PolyDet[] copyOfRange(@PolyDet double @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
+    public static @PolyDet("use") double @PolyDet[] copyOfRange(@PolyDet("use") double @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
         int newLength = to - from;
         if (newLength < 0)
             throw new IllegalArgumentException(from + " > " + to);
@@ -3769,7 +3770,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
-    public static @PolyDet("down") boolean @PolyDet[] copyOfRange(@PolyDet boolean @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
+    public static @PolyDet("use") boolean @PolyDet[] copyOfRange(@PolyDet("use") boolean @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
         int newLength = to - from;
         if (newLength < 0)
             throw new IllegalArgumentException(from + " > " + to);
@@ -4621,12 +4622,13 @@ public class Arrays {
         if (a.length != 0 && bufLen <= 0)
             bufLen = Integer.MAX_VALUE;
         StringBuilder buf = new StringBuilder(bufLen);
-        deepToString(a, buf, new @PolyDet("use") HashSet<@PolyDet("use") Object @PolyDet("use")[]>());
+        deepToString(a, buf, new @PolyDet("upDet") HashSet<@PolyDet("use") Object @PolyDet("use")[]>());
         return buf.toString();
     }
 
-    private static void deepToString(@PolyDet("use") Object @PolyDet[] a, @PolyDet("use") StringBuilder buf,
-                                     @PolyDet("use") Set<@PolyDet("use") Object @PolyDet("use") []> dejaVu) {
+    @SuppressWarnings("determinism:method.invocation.invalid")
+    private static void deepToString(@PolyDet("use") Object @PolyDet[] a, @PolyDet("up") StringBuilder buf,
+                                     @PolyDet("upDet") Set<@PolyDet("use") Object @PolyDet("use") []> dejaVu) {
         if (a == null) {
             buf.append("null");
             return;
