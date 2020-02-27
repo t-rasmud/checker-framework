@@ -105,6 +105,7 @@ import org.checkerframework.framework.qual.HasQualifierParameter;
  * @see     Vector
  * @since   1.2
  */
+@SuppressWarnings({"invalid.upper.bound.on.type.argument", "throw.type.invalid"})
 @HasQualifierParameter(NonDet.class)
 public class ArrayList<E> extends AbstractList<E>
         implements List<E>, RandomAccess, Cloneable, java.io.Serializable
@@ -134,14 +135,14 @@ public class ArrayList<E> extends AbstractList<E>
      * empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA
      * will be expanded to DEFAULT_CAPACITY when the first element is added.
      */
-    transient Object[] elementData; // non-private to simplify nested class access
+    transient @PolyDet("use") Object @PolyDet[] elementData; // non-private to simplify nested class access
 
     /**
      * The size of the ArrayList (the number of elements it contains).
      *
      * @serial
      */
-    private int size;
+    private @PolyDet("down") int size;
 
     /**
      * Constructs an empty list with the specified initial capacity.
@@ -152,7 +153,7 @@ public class ArrayList<E> extends AbstractList<E>
      */
     public @PolyDet ArrayList(@PolyDet int initialCapacity) {
         if (initialCapacity > 0) {
-            this.elementData = new Object[initialCapacity];
+            this.elementData = new @PolyDet("use") Object @PolyDet[initialCapacity];
         } else if (initialCapacity == 0) {
             this.elementData = EMPTY_ELEMENTDATA;
         } else {
