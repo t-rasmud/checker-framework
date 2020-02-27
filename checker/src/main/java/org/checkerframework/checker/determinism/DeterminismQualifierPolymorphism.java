@@ -93,7 +93,9 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                         && !replacementsPolyDet.contains(factory.POLYDET_NOORDERNONDET)
                         && !replacementsPolyDet.contains(factory.POLYDET_UP)
                         && !replacementsPolyDet.contains(factory.POLYDET_DOWN)
-                        && !replacementsPolyDet.contains(factory.POLYDET_UPDET)) {
+                        && !replacementsPolyDet.contains(factory.POLYDET_UPDET)
+                        && !replacementsPolyDet.contains(factory.POLYDET_USE)
+                        && !replacementsPolyDet.contains(factory.POLYDET_USENOORDERNONDET)) {
                     AnnotationMirrorSet replacementsPolyDetUse =
                             replacementsMapping.get(factory.POLYDET_USE);
                     if ((AnnotationUtils.containsSame(replacementsPolyDet, factory.ORDERNONDET)
