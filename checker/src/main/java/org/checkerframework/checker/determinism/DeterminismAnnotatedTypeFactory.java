@@ -886,8 +886,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         if (!isLHS
                 && owner.getKind() != TypeKind.ARRAY // array.length is dealt with elsewhere
                 && element.getKind() == ElementKind.FIELD
-                && !ElementUtils.isStatic(element)
-                && !isCollectionType(owner)) {
+                && !ElementUtils.isStatic(element)) {
             // The qualifier type of a field access is the LUB of the qualifier on the type of the
             // field and the qualifier on the type of the access expression.
             AnnotationMirror expressionAnno = owner.getEffectiveAnnotationInHierarchy(NONDET);
