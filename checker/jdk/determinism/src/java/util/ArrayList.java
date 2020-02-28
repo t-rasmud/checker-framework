@@ -110,24 +110,24 @@ import org.checkerframework.framework.qual.HasQualifierParameter;
 public class ArrayList<E> extends AbstractList<E>
         implements List<E>, RandomAccess, Cloneable, java.io.Serializable
 {
-    private static final long serialVersionUID = 8683452581122892189L;
+    private static final @Det long serialVersionUID = 8683452581122892189L;
 
     /**
      * Default initial capacity.
      */
-    private static final int DEFAULT_CAPACITY = 10;
+    private static final @Det int DEFAULT_CAPACITY = 10;
 
     /**
      * Shared empty array instance used for empty instances.
      */
-    private static final Object[] EMPTY_ELEMENTDATA = {};
+    private static final @Det Object @Det [] EMPTY_ELEMENTDATA = {};
 
     /**
      * Shared empty array instance used for default sized empty instances. We
      * distinguish this from EMPTY_ELEMENTDATA to know how much to inflate when
      * first element is added.
      */
-    private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};
+    private static final @Det Object @Det [] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};
 
     /**
      * The array buffer into which the elements of the ArrayList are stored.
@@ -350,9 +350,9 @@ public class ArrayList<E> extends AbstractList<E>
      *
      * @return a clone of this <tt>ArrayList</tt> instance
      */
-    public @PolyDet("up") Object clone(@PolyDet ArrayList<@PolyDet E> this) {
+    public @PolyDet Object clone(@PolyDet ArrayList<@PolyDet E> this) {
         try {
-            ArrayList<?> v = (ArrayList<?>) super.clone();
+            @PolyDet ArrayList<?> v = (ArrayList<?>) super.clone();
             v.elementData = Arrays.copyOf(elementData, size);
             v.modCount = 0;
             return v;
@@ -405,7 +405,7 @@ public class ArrayList<E> extends AbstractList<E>
      * @throws NullPointerException if the specified array is null
      */
     @SuppressWarnings("unchecked")
-    public <T> @PolyDet("down") T @PolyDet[] toArray(@PolyDet ArrayList<E> this, T[] a) {
+    public <T extends @PolyDet("use") Object> T @PolyDet[] toArray(@PolyDet ArrayList<E> this, T @PolyDet("use") [] a) {
         if (a.length < size)
             // Make a new array of a's runtime type, but my contents:
             return (T[]) Arrays.copyOf(elementData, size, a.getClass());
@@ -419,7 +419,7 @@ public class ArrayList<E> extends AbstractList<E>
 
     @SuppressWarnings("unchecked")
     @PolyDet("up") E elementData(@PolyDet ArrayList<E> this, @PolyDet int index) {
-        return (E) elementData[index];
+        return (@PolyDet("up") E) elementData[index];
     }
 
     /**
@@ -444,7 +444,7 @@ public class ArrayList<E> extends AbstractList<E>
      * @return the element previously at the specified position
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
-    public @PolyDet("up") E set(@PolyDet("noOrderNonDet") ArrayList<E> this, @PolyDet("use") int index, E element) {
+    public @PolyDet("useNoOrderNonDet") E set(@PolyDet("noOrderNonDet") ArrayList<E> this, @PolyDet("useNoOrderNonDet") int index, @PolyDet("useNoOrderNonDet") E element) {
         rangeCheck(index);
 
         E oldValue = elementData(index);
@@ -458,7 +458,7 @@ public class ArrayList<E> extends AbstractList<E>
      * @param e element to be appended to this list
      * @return <tt>true</tt> (as specified by {@link Collection#add})
      */
-    public @PolyDet("down") boolean add(@PolyDet ArrayList<E> this, E e) {
+    public @PolyDet("down") boolean add(@PolyDet ArrayList<E> this, @PolyDet("use") E e) {
         ensureCapacityInternal(size + 1);  // Increments modCount!!
         elementData[size++] = e;
         return true;
@@ -473,7 +473,7 @@ public class ArrayList<E> extends AbstractList<E>
      * @param element element to be inserted
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
-    public void add(@PolyDet ArrayList<E> this, @PolyDet("use") int index, E element) {
+    public void add(@PolyDet ArrayList<E> this, @PolyDet("use") int index, @PolyDet("use") E element) {
         rangeCheckForAdd(index);
 
         ensureCapacityInternal(size + 1);  // Increments modCount!!
@@ -492,7 +492,7 @@ public class ArrayList<E> extends AbstractList<E>
      * @return the element that was removed from the list
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
-    public @PolyDet("up") E remove(@PolyDet("noOrderNonDet") ArrayList<E> this, @PolyDet("use") int index) {
+    public @PolyDet("useNoOrderNonDet") E remove(@PolyDet("noOrderNonDet") ArrayList<E> this, @PolyDet("useNoOrderNonDet") int index) {
         rangeCheck(index);
 
         modCount++;
@@ -578,7 +578,7 @@ public class ArrayList<E> extends AbstractList<E>
      * @throws NullPointerException if the specified collection is null
      */
     public @PolyDet("down") boolean addAll(@PolyDet ArrayList<E> this, @PolyDet("use") Collection<? extends E> c) {
-        Object[] a = c.toArray();
+        @PolyDet("use") Object @PolyDet[] a = c.toArray();
         int numNew = a.length;
         ensureCapacityInternal(size + numNew);  // Increments modCount
         System.arraycopy(a, 0, elementData, size, numNew);
@@ -604,7 +604,7 @@ public class ArrayList<E> extends AbstractList<E>
     public @PolyDet("down") boolean addAll(@PolyDet ArrayList<E> this, @PolyDet("use") int index, @PolyDet("use") Collection<? extends E> c) {
         rangeCheckForAdd(index);
 
-        Object[] a = c.toArray();
+        @PolyDet("use") Object @PolyDet[] a = c.toArray();
         int numNew = a.length;
         ensureCapacityInternal(size + numNew);  // Increments modCount
 
@@ -632,7 +632,7 @@ public class ArrayList<E> extends AbstractList<E>
      *          toIndex > size() ||
      *          toIndex < fromIndex})
      */
-    protected void removeRange(@PolyDet ArrayList<E> this, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex) {
+    protected void removeRange(@PolyDet("noOrderNonDet") ArrayList<E> this, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex) {
         modCount++;
         int numMoved = size - toIndex;
         System.arraycopy(elementData, toIndex, elementData, fromIndex,
@@ -715,8 +715,8 @@ public class ArrayList<E> extends AbstractList<E>
         return batchRemove(c, true);
     }
 
-    private boolean batchRemove(Collection<?> c, boolean complement) {
-        final Object[] elementData = this.elementData;
+    private @PolyDet("down") boolean batchRemove(@PolyDet Collection<?> c, @PolyDet boolean complement) {
+        final @PolyDet("use") Object @PolyDet[] elementData = this.elementData;
         int r = 0, w = 0;
         boolean modified = false;
         try {
@@ -835,23 +835,24 @@ public class ArrayList<E> extends AbstractList<E>
      * @return an iterator over the elements in this list in proper sequence
      */
     public @PolyDet Iterator<E> iterator(@PolyDet ArrayList<E> this) {
-        return new Itr();
+        return new @PolyDet Itr();
     }
 
     /**
      * An optimized version of AbstractList.Itr
      */
+    @HasQualifierParameter(NonDet.class)
     private class Itr implements Iterator<E> {
-        int cursor;       // index of next element to return
-        int lastRet = -1; // index of last element returned; -1 if no such
+        @PolyDet("down") int cursor;       // index of next element to return
+        @PolyDet("down") int lastRet = -1; // index of last element returned; -1 if no such
         int expectedModCount = modCount;
 
-        public boolean hasNext(Itr this) {
+        public @PolyDet("down") boolean hasNext(@PolyDet Itr this) {
             return cursor != size;
         }
 
         @SuppressWarnings("unchecked")
-        public E next(Itr this) {
+        public @PolyDet("up") E next(@PolyDet Itr this) {
             checkForComodification();
             int i = cursor;
             if (i >= size)
@@ -860,7 +861,7 @@ public class ArrayList<E> extends AbstractList<E>
             if (i >= elementData.length)
                 throw new ConcurrentModificationException();
             cursor = i + 1;
-            return (E) elementData[lastRet = i];
+            return (@PolyDet("up") E) elementData[lastRet = i];
         }
 
         public void remove(Itr this) {
@@ -909,6 +910,7 @@ public class ArrayList<E> extends AbstractList<E>
     /**
      * An optimized version of AbstractList.ListItr
      */
+    @HasQualifierParameter(NonDet.class)
     private class ListItr extends Itr implements ListIterator<E> {
         ListItr(int index) {
             super();
@@ -940,7 +942,7 @@ public class ArrayList<E> extends AbstractList<E>
             return (E) elementData[lastRet = i];
         }
 
-        public void set(E e) {
+        public void set(@PolyDet ListItr this, @PolyDet("use") E e) {
             if (lastRet < 0)
                 throw new IllegalStateException();
             checkForComodification();
@@ -952,7 +954,7 @@ public class ArrayList<E> extends AbstractList<E>
             }
         }
 
-        public void add(E e) {
+        public void add(@PolyDet ListItr this, @PolyDet("use") E e) {
             checkForComodification();
 
             try {
@@ -996,9 +998,9 @@ public class ArrayList<E> extends AbstractList<E>
      * @throws IndexOutOfBoundsException {@inheritDoc}
      * @throws IllegalArgumentException {@inheritDoc}
      */
-    public @PolyDet("up") List<E> subList(@PolyDet ArrayList<E> this, @PolyDet int fromIndex, @PolyDet int toIndex) {
+    public @PolyDet("up") List<E> subList(@PolyDet ArrayList<E> this, @PolyDet("down") int fromIndex, @PolyDet("down") int toIndex) {
         subListRangeCheck(fromIndex, toIndex, size);
-        return new SubList(this, 0, fromIndex, toIndex);
+        return new @PolyDet("up") SubList(this, 0, fromIndex, toIndex);
     }
 
     static void subListRangeCheck(int fromIndex, int toIndex, int size) {
@@ -1011,14 +1013,15 @@ public class ArrayList<E> extends AbstractList<E>
                                                ") > toIndex(" + toIndex + ")");
     }
 
+    @HasQualifierParameter(NonDet.class)
     private class SubList extends AbstractList<E> implements RandomAccess {
-        private final AbstractList<E> parent;
+        private final @PolyDet AbstractList<E> parent;
         private final int parentOffset;
         private final int offset;
-        int size;
+        @PolyDet("down") int size;
 
-        SubList(AbstractList<E> parent,
-                int offset, int fromIndex, int toIndex) {
+        @PolyDet("up") SubList(@PolyDet AbstractList<E> parent,
+                @PolyDet int offset, @PolyDet("down") int fromIndex, @PolyDet("down") int toIndex) {
             this.parent = parent;
             this.parentOffset = fromIndex;
             this.offset = offset + fromIndex;
@@ -1026,7 +1029,7 @@ public class ArrayList<E> extends AbstractList<E>
             this.modCount = ArrayList.this.modCount;
         }
 
-        public E set(int index, E e) {
+        public @PolyDet("noOrderNonDet") E set(@PolyDet("noOrderNonDet") SubList this, @PolyDet("useNoOrderNonDet") int index, @PolyDet("useNoOrderNonDet") E e) {
             rangeCheck(index);
             checkForComodification();
             E oldValue = ArrayList.this.elementData(offset + index);
@@ -1034,18 +1037,18 @@ public class ArrayList<E> extends AbstractList<E>
             return oldValue;
         }
 
-        public E get(int index) {
+        public @PolyDet("up") E get(@PolyDet SubList this, @PolyDet int index) {
             rangeCheck(index);
             checkForComodification();
             return ArrayList.this.elementData(offset + index);
         }
 
-        public int size() {
+        public @PolyDet("down") int size(@PolyDet SubList this) {
             checkForComodification();
             return this.size;
         }
 
-        public void add(int index, E e) {
+        public void add(@PolyDet SubList this, @PolyDet("use") int index, @PolyDet("use") E e) {
             rangeCheckForAdd(index);
             checkForComodification();
             parent.add(parentOffset + index, e);
@@ -1053,7 +1056,7 @@ public class ArrayList<E> extends AbstractList<E>
             this.size++;
         }
 
-        public E remove(int index) {
+        public @PolyDet("useNoOrderNonDet") E remove(@PolyDet("noOrderNonDet") SubList this, @PolyDet("useNoOrderNonDet") int index) {
             rangeCheck(index);
             checkForComodification();
             E result = parent.remove(parentOffset + index);
@@ -1062,7 +1065,7 @@ public class ArrayList<E> extends AbstractList<E>
             return result;
         }
 
-        protected void removeRange(int fromIndex, int toIndex) {
+        protected void removeRange(@PolyDet("noOrderNonDet") SubList this, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex) {
             checkForComodification();
             parent.removeRange(parentOffset + fromIndex,
                                parentOffset + toIndex);
@@ -1070,11 +1073,11 @@ public class ArrayList<E> extends AbstractList<E>
             this.size -= toIndex - fromIndex;
         }
 
-        public boolean addAll(Collection<? extends E> c) {
+        public @PolyDet("down") boolean addAll(@PolyDet SubList this, @PolyDet("use") Collection<? extends E> c) {
             return addAll(this.size, c);
         }
 
-        public boolean addAll(int index, Collection<? extends E> c) {
+        public @PolyDet("down") boolean addAll(@PolyDet SubList this, @PolyDet("use") int index, @PolyDet("use") Collection<? extends E> c) {
             rangeCheckForAdd(index);
             int cSize = c.size();
             if (cSize==0)
@@ -1101,7 +1104,7 @@ public class ArrayList<E> extends AbstractList<E>
                 int lastRet = -1;
                 int expectedModCount = ArrayList.this.modCount;
 
-                public boolean hasNext() {
+                public @PolyDet("down") boolean hasNext() {
                     return cursor != SubList.this.size;
                 }
 
@@ -1211,7 +1214,7 @@ public class ArrayList<E> extends AbstractList<E>
             };
         }
 
-        public List<E> subList(int fromIndex, int toIndex) {
+        public @PolyDet("up") List<E> subList(@PolyDet SubList this, @PolyDet("down") int fromIndex, @PolyDet("down") int toIndex) {
             subListRangeCheck(fromIndex, toIndex, size);
             return new SubList(this, offset, fromIndex, toIndex);
         }
@@ -1276,6 +1279,8 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     /** Index-based split-by-two, lazily initialized Spliterator */
+    @CollectionType
+    @HasQualifierParameter(NonDet.class)
     static final class ArrayListSpliterator<E> implements Spliterator<E> {
 
         /*
@@ -1402,7 +1407,7 @@ public class ArrayList<E> extends AbstractList<E>
         int removeCount = 0;
         final BitSet removeSet = new BitSet(size);
         final int expectedModCount = modCount;
-        final int size = this.size;
+        int size = this.size;
         for (int i=0; modCount == expectedModCount && i < size; i++) {
             @SuppressWarnings("unchecked")
             final E element = (E) elementData[i];
@@ -1455,7 +1460,7 @@ public class ArrayList<E> extends AbstractList<E>
     @SuppressWarnings("unchecked")
     public void sort(@PolyDet ArrayList<E> this, @PolyDet("use") Comparator<? super E> c) {
         final int expectedModCount = modCount;
-        Arrays.sort((E[]) elementData, 0, size, c);
+        Arrays.sort((@PolyDet E @PolyDet []) elementData, 0, size, c);
         if (modCount != expectedModCount) {
             throw new ConcurrentModificationException();
         }

@@ -607,7 +607,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         AnnotatedWildcardType classWildcardArg = (AnnotatedWildcardType) typeArgs.get(0);
         if (classWildcardArg.getExtendsBoundField().getKind() == TypeKind.ARRAY) {
             AnnotatedTypeMirror extendsBoundArray = classWildcardArg.getExtendsBoundField();
-            new AnnotationReplacer().visit(extendsBoundArray, NONDET);
+            new AnnotationReplacer()
+                    .visit(extendsBoundArray, receiverType.getAnnotationInHierarchy(NONDET));
         }
     }
 
@@ -885,7 +886,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         if (!isLHS
                 && owner.getKind() != TypeKind.ARRAY // array.length is dealt with elsewhere
                 && element.getKind() == ElementKind.FIELD
-                && !ElementUtils.isStatic(element)) {
+                && !ElementUtils.isStatic(element)
+                && !isCollectionType(owner)) {
             // The qualifier type of a field access is the LUB of the qualifier on the type of the
             // field and the qualifier on the type of the access expression.
             AnnotationMirror expressionAnno = owner.getEffectiveAnnotationInHierarchy(NONDET);

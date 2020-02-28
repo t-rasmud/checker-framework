@@ -175,7 +175,7 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      * @throws NullPointerException {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public <T> @PolyDet("down") T @PolyDet[] toArray(@PolyDet AbstractCollection<E> this, T[] a) {
+    public <T extends @PolyDet("use") Object> T @PolyDet[] toArray(@PolyDet AbstractCollection<E> this, T @PolyDet("use") [] a) {
         // Estimate size of array; be prepared to see more or fewer elements
         int size = size();
         T[] r = a.length >= size ? a :
@@ -262,7 +262,7 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      * @throws IllegalArgumentException      {@inheritDoc}
      * @throws IllegalStateException         {@inheritDoc}
      */
-    public @PolyDet("down") boolean add(@PolyDet AbstractCollection<E> this, E e) {
+    public @PolyDet("down") boolean add(@PolyDet AbstractCollection<E> this, @PolyDet("use") E e) {
         throw new UnsupportedOperationException();
     }
 

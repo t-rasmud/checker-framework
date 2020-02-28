@@ -254,7 +254,7 @@ public interface Collection<E> extends Iterable<E> {
      *         this collection
      * @throws NullPointerException if the specified array is null
      */
-    <T> @PolyDet T @PolyDet[] toArray(@PolyDet Collection<E> this, T[] a);
+    <T extends @PolyDet("use") Object> T @PolyDet[] toArray(@PolyDet Collection<E> this, T @PolyDet("use") [] a);
 
     // Modification Operations
 
@@ -291,7 +291,7 @@ public interface Collection<E> extends Iterable<E> {
      * @throws IllegalStateException if the element cannot be added at this
      *         time due to insertion restrictions
      */
-    @PolyDet("down") boolean add(@PolyDet Collection<E> this, E e);
+    @PolyDet("down") boolean add(@PolyDet Collection<E> this, @PolyDet("use") E e);
 
     /**
      * Removes a single instance of the specified element from this

@@ -87,6 +87,7 @@ import org.checkerframework.framework.qual.HasQualifierParameter;
  * @see     HashMap
  * @since   1.2
  */
+@SuppressWarnings("invalid.upper.bound.on.type.argument")
 @HasQualifierParameter(NonDet.class)
 public class HashSet<E>
     extends AbstractSet<E>

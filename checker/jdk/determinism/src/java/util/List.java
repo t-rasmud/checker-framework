@@ -170,7 +170,7 @@ public interface List<E> extends Collection<E> {
      *         sequence
      * @see Arrays#asList(Object[])
      */
-    @PolyDet("down") Object @PolyDet[] toArray(@PolyDet List<E> this);
+    @PolyDet("down") Object @PolyDet[] toArray(@PolyDet List<@PolyDet("use") E> this);
 
     /**
      * Returns an array containing all of the elements in this list in
@@ -211,7 +211,7 @@ public interface List<E> extends Collection<E> {
      *         this list
      * @throws NullPointerException if the specified array is null
      */
-    <T> @PolyDet("down") T @PolyDet[] toArray(@PolyDet List<E> this, T[] a);
+    <T extends @PolyDet("use") Object> T @PolyDet[] toArray(@PolyDet List<E> this, T @PolyDet("use") [] a);
 
 
     // Modification Operations
@@ -238,7 +238,7 @@ public interface List<E> extends Collection<E> {
      * @throws IllegalArgumentException if some property of this element
      *         prevents it from being added to this list
      */
-    @PolyDet("down") boolean add(@PolyDet List<E>this, E e);
+    @PolyDet("down") boolean add(@PolyDet List<E>this, @PolyDet("use") E e);
 
     /**
      * Removes the first occurrence of the specified element from this list,
@@ -564,7 +564,7 @@ public interface List<E> extends Collection<E> {
      * @throws IndexOutOfBoundsException if the index is out of range
      *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
      */
-    @PolyDet("up") E set(@PolyDet("noOrderNonDet") List<E> this, @PolyDet("useNoOrderNonDet") int index, E element);
+    @PolyDet("up") E set(@PolyDet("noOrderNonDet") List<E> this, @PolyDet("useNoOrderNonDet") int index, @PolyDet("useNoOrderNonDet") E element);
 
     /**
      * Inserts the specified element at the specified position in this list
@@ -585,7 +585,7 @@ public interface List<E> extends Collection<E> {
      * @throws IndexOutOfBoundsException if the index is out of range
      *         (<tt>index &lt; 0 || index &gt; size()</tt>)
      */
-    void add(@PolyDet List<E> this, @PolyDet("use") int index, E element);
+    void add(@PolyDet List<E> this, @PolyDet("use") int index, @PolyDet("use") E element);
 
     /**
      * Removes the element at the specified position in this list (optional
@@ -708,7 +708,7 @@ public interface List<E> extends Collection<E> {
      *         (<tt>fromIndex &lt; 0 || toIndex &gt; size ||
      *         fromIndex &gt; toIndex</tt>)
      */
-    @PolyDet("up") List<E> subList(@PolyDet List<E> this, @PolyDet int fromIndex, @PolyDet int toIndex);
+    @PolyDet("up") List<E> subList(@PolyDet List<E> this, @PolyDet("down") int fromIndex, @PolyDet("down") int toIndex);
 
     /**
      * Creates a {@link Spliterator} over the elements in this list.
