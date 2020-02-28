@@ -11,7 +11,13 @@ public class InvariantSetAccess {
         @Det String s = lst.get(0);
     }
 
-    void test1(@OrderNonDet ArrayList<@Det ArrayList<@Det String>> lst) {
+    void test1(
+            @OrderNonDet ArrayList<@Det ArrayList<@Det String>> lst,
+            @Det ArrayList<@Det String> lst1,
+            @NonDet int index) {
+        lst.add(lst1);
         @NonDet ArrayList<@Det String> tmp = lst.get(0);
+        tmp.add(index, "");
+        lst1.add(index, "");
     }
 }
