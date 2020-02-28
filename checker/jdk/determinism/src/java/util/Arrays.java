@@ -71,7 +71,7 @@ import org.checkerframework.framework.qual.HasQualifierParameter;
  * @author John Rose
  * @since  1.2
  */
-@SuppressWarnings("determinism:throw.type.invalid")
+@SuppressWarnings({"determinism:throw.type.invalid", ""})
 public class Arrays {
 
     /**
@@ -3848,7 +3848,7 @@ public class Arrays {
         }
 
         @Override
-        public E set(@PolyDet("noOrderNonDet") ArrayList<E> this, @PolyDet("use") int index, E element) {
+        public E set(@PolyDet("noOrderNonDet") ArrayList<E> this, @PolyDet("useNoOrderNonDet") int index, @PolyDet("useNoOrderNonDet") E element) {
             E oldValue = a[index];
             a[index] = element;
             return oldValue;
