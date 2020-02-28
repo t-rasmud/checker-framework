@@ -117,7 +117,7 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                     type.replaceAnnotations(replacements);
                 } else if (replacements.contains(factory.ORDERNONDET)
                         || replacements.contains(factory.NONDET)) {
-                    replaceForPolyWithModifier(type, factory.NONDET);
+                    type.replaceAnnotation(factory.NONDET);
                 }
                 return;
             case "down":
@@ -133,13 +133,13 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                         || replacements.contains(factory.ORDERNONDET)) {
                     type.replaceAnnotations(replacements);
                 } else if (replacements.contains(factory.DET)) {
-                    replaceForPolyWithModifier(type, factory.ORDERNONDET);
+                    type.replaceAnnotation(factory.ORDERNONDET);
                 }
                 return;
             case "noOrderNonDet":
                 if (replacements.contains(factory.ORDERNONDET)
                         || replacements.contains(factory.POLYDET)) {
-                    replaceForPolyWithModifier(type, factory.DET);
+                    type.replaceAnnotation(factory.DET);
                 } else {
                     type.replaceAnnotations(replacements);
                 }
