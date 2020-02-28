@@ -71,7 +71,7 @@ import org.checkerframework.framework.qual.HasQualifierParameter;
  * @author John Rose
  * @since  1.2
  */
-@SuppressWarnings({"determinism:throw.type.invalid", ""})
+@SuppressWarnings({"determinism:throw.type.invalid"})
 public class Arrays {
 
     /**
