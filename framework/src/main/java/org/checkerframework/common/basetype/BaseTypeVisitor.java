@@ -823,7 +823,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
                     qualifierHierarchy.findAnnotationInHierarchy(constructorAnnotations, top);
             if (!qualifierHierarchy.isSubtype(top, constructorAnno)) {
                 checker.report(
-                        Result.warning("inconsistent.constructor.type", constructorAnno),
+                        Result.warning("inconsistent.constructor.type", constructorAnno, top),
                         constructorElement);
             }
         }
@@ -2644,7 +2644,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
             List<? extends AnnotatedTypeMirror> typeargs,
             List<? extends Tree> typeargTrees) {
 
-        // System.out.printf("BaseTypeVisitor.checkTypeArguments: %s, TVs: %s, TAs: %s, TATs: %s\n",
+        // System.out.printf("BaseTypeVisitor.checkTypeArguments: %s, TVs: %s, TAs: %s, TATs: %s%n",
         //         toptree, paramBounds, typeargs, typeargTrees);
 
         // If there are no type variables, do nothing.
