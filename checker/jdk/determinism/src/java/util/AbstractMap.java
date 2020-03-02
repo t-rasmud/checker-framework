@@ -209,7 +209,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * @throws NullPointerException          {@inheritDoc}
      * @throws IllegalArgumentException      {@inheritDoc}
      */
-    public @PolyDet("down") V put(@PolyDet AbstractMap<K,V> this, K key, V value) {
+    public @PolyDet("down") V put(@PolyDet AbstractMap<@PolyDet("down") K,@PolyDet("down") V> this, K key, V value) {
         throw new UnsupportedOperationException();
     }
 
@@ -235,7 +235,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * @throws ClassCastException            {@inheritDoc}
      * @throws NullPointerException          {@inheritDoc}
      */
-    public @PolyDet("down") V remove(@PolyDet AbstractMap<K,V> this, @PolyDet("use") Object key) {
+    public @PolyDet("down") V remove(@PolyDet AbstractMap<@PolyDet("down") K,@PolyDet("down") V> this, @PolyDet("use") Object key) {
         Iterator<Entry<K,V>> i = entrySet().iterator();
         Entry<K,V> correctEntry = null;
         if (key==null) {
@@ -280,7 +280,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * @throws NullPointerException          {@inheritDoc}
      * @throws IllegalArgumentException      {@inheritDoc}
      */
-    public void putAll(@PolyDet AbstractMap<K,V> this, @PolyDet("use") Map<? extends K, ? extends V> m) {
+    public void putAll(@PolyDet AbstractMap<@PolyDet("down") K,@PolyDet("down") V> this, @PolyDet("use") Map<? extends K, ? extends V> m) {
         for (Map.Entry<? extends K, ? extends V> e : m.entrySet())
             put(e.getKey(), e.getValue());
     }
@@ -297,7 +297,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      *
      * @throws UnsupportedOperationException {@inheritDoc}
      */
-    public void clear(@PolyDet AbstractMap<K,V> this) {
+    public void clear(@PolyDet AbstractMap<@PolyDet("down") K,@PolyDet("down") V> this) {
         entrySet().clear();
     }
 
@@ -476,7 +476,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * @param o object to be compared for equality with this map
      * @return <tt>true</tt> if the specified object is equal to this map
      */
-    public @PolyDet("down") boolean equals(@PolyDet AbstractMap<K,V> this, @PolyDet Object o) {
+    public @PolyDet("down") boolean equals(@PolyDet AbstractMap<K,V> this, @PolyDet("upDet") Object o) {
         if (o == this)
             return true;
 

@@ -150,7 +150,7 @@ public interface NavigableSet<E> extends SortedSet<E> {
      *
      * @return the first element, or {@code null} if this set is empty
      */
-    @PolyDet("down") E pollFirst(@PolyDet NavigableSet<E> this);
+    @PolyDet("down") E pollFirst(@PolyDet NavigableSet<@PolyDet("down") E> this);
 
     /**
      * Retrieves and removes the last (highest) element,
@@ -158,7 +158,7 @@ public interface NavigableSet<E> extends SortedSet<E> {
      *
      * @return the last element, or {@code null} if this set is empty
      */
-    @PolyDet("down") E pollLast(@PolyDet NavigableSet<E> this);
+    @PolyDet("down") E pollLast(@PolyDet NavigableSet<@PolyDet("down") E> this);
 
     /**
      * Returns an iterator over the elements in this set, in ascending order.

@@ -114,7 +114,7 @@ public abstract class AbstractSequentialList<E> extends AbstractList<E> {
      * @throws IllegalArgumentException      {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public @PolyDet("up") E set(@PolyDet("noOrderNonDet") AbstractSequentialList<E> this, @PolyDet("useNoOrderNonDet") int index, @PolyDet("useNoOrderNonDet") E element) {
+    public @PolyDet("up") E set(@PolyDet("noOrderNonDet") AbstractSequentialList<@PolyDet("noOrderNonDet") E> this, @PolyDet("useNoOrderNonDet") int index, @PolyDet("useNoOrderNonDet") E element) {
         try {
             ListIterator<E> e = listIterator(index);
             E oldVal = e.next();
@@ -145,7 +145,7 @@ public abstract class AbstractSequentialList<E> extends AbstractList<E> {
      * @throws IllegalArgumentException      {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public void add(@PolyDet AbstractSequentialList<E> this, @PolyDet("use") int index, @PolyDet("use") E element) {
+    public void add(@PolyDet AbstractSequentialList<@PolyDet("down") E> this, @PolyDet("use") int index, @PolyDet("use") E element) {
         try {
             listIterator(index).add(element);
         } catch (NoSuchElementException exc) {
@@ -170,7 +170,7 @@ public abstract class AbstractSequentialList<E> extends AbstractList<E> {
      * @throws UnsupportedOperationException {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public @PolyDet("up") E remove(@PolyDet("noOrderNonDet") AbstractSequentialList<E> this, @PolyDet("use") int index) {
+    public @PolyDet("up") E remove(@PolyDet("noOrderNonDet") AbstractSequentialList<@PolyDet("noOrderNonDet") E> this, @PolyDet("use") int index) {
         try {
             ListIterator<E> e = listIterator(index);
             E outCast = e.next();
@@ -213,7 +213,7 @@ public abstract class AbstractSequentialList<E> extends AbstractList<E> {
      * @throws IllegalArgumentException      {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public @PolyDet("down") boolean addAll(@PolyDet AbstractSequentialList<E> this, @PolyDet("use") int index, @PolyDet("use") Collection<? extends E> c) {
+    public @PolyDet("down") boolean addAll(@PolyDet AbstractSequentialList<@PolyDet("down") E> this, @PolyDet("use") int index, @PolyDet("use") Collection<? extends E> c) {
         try {
             boolean modified = false;
             ListIterator<E> e1 = listIterator(index);

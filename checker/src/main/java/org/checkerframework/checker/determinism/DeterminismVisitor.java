@@ -336,7 +336,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 checker.report(
                         Result.failure(INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno), varTree);
             } else {
-                super.commonAssignmentCheck(varTree, valueExp, errorKey);
+                checker.report(
+                        Result.failure(INVALID_FIELD_ASSIGNMENT, varAnno, exprAnno), varTree);
             }
         } else {
             super.commonAssignmentCheck(varTree, valueExp, errorKey);

@@ -94,7 +94,7 @@ public interface Iterator<E> {
      *         been called after the last call to the {@code next}
      *         method
      */
-    default void remove(@PolyDet("noOrderNonDet") Iterator<E> this) {
+    default void remove(@PolyDet Iterator<E> this) {
         throw new UnsupportedOperationException("remove");
     }
 
@@ -115,7 +115,7 @@ public interface Iterator<E> {
      * @throws NullPointerException if the specified action is null
      * @since 1.8
      */
-    default void forEachRemaining(@PolyDet Iterator<E> this, @PolyDet("use") Consumer<? super E> action) {
+    default void forEachRemaining(@PolyDet Iterator<@PolyDet("down") E> this, @PolyDet("use") Consumer<? super E> action) {
         Objects.requireNonNull(action);
         while (hasNext())
             action.accept(next());

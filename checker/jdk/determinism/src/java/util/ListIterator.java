@@ -174,7 +174,7 @@ public interface ListIterator<E> extends Iterator<E> {
      *         {@code add} have been called after the last call to
      *         {@code next} or {@code previous}
      */
-    void set(@PolyDet ListIterator<E> this, @PolyDet("use") E e);
+    void set(@PolyDet ListIterator<@PolyDet("down") E> this, @PolyDet("use") E e);
 
     /**
      * Inserts the specified element into the list (optional operation).
@@ -196,5 +196,5 @@ public interface ListIterator<E> extends Iterator<E> {
      * @throws IllegalArgumentException if some aspect of this element
      *         prevents it from being added to this list
      */
-    void add(@PolyDet ListIterator<E> this, @PolyDet("use") E e);
+    void add(@PolyDet ListIterator<@PolyDet("down") E> this, @PolyDet("use") E e);
 }

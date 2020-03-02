@@ -226,7 +226,7 @@ public interface Set<E> extends Collection<E> {
      * @throws IllegalArgumentException if some property of the specified element
      *         prevents it from being added to this set
      */
-    @PolyDet("down") boolean add(@PolyDet Set<E> this, E e);
+    @PolyDet("down") boolean add(@PolyDet Set<@PolyDet("down") E> this, E e);
 
 
     /**
@@ -250,7 +250,7 @@ public interface Set<E> extends Collection<E> {
      * @throws UnsupportedOperationException if the <tt>remove</tt> operation
      *         is not supported by this set
      */
-    @PolyDet("down") boolean remove(@PolyDet Set<E> this, @PolyDet("use") Object o);
+    @PolyDet("down") boolean remove(@PolyDet Set<@PolyDet("down") E> this, @PolyDet("use") Object o);
 
 
     // Bulk Operations
@@ -298,7 +298,7 @@ public interface Set<E> extends Collection<E> {
      *         specified collection prevents it from being added to this set
      * @see #add(Object)
      */
-    @PolyDet("down") boolean addAll(@PolyDet Set<E> this, @PolyDet("use") Collection<? extends E> c);
+    @PolyDet("down") boolean addAll(@PolyDet Set<@PolyDet("down") E> this, @PolyDet("use") Collection<? extends E> c);
 
     /**
      * Retains only the elements in this set that are contained in the
@@ -321,7 +321,7 @@ public interface Set<E> extends Collection<E> {
      *         or if the specified collection is null
      * @see #remove(Object)
      */
-    @PolyDet("down") boolean retainAll(@PolyDet Set<E> this, @PolyDet("use") Collection<?> c);
+    @PolyDet("down") boolean retainAll(@PolyDet Set<@PolyDet("down") E> this, @PolyDet("use") Collection<?> c);
 
     /**
      * Removes from this set all of its elements that are contained in the
@@ -344,7 +344,7 @@ public interface Set<E> extends Collection<E> {
      * @see #remove(Object)
      * @see #contains(Object)
      */
-    @PolyDet("down") boolean removeAll(@PolyDet Set<E> this, @PolyDet("use") Collection<?> c);
+    @PolyDet("down") boolean removeAll(@PolyDet Set<@PolyDet("down") E> this, @PolyDet("use") Collection<?> c);
 
     /**
      * Removes all of the elements from this set (optional operation).
@@ -353,7 +353,7 @@ public interface Set<E> extends Collection<E> {
      * @throws UnsupportedOperationException if the <tt>clear</tt> method
      *         is not supported by this set
      */
-    void clear(@PolyDet Set<E> this);
+    void clear(@PolyDet Set<@PolyDet("down") E> this);
 
 
     // Comparison and hashing
