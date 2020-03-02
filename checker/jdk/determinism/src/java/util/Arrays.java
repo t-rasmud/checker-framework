@@ -1251,8 +1251,8 @@ public class Arrays {
     }
 
     /** To be removed in a future release. */
-    private static void legacyMergeSort(Object[] a) {
-        @PolyDet Object @PolyDet [] aux = a.clone();
+    private static void legacyMergeSort(@PolyDet("down") Object @PolyDet [] a) {
+        @PolyDet("down") Object @PolyDet [] aux = a.clone();
         mergeSort(aux, a, 0, a.length, 0);
     }
 
@@ -1308,7 +1308,7 @@ public class Arrays {
      *         not <i>mutually comparable</i> (for example, strings and
      *         integers).
      */
-    public static void sort(@PolyDet("down") Object @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex) {
+    public static void sort(@PolyDet("down") Object @PolyDet[] a, @PolyDet("down") int fromIndex, @PolyDet("down") int toIndex) {
         rangeCheck(a.length, fromIndex, toIndex);
         if (LegacyMergeSort.userRequested)
             legacyMergeSort(a, fromIndex, toIndex);
@@ -1318,8 +1318,8 @@ public class Arrays {
 
     /** To be removed in a future release. */
     private static void legacyMergeSort(@PolyDet("down") Object @PolyDet [] a,
-                                        @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex) {
-        @PolyDet("use") Object @PolyDet("up") [] aux = copyOfRange(a, fromIndex, toIndex);
+                                        @PolyDet("down") int fromIndex, @PolyDet("down") int toIndex) {
+        @PolyDet("down") Object @PolyDet("up") [] aux = copyOfRange(a, fromIndex, toIndex);
         mergeSort(aux, a, fromIndex, toIndex, -fromIndex);
     }
 
@@ -1339,11 +1339,11 @@ public class Arrays {
      * To be removed in a future release.
      */
     @SuppressWarnings({"unchecked", "rawtypes", "determinism:assignment.type.incompatible"})
-    private static void mergeSort(@PolyDet("use") Object @PolyDet [] src,
-                                  @PolyDet("use") Object @PolyDet("up") [] dest,
-                                  @PolyDet("use") int low,
-                                  @PolyDet("use") int high,
-                                  @PolyDet("use") int off) {
+    private static void mergeSort(@PolyDet("down") Object @PolyDet [] src,
+                                  @PolyDet("down") Object @PolyDet("up") [] dest,
+                                  @PolyDet("down") int low,
+                                  @PolyDet("down") int high,
+                                  @PolyDet("down") int off) {
         int length = high - low;
 
         // Insertion sort on smallest arrays
@@ -1384,7 +1384,7 @@ public class Arrays {
      * Swaps x[a] with x[b].
      */
     @SuppressWarnings("determinism:assignment.type.incompatible")
-    private static void swap(@PolyDet("down") Object @PolyDet [] x, @PolyDet("use") int a, @PolyDet("use") int b) {
+    private static void swap(@PolyDet("down") Object @PolyDet [] x, @PolyDet("down") int a, @PolyDet("down") int b) {
         Object t = x[a];
         x[a] = x[b];
         x[b] = t;
@@ -1505,7 +1505,7 @@ public class Arrays {
      * @throws ArrayIndexOutOfBoundsException if {@code fromIndex < 0} or
      *         {@code toIndex > a.length}
      */
-    public static <@PolyDet("down") T extends @PolyDet("use") Object> void sort(T @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
+    public static <@PolyDet("down") T extends @PolyDet("use") Object> void sort(T @PolyDet[] a, @PolyDet("down") int fromIndex, @PolyDet("down") int toIndex,
                                                                @PolyDet("use") Comparator<? super T> c) {
         if (c == null) {
             sort(a, fromIndex, toIndex);
@@ -1519,9 +1519,9 @@ public class Arrays {
     }
 
     /** To be removed in a future release. */
-    private static <@PolyDet("down") T extends @PolyDet("use") Object> void legacyMergeSort(T @PolyDet [] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
+    private static <@PolyDet("down") T extends @PolyDet("use") Object> void legacyMergeSort(T @PolyDet [] a, @PolyDet("down") int fromIndex, @PolyDet("down") int toIndex,
                                                                            @PolyDet("use") Comparator<? super T> c) {
-        @PolyDet("use") T @PolyDet("up") [] aux = copyOfRange(a, fromIndex, toIndex);
+        @PolyDet("down") T @PolyDet("up") [] aux = copyOfRange(a, fromIndex, toIndex);
         if (c==null)
             mergeSort(aux, a, fromIndex, toIndex, -fromIndex);
         else
@@ -1537,9 +1537,9 @@ public class Arrays {
      * To be removed in a future release.
      */
     @SuppressWarnings({"rawtypes", "unchecked", "determinism:assignment.type.incompatible"})
-    private static void mergeSort(@PolyDet("use") Object @PolyDet [] src,
-                                  @PolyDet("use") Object @PolyDet("up") [] dest,
-                                  @PolyDet("use") int low, @PolyDet("use") int high, @PolyDet("use") int off,
+    private static void mergeSort(@PolyDet("down") Object @PolyDet [] src,
+                                  @PolyDet("down") Object @PolyDet("up") [] dest,
+                                  @PolyDet("down") int low, @PolyDet("down") int high, @PolyDet("down") int off,
                                   @PolyDet("use") Comparator c) {
         int length = high - low;
 
@@ -2847,7 +2847,7 @@ public class Arrays {
      * @param a the array to be filled
      * @param val the value to be stored in all elements of the array
      */
-    public static void fill(@PolyDet("down") long @PolyDet[] a, @PolyDet("use") long val) {
+    public static void fill(@PolyDet("noOrderNonDet") long @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") long val) {
         for (int i = 0, len = a.length; i < len; i++)
             a[i] = val;
     }
@@ -2869,7 +2869,7 @@ public class Arrays {
      * @throws ArrayIndexOutOfBoundsException if <tt>fromIndex &lt; 0</tt> or
      *         <tt>toIndex &gt; a.length</tt>
      */
-    public static void fill(@PolyDet("down") long @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex, @PolyDet("use") long val) {
+    public static void fill(@PolyDet("noOrderNonDet") long @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex, @PolyDet("useNoOrderNonDet") long val) {
         rangeCheck(a.length, fromIndex, toIndex);
         for (int i = fromIndex; i < toIndex; i++)
             a[i] = val;
@@ -2882,7 +2882,7 @@ public class Arrays {
      * @param a the array to be filled
      * @param val the value to be stored in all elements of the array
      */
-    public static void fill(@PolyDet("down") int @PolyDet[] a, @PolyDet("use") int val) {
+    public static void fill(@PolyDet("noOrderNonDet") int @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int val) {
         for (int i = 0, len = a.length; i < len; i++)
             a[i] = val;
     }
@@ -2904,7 +2904,7 @@ public class Arrays {
      * @throws ArrayIndexOutOfBoundsException if <tt>fromIndex &lt; 0</tt> or
      *         <tt>toIndex &gt; a.length</tt>
      */
-    public static void fill(@PolyDet("down") int @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex, @PolyDet("use") int val) {
+    public static void fill(@PolyDet("noOrderNonDet") int @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex, @PolyDet("useNoOrderNonDet") int val) {
         rangeCheck(a.length, fromIndex, toIndex);
         for (int i = fromIndex; i < toIndex; i++)
             a[i] = val;
@@ -2917,7 +2917,7 @@ public class Arrays {
      * @param a the array to be filled
      * @param val the value to be stored in all elements of the array
      */
-    public static void fill(@PolyDet("down") short @PolyDet[] a, @PolyDet("use") short val) {
+    public static void fill(@PolyDet("noOrderNonDet") short @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") short val) {
         for (int i = 0, len = a.length; i < len; i++)
             a[i] = val;
     }
@@ -2939,7 +2939,7 @@ public class Arrays {
      * @throws ArrayIndexOutOfBoundsException if <tt>fromIndex &lt; 0</tt> or
      *         <tt>toIndex &gt; a.length</tt>
      */
-    public static void fill(@PolyDet("down") short @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex, @PolyDet("use") short val) {
+    public static void fill(@PolyDet("noOrderNonDet") short @PolyDet("noOrderNonDet") [] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex, @PolyDet("useNoOrderNonDet") short val) {
         rangeCheck(a.length, fromIndex, toIndex);
         for (int i = fromIndex; i < toIndex; i++)
             a[i] = val;
@@ -2952,7 +2952,7 @@ public class Arrays {
      * @param a the array to be filled
      * @param val the value to be stored in all elements of the array
      */
-    public static void fill(@PolyDet("down") char @PolyDet[] a, @PolyDet("use") char val) {
+    public static void fill(@PolyDet("noOrderNonDet") char @PolyDet("noOrderNonDet")[] a, @PolyDet("useNoOrderNonDet") char val) {
         for (int i = 0, len = a.length; i < len; i++)
             a[i] = val;
     }
@@ -2974,7 +2974,7 @@ public class Arrays {
      * @throws ArrayIndexOutOfBoundsException if <tt>fromIndex &lt; 0</tt> or
      *         <tt>toIndex &gt; a.length</tt>
      */
-    public static void fill(@PolyDet("down") char @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex, @PolyDet("use") char val) {
+    public static void fill(@PolyDet("noOrderNonDet") char @PolyDet("noOrderNonDet")[] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex, @PolyDet("useNoOrderNonDet") char val) {
         rangeCheck(a.length, fromIndex, toIndex);
         for (int i = fromIndex; i < toIndex; i++)
             a[i] = val;
@@ -2987,7 +2987,7 @@ public class Arrays {
      * @param a the array to be filled
      * @param val the value to be stored in all elements of the array
      */
-    public static void fill(@PolyDet("down") byte @PolyDet[] a, @PolyDet("use") byte val) {
+    public static void fill(@PolyDet("noOrderNonDet") byte @PolyDet("noOrderNonDet")[] a, @PolyDet("useNoOrderNonDet") byte val) {
         for (int i = 0, len = a.length; i < len; i++)
             a[i] = val;
     }
@@ -3009,7 +3009,7 @@ public class Arrays {
      * @throws ArrayIndexOutOfBoundsException if <tt>fromIndex &lt; 0</tt> or
      *         <tt>toIndex &gt; a.length</tt>
      */
-    public static void fill(@PolyDet("down") byte @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex, @PolyDet("use") byte val) {
+    public static void fill(@PolyDet("noOrderNonDet") byte @PolyDet("noOrderNonDet")[] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex, @PolyDet("useNoOrderNonDet") byte val) {
         rangeCheck(a.length, fromIndex, toIndex);
         for (int i = fromIndex; i < toIndex; i++)
             a[i] = val;
@@ -3022,7 +3022,7 @@ public class Arrays {
      * @param a the array to be filled
      * @param val the value to be stored in all elements of the array
      */
-    public static void fill(@PolyDet("down") boolean @PolyDet[] a, @PolyDet("use") boolean val) {
+    public static void fill(@PolyDet("noOrderNonDet") boolean @PolyDet("noOrderNonDet")[] a, @PolyDet("useNoOrderNonDet") boolean val) {
         for (int i = 0, len = a.length; i < len; i++)
             a[i] = val;
     }
@@ -3044,8 +3044,8 @@ public class Arrays {
      * @throws ArrayIndexOutOfBoundsException if <tt>fromIndex &lt; 0</tt> or
      *         <tt>toIndex &gt; a.length</tt>
      */
-    public static void fill(@PolyDet("down") boolean @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex,
-                            @PolyDet("use") boolean val) {
+    public static void fill(@PolyDet("noOrderNonDet") boolean @PolyDet("noOrderNonDet")[] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex,
+                            @PolyDet("useNoOrderNonDet") boolean val) {
         rangeCheck(a.length, fromIndex, toIndex);
         for (int i = fromIndex; i < toIndex; i++)
             a[i] = val;
@@ -3058,7 +3058,7 @@ public class Arrays {
      * @param a the array to be filled
      * @param val the value to be stored in all elements of the array
      */
-    public static void fill(@PolyDet("down") double @PolyDet[] a, @PolyDet("use") double val) {
+    public static void fill(@PolyDet("noOrderNonDet") double @PolyDet("noOrderNonDet")[] a, @PolyDet("useNoOrderNonDet") double val) {
         for (int i = 0, len = a.length; i < len; i++)
             a[i] = val;
     }
@@ -3080,7 +3080,7 @@ public class Arrays {
      * @throws ArrayIndexOutOfBoundsException if <tt>fromIndex &lt; 0</tt> or
      *         <tt>toIndex &gt; a.length</tt>
      */
-    public static void fill(@PolyDet("down") double @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex, @PolyDet("use") double val){
+    public static void fill(@PolyDet("noOrderNonDet") double @PolyDet("noOrderNonDet")[] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex, @PolyDet("useNoOrderNonDet") double val){
         rangeCheck(a.length, fromIndex, toIndex);
         for (int i = fromIndex; i < toIndex; i++)
             a[i] = val;
@@ -3093,7 +3093,7 @@ public class Arrays {
      * @param a the array to be filled
      * @param val the value to be stored in all elements of the array
      */
-    public static void fill(@PolyDet("down") float @PolyDet[] a, @PolyDet("use") float val) {
+    public static void fill(@PolyDet("noOrderNonDet") float @PolyDet("noOrderNonDet")[] a, @PolyDet("useNoOrderNonDet") float val) {
         for (int i = 0, len = a.length; i < len; i++)
             a[i] = val;
     }
@@ -3115,7 +3115,7 @@ public class Arrays {
      * @throws ArrayIndexOutOfBoundsException if <tt>fromIndex &lt; 0</tt> or
      *         <tt>toIndex &gt; a.length</tt>
      */
-    public static void fill(@PolyDet("down") float @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex, @PolyDet("use") float val) {
+    public static void fill(@PolyDet("noOrderNonDet") float @PolyDet("noOrderNonDet")[] a, @PolyDet("noOrderNonDet") int fromIndex, @PolyDet("noOrderNonDet") int toIndex, @PolyDet("noOrderNonDet") float val) {
         rangeCheck(a.length, fromIndex, toIndex);
         for (int i = fromIndex; i < toIndex; i++)
             a[i] = val;
@@ -3130,7 +3130,7 @@ public class Arrays {
      * @throws ArrayStoreException if the specified value is not of a
      *         runtime type that can be stored in the specified array
      */
-    public static void fill(@PolyDet("down") Object @PolyDet[] a, @PolyDet("use") Object val) {
+    public static void fill(@PolyDet("noOrderNonDet") Object @PolyDet("noOrderNonDet")[] a, @PolyDet("useNoOrderNonDet") Object val) {
         for (int i = 0, len = a.length; i < len; i++)
             a[i] = val;
     }
@@ -3154,7 +3154,7 @@ public class Arrays {
      * @throws ArrayStoreException if the specified value is not of a
      *         runtime type that can be stored in the specified array
      */
-    public static void fill(@PolyDet("down") Object @PolyDet[] a, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex, @PolyDet("use") Object val) {
+    public static void fill(@PolyDet("noOrderNonDet") Object @PolyDet("noOrderNonDet")[] a, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex, @PolyDet("useNoOrderNonDet") Object val) {
         rangeCheck(a.length, fromIndex, toIndex);
         for (int i = fromIndex; i < toIndex; i++)
             a[i] = val;
@@ -4796,7 +4796,7 @@ public class Arrays {
      * @throws NullPointerException if the generator is null
      * @since 1.8
      */
-    public static void parallelSetAll(@PolyDet("down") long @PolyDet [] array, @PolyDet("use") IntToLongFunction generator) {
+    public static void parallelSetAll(@PolyDet("down") long @PolyDet [] array, @PolyDet("down") IntToLongFunction generator) {
         Objects.requireNonNull(generator);
         IntStream.range(0, array.length).parallel().forEach(i -> { array[i] = generator.applyAsLong(i); });
     }
