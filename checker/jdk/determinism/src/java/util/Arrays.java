@@ -1433,7 +1433,7 @@ public class Arrays {
      * @throws IllegalArgumentException (optional) if the comparator is
      *         found to violate the {@link Comparator} contract
      */
-    public static <@PolyDet("down") T extends @PolyDet("use") Object> void sort(T @PolyDet[] a, @PolyDet("use") Comparator<? super T> c) {
+    public static <@PolyDet("down") T extends @PolyDet("down") Object> void sort(T @PolyDet[] a, @PolyDet("use") Comparator<? super T> c) {
         if (c == null) {
             sort(a);
         } else {
@@ -1445,7 +1445,7 @@ public class Arrays {
     }
 
     /** To be removed in a future release. */
-    private static <@PolyDet("down") T extends @PolyDet("use") Object> void legacyMergeSort(T @PolyDet[] a, @PolyDet("use") Comparator<? super T> c) {
+    private static <@PolyDet("down") T extends @PolyDet("down") Object> void legacyMergeSort(T @PolyDet[] a, @PolyDet("use") Comparator<? super T> c) {
         T[] aux = a.clone();
         if (c==null)
             mergeSort(aux, a, 0, a.length, 0);
@@ -1505,7 +1505,7 @@ public class Arrays {
      * @throws ArrayIndexOutOfBoundsException if {@code fromIndex < 0} or
      *         {@code toIndex > a.length}
      */
-    public static <@PolyDet("down") T extends @PolyDet("use") Object> void sort(T @PolyDet[] a, @PolyDet("down") int fromIndex, @PolyDet("down") int toIndex,
+    public static <@PolyDet("down") T extends @PolyDet("down") Object> void sort(T @PolyDet[] a, @PolyDet("down") int fromIndex, @PolyDet("down") int toIndex,
                                                                @PolyDet("use") Comparator<? super T> c) {
         if (c == null) {
             sort(a, fromIndex, toIndex);
@@ -1519,7 +1519,7 @@ public class Arrays {
     }
 
     /** To be removed in a future release. */
-    private static <@PolyDet("down") T extends @PolyDet("use") Object> void legacyMergeSort(T @PolyDet [] a, @PolyDet("down") int fromIndex, @PolyDet("down") int toIndex,
+    private static <@PolyDet("down") T extends @PolyDet("down") Object> void legacyMergeSort(T @PolyDet [] a, @PolyDet("down") int fromIndex, @PolyDet("down") int toIndex,
                                                                            @PolyDet("use") Comparator<? super T> c) {
         @PolyDet("down") T @PolyDet("up") [] aux = copyOfRange(a, fromIndex, toIndex);
         if (c==null)
@@ -3808,12 +3808,13 @@ public class Arrays {
     /**
      * @serial include
      */
+    @SuppressWarnings({"invalid.upper.bound.on.type.argument", "declaration.inconsistent.with.extends.clause", "type.argument.type.incompatible"})
     @HasQualifierParameter(NonDet.class)
-    private static @PolyDet class ArrayList<E extends @PolyDet("use") Object> extends @PolyDet AbstractList<E>
+    private static class ArrayList<E> extends @PolyDet AbstractList<E>
             implements RandomAccess, java.io.Serializable
     {
         private static final long serialVersionUID = -2764017481108945198L;
-        private final E[] a;
+        private final @PolyDet("use") E @PolyDet[] a;
 
         ArrayList(E @PolyDet [] array) {
             a = Objects.requireNonNull(array);
@@ -3856,7 +3857,7 @@ public class Arrays {
 
         @Override
         public @PolyDet("down") int indexOf(@PolyDet ArrayList<E> this, @PolyDet Object o) {
-            E[] a = this.a;
+            @PolyDet("use") E @PolyDet[] a = this.a;
             if (o == null) {
                 for (int i = 0; i < a.length; i++)
                     if (a[i] == null)
@@ -3890,7 +3891,7 @@ public class Arrays {
         @Override
         public void replaceAll(UnaryOperator<E> operator) {
             Objects.requireNonNull(operator);
-            E[] a = this.a;
+            @PolyDet("use") E @PolyDet[] a = this.a;
             for (int i = 0; i < a.length; i++) {
                 a[i] = operator.apply(a[i]);
             }

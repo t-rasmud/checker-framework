@@ -83,6 +83,9 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                     qualHierarchy.leastUpperBounds(replacementsPolyDet, replacementsPolyDetNoOND);
             replacements = new AnnotationMirrorSet(lub);
         }
+        if (replacements == null) {
+            return;
+        }
 
         switch (value) {
             case "":
