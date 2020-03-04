@@ -420,7 +420,7 @@ public class Collections {
      * @throws UnsupportedOperationException if the specified list or
      *         its list-iterator does not support the <tt>set</tt> operation.
      */
-    public static void shuffle(@PolyDet List<? super @PolyDet("down") Object> list) {
+    public static void shuffle(@PolyDet List<@PolyDet("use") ? super @PolyDet("down") Object> list) {
         Random rnd = r;
         if (rnd == null)
             r = rnd = new Random(); // harmless race.
