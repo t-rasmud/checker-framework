@@ -607,7 +607,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         AnnotatedWildcardType classWildcardArg = (AnnotatedWildcardType) typeArgs.get(0);
         if (classWildcardArg.getExtendsBoundField().getKind() == TypeKind.ARRAY) {
             AnnotatedTypeMirror extendsBoundArray = classWildcardArg.getExtendsBoundField();
-            new AnnotationReplacer().visit(extendsBoundArray, NONDET);
+            new AnnotationReplacer()
+                    .visit(extendsBoundArray, receiverType.getAnnotationInHierarchy(NONDET));
         }
     }
 

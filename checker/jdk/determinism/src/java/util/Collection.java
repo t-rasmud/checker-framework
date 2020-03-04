@@ -209,7 +209,7 @@ public interface Collection<E> extends Iterable<E> {
      *
      * @return an array containing all of the elements in this collection
      */
-    @PolyDet("down") Object @PolyDet[] toArray(@PolyDet Collection<E> this);
+    @PolyDet("down") Object @PolyDet[] toArray(@PolyDet Collection<@PolyDet("down") E> this);
 
     /**
      * Returns an array containing all of the elements in this collection;
@@ -254,7 +254,7 @@ public interface Collection<E> extends Iterable<E> {
      *         this collection
      * @throws NullPointerException if the specified array is null
      */
-    <T> @PolyDet T @PolyDet[] toArray(@PolyDet Collection<E> this, T[] a);
+    <T extends @PolyDet("down") Object> T @PolyDet[] toArray(@PolyDet Collection<@PolyDet("down") E> this, T @PolyDet("use") [] a);
 
     // Modification Operations
 
@@ -291,7 +291,7 @@ public interface Collection<E> extends Iterable<E> {
      * @throws IllegalStateException if the element cannot be added at this
      *         time due to insertion restrictions
      */
-    @PolyDet("down") boolean add(@PolyDet Collection<E> this, E e);
+    @PolyDet("down") boolean add(@PolyDet Collection<@PolyDet("down") E> this, @PolyDet("use") E e);
 
     /**
      * Removes a single instance of the specified element from this
@@ -313,7 +313,7 @@ public interface Collection<E> extends Iterable<E> {
      * @throws UnsupportedOperationException if the <tt>remove</tt> operation
      *         is not supported by this collection
      */
-    @PolyDet("down") boolean remove(@PolyDet Collection<E> this, @PolyDet("use") Object o);
+    @PolyDet("down") boolean remove(@PolyDet Collection<@PolyDet("down") E> this, @PolyDet("use") Object o);
 
 
     // Bulk Operations
@@ -362,7 +362,7 @@ public interface Collection<E> extends Iterable<E> {
      *         this time due to insertion restrictions
      * @see #add(Object)
      */
-    @PolyDet("down") boolean addAll(@PolyDet Collection<E> this, @PolyDet("use") Collection<? extends E> c);
+    @PolyDet("down") boolean addAll(@PolyDet Collection<@PolyDet("down") E> this, @PolyDet("use") Collection<? extends E> c);
 
     /**
      * Removes all of this collection's elements that are also contained in the
@@ -387,7 +387,7 @@ public interface Collection<E> extends Iterable<E> {
      * @see #remove(Object)
      * @see #contains(Object)
      */
-    @PolyDet("down") boolean removeAll(@PolyDet Collection<E> this, @PolyDet("use") Collection<?> c);
+    @PolyDet("down") boolean removeAll(@PolyDet Collection<@PolyDet("down") E> this, @PolyDet("use") Collection<?> c);
 
     /**
      * Removes all of the elements of this collection that satisfy the given
@@ -411,7 +411,7 @@ public interface Collection<E> extends Iterable<E> {
      *         supported.
      * @since 1.8
      */
-    default @PolyDet("down") boolean removeIf(@PolyDet Collection<E> this, @PolyDet("use") Predicate<? super E> filter) {
+    default @PolyDet("down") boolean removeIf(@PolyDet Collection<@PolyDet("down") E> this, @PolyDet("use") Predicate<? super E> filter) {
         Objects.requireNonNull(filter);
         boolean removed = false;
         final Iterator<E> each = iterator();
@@ -446,7 +446,7 @@ public interface Collection<E> extends Iterable<E> {
      * @see #remove(Object)
      * @see #contains(Object)
      */
-    @PolyDet("down") boolean retainAll(@PolyDet Collection<E> this, @PolyDet("use") Collection<?> c);
+    @PolyDet("down") boolean retainAll(@PolyDet Collection<@PolyDet("down") E> this, @PolyDet("use") Collection<?> c);
 
     /**
      * Removes all of the elements from this collection (optional operation).
@@ -455,7 +455,7 @@ public interface Collection<E> extends Iterable<E> {
      * @throws UnsupportedOperationException if the <tt>clear</tt> operation
      *         is not supported by this collection
      */
-    void clear(@PolyDet Collection<E> this);
+    void clear(@PolyDet Collection<@PolyDet("down") E> this);
 
 
     // Comparison and hashing

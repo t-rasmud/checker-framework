@@ -108,7 +108,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws IllegalArgumentException if some property of this element
      *         prevents it from being added to this list
      */
-    @PolyDet("down") public boolean add(@PolyDet AbstractList<E>this, E e) {
+    @PolyDet("down") public boolean add(@PolyDet AbstractList<@PolyDet("down") E>this, @PolyDet("use") E e) {
         add(size(), e);
         return true;
     }
@@ -132,7 +132,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws IllegalArgumentException      {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public @PolyDet("up") E set(@PolyDet("noOrderNonDet") AbstractList<E> this, @PolyDet("use") int index, E element) {
+    public @PolyDet("useNoOrderNonDet") E set(@PolyDet("noOrderNonDet") AbstractList<@PolyDet("noOrderNonDet") E> this, @PolyDet("useNoOrderNonDet") int index, @PolyDet("useNoOrderNonDet") E element) {
         throw new UnsupportedOperationException();
     }
 
@@ -148,7 +148,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws IllegalArgumentException      {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public void add(@PolyDet AbstractList<E> this, @PolyDet("use") int index, E element) {
+    public void add(@PolyDet AbstractList<@PolyDet("down") E> this, @PolyDet("use") int index, @PolyDet("use") E element) {
         throw new UnsupportedOperationException();
     }
 
@@ -161,7 +161,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws UnsupportedOperationException {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public @PolyDet("up") E remove(@PolyDet("noOrderNonDet") AbstractList<E> this, @PolyDet("use") int index) {
+    public @PolyDet("useNoOrderNonDet") E remove(@PolyDet("noOrderNonDet") AbstractList<@PolyDet("noOrderNonDet") E> this, @PolyDet("useNoOrderNonDet") int index) {
         throw new UnsupportedOperationException();
     }
 
@@ -234,7 +234,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws UnsupportedOperationException if the {@code clear} operation
      *         is not supported by this list
      */
-    public void clear(@PolyDet AbstractList<E> this) {
+    public void clear(@PolyDet AbstractList<@PolyDet("down") E> this) {
         removeRange(0, size());
     }
 
@@ -257,7 +257,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws IllegalArgumentException      {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public @PolyDet("down") boolean addAll(@PolyDet AbstractList<E> this, @PolyDet("use") int index, @PolyDet("use") Collection<? extends E> c) {
+    public @PolyDet("down") boolean addAll(@PolyDet AbstractList<@PolyDet("down") E> this, @PolyDet("use") int index, @PolyDet("use") Collection<? extends E> c) {
         rangeCheckForAdd(index);
         boolean modified = false;
         for (E e : c) {
@@ -484,7 +484,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws IllegalArgumentException if the endpoint indices are out of order
      *         {@code (fromIndex > toIndex)}
      */
-    public @PolyDet("up") List<E> subList(@PolyDet AbstractList<E> this, @PolyDet int fromIndex, @PolyDet int toIndex) {
+    public @PolyDet("up") List<E> subList(@PolyDet AbstractList<E> this, @PolyDet("down") int fromIndex, @PolyDet("down") int toIndex) {
         return (this instanceof RandomAccess ?
                 new RandomAccessSubList<>(this, fromIndex, toIndex) :
                 new SubList<>(this, fromIndex, toIndex));
@@ -568,7 +568,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @param fromIndex index of first element to be removed
      * @param toIndex index after last element to be removed
      */
-    protected void removeRange(@PolyDet AbstractList<E> this, @PolyDet("use") int fromIndex, @PolyDet("use") int toIndex) {
+    protected void removeRange(@PolyDet("noOrderNonDet") AbstractList<@PolyDet("noOrderNonDet") E> this, @PolyDet("useNoOrderNonDet") int fromIndex, @PolyDet("useNoOrderNonDet") int toIndex) {
         ListIterator<E> it = listIterator(fromIndex);
         for (int i=0, n=toIndex-fromIndex; i<n; i++) {
             it.next();

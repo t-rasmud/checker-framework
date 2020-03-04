@@ -45,6 +45,7 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
         this.factory = factory;
         this.polyQuals.put(factory.POLYDET_NOORDERNONDET, factory.NONDET);
         this.polyQuals.put(factory.POLYDET_USE, factory.NONDET);
+        this.polyQuals.put(factory.POLYDET_USENOORDERNONDET, factory.NONDET);
     }
 
     /**
@@ -82,6 +83,9 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                     qualHierarchy.leastUpperBounds(replacementsPolyDet, replacementsPolyDetNoOND);
             replacements = new AnnotationMirrorSet(lub);
         }
+        if (replacements == null) {
+            return;
+        }
 
         switch (value) {
             case "":
@@ -98,14 +102,18 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                         && !replacementsPolyDet.contains(factory.POLYDET_USENOORDERNONDET)) {
                     AnnotationMirrorSet replacementsPolyDetUse =
                             replacementsMapping.get(factory.POLYDET_USE);
-                    if ((AnnotationUtils.containsSame(replacementsPolyDet, factory.ORDERNONDET)
-                                    && AnnotationUtils.containsSame(
-                                            replacementsPolyDetUse, factory.NONDET))
-                            || (AnnotationUtils.containsSame(replacementsPolyDet, factory.DET)
-                                            && (AnnotationUtils.containsSame(
+                    if (replacementsPolyDetUse == null
+                            || ((AnnotationUtils.containsSame(
+                                                    replacementsPolyDet, factory.ORDERNONDET)
+                                            && AnnotationUtils.containsSame(
                                                     replacementsPolyDetUse, factory.NONDET))
-                                    || AnnotationUtils.containsSame(
-                                            replacementsPolyDetUse, factory.ORDERNONDET))) {
+                                    || (AnnotationUtils.containsSame(
+                                                            replacementsPolyDet, factory.DET)
+                                                    && (AnnotationUtils.containsSame(
+                                                            replacementsPolyDetUse, factory.NONDET))
+                                            || AnnotationUtils.containsSame(
+                                                    replacementsPolyDetUse,
+                                                    factory.ORDERNONDET)))) {
                         type.replaceAnnotations(replacementsPolyDet);
                     } else {
                         type.replaceAnnotations(replacementsPolyDetUse);
@@ -150,8 +158,20 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                         && !replacementsPolyDetNoOND.contains(factory.POLYDET_NOORDERNONDET)
                         && !replacementsPolyDetNoOND.contains(factory.POLYDET_UP)
                         && !replacementsPolyDetNoOND.contains(factory.POLYDET_DOWN)
-                        && !replacementsPolyDetNoOND.contains(factory.POLYDET_UPDET)) {
-                    type.replaceAnnotations(replacementsPolyDetNoOND);
+                        && !replacementsPolyDetNoOND.contains(factory.POLYDET_UPDET)
+                        && !replacementsPolyDetNoOND.contains(factory.POLYDET_USE)
+                        && !replacementsPolyDetNoOND.contains(factory.POLYDET_USENOORDERNONDET)) {
+                    AnnotationMirrorSet replacementsPolyDetUseNoOrderNonDet =
+                            replacementsMapping.get(factory.POLYDET_USENOORDERNONDET);
+                    if (replacementsPolyDetUseNoOrderNonDet != null
+                            && (AnnotationUtils.containsSame(
+                                            replacementsPolyDetNoOND, factory.NONDET)
+                                    && AnnotationUtils.containsSame(
+                                            replacementsPolyDetUseNoOrderNonDet, factory.DET))) {
+                        type.replaceAnnotations(replacementsPolyDetUseNoOrderNonDet);
+                    } else {
+                        type.replaceAnnotations(replacementsPolyDetNoOND);
+                    }
                 }
                 return;
             default:
