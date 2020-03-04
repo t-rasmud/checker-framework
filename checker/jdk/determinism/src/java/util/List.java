@@ -170,7 +170,7 @@ public interface List<E> extends Collection<E> {
      *         sequence
      * @see Arrays#asList(Object[])
      */
-    @PolyDet("down") Object @PolyDet[] toArray(@PolyDet List<@PolyDet("use") E> this);
+    @PolyDet("down") Object @PolyDet[] toArray(@PolyDet List<@PolyDet("down") E> this);
 
     /**
      * Returns an array containing all of the elements in this list in
@@ -211,7 +211,7 @@ public interface List<E> extends Collection<E> {
      *         this list
      * @throws NullPointerException if the specified array is null
      */
-    <T extends @PolyDet("use") Object> T @PolyDet[] toArray(@PolyDet List<E> this, T @PolyDet("use") [] a);
+    <T extends @PolyDet("down") Object> T @PolyDet[] toArray(@PolyDet List<@PolyDet("down") E> this, T @PolyDet("use") [] a);
 
 
     // Modification Operations

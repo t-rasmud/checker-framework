@@ -209,7 +209,7 @@ public interface Collection<E> extends Iterable<E> {
      *
      * @return an array containing all of the elements in this collection
      */
-    @PolyDet("down") Object @PolyDet[] toArray(@PolyDet Collection<E> this);
+    @PolyDet("down") Object @PolyDet[] toArray(@PolyDet Collection<@PolyDet("down") E> this);
 
     /**
      * Returns an array containing all of the elements in this collection;
@@ -254,7 +254,7 @@ public interface Collection<E> extends Iterable<E> {
      *         this collection
      * @throws NullPointerException if the specified array is null
      */
-    <T extends @PolyDet("use") Object> T @PolyDet[] toArray(@PolyDet Collection<E> this, T @PolyDet("use") [] a);
+    <T extends @PolyDet("down") Object> T @PolyDet[] toArray(@PolyDet Collection<@PolyDet("down") E> this, T @PolyDet("use") [] a);
 
     // Modification Operations
 

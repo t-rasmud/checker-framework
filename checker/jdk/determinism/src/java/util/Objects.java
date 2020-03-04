@@ -200,7 +200,7 @@ public final class Objects {
      * @return {@code obj} if not {@code null}
      * @throws NullPointerException if {@code obj} is {@code null}
      */
-    public static <T> T requireNonNull(T obj) {
+    public static <T> @PolyDet T requireNonNull(@PolyDet T obj) {
         if (obj == null)
             throw new NullPointerException();
         return obj;

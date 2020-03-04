@@ -135,7 +135,7 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      * return list.toArray();
      * }</pre>
      */
-    public @PolyDet("down") Object @PolyDet[] toArray(@PolyDet AbstractCollection<E> this) {
+    public @PolyDet("down") Object @PolyDet[] toArray(@PolyDet AbstractCollection<@PolyDet("down") E> this) {
         // Estimate size of array; be prepared to see more or fewer elements
         Object[] r = new Object[size()];
         Iterator<E> it = iterator();
@@ -175,7 +175,7 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      * @throws NullPointerException {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public <T extends @PolyDet("use") Object> T @PolyDet[] toArray(@PolyDet AbstractCollection<E> this, T @PolyDet("use") [] a) {
+    public <T extends @PolyDet("down") Object> T @PolyDet[] toArray(@PolyDet AbstractCollection<@PolyDet("down") E> this, T @PolyDet("use") [] a) {
         // Estimate size of array; be prepared to see more or fewer elements
         int size = size();
         T[] r = a.length >= size ? a :

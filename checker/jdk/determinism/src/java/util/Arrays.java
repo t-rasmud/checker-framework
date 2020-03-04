@@ -3810,13 +3810,13 @@ public class Arrays {
      */
     @SuppressWarnings({"invalid.upper.bound.on.type.argument", "declaration.inconsistent.with.extends.clause", "type.argument.type.incompatible"})
     @HasQualifierParameter(NonDet.class)
-    private static class ArrayList<E> extends @PolyDet AbstractList<E>
+    private static class ArrayList<E> extends AbstractList<E>
             implements RandomAccess, java.io.Serializable
     {
         private static final long serialVersionUID = -2764017481108945198L;
         private final @PolyDet("use") E @PolyDet[] a;
 
-        ArrayList(E @PolyDet [] array) {
+        ArrayList(@PolyDet("use") E @PolyDet [] array) {
             a = Objects.requireNonNull(array);
         }
 
@@ -3826,13 +3826,13 @@ public class Arrays {
         }
 
         @Override
-        public @PolyDet("down") Object @PolyDet [] toArray(@PolyDet ArrayList<E> this) {
+        public @PolyDet("down") Object @PolyDet [] toArray(@PolyDet ArrayList<@PolyDet("down") E> this) {
             return a.clone();
         }
 
         @Override
         @SuppressWarnings("unchecked")
-        public <T extends @PolyDet("use") Object> T @PolyDet [] toArray(@PolyDet ArrayList<E> this, T @PolyDet [] a) {
+        public <T extends @PolyDet("down") Object> T @PolyDet [] toArray(@PolyDet ArrayList<@PolyDet("down") E> this, T @PolyDet [] a) {
             int size = size();
             if (a.length < size)
                 return Arrays.copyOf(this.a, size,
@@ -3849,7 +3849,7 @@ public class Arrays {
         }
 
         @Override
-        public E set(@PolyDet("noOrderNonDet") ArrayList<E> this, @PolyDet("useNoOrderNonDet") int index, @PolyDet("useNoOrderNonDet") E element) {
+        public @PolyDet("noOrderNonDet") E set(@PolyDet("noOrderNonDet") ArrayList<E> this, @PolyDet("useNoOrderNonDet") int index, @PolyDet("useNoOrderNonDet") E element) {
             E oldValue = a[index];
             a[index] = element;
             return oldValue;
@@ -4700,7 +4700,7 @@ public class Arrays {
      * @throws NullPointerException if the generator is null
      * @since 1.8
      */
-    public static <@PolyDet("down") T extends @PolyDet("use") Object> void setAll(T @PolyDet [] array, @PolyDet("use") IntFunction<? extends T> generator) {
+    public static <@PolyDet("down") T extends @PolyDet("down") Object> void setAll(T @PolyDet [] array, @PolyDet("use") IntFunction<? extends T> generator) {
         Objects.requireNonNull(generator);
         for (int i = 0; i < array.length; i++)
             array[i] = generator.apply(i);
@@ -4721,7 +4721,7 @@ public class Arrays {
      * @throws NullPointerException if the generator is null
      * @since 1.8
      */
-    public static <@PolyDet("down") T extends @PolyDet("use") Object> void parallelSetAll(T @PolyDet [] array, @PolyDet("use") IntFunction<? extends T> generator) {
+    public static <@PolyDet("down") T extends @PolyDet("down") Object> void parallelSetAll(T @PolyDet [] array, @PolyDet("use") IntFunction<? extends T> generator) {
         Objects.requireNonNull(generator);
         IntStream.range(0, array.length).parallel().forEach(i -> { array[i] = generator.apply(i); });
     }
