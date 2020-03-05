@@ -211,7 +211,7 @@ public interface List<E> extends Collection<E> {
      *         this list
      * @throws NullPointerException if the specified array is null
      */
-    <T extends @PolyDet("down") Object> T @PolyDet[] toArray(@PolyDet List<@PolyDet("down") E> this, T @PolyDet("use") [] a);
+    <T extends @PolyDet("down") Object> @PolyDet("down") T @PolyDet[] toArray(@PolyDet List<@PolyDet("down") E> this, T @PolyDet("use") [] a);
 
 
     // Modification Operations
