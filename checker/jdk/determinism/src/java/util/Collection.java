@@ -254,7 +254,7 @@ public interface Collection<E> extends Iterable<E> {
      *         this collection
      * @throws NullPointerException if the specified array is null
      */
-    <T extends @PolyDet("down") Object> T @PolyDet[] toArray(@PolyDet Collection<@PolyDet("down") E> this, T @PolyDet("use") [] a);
+    <T extends @PolyDet("down") Object> @PolyDet("down") T @PolyDet[] toArray(@PolyDet Collection<@PolyDet("down") E> this, T @PolyDet("use") [] a);
 
     // Modification Operations
 

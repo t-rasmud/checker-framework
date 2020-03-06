@@ -175,7 +175,7 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      * @throws NullPointerException {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public <T extends @PolyDet("down") Object> T @PolyDet[] toArray(@PolyDet AbstractCollection<@PolyDet("down") E> this, T @PolyDet("use") [] a) {
+    public <T extends @PolyDet("down") Object> @PolyDet("down") T @PolyDet[] toArray(@PolyDet AbstractCollection<@PolyDet("down") E> this, T @PolyDet("use") [] a) {
         // Estimate size of array; be prepared to see more or fewer elements
         int size = size();
         T[] r = a.length >= size ? a :

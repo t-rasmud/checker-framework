@@ -209,7 +209,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * @throws NullPointerException          {@inheritDoc}
      * @throws IllegalArgumentException      {@inheritDoc}
      */
-    public @PolyDet("down") V put(@PolyDet AbstractMap<@PolyDet("down") K,@PolyDet("down") V> this, K key, V value) {
+    public @PolyDet("down") V put(@PolyDet AbstractMap<@PolyDet("down") K,@PolyDet("down") V> this, @PolyDet("use") K key, @PolyDet("use") V value) {
         throw new UnsupportedOperationException();
     }
 

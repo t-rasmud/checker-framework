@@ -242,7 +242,7 @@ public interface Map<K,V> {
      * @throws IllegalArgumentException if some property of the specified key
      *         or value prevents it from being stored in this map
      */
-    V put(@PolyDet Map<@PolyDet("down") K,@PolyDet("down") V> this, K key, V value);
+    V put(@PolyDet Map<@PolyDet("down") K,@PolyDet("down") V> this, @PolyDet("use") K key, @PolyDet("use") V value);
 
     /**
      * Removes the mapping for a key from this map if it is present

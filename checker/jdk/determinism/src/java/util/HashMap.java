@@ -611,7 +611,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      *         (A <tt>null</tt> return can also indicate that the map
      *         previously associated <tt>null</tt> with <tt>key</tt>.)
      */
-    public V put(@PolyDet HashMap<@PolyDet("down") K, @PolyDet("down") V> this, K key, V value) {
+    public V put(@PolyDet HashMap<@PolyDet("down") K, @PolyDet("down") V> this, @PolyDet("use") K key, @PolyDet("use") V value) {
         return putVal(hash(key), key, value, false, true);
     }
 

@@ -93,6 +93,13 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                 return;
             case "use":
                 if (replacementsPolyDet != null
+                        && replacementsPolyDet.contains(factory.POLYDET_NOORDERNONDET)) {
+                    if (AnnotationUtils.containsSame(
+                            replacementsPolyDet, factory.POLYDET_NOORDERNONDET)) {
+                        type.replaceAnnotation(factory.POLYDET_USENOORDERNONDET);
+                    }
+                }
+                if (replacementsPolyDet != null
                         && !replacementsPolyDet.contains(factory.POLYDET)
                         && !replacementsPolyDet.contains(factory.POLYDET_NOORDERNONDET)
                         && !replacementsPolyDet.contains(factory.POLYDET_UP)

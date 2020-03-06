@@ -3182,8 +3182,8 @@ public class Arrays {
      * @since 1.6
      */
     @SuppressWarnings("unchecked")
-    public static <T extends @PolyDet("use") Object> T @PolyDet[] copyOf(T @PolyDet[] original, @PolyDet("use") int newLength) {
-        return (T[]) copyOf(original, newLength, (Class<? extends T[]>) original.getClass());
+    public static <@PolyDet("down") T extends @PolyDet("use") Object> @PolyDet("down") T @PolyDet[] copyOf(T @PolyDet[] original, @PolyDet("use") int newLength) {
+        return (@PolyDet("down") T @PolyDet[]) copyOf(original, newLength, (Class<? extends T[]>) original.getClass());
     }
 
     /**
@@ -3210,11 +3210,11 @@ public class Arrays {
      *     an array of class <tt>newType</tt>
      * @since 1.6
      */
-    public static <T extends @PolyDet("use") Object, U extends @PolyDet("use") Object> T @PolyDet[] copyOf(U @PolyDet[] original, @PolyDet("use") int newLength, @PolyDet("use") Class<? extends @PolyDet("use") T @PolyDet("use") []> newType) {
+    public static <@PolyDet("down") T extends @PolyDet("use") Object, U extends @PolyDet("use") Object> @PolyDet("down") T @PolyDet[] copyOf(U @PolyDet[] original, @PolyDet("use") int newLength, @PolyDet("use") Class<? extends @PolyDet("use") T @PolyDet("use") []> newType) {
         @SuppressWarnings("unchecked")
-        T[] copy = ((Object)newType == (Object)Object[].class)
-                ? (T[]) new Object[newLength]
-                : (T[]) Array.newInstance(newType.getComponentType(), newLength);
+        @PolyDet("down") T @PolyDet[] copy = ((Object)newType == (Object)Object[].class)
+                ? (@PolyDet("down") T @PolyDet[]) new @PolyDet("down") Object @PolyDet("use")[newLength]
+                : (@PolyDet("down") T @PolyDet[]) Array.newInstance(newType.getComponentType(), newLength);
         System.arraycopy(original, 0, copy, 0,
                 Math.min(original.length, newLength));
         return copy;
@@ -3832,7 +3832,7 @@ public class Arrays {
 
         @Override
         @SuppressWarnings("unchecked")
-        public <T extends @PolyDet("down") Object> T @PolyDet [] toArray(@PolyDet ArrayList<@PolyDet("down") E> this, T @PolyDet [] a) {
+        public <T extends @PolyDet("down") Object> @PolyDet("down") T @PolyDet [] toArray(@PolyDet ArrayList<@PolyDet("down") E> this, T @PolyDet [] a) {
             int size = size();
             if (a.length < size)
                 return Arrays.copyOf(this.a, size,

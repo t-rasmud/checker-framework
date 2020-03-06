@@ -95,7 +95,7 @@ public class HashSet<E>
 {
     static final long serialVersionUID = -5024744406713321676L;
 
-    private transient HashMap<E,Object> map;
+    private transient @PolyDet HashMap<E,Object> map;
 
     // Dummy value to associate with an Object in the backing Map
     private static final Object PRESENT = new Object();
@@ -161,7 +161,7 @@ public class HashSet<E>
      *             than zero, or if the load factor is nonpositive
      */
     @PolyDet("upDet") HashSet(@PolyDet int initialCapacity, @PolyDet float loadFactor, @PolyDet boolean dummy) {
-        map = new LinkedHashMap<>(initialCapacity, loadFactor);
+        map = new @PolyDet("upDet") LinkedHashMap<>(initialCapacity, loadFactor);
     }
 
     /**
@@ -218,7 +218,7 @@ public class HashSet<E>
      * @return <tt>true</tt> if this set did not already contain the specified
      * element
      */
-    public @PolyDet("down") boolean add(@PolyDet HashSet<@PolyDet("down") E> this, E e) {
+    public @PolyDet("down") boolean add(@PolyDet HashSet<@PolyDet("down") E> this, @PolyDet("use") E e) {
         return map.put(e, PRESENT)==null;
     }
 
@@ -255,7 +255,7 @@ public class HashSet<E>
     @SuppressWarnings("unchecked")
     public @PolyDet("up") Object clone(@PolyDet HashSet<E> this) {
         try {
-            HashSet<E> newSet = (HashSet<E>) super.clone();
+            @PolyDet("up") HashSet<E> newSet = (HashSet<E>) super.clone();
             newSet.map = (HashMap<E, Object>) map.clone();
             return newSet;
         } catch (CloneNotSupportedException e) {
@@ -294,7 +294,7 @@ public class HashSet<E>
      * Reconstitute the <tt>HashSet</tt> instance from a stream (that is,
      * deserialize it).
      */
-    private void readObject(java.io.ObjectInputStream s)
+    private void readObject(@PolyDet HashSet<E> this, java.io.@PolyDet("use") ObjectInputStream s)
         throws java.io.IOException, ClassNotFoundException {
         // Read in any hidden serialization magic
         s.defaultReadObject();
@@ -327,13 +327,13 @@ public class HashSet<E>
 
         // Create backing HashMap
         map = (((HashSet<?>)this) instanceof LinkedHashSet ?
-               new LinkedHashMap<E,Object>(capacity, loadFactor) :
-               new HashMap<E,Object>(capacity, loadFactor));
+               new @PolyDet("upDet") LinkedHashMap<E,Object>(capacity, loadFactor) :
+               new @PolyDet("upDet") HashMap<E,Object>(capacity, loadFactor));
 
         // Read in all elements in the proper order.
         for (int i=0; i<size; i++) {
             @SuppressWarnings("unchecked")
-                E e = (E) s.readObject();
+                @PolyDet("use") E e = (@PolyDet("use") E) s.readObject();
             map.put(e, PRESENT);
         }
     }

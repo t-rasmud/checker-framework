@@ -226,7 +226,7 @@ public interface Set<E> extends Collection<E> {
      * @throws IllegalArgumentException if some property of the specified element
      *         prevents it from being added to this set
      */
-    @PolyDet("down") boolean add(@PolyDet Set<@PolyDet("down") E> this, E e);
+    @PolyDet("down") boolean add(@PolyDet Set<@PolyDet("down") E> this, @PolyDet("use") E e);
 
 
     /**
