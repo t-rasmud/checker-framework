@@ -110,6 +110,7 @@ import org.checkerframework.framework.qual.HasQualifierParameter;
  * @see Collection
  * @since 1.2
  */
+@SuppressWarnings("invalid.upper.bound.on.type.argument")
 @HasQualifierParameter(NonDet.class)
 public class TreeMap<K,V>
     extends AbstractMap<K,V>
