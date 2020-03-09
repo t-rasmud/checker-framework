@@ -6,8 +6,7 @@ import org.checkerframework.checker.determinism.qual.OrderNonDet;
 
 public class MapEntrySet {
     void testNDMap(@NonDet Map<@NonDet String, @NonDet String> map) {
-        // :: error: (assignment.type.incompatible)
-        @Det Set<Map.@Det Entry<@NonDet String, @NonDet String>> entries = map.entrySet();
+        @NonDet Set<Map.@NonDet Entry<@NonDet String, @NonDet String>> entries = map.entrySet();
     }
 
     void testONDMap(@OrderNonDet Map<@Det String, @Det String> map) {
