@@ -49,6 +49,7 @@ public class TestListSetEquals {
     }
 
     void testListSetEquals2(@Det List<@Det Integer> aList, @OrderNonDet Set<@Det Integer> set) {
+        // :: error: (method.invocation.invalid)
         @Det boolean ret = aList.equals(set);
     }
 
@@ -126,10 +127,12 @@ public class TestListSetEquals {
     }
 
     void testSetListEqual5(@Det Set<@Det Integer> set, @NonDet List<@NonDet Integer> list) {
+        // :: error: (argument.type.incompatible)
         @Det boolean ret = set.equals(list);
     }
 
     void testSetListEqual6(@OrderNonDet Set<@Det Integer> set, @NonDet List<@NonDet Integer> list) {
+        // :: error: (argument.type.incompatible)
         @Det boolean ret = set.equals(list);
     }
 

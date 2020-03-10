@@ -1,3 +1,4 @@
+// @skip-test Issue#165
 import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.determinism.qual.NonDet;
 
