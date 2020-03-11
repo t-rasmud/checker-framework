@@ -71,7 +71,6 @@ import org.checkerframework.framework.qual.HasQualifierParameter;
  * @author John Rose
  * @since  1.2
  */
-@SuppressWarnings({"determinism:throw.type.invalid"})
 public class Arrays {
 
     /**
@@ -112,6 +111,7 @@ public class Arrays {
      * Checks that {@code fromIndex} and {@code toIndex} are in
      * the range and throws an exception if they aren't.
      */
+    @SuppressWarnings({"determinism:throw.type.invalid"})
     private static void rangeCheck(int arrayLength, int fromIndex, int toIndex) {
         if (fromIndex > toIndex) {
             throw new IllegalArgumentException(
@@ -3479,6 +3479,7 @@ public class Arrays {
      *     an array of class <tt>newType</tt>.
      * @since 1.6
      */
+    @SuppressWarnings({"determinism:throw.type.invalid"})
     public static <T extends @PolyDet("use") Object, U extends @PolyDet("use") Object> T @PolyDet[] copyOfRange(U @PolyDet[] original, @PolyDet int from, @PolyDet int to, @PolyDet("use") Class<? extends @PolyDet("use") T @PolyDet("use") []> newType) {
         int newLength = to - from;
         if (newLength < 0)
@@ -3518,6 +3519,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
+    @SuppressWarnings({"determinism:throw.type.invalid"})
     public static @PolyDet("use") byte @PolyDet[] copyOfRange(@PolyDet("use") byte @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
         int newLength = to - from;
         if (newLength < 0)
@@ -3554,6 +3556,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
+    @SuppressWarnings({"determinism:throw.type.invalid"})
     public static @PolyDet("use") short @PolyDet[] copyOfRange(@PolyDet("use") short @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
         int newLength = to - from;
         if (newLength < 0)
@@ -3590,6 +3593,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
+    @SuppressWarnings({"determinism:throw.type.invalid"})
     public static @PolyDet("use") int @PolyDet[] copyOfRange(@PolyDet("use") int @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
         int newLength = to - from;
         if (newLength < 0)
@@ -3626,6 +3630,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
+    @SuppressWarnings({"determinism:throw.type.invalid"})
     public static @PolyDet("use") long @PolyDet[] copyOfRange(@PolyDet("use") long @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
         int newLength = to - from;
         if (newLength < 0)
@@ -3662,6 +3667,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
+    @SuppressWarnings({"determinism:throw.type.invalid"})
     public static @PolyDet("use") char @PolyDet[] copyOfRange(@PolyDet("use") char @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
         int newLength = to - from;
         if (newLength < 0)
@@ -3698,6 +3704,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
+    @SuppressWarnings({"determinism:throw.type.invalid"})
     public static @PolyDet("use") float @PolyDet[] copyOfRange(@PolyDet("use") float @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
         int newLength = to - from;
         if (newLength < 0)
@@ -3734,6 +3741,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
+    @SuppressWarnings({"determinism:throw.type.invalid"})
     public static @PolyDet("use") double @PolyDet[] copyOfRange(@PolyDet("use") double @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
         int newLength = to - from;
         if (newLength < 0)
@@ -3770,6 +3778,7 @@ public class Arrays {
      * @throws NullPointerException if <tt>original</tt> is null
      * @since 1.6
      */
+    @SuppressWarnings({"determinism:throw.type.invalid"})
     public static @PolyDet("use") boolean @PolyDet[] copyOfRange(@PolyDet("use") boolean @PolyDet[] original, @PolyDet int from, @PolyDet int to) {
         int newLength = to - from;
         if (newLength < 0)
@@ -3826,6 +3835,7 @@ public class Arrays {
         }
 
         @Override
+        @SuppressWarnings("determinism:return.type.incompatible")
         public @PolyDet("down") Object @PolyDet [] toArray(@PolyDet ArrayList<@PolyDet("down") E> this) {
             return a.clone();
         }
@@ -3849,6 +3859,7 @@ public class Arrays {
         }
 
         @Override
+        @SuppressWarnings("determinism:return.type.incompatible")
         public @PolyDet("noOrderNonDet") E set(@PolyDet("noOrderNonDet") ArrayList<E> this, @PolyDet("useNoOrderNonDet") int index, @PolyDet("useNoOrderNonDet") E element) {
             E oldValue = a[index];
             a[index] = element;
@@ -4700,6 +4711,7 @@ public class Arrays {
      * @throws NullPointerException if the generator is null
      * @since 1.8
      */
+    @SuppressWarnings("assignment.type.incompatible")
     public static <@PolyDet("down") T extends @PolyDet("down") Object> void setAll(T @PolyDet [] array, @PolyDet("use") IntFunction<? extends T> generator) {
         Objects.requireNonNull(generator);
         for (int i = 0; i < array.length; i++)
@@ -4721,6 +4733,7 @@ public class Arrays {
      * @throws NullPointerException if the generator is null
      * @since 1.8
      */
+    @SuppressWarnings("determinism:invalid.array.assignment") // Issue#170
     public static <@PolyDet("down") T extends @PolyDet("down") Object> void parallelSetAll(T @PolyDet [] array, @PolyDet("use") IntFunction<? extends T> generator) {
         Objects.requireNonNull(generator);
         IntStream.range(0, array.length).parallel().forEach(i -> { array[i] = generator.apply(i); });
@@ -4739,6 +4752,7 @@ public class Arrays {
      * @throws NullPointerException if the generator is null
      * @since 1.8
      */
+    @SuppressWarnings("assignment.type.incompatible")
     public static void setAll(@PolyDet("down") int @PolyDet [] array, @PolyDet("use") IntUnaryOperator generator) {
         Objects.requireNonNull(generator);
         for (int i = 0; i < array.length; i++)
@@ -4759,6 +4773,7 @@ public class Arrays {
      * @throws NullPointerException if the generator is null
      * @since 1.8
      */
+    @SuppressWarnings("determinism:invalid.array.assignment") // Issue#170
     public static void parallelSetAll(@PolyDet("down") int @PolyDet [] array, @PolyDet("use") IntUnaryOperator generator) {
         Objects.requireNonNull(generator);
         IntStream.range(0, array.length).parallel().forEach(i -> { array[i] = generator.applyAsInt(i); });
@@ -4777,6 +4792,7 @@ public class Arrays {
      * @throws NullPointerException if the generator is null
      * @since 1.8
      */
+    @SuppressWarnings("assignment.type.incompatible")
     public static void setAll(@PolyDet("down") long @PolyDet [] array, @PolyDet("use") IntToLongFunction generator) {
         Objects.requireNonNull(generator);
         for (int i = 0; i < array.length; i++)
@@ -4797,6 +4813,7 @@ public class Arrays {
      * @throws NullPointerException if the generator is null
      * @since 1.8
      */
+    @SuppressWarnings("determinism:invalid.array.assignment") // Issue#170
     public static void parallelSetAll(@PolyDet("down") long @PolyDet [] array, @PolyDet("down") IntToLongFunction generator) {
         Objects.requireNonNull(generator);
         IntStream.range(0, array.length).parallel().forEach(i -> { array[i] = generator.applyAsLong(i); });
@@ -4815,6 +4832,7 @@ public class Arrays {
      * @throws NullPointerException if the generator is null
      * @since 1.8
      */
+    @SuppressWarnings("assignment.type.incompatible")
     public static void setAll(@PolyDet("down") double @PolyDet [] array, @PolyDet("use") IntToDoubleFunction generator) {
         Objects.requireNonNull(generator);
         for (int i = 0; i < array.length; i++)
@@ -4835,6 +4853,7 @@ public class Arrays {
      * @throws NullPointerException if the generator is null
      * @since 1.8
      */
+    @SuppressWarnings("determinism:invalid.array.assignment") // Issue#170
     public static void parallelSetAll(@PolyDet("down") double @PolyDet [] array, @PolyDet("use") IntToDoubleFunction generator) {
         Objects.requireNonNull(generator);
         IntStream.range(0, array.length).parallel().forEach(i -> { array[i] = generator.applyAsDouble(i); });
