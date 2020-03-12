@@ -344,28 +344,19 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         }
     }
 
-    // Hack: Remove this after it's fixed on the master branch.
+    /** Replaces {@code @OrderNonDet} with {@code @NonDet}. */
     @Override
-    public Void visitEnhancedForLoop(EnhancedForLoopTree node, Void p) {
-        AnnotatedTypeMirror var = this.atypeFactory.getAnnotatedTypeLhs(node.getVariable());
-        AnnotatedTypeMirror iterableType = this.atypeFactory.getAnnotatedType(node.getExpression());
-        AnnotatedTypeMirror iteratedType =
-                AnnotatedTypes.getIteratedType(
-                        this.checker.getProcessingEnvironment(), this.atypeFactory, iterableType);
-        boolean valid = this.validateTypeOf(node.getVariable());
+    protected AnnotatedTypeMirror enhancedForLoopIteratedType(AnnotatedTypeMirror iterableType) {
+        AnnotatedTypeMirror iteratedType = super.enhancedForLoopIteratedType(iterableType);
         if (iterableType.hasAnnotation(atypeFactory.ORDERNONDET)
                 || iterableType.hasAnnotation(atypeFactory.NONDET)) {
             iteratedType.replaceAnnotation(atypeFactory.NONDET);
         }
         if (iterableType.hasAnnotation(atypeFactory.POLYDET)) {
-            iteratedType.replaceAnnotation(atypeFactory.POLYDET);
-        }
-        if (valid) {
-            this.commonAssignmentCheck(
-                    var, iteratedType, node.getExpression(), "enhancedfor.type.incompatible");
+            iteratedType.replaceAnnotation(atypeFactory.POLYDET_UP);
         }
 
-        return super.visitEnhancedForLoop(node, p);
+        return iteratedType;
     }
 
     /**
