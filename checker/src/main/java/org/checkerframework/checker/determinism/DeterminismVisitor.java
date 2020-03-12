@@ -344,7 +344,10 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         }
     }
 
-    /** Replaces {@code @OrderNonDet} with {@code @NonDet}. */
+    /**
+     * Replaces {@code @OrderNonDet} with {@code @NonDet} and {@code PolyDet} with
+     * {@code @PolyDet("up")}.
+     */
     @Override
     protected AnnotatedTypeMirror enhancedForLoopIteratedType(AnnotatedTypeMirror iterableType) {
         AnnotatedTypeMirror iteratedType = super.enhancedForLoopIteratedType(iterableType);
