@@ -19,7 +19,6 @@ import org.checkerframework.framework.flow.CFAnalysis;
 import org.checkerframework.framework.flow.CFStore;
 import org.checkerframework.framework.flow.CFTransfer;
 import org.checkerframework.framework.flow.CFValue;
-import org.checkerframework.framework.source.Result;
 import org.checkerframework.framework.type.AnnotatedTypeFactory;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedArrayType;
@@ -729,11 +728,10 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 ExecutableElement method = (ExecutableElement) elt.getEnclosingElement();
                 if (isMainMethod(method)) {
                     if (!type.getAnnotations().isEmpty() && !type.hasAnnotation(DET)) {
-                        checker.report(
-                                Result.failure(
-                                        "invalid.annotation.on.parameter",
-                                        type.getAnnotationInHierarchy(NONDET)),
-                                elt);
+                        checker.reportError(
+                                elt,
+                                "invalid.annotation.on.parameter",
+                                type.getAnnotationInHierarchy(NONDET));
                     }
                     type.addMissingAnnotations(Collections.singleton(DET));
                 } else if (isList(type.getUnderlyingType())

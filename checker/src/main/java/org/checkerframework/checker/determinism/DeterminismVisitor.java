@@ -117,7 +117,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         // Raises an error if a non-collection type is annotated with @OrderNonDet.
         if (useType.hasAnnotation(atypeFactory.ORDERNONDET)
                 && !atypeFactory.isCollectionType(useType)) {
-            checker.report(Result.failure(ORDERNONDET_ON_NONCOLLECTION), tree);
+            checker.reportError(tree, ORDERNONDET_ON_NONCOLLECTION);
             return false;
         }
 
@@ -175,7 +175,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     @Override
     public boolean isValidUse(AnnotatedPrimitiveType type, Tree tree) {
         if (type.hasAnnotation(atypeFactory.ORDERNONDET)) {
-            checker.report(Result.failure(ORDERNONDET_ON_NONCOLLECTION), tree);
+            checker.reportError(tree, ORDERNONDET_ON_NONCOLLECTION);
             return false;
         }
         return true;
@@ -327,17 +327,13 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 if (varTree.getKind() == Kind.ARRAY_ACCESS) {
                     if (AnnotationUtils.areSame(varAnno, atypeFactory.ORDERNONDET)
                             || AnnotationUtils.areSame(varAnno, atypeFactory.POLYDET)) {
-                        checker.report(
-                                Result.failure(INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno),
-                                varTree);
+                        checker.reportError(varTree, INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno);
                     }
                 }
             } else if (varTree.getKind() == Kind.ARRAY_ACCESS) {
-                checker.report(
-                        Result.failure(INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno), varTree);
+                checker.reportError(varTree, INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno);
             } else {
-                checker.report(
-                        Result.failure(INVALID_FIELD_ASSIGNMENT, varAnno, exprAnno), varTree);
+                checker.reportError(varTree, INVALID_FIELD_ASSIGNMENT, varAnno, exprAnno);
             }
         } else {
             super.commonAssignmentCheck(varTree, valueExp, errorKey);
@@ -424,11 +420,10 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         AnnotatedTypeMirror conditionType = atypeFactory.getAnnotatedType(conditionalExpression);
         if (!conditionType.hasAnnotation(atypeFactory.DET)
                 && checker.getLintOption("enableconditionaltypecheck", false)) {
-            checker.report(
-                    Result.failure(
-                            "invalid.type.on.conditional",
-                            conditionType.getAnnotationInHierarchy(atypeFactory.NONDET)),
-                    conditionalExpression);
+            checker.reportError(
+                    conditionalExpression,
+                    "invalid.type.on.conditional",
+                    conditionType.getAnnotationInHierarchy(atypeFactory.NONDET));
         }
     }
 
@@ -514,11 +509,10 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             AnnotationMirror overiddenAnnotation =
                     atypeFactory.getDeclAnnotation(entry.getValue(), RequiresDetToString.class);
             if (overiddenAnnotation == null) {
-                checker.report(
-                        Result.failure(
-                                "invalid.requiresdettostring",
-                                ElementUtils.enclosingClass(entry.getValue()).asType()),
-                        methodTree);
+                checker.reportError(
+                        methodTree,
+                        "invalid.requiresdettostring",
+                        ElementUtils.enclosingClass(entry.getValue()).asType());
             }
         }
     }
@@ -605,10 +599,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                                 .getAnnotatedType(overriddenMethod.second)
                                 .getReturnType()
                                 .hasAnnotation(atypeFactory.POLYDET)) {
-                    checker.report(
-                            Result.failure(
-                                    "nondeterministic.tostring", argType.getUnderlyingType()),
-                            node);
+                    checker.reportError(
+                            node, "nondeterministic.tostring", argType.getUnderlyingType());
                     break;
                 }
             }
@@ -631,7 +623,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         if (atypeFactory.getQualifierHierarchy().isSubtype(subAnnotation, superAnnotation)) {
             return true;
         }
-        checker.report(Result.failure(errorMessage, subAnnotation, superAnnotation), tree);
+        checker.reportError(tree, errorMessage, subAnnotation, superAnnotation);
         return false;
     }
 
@@ -653,14 +645,14 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             Tree tree,
             @CompilerMessageKey String errorMessage) {
         if (!atypeFactory.getQualifierHierarchy().isSubtype(elementAnno, collectionAnno)) {
-            checker.report(Result.failure(errorMessage, elementAnno, collectionAnno), tree);
+            checker.reportError(tree, errorMessage, elementAnno, collectionAnno);
             return false;
         }
         if (AnnotationUtils.areSame(collectionAnno, atypeFactory.NONDET)
                 && (AnnotationUtils.areSame(elementAnno, atypeFactory.DET)
                         || AnnotationUtils.areSame(elementAnno, atypeFactory.ORDERNONDET)
                         || AnnotationUtils.areSameByName(elementAnno, atypeFactory.POLYDET))) {
-            checker.report(Result.failure(errorMessage, elementAnno, collectionAnno), tree);
+            checker.reportError(tree, errorMessage, elementAnno, collectionAnno);
             return false;
         }
         return true;
@@ -709,11 +701,10 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 AnnotationMirror constructorResult =
                         constructorResultType.getAnnotationInHierarchy(atypeFactory.NONDET);
                 if (AnnotationUtils.areSameByClass(constructorResult, PolyDet.class)) {
-                    checker.report(
-                            Result.failure(
-                                    DeterminismVisitor.INVALID_COLLECTION_CONSTRUCTOR_INVOCATION,
-                                    constructorResultType),
-                            newClassTree);
+                    checker.reportError(
+                            newClassTree,
+                            DeterminismVisitor.INVALID_COLLECTION_CONSTRUCTOR_INVOCATION,
+                            constructorResultType);
                 }
             }
         }
