@@ -344,22 +344,28 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         }
     }
 
-    /**
-     * Replaces {@code @OrderNonDet} with {@code @NonDet} and {@code PolyDet} with
-     * {@code @PolyDet("up")}.
-     */
+    // Hack: Remove this after it's fixed on the master branch.
     @Override
-    protected AnnotatedTypeMirror enhancedForLoopIteratedType(AnnotatedTypeMirror iterableType) {
-        AnnotatedTypeMirror iteratedType = super.enhancedForLoopIteratedType(iterableType);
+    public Void visitEnhancedForLoop(EnhancedForLoopTree node, Void p) {
+        AnnotatedTypeMirror var = this.atypeFactory.getAnnotatedTypeLhs(node.getVariable());
+        AnnotatedTypeMirror iterableType = this.atypeFactory.getAnnotatedType(node.getExpression());
+        AnnotatedTypeMirror iteratedType =
+                AnnotatedTypes.getIteratedType(
+                        this.checker.getProcessingEnvironment(), this.atypeFactory, iterableType);
+        boolean valid = this.validateTypeOf(node.getVariable());
         if (iterableType.hasAnnotation(atypeFactory.ORDERNONDET)
                 || iterableType.hasAnnotation(atypeFactory.NONDET)) {
             iteratedType.replaceAnnotation(atypeFactory.NONDET);
         }
         if (iterableType.hasAnnotation(atypeFactory.POLYDET)) {
-            iteratedType.replaceAnnotation(atypeFactory.POLYDET_UP);
+            iteratedType.replaceAnnotation(atypeFactory.POLYDET);
+        }
+        if (valid) {
+            this.commonAssignmentCheck(
+                    var, iteratedType, node.getExpression(), "enhancedfor.type.incompatible");
         }
 
-        return iteratedType;
+        return super.visitEnhancedForLoop(node, p);
     }
 
     /**
