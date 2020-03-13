@@ -1311,7 +1311,9 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
     public Void visitEnhancedForLoop(EnhancedForLoopTree node, Void p) {
         AnnotatedTypeMirror var = atypeFactory.getAnnotatedTypeLhs(node.getVariable());
         AnnotatedTypeMirror iterableType = atypeFactory.getAnnotatedType(node.getExpression());
-        AnnotatedTypeMirror iteratedType = enhancedForLoopIteratedType(iterableType);
+        AnnotatedTypeMirror iteratedType =
+                AnnotatedTypes.getIteratedType(
+                        checker.getProcessingEnvironment(), atypeFactory, iterableType);
         boolean valid = validateTypeOf(node.getVariable());
         if (valid) {
             commonAssignmentCheck(
@@ -1649,20 +1651,6 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
                             "vector.copyinto.type.incompatible", vectorTypeArg, argComponent),
                     errorLocation);
         }
-    }
-
-    /**
-     * Returns the type of elements {@code iterableType} would produce when iterated over. For
-     * example, when called on {@code List<@Nullable String>}, this method would return
-     * {@code @Nullable String}.
-     *
-     * @param iterableType the type being iterated over. Must be an array or a declared type that
-     *     implements {@link Iterable}.
-     * @return the type of elements {@code iterableType} produces when iterated over.
-     */
-    protected AnnotatedTypeMirror enhancedForLoopIteratedType(AnnotatedTypeMirror iterableType) {
-        return AnnotatedTypes.getIteratedType(
-                checker.getProcessingEnvironment(), atypeFactory, iterableType);
     }
 
     /**
