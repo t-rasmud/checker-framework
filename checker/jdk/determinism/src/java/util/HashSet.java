@@ -87,7 +87,7 @@ import org.checkerframework.framework.qual.HasQualifierParameter;
  * @see     HashMap
  * @since   1.2
  */
-@SuppressWarnings({"invalid.upper.bound.on.type.argument", "throw.type.invalid"})
+@SuppressWarnings("determinism:invalid.upper.bound.on.type.argument")
 @HasQualifierParameter(NonDet.class)
 public class HashSet<E>
     extends AbstractSet<E>
@@ -252,7 +252,7 @@ public class HashSet<E>
      *
      * @return a shallow copy of this set
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "determinism:invariant.cast.unsafe"})
     public @PolyDet("up") Object clone(@PolyDet HashSet<E> this) {
         try {
             @PolyDet("up") HashSet<E> newSet = (HashSet<E>) super.clone();
@@ -294,6 +294,7 @@ public class HashSet<E>
      * Reconstitute the <tt>HashSet</tt> instance from a stream (that is,
      * deserialize it).
      */
+    @SuppressWarnings({"determinism:throw.type.invalid", "determinism:assignment.type.incompatible"})
     private void readObject(@PolyDet HashSet<E> this, java.io.@PolyDet("use") ObjectInputStream s)
         throws java.io.IOException, ClassNotFoundException {
         // Read in any hidden serialization magic
