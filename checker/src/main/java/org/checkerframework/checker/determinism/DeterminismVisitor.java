@@ -1,5 +1,7 @@
 package org.checkerframework.checker.determinism;
 
+import static javax.tools.Diagnostic.Kind.ERROR;
+
 import com.sun.source.tree.*;
 import com.sun.source.tree.Tree.Kind;
 import java.util.ArrayList;
@@ -20,7 +22,7 @@ import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeValidator;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
 import org.checkerframework.common.basetype.TypeValidator;
-import org.checkerframework.framework.source.Result;
+import org.checkerframework.framework.source.DiagMessage;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedArrayType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedDeclaredType;
@@ -450,7 +452,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      */
     private void checkMethodSignatureForPolyQuals(MethodTree methodTree) {
         // Errors that should be issued if @PolyDet or @PolyDet("noOrderNonDet") are not found.
-        List<Pair<Result, Tree>> errors = new ArrayList<>();
+        List<Pair<DiagMessage, Tree>> errors = new ArrayList<>();
         VariableTree receiver = methodTree.getReceiverParameter();
         // Don't check receiver annotation for static methods and constructors
         // as the receiver is null in these two cases.
@@ -483,8 +485,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         }
         // This point is only reached if @PolyDet or @PolyDet("noOrderNonDet") were not found on
         // either the receiver or any parameter.
-        for (Pair<Result, Tree> pair : errors) {
-            checker.report(pair.first, pair.second);
+        for (Pair<DiagMessage, Tree> pair : errors) {
+            checker.report(pair.second, pair.first);
         }
     }
 
@@ -518,19 +520,19 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     }
 
     /**
-     * Adds a pair of an Result and {@code tree} to {@code errors} if {@code anno} is
+     * Adds a pair of an DiagMessage and {@code tree} to {@code errors} if {@code anno} is
      * {@code @PolyDet("up")}, {@code @PolyDet("down")}, {@code @PolyDet("upDet")}, or
      * {@code @PolyDet("use")}. Returns true if {@code anno} is {@code @PolyDet} or
      * {@code @PolyDet("noOrderNonDet")}; otherwise false.
      *
      * @param anno a possibly null annotation to check
      * @param tree place to report error
-     * @param errors list to add pair of Result and {@code tree}
+     * @param errors list to add pair of DiagMessage and {@code tree}
      * @return true if {@code anno} is {@code @PolyDet} or{@code @PolyDet("noOrderNonDet")};
      *     otherwise false
      */
     private boolean addPolyDetError(
-            @Nullable AnnotationMirror anno, Tree tree, List<Pair<Result, Tree>> errors) {
+            @Nullable AnnotationMirror anno, Tree tree, List<Pair<DiagMessage, Tree>> errors) {
         if (anno == null) {
             return false;
         }
@@ -542,7 +544,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             } else {
                 @SuppressWarnings("compilermessages")
                 @CompilerMessageKey String errorKey = "invalid.polydet." + elemValue.toLowerCase();
-                errors.add(Pair.of(Result.failure(errorKey), tree));
+                errors.add(Pair.of(new DiagMessage(ERROR, errorKey), tree));
             }
         }
         return false;
