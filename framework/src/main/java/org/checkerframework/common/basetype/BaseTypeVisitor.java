@@ -1,5 +1,7 @@
 package org.checkerframework.common.basetype;
 
+import static javax.tools.Diagnostic.Kind.ERROR;
+
 import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.ArrayAccessTree;
 import com.sun.source.tree.AssignmentTree;
@@ -43,6 +45,7 @@ import com.sun.tools.javac.tree.TreeInfo;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -374,7 +377,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
 
         checkExtendsImplements(classTree);
 
-        checkQualifierParam(classTree);
+        checkQualifierParameter(classTree);
 
         super.visitClass(classTree, null);
     }
@@ -387,33 +390,36 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
      * <p>Issues an error if (@code classTree} extends or implements a class/interface that has a
      * qualifier parameter, but this class does not.
      *
-     * @param classTree the ClassTree to check foor polymorphic fields
+     * @param classTree the ClassTree to check for polymorphic fields
      */
-    private void checkQualifierParam(ClassTree classTree) {
-        Set<AnnotationMirror> polyWithOutQualiferParam = AnnotationUtils.createAnnotationSet();
+    protected void checkQualifierParameter(ClassTree classTree) {
+        // Set of polymorphic qualifiers for hierarchies that doe not have a qualifier parameter and
+        // therefor cannot appear on a field.
+        Set<AnnotationMirror> illegalOnFieldsPolyQual = AnnotationUtils.createAnnotationSet();
+        // Set of polymorphic annotations for all hierarchies
         Set<AnnotationMirror> polys = AnnotationUtils.createAnnotationSet();
 
-        boolean conflictingErrorReported = false;
         for (AnnotationMirror top : atypeFactory.getQualifierHierarchy().getTopAnnotations()) {
             TypeElement classElement = TreeUtils.elementFromDeclaration(classTree);
+            if (classElement == null) {
+                continue;
+            }
             AnnotationMirror poly =
                     atypeFactory.getQualifierHierarchy().getPolymorphicAnnotation(top);
             if (poly != null) {
                 polys.add(poly);
             }
 
-            if (!conflictingErrorReported
-                    && atypeFactory.hasExplicitQualifierParameterInHierarchy(classElement, top)
+            if (atypeFactory.hasExplicitQualifierParameterInHierarchy(classElement, top)
                     && atypeFactory.hasExplicitNoQualifierParameterInHierarchy(classElement, top)) {
                 checker.reportError(classTree, "conflicting.qual.param", top);
-                conflictingErrorReported = true;
             }
 
             if (atypeFactory.hasQualifierParameterInHierarchy(classElement, top)) {
                 continue;
             }
             if (poly != null) {
-                polyWithOutQualiferParam.add(poly);
+                illegalOnFieldsPolyQual.add(poly);
             }
             Element extendsEle = TypesUtils.getTypeElement(classElement.getSuperclass());
             if (extendsEle != null
@@ -433,14 +439,16 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
         for (Tree mem : classTree.getMembers()) {
             if (mem.getKind() == Tree.Kind.VARIABLE) {
                 AnnotatedTypeMirror fieldType = atypeFactory.getAnnotatedType(mem);
-                Set<AnnotationMirror> polyAnnos;
+                List<DiagMessage> hasIllegalPoly;
                 if (ElementUtils.isStatic(TreeUtils.elementFromDeclaration((VariableTree) mem))) {
-                    polyAnnos = polys;
+                    // A polymorphic qualifier is not allowed on a static field even if the class
+                    // has a qualifier parameter.
+                    hasIllegalPoly = polyScanner.visit(fieldType, polys);
                 } else {
-                    polyAnnos = polyWithOutQualiferParam;
+                    hasIllegalPoly = polyScanner.visit(fieldType, illegalOnFieldsPolyQual);
                 }
-                if (polyScanner.visit(fieldType, polyAnnos)) {
-                    checker.reportError(mem, "invalid.polymorphic.qualifier.use");
+                for (DiagMessage dm : hasIllegalPoly) {
+                    checker.report(mem, dm);
                 }
             }
         }
@@ -455,27 +463,27 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
      * A scanner that indicates whether any part of an annotated type has a polymorphic annotation.
      */
     static class PolyTypeScanner
-            extends SimpleAnnotatedTypeScanner<Boolean, Set<AnnotationMirror>> {
+            extends SimpleAnnotatedTypeScanner<List<DiagMessage>, Set<AnnotationMirror>> {
 
         @Override
-        protected Boolean reduce(Boolean r1, Boolean r2) {
-            r1 = r1 == null ? false : r1;
-            r2 = r2 == null ? false : r2;
-            return r1 || r2;
+        protected List<DiagMessage> reduce(List<DiagMessage> r1, List<DiagMessage> r2) {
+            return DiagMessage.mergeLists(r1, r2);
         }
 
         @Override
-        protected Boolean defaultAction(AnnotatedTypeMirror type, Set<AnnotationMirror> polys) {
+        protected List<DiagMessage> defaultAction(
+                AnnotatedTypeMirror type, Set<AnnotationMirror> polys) {
             if (type == null) {
-                return false;
+                return Collections.emptyList();
             }
 
             for (AnnotationMirror poly : polys) {
                 if (type.hasAnnotationRelaxed(poly)) {
-                    return true;
+                    return Collections.singletonList(
+                            new DiagMessage(ERROR, "invalid.polymorphic.qualifier.use", poly));
                 }
             }
-            return false;
+            return Collections.emptyList();
         }
     }
 
@@ -2089,7 +2097,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
      * Return whether or not casting the exprType to castType is legal.
      *
      * @param castType an invariant type
-     * @param exprType type of the expressions that is cast may or may not be invariant
+     * @param exprType type of the expressions that is cast which may or may not be invariant
      * @param top the top qualifier of the hierarchy to check
      * @return whether or not casting the exprType to castType is legal.
      */
@@ -2100,7 +2108,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
         }
         AnnotationMirror castTypeAnno = castType.getEffectiveAnnotationInHierarchy(top);
         AnnotationMirror exprTypeAnno = exprType.getEffectiveAnnotationInHierarchy(top);
-        ;
+
         if (atypeFactory.hasQualifierParameterInHierarchy(exprType, top)) {
             // The isTypeCastSafe call above checked that the exprType is a subtype of castType,
             // so just check the reverse to check that the qualifiers are equivalent.
@@ -3885,6 +3893,8 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
      */
     public boolean isValidUse(
             AnnotatedDeclaredType declarationType, AnnotatedDeclaredType useType, Tree tree) {
+        // Don't use isSubtype(ATM, ATM) because it will return false if the types have qualifier
+        // parameters.
         Set<? extends AnnotationMirror> tops =
                 atypeFactory.getQualifierHierarchy().getTopAnnotations();
         Set<AnnotationMirror> upperBounds =

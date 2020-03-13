@@ -3,6 +3,8 @@ package org.checkerframework.framework.type;
 // The imports from com.sun are all @jdk.Exported and therefore somewhat safe to use.
 // Try to avoid using non-@jdk.Exported classes.
 
+import static javax.tools.Diagnostic.Kind.ERROR;
+
 import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.AssignmentTree;
 import com.sun.source.tree.ClassTree;
@@ -3374,6 +3376,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         }
         return result;
     }
+
     /**
      * Whether or not the {@code annotatedTypeMirror} has an implicit qualifier parameter.
      *
@@ -3386,6 +3389,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         return AnnotationUtils.containsSame(
                 getQualifierParameterHierarchies(annotatedTypeMirror), top);
     }
+
     /**
      * Whether or not the {@code element} has an implicit qualifier parameter.
      *
@@ -3395,6 +3399,9 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      */
     public boolean hasQualifierParameterInHierarchy(
             @Nullable Element element, AnnotationMirror top) {
+        if (element == null) {
+            return false;
+        }
         return AnnotationUtils.containsSame(getQualifierParameterHierarchies(element), top);
     }
 
@@ -3407,8 +3414,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      * @return whether the class given by {@code element} has been explicitly annotated with {@code
      *     HasQualifierParameter} for the given hierarchy
      */
-    public boolean hasExplicitQualifierParameterInHierarchy(
-            @Nullable Element element, AnnotationMirror top) {
+    public boolean hasExplicitQualifierParameterInHierarchy(Element element, AnnotationMirror top) {
         return AnnotationUtils.containsSame(
                 getSupportedAnnotationsInElementAnnotation(element, HasQualifierParameter.class),
                 top);
@@ -3424,7 +3430,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      *     NoQualifierParameter} for the given hierarchy
      */
     public boolean hasExplicitNoQualifierParameterInHierarchy(
-            @Nullable Element element, AnnotationMirror top) {
+            Element element, AnnotationMirror top) {
         return AnnotationUtils.containsSame(
                 getSupportedAnnotationsInElementAnnotation(element, NoQualifierParameter.class),
                 top);
@@ -3441,11 +3447,14 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     public Set<AnnotationMirror> getQualifierParameterHierarchies(
             AnnotatedTypeMirror annotatedType) {
         if (annotatedType.getKind() != TypeKind.DECLARED) {
-            return AnnotationUtils.createAnnotationSet();
+            return Collections.emptySet();
         }
 
         AnnotatedDeclaredType declaredType = (AnnotatedDeclaredType) annotatedType;
         Element element = declaredType.getUnderlyingType().asElement();
+        if (element == null) {
+            return Collections.emptySet();
+        }
         return getQualifierParameterHierarchies(element);
     }
 
@@ -3457,13 +3466,14 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      * @return the set of top annotations representing all the hierarchies for which this element
      *     has a qualifier parameter
      */
-    public Set<AnnotationMirror> getQualifierParameterHierarchies(@Nullable Element element) {
-        if (element == null || !ElementUtils.isTypeDeclaration(element)) {
-            return AnnotationUtils.createAnnotationSet();
+    public Set<AnnotationMirror> getQualifierParameterHierarchies(Element element) {
+        if (!ElementUtils.isTypeDeclaration(element)) {
+            return Collections.emptySet();
         }
 
-        Set<AnnotationMirror> found =
-                getSupportedAnnotationsInElementAnnotation(element, HasQualifierParameter.class);
+        Set<AnnotationMirror> found = AnnotationUtils.createAnnotationSet();
+        found.addAll(
+                getSupportedAnnotationsInElementAnnotation(element, HasQualifierParameter.class));
         Set<AnnotationMirror> hasQualifierParameterTops = AnnotationUtils.createAnnotationSet();
         PackageElement packageElement = ElementUtils.enclosingPackage(element);
 
@@ -3501,17 +3511,16 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      */
     private Set<AnnotationMirror> getSupportedAnnotationsInElementAnnotation(
             @Nullable Element element, Class<? extends Annotation> annoClass) {
-        Set<AnnotationMirror> found = AnnotationUtils.createAnnotationSet();
-
         if (element == null) {
-            return found;
+            return Collections.emptySet();
         }
         // TODO: caching
         AnnotationMirror annotation = getDeclAnnotation(element, annoClass);
         if (annotation == null) {
-            return found;
+            return Collections.emptySet();
         }
 
+        Set<AnnotationMirror> found = AnnotationUtils.createAnnotationSet();
         List<Name> qualClasses =
                 AnnotationUtils.getElementValueClassNames(annotation, "value", true);
         for (Name qual : qualClasses) {
