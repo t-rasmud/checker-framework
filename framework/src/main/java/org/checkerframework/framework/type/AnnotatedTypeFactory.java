@@ -3,6 +3,8 @@ package org.checkerframework.framework.type;
 // The imports from com.sun are all @jdk.Exported and therefore somewhat safe to use.
 // Try to avoid using non-@jdk.Exported classes.
 
+import static javax.tools.Diagnostic.Kind.ERROR;
+
 import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.AssignmentTree;
 import com.sun.source.tree.ClassTree;
@@ -74,7 +76,6 @@ import org.checkerframework.framework.qual.InheritedAnnotation;
 import org.checkerframework.framework.qual.NoQualifierParameter;
 import org.checkerframework.framework.qual.PolymorphicQualifier;
 import org.checkerframework.framework.qual.SubtypeOf;
-import org.checkerframework.framework.source.Result;
 import org.checkerframework.framework.source.SourceChecker;
 import org.checkerframework.framework.stub.StubTypes;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedArrayType;
@@ -3164,12 +3165,11 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
                 results.add(annotation);
             } catch (com.sun.tools.javac.code.Symbol.CompletionFailure cf) {
                 // If a CompletionFailure occurs, issue a warning.
-                checker.report(
-                        Result.warning(
-                                "annotation.not.completed",
-                                ElementUtils.getVerboseName(elt),
-                                annotation),
-                        annotation.getAnnotationType().asElement());
+                checker.reportWarning(
+                        annotation.getAnnotationType().asElement(),
+                        "annotation.not.completed",
+                        ElementUtils.getVerboseName(elt),
+                        annotation);
             }
         }
 
@@ -3218,12 +3218,11 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
                 } catch (com.sun.tools.javac.code.Symbol.CompletionFailure cf) {
                     // Fix for Issue 348: If a CompletionFailure occurs,
                     // issue a warning.
-                    checker.report(
-                            Result.warning(
-                                    "annotation.not.completed",
-                                    ElementUtils.getVerboseName(elt),
-                                    annotation),
-                            annotation.getAnnotationType().asElement());
+                    checker.reportWarning(
+                            annotation.getAnnotationType().asElement(),
+                            "annotation.not.completed",
+                            ElementUtils.getVerboseName(elt),
+                            annotation);
                     continue;
                 }
                 if (AnnotationUtils.containsSameByClass(annotationsOnAnnotation, Inherited.class)
@@ -3258,12 +3257,11 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
                     } catch (com.sun.tools.javac.code.Symbol.CompletionFailure cf) {
                         // Fix for Issue 348: If a CompletionFailure occurs,
                         // issue a warning.
-                        checker.report(
-                                Result.warning(
-                                        "annotation.not.completed",
-                                        ElementUtils.getVerboseName(elt),
-                                        annotation),
-                                annotation.getAnnotationType().asElement());
+                        checker.reportWarning(
+                                annotation.getAnnotationType().asElement(),
+                                "annotation.not.completed",
+                                ElementUtils.getVerboseName(elt),
+                                annotation);
                         continue;
                     }
                     if (containsSameByClass(annotationsOnAnnotation, InheritedAnnotation.class)
@@ -3328,12 +3326,11 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
                 // I didn't find a nicer alternative to check whether the Symbol can be completed.
                 // The completer field of a Symbol might be non-null also in successful cases.
                 // Issue a warning (exception only happens once) and continue.
-                checker.report(
-                        Result.warning(
-                                "annotation.not.completed",
-                                ElementUtils.getVerboseName(element),
-                                annotation),
-                        annotation.getAnnotationType().asElement());
+                checker.reportWarning(
+                        annotation.getAnnotationType().asElement(),
+                        "annotation.not.completed",
+                        ElementUtils.getVerboseName(element),
+                        annotation);
                 continue;
             }
             // First call copier, if exception, continue normal modula laws.
@@ -3379,6 +3376,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         }
         return result;
     }
+
     /**
      * Whether or not the {@code annotatedTypeMirror} has an implicit qualifier parameter.
      *
@@ -3391,6 +3389,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         return AnnotationUtils.containsSame(
                 getQualifierParameterHierarchies(annotatedTypeMirror), top);
     }
+
     /**
      * Whether or not the {@code element} has an implicit qualifier parameter.
      *
@@ -3400,6 +3399,9 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      */
     public boolean hasQualifierParameterInHierarchy(
             @Nullable Element element, AnnotationMirror top) {
+        if (element == null) {
+            return false;
+        }
         return AnnotationUtils.containsSame(getQualifierParameterHierarchies(element), top);
     }
 
@@ -3412,8 +3414,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      * @return whether the class given by {@code element} has been explicitly annotated with {@code
      *     HasQualifierParameter} for the given hierarchy
      */
-    public boolean hasExplicitQualifierParameterInHierarchy(
-            @Nullable Element element, AnnotationMirror top) {
+    public boolean hasExplicitQualifierParameterInHierarchy(Element element, AnnotationMirror top) {
         return AnnotationUtils.containsSame(
                 getSupportedAnnotationsInElementAnnotation(element, HasQualifierParameter.class),
                 top);
@@ -3429,7 +3430,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      *     NoQualifierParameter} for the given hierarchy
      */
     public boolean hasExplicitNoQualifierParameterInHierarchy(
-            @Nullable Element element, AnnotationMirror top) {
+            Element element, AnnotationMirror top) {
         return AnnotationUtils.containsSame(
                 getSupportedAnnotationsInElementAnnotation(element, NoQualifierParameter.class),
                 top);
@@ -3446,11 +3447,14 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     public Set<AnnotationMirror> getQualifierParameterHierarchies(
             AnnotatedTypeMirror annotatedType) {
         if (annotatedType.getKind() != TypeKind.DECLARED) {
-            return AnnotationUtils.createAnnotationSet();
+            return Collections.emptySet();
         }
 
         AnnotatedDeclaredType declaredType = (AnnotatedDeclaredType) annotatedType;
         Element element = declaredType.getUnderlyingType().asElement();
+        if (element == null) {
+            return Collections.emptySet();
+        }
         return getQualifierParameterHierarchies(element);
     }
 
@@ -3462,13 +3466,14 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      * @return the set of top annotations representing all the hierarchies for which this element
      *     has a qualifier parameter
      */
-    public Set<AnnotationMirror> getQualifierParameterHierarchies(@Nullable Element element) {
-        if (element == null || !ElementUtils.isTypeDeclaration(element)) {
-            return AnnotationUtils.createAnnotationSet();
+    public Set<AnnotationMirror> getQualifierParameterHierarchies(Element element) {
+        if (!ElementUtils.isTypeDeclaration(element)) {
+            return Collections.emptySet();
         }
 
-        Set<AnnotationMirror> found =
-                getSupportedAnnotationsInElementAnnotation(element, HasQualifierParameter.class);
+        Set<AnnotationMirror> found = AnnotationUtils.createAnnotationSet();
+        found.addAll(
+                getSupportedAnnotationsInElementAnnotation(element, HasQualifierParameter.class));
         Set<AnnotationMirror> hasQualifierParameterTops = AnnotationUtils.createAnnotationSet();
         PackageElement packageElement = ElementUtils.enclosingPackage(element);
 
@@ -3506,17 +3511,16 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      */
     private Set<AnnotationMirror> getSupportedAnnotationsInElementAnnotation(
             @Nullable Element element, Class<? extends Annotation> annoClass) {
-        Set<AnnotationMirror> found = AnnotationUtils.createAnnotationSet();
-
         if (element == null) {
-            return found;
+            return Collections.emptySet();
         }
         // TODO: caching
         AnnotationMirror annotation = getDeclAnnotation(element, annoClass);
         if (annotation == null) {
-            return found;
+            return Collections.emptySet();
         }
 
+        Set<AnnotationMirror> found = AnnotationUtils.createAnnotationSet();
         List<Name> qualClasses =
                 AnnotationUtils.getElementValueClassNames(annotation, "value", true);
         for (Name qual : qualClasses) {
