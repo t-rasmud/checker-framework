@@ -11,6 +11,7 @@ public class TestAddAll {
             @NonDet List<@Det Integer> lst3) {
         lst.addAll(lst1);
         lst.addAll(lst2);
+        // :: error: (argument.type.incompatible)
         lst.addAll(lst3);
     }
 }
