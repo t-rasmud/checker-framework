@@ -888,7 +888,7 @@ public class TreeMap<K,V>
      * {@code clear} operations.  It does not support the
      * {@code add} or {@code addAll} operations.
      */
-    public @PolyDet Set<Map.Entry<K,V>> entrySet(@PolyDet TreeMap<K, V> this) {
+    public @PolyDet Set<Map.@PolyDet("down") Entry<K,V>> entrySet(@PolyDet TreeMap<K, V> this) {
         EntrySet es = entrySet;
         return (es != null) ? es : (entrySet = new EntrySet());
     }

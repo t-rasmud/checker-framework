@@ -9,7 +9,7 @@ echo "SHELLOPTS=${SHELLOPTS}"
 if [ -d "/tmp/plume-scripts" ] ; then
   (cd /tmp/plume-scripts && git pull -q)
 else
-  (cd /tmp && git clone --depth 1 -q https://github.com/plume-lib/plume-scripts.git)
+  (cd /tmp && (git clone --depth 1 -q https://github.com/plume-lib/plume-scripts.git || git clone --depth 1 -q https://github.com/plume-lib/plume-scripts.git))
 fi
 
 export CHECKERFRAMEWORK="${CHECKERFRAMEWORK:-$(pwd -P)}"
@@ -27,4 +27,9 @@ source "$SCRIPTDIR"/build.sh "${BUILDJDK}"
 cd ../daikon
 git log | head -n 5
 make compile
-time make -C java typecheck
+if [ "$TRAVIS" = "true" ] ; then
+  # Travis kills a job if it runs 10 minutes without output
+  time make JAVACHECK_EXTRA_ARGS=-Afilenames -C java typecheck
+else
+  time make -C java typecheck
+fi

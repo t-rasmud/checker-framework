@@ -22,12 +22,14 @@ echo "BUILDJDK=${BUILDJDK}"
 source "$SCRIPTDIR"/build.sh "${BUILDJDK}"
 
 
-## checker-framework-inference is a downstream test, but run it in its
-## own group because it is most likely to fail, and it's helpful to see
-## that only it, not other downstream tests, failed.
-
-/tmp/plume-scripts/git-clone-related typetools checker-framework-inference
-
-export AFU="${AFU:-$(cd ../annotation-tools/annotation-file-utilities && pwd -P)}"
-export PATH=$AFU/scripts:$PATH
-(cd ../checker-framework-inference && ./.travis-build.sh)
+# daikon-typecheck: 15 minutes
+/tmp/plume-scripts/git-clone-related codespecs daikon
+cd ../daikon
+git log | head -n 5
+make compile
+if [ "$TRAVIS" = "true" ] ; then
+  # Travis kills a job if it runs 10 minutes without output
+  time make JAVACHECK_EXTRA_ARGS=-Afilenames -C java check-part2
+else
+  time make -C java check-part2
+fi

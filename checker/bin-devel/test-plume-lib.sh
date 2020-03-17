@@ -20,8 +20,13 @@ if [[ "${GROUPARG}" == "options" ]]; then PACKAGES=("${GROUPARG}"); fi
 if [[ "${GROUPARG}" == "plume-util" ]]; then PACKAGES=("${GROUPARG}"); fi
 if [[ "${GROUPARG}" == "require-javadoc" ]]; then PACKAGES=("${GROUPARG}"); fi
 if [[ "${GROUPARG}" == "signature-util" ]]; then PACKAGES=("${GROUPARG}"); fi
-if [[ "${GROUPARG}" == "allJdk11" ]]; then PACKAGES=(bcel-util bibtex-clean html-pretty-print icalavailable lookup multi-version-control options plume-util); fi
-if [[ "${GROUPARG}" == "all" ]] || [[ "${GROUPARG}" == "" ]]; then echo "GROUPARG is all or empty"; PACKAGES=(bcel-util bibtex-clean html-pretty-print icalavailable lookup multi-version-control options plume-util require-javadoc); fi
+if [[ "${GROUPARG}" == "all" ]] || [[ "${GROUPARG}" == "" ]]; then
+    if java -version 2>&1 | grep version | grep 1.8 ; then
+        PACKAGES=(bcel-util bibtex-clean html-pretty-print icalavailable lookup multi-version-control options plume-util require-javadoc)
+    else
+        PACKAGES=(bcel-util bibtex-clean html-pretty-print icalavailable lookup multi-version-control options plume-util)
+    fi
+fi
 if [ -z ${PACKAGES+x} ]; then
   echo "Bad group argument '${GROUPARG}'"
   exit 1
@@ -32,7 +37,7 @@ echo "PACKAGES=" "${PACKAGES[@]}"
 if [ -d "/tmp/plume-scripts" ] ; then
   (cd /tmp/plume-scripts && git pull -q)
 else
-  (cd /tmp && git clone --depth 1 -q https://github.com/plume-lib/plume-scripts.git)
+  (cd /tmp && (git clone --depth 1 -q https://github.com/plume-lib/plume-scripts.git || git clone --depth 1 -q https://github.com/plume-lib/plume-scripts.git))
 fi
 
 echo "initial CHECKERFRAMEWORK=$CHECKERFRAMEWORK"
@@ -44,8 +49,8 @@ if [ -d "$CHECKERFRAMEWORK" ] ; then
   # Fails if not currently on a branch
   git -C "$CHECKERFRAMEWORK" pull || true
 else
-  JSR308="$(cd "$CHECKERFRAMEWORK/.." && pwd -P)"
-  (cd "$JSR308" && git clone https://github.com/typetools/checker-framework.git) || (cd "$JSR308" && git clone https://github.com/typetools/checker-framework.git)
+  /tmp/plume-scripts/git-clone-related typetools checker-framework "$CHECKERFRAMEWORK" \
+    || /tmp/plume-scripts/git-clone-related typetools checker-framework "$CHECKERFRAMEWORK"
 fi
 # This also builds annotation-tools
 (cd "$CHECKERFRAMEWORK" && ./checker/bin-devel/build.sh downloadjdk)
@@ -53,7 +58,9 @@ fi
 echo "PACKAGES=" "${PACKAGES[@]}"
 for PACKAGE in "${PACKAGES[@]}"; do
   echo "PACKAGE=${PACKAGE}"
-  (cd /tmp && rm -rf "${PACKAGE}" && git clone --depth 1 "https://github.com/plume-lib/${PACKAGE}.git")
+  PACKAGEDIR="/tmp/${PACKAGE}"
+  rm -rf "${PACKAGEDIR}"
+  /tmp/plume-scripts/git-clone-related plume-lib "${PACKAGE}" "${PACKAGEDIR}"
   echo "About to call ./gradlew --console=plain -PcfLocal assemble"
-  (cd /tmp/"${PACKAGE}" && CHECKERFRAMEWORK=$CHECKERFRAMEWORK ./gradlew --console=plain -PcfLocal assemble)
+  (cd "${PACKAGEDIR}" && CHECKERFRAMEWORK=$CHECKERFRAMEWORK ./gradlew --console=plain -PcfLocal assemble)
 done

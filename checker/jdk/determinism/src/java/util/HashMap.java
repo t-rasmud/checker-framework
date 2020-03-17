@@ -1005,7 +1005,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      *
      * @return a set view of the mappings contained in this map
      */
-    public @PolyDet Set<Map.Entry<K,V>> entrySet(@PolyDet HashMap<K, V> this) {
+    public @PolyDet Set<Map.@PolyDet("down") Entry<K,V>> entrySet(@PolyDet HashMap<K, V> this) {
         Set<Map.Entry<K,V>> es;
         return (es = entrySet) == null ? (entrySet = new EntrySet()) : es;
     }

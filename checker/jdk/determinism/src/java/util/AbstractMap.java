@@ -449,7 +449,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
         return vals;
     }
 
-    public abstract @PolyDet Set<Entry<K,V>> entrySet(@PolyDet AbstractMap<K,V> this);
+    public abstract @PolyDet Set<@PolyDet("down") Entry<K,V>> entrySet(@PolyDet AbstractMap<K,V> this);
 
 
     // Comparison and hashing

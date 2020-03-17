@@ -634,7 +634,7 @@ public class LinkedHashMap<K,V>
      *
      * @return a set view of the mappings contained in this map
      */
-    public @PolyDet Set<Map.Entry<K,V>> entrySet(@PolyDet LinkedHashMap<K, V> this) {
+    public @PolyDet Set<Map.@PolyDet("down") Entry<K,V>> entrySet(@PolyDet LinkedHashMap<K, V> this) {
         Set<Map.Entry<K,V>> es;
         return (es = entrySet) == null ? (entrySet = new LinkedEntrySet()) : es;
     }

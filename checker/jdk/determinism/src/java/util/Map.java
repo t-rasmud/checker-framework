@@ -362,7 +362,7 @@ public interface Map<K,V> {
      *
      * @return a set view of the mappings contained in this map
      */
-    @PolyDet Set<Map.Entry<K, V>> entrySet(@PolyDet Map<K,V> this);
+    @PolyDet Set<Map.@PolyDet("down") Entry<K, V>> entrySet(@PolyDet Map<K,V> this);
 
 
     /**
