@@ -19,7 +19,8 @@ env:
     - OS=ubuntu
   matrix:
     - GROUP=cftests-junit JDKVER=jdk8 BUILDJDK=downloadjdk
-    - GROUP=cftests-junit JDKVER=jdk11 BUILDJDK=downloadjdk
+    ## TODO: Copy JDK annotations to JDK 11, then uncomment this.
+    # - GROUP=cftests-junit JDKVER=jdk11 BUILDJDK=downloadjdk
     - GROUP=cftests-nonjunit JDKVER=jdk8 BUILDJDK=downloadjdk
     - GROUP=cftests-nonjunit JDKVER=jdk11 BUILDJDK=downloadjdk
     - GROUP=jdk-jar JDKVER=jdk8 BUILDJDK=downloadjdk
@@ -93,5 +94,6 @@ script:
      export TRAVIS_PULL_REQUEST_SLUG=${TRAVIS_PULL_REQUEST_SLUG} &&
      export TRAVIS_REPO_SLUG=$TRAVIS_REPO_SLUG &&
      ./.travis-build.sh $GROUP $BUILDJDK"
+
 git:
   depth: 9
