@@ -32,6 +32,7 @@ import java.io.IOException;
 
 import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.framework.qual.HasQualifierParameter;
+import org.checkerframework.framework.qual.PolymorphicQualifier;
 
 /**
  * <p>Hash table and linked list implementation of the <tt>Map</tt> interface,
@@ -163,7 +164,7 @@ import org.checkerframework.framework.qual.HasQualifierParameter;
  * @see     Hashtable
  * @since   1.4
  */
-@HasQualifierParameter(NonDet.class)
+@SuppressWarnings("determinism:invalid.upper.bound.on.type.argument")
 public class LinkedHashMap<K,V>
     extends HashMap<K,V>
     implements Map<K,V>
@@ -223,6 +224,7 @@ public class LinkedHashMap<K,V>
     // internal utilities
 
     // link at the end of list
+    @SuppressWarnings("determinism:invalid.field.assignment")
     private void linkNodeLast(LinkedHashMap.Entry<K,V> p) {
         LinkedHashMap.Entry<K,V> last = tail;
         tail = p;
@@ -235,6 +237,7 @@ public class LinkedHashMap<K,V>
     }
 
     // apply src's links to dst
+    @SuppressWarnings("determinism:invalid.field.assignment")
     private void transferLinks(LinkedHashMap.Entry<K,V> src,
                                LinkedHashMap.Entry<K,V> dst) {
         LinkedHashMap.Entry<K,V> b = dst.before = src.before;
@@ -265,6 +268,7 @@ public class LinkedHashMap<K,V>
 
     Node<K,V> replacementNode(Node<K,V> p, Node<K,V> next) {
         LinkedHashMap.Entry<K,V> q = (LinkedHashMap.Entry<K,V>)p;
+        @SuppressWarnings("determinism:argument.type.incompatible")
         LinkedHashMap.Entry<K,V> t =
             new LinkedHashMap.Entry<K,V>(q.hash, q.key, q.value, next);
         transferLinks(q, t);
@@ -279,11 +283,13 @@ public class LinkedHashMap<K,V>
 
     TreeNode<K,V> replacementTreeNode(Node<K,V> p, Node<K,V> next) {
         LinkedHashMap.Entry<K,V> q = (LinkedHashMap.Entry<K,V>)p;
+        @SuppressWarnings("determinism:argument.type.incompatible")
         TreeNode<K,V> t = new TreeNode<K,V>(q.hash, q.key, q.value, next);
         transferLinks(q, t);
         return t;
     }
 
+    @SuppressWarnings("determinism:invalid.field.assignment")
     void afterNodeRemoval(Node<K,V> e) { // unlink
         LinkedHashMap.Entry<K,V> p =
             (LinkedHashMap.Entry<K,V>)e, b = p.before, a = p.after;
@@ -306,6 +312,7 @@ public class LinkedHashMap<K,V>
         }
     }
 
+    @SuppressWarnings("determinism:invalid.field.assignment")
     void afterNodeAccess(Node<K,V> e) { // move node to last
         LinkedHashMap.Entry<K,V> last;
         if (accessOrder && (last = tail) != e) {
@@ -347,6 +354,7 @@ public class LinkedHashMap<K,V>
      * @throws IllegalArgumentException if the initial capacity is negative
      *         or the load factor is nonpositive
      */
+    @SuppressWarnings("determinism:super.invocation.invalid")
     public @PolyDet LinkedHashMap(@PolyDet int initialCapacity, @PolyDet float loadFactor) {
         super(initialCapacity, loadFactor);
         accessOrder = false;
@@ -359,6 +367,7 @@ public class LinkedHashMap<K,V>
      * @param  initialCapacity the initial capacity
      * @throws IllegalArgumentException if the initial capacity is negative
      */
+    @SuppressWarnings("determinism:super.invocation.invalid")
     public @PolyDet LinkedHashMap(@PolyDet int initialCapacity) {
         super(initialCapacity);
         accessOrder = false;
@@ -368,6 +377,7 @@ public class LinkedHashMap<K,V>
      * Constructs an empty insertion-ordered <tt>LinkedHashMap</tt> instance
      * with the default initial capacity (16) and load factor (0.75).
      */
+    @SuppressWarnings("determinism:super.invocation.invalid")
     public @Det LinkedHashMap() {
         super();
         accessOrder = false;
@@ -382,6 +392,7 @@ public class LinkedHashMap<K,V>
      * @param  m the map whose mappings are to be placed in this map
      * @throws NullPointerException if the specified map is null
      */
+    @SuppressWarnings("determinism:super.invocation.invalid")
     public @PolyDet LinkedHashMap(@PolyDet Map<? extends K, ? extends V> m) {
         super();
         accessOrder = false;
@@ -399,6 +410,7 @@ public class LinkedHashMap<K,V>
      * @throws IllegalArgumentException if the initial capacity is negative
      *         or the load factor is nonpositive
      */
+    @SuppressWarnings("determinism:super.invocation.invalid")
     public @PolyDet LinkedHashMap(@PolyDet int initialCapacity,
                          @PolyDet float loadFactor,
                          @PolyDet boolean accessOrder) {
@@ -717,6 +729,7 @@ public class LinkedHashMap<K,V>
             return next != null;
         }
 
+        @SuppressWarnings("determinism:invalid.field.assignment")
         final LinkedHashMap.Entry<K,V> nextNode() {
             LinkedHashMap.Entry<K,V> e = next;
             if (modCount != expectedModCount)
@@ -728,6 +741,7 @@ public class LinkedHashMap<K,V>
             return e;
         }
 
+        @SuppressWarnings("determinism:invalid.field.assignment")
         public final void remove() {
             Node<K,V> p = current;
             if (p == null)
