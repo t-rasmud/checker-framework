@@ -26,6 +26,7 @@
 package java.util;
 
 import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
@@ -216,7 +217,7 @@ public interface SortedMap<K,V> extends Map<K,V> {
      * @return the first (lowest) key currently in this map
      * @throws NoSuchElementException if this map is empty
      */
-    K firstKey();
+    @PolyDet("down") K firstKey(@PolyDet SortedMap<K, V> this);
 
     /**
      * Returns the last (highest) key currently in this map.
@@ -224,7 +225,7 @@ public interface SortedMap<K,V> extends Map<K,V> {
      * @return the last (highest) key currently in this map
      * @throws NoSuchElementException if this map is empty
      */
-    K lastKey();
+    @PolyDet("down") K lastKey(@PolyDet SortedMap<K, V> this);
 
     /**
      * Returns a {@link Set} view of the keys contained in this map.

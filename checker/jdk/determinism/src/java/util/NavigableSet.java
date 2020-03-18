@@ -165,7 +165,7 @@ public interface NavigableSet<E> extends SortedSet<E> {
      *
      * @return an iterator over the elements in this set, in ascending order
      */
-    @PolyDet Iterator<E> iterator(@PolyDet NavigableSet<E> this);
+    @PolyDet("down") Iterator<E> iterator(@PolyDet NavigableSet<E> this);
 
     /**
      * Returns a reverse order view of the elements contained in this set.
@@ -182,7 +182,7 @@ public interface NavigableSet<E> extends SortedSet<E> {
      *
      * @return a reverse order view of this set
      */
-    @PolyDet NavigableSet<E> descendingSet(@PolyDet NavigableSet<E> this);
+    @PolyDet("down") NavigableSet<E> descendingSet(@PolyDet NavigableSet<E> this);
 
     /**
      * Returns an iterator over the elements in this set, in descending order.
@@ -190,7 +190,7 @@ public interface NavigableSet<E> extends SortedSet<E> {
      *
      * @return an iterator over the elements in this set, in descending order
      */
-    @PolyDet Iterator<E> descendingIterator(@PolyDet NavigableSet<E> this);
+    @PolyDet("down") Iterator<E> descendingIterator(@PolyDet NavigableSet<E> this);
 
     /**
      * Returns a view of the portion of this set whose elements range from
@@ -227,7 +227,7 @@ public interface NavigableSet<E> extends SortedSet<E> {
      *         has a restricted range, and {@code fromElement} or
      *         {@code toElement} lies outside the bounds of the range.
      */
-    @PolyDet NavigableSet<E> subSet(@PolyDet NavigableSet<E> this, E fromElement, @PolyDet boolean fromInclusive,
+    @PolyDet("down") NavigableSet<E> subSet(@PolyDet NavigableSet<E> this, E fromElement, @PolyDet boolean fromInclusive,
                            E toElement,   @PolyDet boolean toInclusive);
 
     /**
@@ -257,7 +257,7 @@ public interface NavigableSet<E> extends SortedSet<E> {
      *         restricted range, and {@code toElement} lies outside the
      *         bounds of the range
      */
-    @PolyDet NavigableSet<E> headSet(@PolyDet NavigableSet<E> this, E toElement, @PolyDet boolean inclusive);
+    @PolyDet("down") NavigableSet<E> headSet(@PolyDet NavigableSet<E> this, E toElement, @PolyDet boolean inclusive);
 
     /**
      * Returns a view of the portion of this set whose elements are greater
@@ -286,7 +286,7 @@ public interface NavigableSet<E> extends SortedSet<E> {
      *         restricted range, and {@code fromElement} lies outside the
      *         bounds of the range
      */
-    @PolyDet NavigableSet<E> tailSet(@PolyDet NavigableSet<E> this, E fromElement, @PolyDet boolean inclusive);
+    @PolyDet("down") NavigableSet<E> tailSet(@PolyDet NavigableSet<E> this, E fromElement, @PolyDet boolean inclusive);
 
     /**
      * {@inheritDoc}
@@ -297,7 +297,7 @@ public interface NavigableSet<E> extends SortedSet<E> {
      * @throws NullPointerException     {@inheritDoc}
      * @throws IllegalArgumentException {@inheritDoc}
      */
-    @PolyDet SortedSet<E> subSet(@PolyDet NavigableSet<E> this, E fromElement, E toElement);
+    @PolyDet("down") SortedSet<E> subSet(@PolyDet NavigableSet<E> this, E fromElement, E toElement);
 
     /**
      * {@inheritDoc}
@@ -308,7 +308,7 @@ public interface NavigableSet<E> extends SortedSet<E> {
      * @throws NullPointerException     {@inheritDoc}
      * @throws IllegalArgumentException {@inheritDoc}
      */
-    @PolyDet SortedSet<E> headSet(@PolyDet NavigableSet<E> this, E toElement);
+    @PolyDet("down") SortedSet<E> headSet(@PolyDet NavigableSet<E> this, E toElement);
 
     /**
      * {@inheritDoc}
@@ -319,5 +319,5 @@ public interface NavigableSet<E> extends SortedSet<E> {
      * @throws NullPointerException     {@inheritDoc}
      * @throws IllegalArgumentException {@inheritDoc}
      */
-    @PolyDet SortedSet<E> tailSet(@PolyDet NavigableSet<E> this, E fromElement);
+    @PolyDet("down") SortedSet<E> tailSet(@PolyDet NavigableSet<E> this, E fromElement);
 }

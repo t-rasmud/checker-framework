@@ -36,6 +36,7 @@
 package java.util;
 
 import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.framework.qual.HasQualifierParameter;
 
 /**
@@ -125,7 +126,7 @@ public interface NavigableMap<K,V> extends SortedMap<K,V> {
      * @throws NullPointerException if the specified key is null
      *         and this map does not permit null keys
      */
-    K lowerKey(K key);
+    @PolyDet("down") K lowerKey(@PolyDet NavigableMap<K, V> this, K key);
 
     /**
      * Returns a key-value mapping associated with the greatest key
@@ -154,7 +155,7 @@ public interface NavigableMap<K,V> extends SortedMap<K,V> {
      * @throws NullPointerException if the specified key is null
      *         and this map does not permit null keys
      */
-    K floorKey(K key);
+    @PolyDet("down") K floorKey(@PolyDet NavigableMap<K, V> this,K key);
 
     /**
      * Returns a key-value mapping associated with the least key
@@ -183,7 +184,7 @@ public interface NavigableMap<K,V> extends SortedMap<K,V> {
      * @throws NullPointerException if the specified key is null
      *         and this map does not permit null keys
      */
-    K ceilingKey(K key);
+    @PolyDet("down") K ceilingKey(@PolyDet NavigableMap<K, V> this, K key);
 
     /**
      * Returns a key-value mapping associated with the least key
@@ -212,7 +213,7 @@ public interface NavigableMap<K,V> extends SortedMap<K,V> {
      * @throws NullPointerException if the specified key is null
      *         and this map does not permit null keys
      */
-    K higherKey(K key);
+    @PolyDet("down") K higherKey(@PolyDet NavigableMap<K, V> this, K key);
 
     /**
      * Returns a key-value mapping associated with the least
@@ -239,7 +240,7 @@ public interface NavigableMap<K,V> extends SortedMap<K,V> {
      * @return the removed first entry of this map,
      *         or {@code null} if this map is empty
      */
-    Map.Entry<K,V> pollFirstEntry();
+    Map.@PolyDet("down") Entry<K,V> pollFirstEntry(@PolyDet NavigableMap<K, V> this);
 
     /**
      * Removes and returns a key-value mapping associated with
@@ -248,7 +249,7 @@ public interface NavigableMap<K,V> extends SortedMap<K,V> {
      * @return the removed last entry of this map,
      *         or {@code null} if this map is empty
      */
-    Map.Entry<K,V> pollLastEntry();
+    Map.@PolyDet("down") Entry<K,V> pollLastEntry(@PolyDet NavigableMap<K, V> this);
 
     /**
      * Returns a reverse order view of the mappings contained in this map.

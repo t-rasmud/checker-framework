@@ -151,7 +151,7 @@ public interface SortedSet<E> extends Set<E> {
      *         has a restricted range, and <tt>fromElement</tt> or
      *         <tt>toElement</tt> lies outside the bounds of the range
      */
-    @PolyDet SortedSet<E> subSet(@PolyDet SortedSet<E> this, E fromElement, E toElement);
+    @PolyDet("down") SortedSet<E> subSet(@PolyDet SortedSet<E> this, E fromElement, E toElement);
 
     /**
      * Returns a view of the portion of this set whose elements are
@@ -178,7 +178,7 @@ public interface SortedSet<E> extends Set<E> {
      *         restricted range, and <tt>toElement</tt> lies outside the
      *         bounds of the range
      */
-    @PolyDet SortedSet<E> headSet(@PolyDet SortedSet<E> this, E toElement);
+    @PolyDet("down") SortedSet<E> headSet(@PolyDet SortedSet<E> this, E toElement);
 
     /**
      * Returns a view of the portion of this set whose elements are
@@ -205,7 +205,7 @@ public interface SortedSet<E> extends Set<E> {
      *         restricted range, and <tt>fromElement</tt> lies outside the
      *         bounds of the range
      */
-    @PolyDet SortedSet<E> tailSet(@PolyDet SortedSet<E> this, E fromElement);
+    @PolyDet("down") SortedSet<E> tailSet(@PolyDet SortedSet<E> this, E fromElement);
 
     /**
      * Returns the first (lowest) element currently in this set.
