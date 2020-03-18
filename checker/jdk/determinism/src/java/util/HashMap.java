@@ -292,7 +292,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             this.next = next;
         }
 
-        public final K getKey()        { return key; }
+        public final @PolyDet("up") K getKey(@PolyDet Node<K,V> this)        { return key; }
         public final V getValue()      { return value; }
         public final String toString() { return key + "=" + value; }
 
@@ -402,7 +402,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * Holds cached entrySet(). Note that AbstractMap fields are used
      * for keySet() and values().
      */
-    transient Set<Map.Entry<K,V>> entrySet;
+    transient @PolyDet Set<Map.@PolyDet("down") Entry<K,V>> entrySet;
 
     /**
      * The number of key-value mappings contained in this map.
@@ -567,7 +567,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * @param key the key
      * @return the node, or null if none
      */
-    final Node<K,V> getNode(int hash, Object key) {
+    final @PolyDet("down") Node<K,V> getNode(@PolyDet HashMap<K, V> this, @PolyDet int hash, @PolyDet Object key) {
         Node<K,V>[] tab; Node<K,V> first, e; int n; K k;
         if ((tab = table) != null && (n = tab.length) > 0 &&
                 (first = tab[(n - 1) & hash]) != null) {
@@ -813,8 +813,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * @param movable if false do not move other nodes while removing
      * @return the node, or null if none
      */
-    final Node<K,V> removeNode(int hash, Object key, Object value,
-                               boolean matchValue, boolean movable) {
+    final @PolyDet("down") Node<K,V> removeNode(@PolyDet HashMap<@PolyDet("down") K, @PolyDet("down") V> this, @PolyDet("use") int hash, @PolyDet("use") Object key, @PolyDet("use") Object value,
+                               @PolyDet("use") boolean matchValue, @PolyDet("use") boolean movable) {
         Node<K,V>[] tab; Node<K,V> p; int n, index;
         if ((tab = table) != null && (n = tab.length) > 0 &&
                 (p = tab[index = (n - 1) & hash]) != null) {
@@ -1776,7 +1776,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 
     // Callbacks to allow LinkedHashMap post-actions
     void afterNodeAccess(Node<K,V> p) { }
-    void afterNodeInsertion(boolean evict) { }
+    void afterNodeInsertion(@PolyDet HashMap<K, V> this, @PolyDet("use") boolean evict) { }
     void afterNodeRemoval(Node<K,V> p) { }
 
     // Called only from writeObject, to ensure compatible ordering.

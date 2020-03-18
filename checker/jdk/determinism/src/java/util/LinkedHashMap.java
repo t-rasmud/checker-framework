@@ -254,6 +254,7 @@ public class LinkedHashMap<K,V>
 
     // overrides of HashMap hook methods
 
+    @SuppressWarnings("determinism:invalid.field.assignment")
     void reinitialize() {
         super.reinitialize();
         head = tail = null;
@@ -304,7 +305,8 @@ public class LinkedHashMap<K,V>
             a.before = b;
     }
 
-    void afterNodeInsertion(boolean evict) { // possibly remove eldest
+    @SuppressWarnings("determinism:argument.type.incompatible")
+    void afterNodeInsertion(@PolyDet LinkedHashMap<K, V> this, @PolyDet("use") boolean evict) { // possibly remove eldest
         LinkedHashMap.Entry<K,V> first;
         if (evict && (first = head) != null && removeEldestEntry(first)) {
             K key = first.key;
@@ -312,7 +314,7 @@ public class LinkedHashMap<K,V>
         }
     }
 
-    @SuppressWarnings("determinism:invalid.field.assignment")
+    @SuppressWarnings({"determinism:invalid.field.assignment", "determinism:unary.increment.type.incompatible"})
     void afterNodeAccess(Node<K,V> e) { // move node to last
         LinkedHashMap.Entry<K,V> last;
         if (accessOrder && (last = tail) != e) {
@@ -354,7 +356,7 @@ public class LinkedHashMap<K,V>
      * @throws IllegalArgumentException if the initial capacity is negative
      *         or the load factor is nonpositive
      */
-    @SuppressWarnings("determinism:super.invocation.invalid")
+    @SuppressWarnings({"determinism:super.invocation.invalid", "determinism:invalid.field.assignment"})
     public @PolyDet LinkedHashMap(@PolyDet int initialCapacity, @PolyDet float loadFactor) {
         super(initialCapacity, loadFactor);
         accessOrder = false;
@@ -367,7 +369,7 @@ public class LinkedHashMap<K,V>
      * @param  initialCapacity the initial capacity
      * @throws IllegalArgumentException if the initial capacity is negative
      */
-    @SuppressWarnings("determinism:super.invocation.invalid")
+    @SuppressWarnings({"determinism:super.invocation.invalid", "determinism:invalid.field.assignment"})
     public @PolyDet LinkedHashMap(@PolyDet int initialCapacity) {
         super(initialCapacity);
         accessOrder = false;
@@ -392,7 +394,7 @@ public class LinkedHashMap<K,V>
      * @param  m the map whose mappings are to be placed in this map
      * @throws NullPointerException if the specified map is null
      */
-    @SuppressWarnings("determinism:super.invocation.invalid")
+    @SuppressWarnings({"determinism:super.invocation.invalid", "determinism:invalid.field.assignment"})
     public @PolyDet LinkedHashMap(@PolyDet Map<? extends K, ? extends V> m) {
         super();
         accessOrder = false;
@@ -410,7 +412,7 @@ public class LinkedHashMap<K,V>
      * @throws IllegalArgumentException if the initial capacity is negative
      *         or the load factor is nonpositive
      */
-    @SuppressWarnings("determinism:super.invocation.invalid")
+    @SuppressWarnings({"determinism:super.invocation.invalid", "determinism:invalid.field.assignment"})
     public @PolyDet LinkedHashMap(@PolyDet int initialCapacity,
                          @PolyDet float loadFactor,
                          @PolyDet boolean accessOrder) {
@@ -451,8 +453,9 @@ public class LinkedHashMap<K,V>
      * The {@link #containsKey containsKey} operation may be used to
      * distinguish these two cases.
      */
-    public @PolyDet V get(@PolyDet LinkedHashMap<K, V> this, @PolyDet Object key) {
-        Node<K,V> e;
+    @SuppressWarnings("determinism:return.type.incompatible")
+    public @PolyDet("down") V get(@PolyDet LinkedHashMap<K, V> this, @PolyDet Object key) {
+        @PolyDet("down") Node<K,V> e;
         if ((e = getNode(hash(key), key)) == null)
             return null;
         if (accessOrder)
@@ -463,6 +466,7 @@ public class LinkedHashMap<K,V>
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("determinism:return.type.incompatible")
     public @PolyDet V getOrDefault(@PolyDet LinkedHashMap<K, V> this, @PolyDet Object key, V defaultValue) {
        Node<K,V> e;
        if ((e = getNode(hash(key), key)) == null)
@@ -475,6 +479,7 @@ public class LinkedHashMap<K,V>
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("determinism:invalid.field.assignment")
     public void clear(@PolyDet LinkedHashMap<@PolyDet("down") K, @PolyDet("down") V> this) {
         super.clear();
         head = tail = null;
@@ -543,23 +548,25 @@ public class LinkedHashMap<K,V>
      *
      * @return a set view of the keys contained in this map
      */
+    @SuppressWarnings("determinism:invalid.field.assignment")
     public @PolyDet Set<K> keySet(@PolyDet LinkedHashMap<K, V> this) {
-        Set<K> ks = keySet;
+        @PolyDet Set<K> ks = keySet;
         if (ks == null) {
-            ks = new LinkedKeySet();
+            ks = new @PolyDet LinkedKeySet();
             keySet = ks;
         }
         return ks;
     }
 
     final class LinkedKeySet extends AbstractSet<K> {
-        public final int size()                 { return size; }
+        public final @PolyDet("down") int size(@PolyDet LinkedKeySet this)                 { return size; }
         public final void clear()               { LinkedHashMap.this.clear(); }
-        public final Iterator<K> iterator() {
-            return new LinkedKeyIterator();
+        public final @PolyDet Iterator<K> iterator(@PolyDet LinkedKeySet this) {
+            return new @PolyDet LinkedKeyIterator();
         }
-        public final boolean contains(Object o) { return containsKey(o); }
-        public final boolean remove(Object key) {
+        @SuppressWarnings("determinism:method.invocation.invalid")
+        public final @PolyDet("down") boolean contains(@PolyDet LinkedKeySet this, @PolyDet Object o) { return containsKey(o); }
+        public final @PolyDet("down") boolean remove(@PolyDet LinkedKeySet this, @PolyDet Object key) {
             return removeNode(hash(key), key, null, false, true) != null;
         }
         public final Spliterator<K> spliterator()  {
@@ -596,22 +603,24 @@ public class LinkedHashMap<K,V>
      *
      * @return a view of the values contained in this map
      */
+    @SuppressWarnings("determinism:invalid.field.assignment")
     public @PolyDet Collection<V> values(@PolyDet LinkedHashMap<K, V> this) {
-        Collection<V> vs = values;
+        @PolyDet Collection<V> vs = values;
         if (vs == null) {
-            vs = new LinkedValues();
+            vs = new @PolyDet LinkedValues();
             values = vs;
         }
         return vs;
     }
 
     final class LinkedValues extends AbstractCollection<V> {
-        public final int size()                 { return size; }
+        public final @PolyDet("down") int size(@PolyDet LinkedValues this)                 { return size; }
         public final void clear()               { LinkedHashMap.this.clear(); }
         public final Iterator<V> iterator() {
-            return new LinkedValueIterator();
+            return new @PolyDet LinkedValueIterator();
         }
-        public final boolean contains(Object o) { return containsValue(o); }
+        @SuppressWarnings("determinism:method.invocation.invalid")
+        public final @PolyDet("down") boolean contains(@PolyDet LinkedValues this, @PolyDet Object o) { return containsValue(o); }
         public final Spliterator<V> spliterator() {
             return Spliterators.spliterator(this, Spliterator.SIZED |
                                             Spliterator.ORDERED);
@@ -646,26 +655,28 @@ public class LinkedHashMap<K,V>
      *
      * @return a set view of the mappings contained in this map
      */
+    @SuppressWarnings({"determinism:invalid.field.assignment", "determinism:assignment.type.incompatible"})
     public @PolyDet Set<Map.@PolyDet("down") Entry<K,V>> entrySet(@PolyDet LinkedHashMap<K, V> this) {
-        Set<Map.Entry<K,V>> es;
-        return (es = entrySet) == null ? (entrySet = new LinkedEntrySet()) : es;
+        @PolyDet Set<Map.@PolyDet("down") Entry<K,V>> es;
+        return (es = entrySet) == null ? (entrySet = new @PolyDet LinkedEntrySet()) : es;
     }
 
     final class LinkedEntrySet extends AbstractSet<Map.Entry<K,V>> {
-        public final int size()                 { return size; }
+        public final @PolyDet("down") int size(@PolyDet LinkedEntrySet this)                 { return size; }
         public final void clear()               { LinkedHashMap.this.clear(); }
-        public final Iterator<Map.Entry<K,V>> iterator() {
-            return new LinkedEntryIterator();
+        public final @PolyDet Iterator<Map.Entry<K,V>> iterator(@PolyDet LinkedEntrySet this) {
+            return new @PolyDet LinkedEntryIterator();
         }
-        public final boolean contains(Object o) {
+        @SuppressWarnings("determinism:method.invocation.invalid")
+        public final @PolyDet("down") boolean contains(@PolyDet LinkedEntrySet this, @PolyDet Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
-            Map.Entry<?,?> e = (Map.Entry<?,?>) o;
+            Map.@PolyDet("down") Entry<?,?> e = (Map.@PolyDet("down") Entry<?,?>) o;
             Object key = e.getKey();
-            Node<K,V> candidate = getNode(hash(key), key);
+            @PolyDet("down") Node<K,V> candidate = getNode(hash(key), key);
             return candidate != null && candidate.equals(e);
         }
-        public final boolean remove(Object o) {
+        public final @PolyDet("down") boolean remove(@PolyDet LinkedEntrySet this, @PolyDet Object o) {
             if (o instanceof Map.Entry) {
                 Map.Entry<?,?> e = (Map.Entry<?,?>) o;
                 Object key = e.getKey();
@@ -692,6 +703,7 @@ public class LinkedHashMap<K,V>
 
     // Map overrides
 
+    @SuppressWarnings("determinism:argument.type.incompatible")    //Issue#170
     public void forEach(@PolyDet LinkedHashMap<@PolyDet("down") K, @PolyDet("down") V> this, @PolyDet("use") BiConsumer<? super @PolyDet("up") K, ? super @PolyDet("up") V> action) {
         if (action == null)
             throw new NullPointerException();
@@ -702,6 +714,7 @@ public class LinkedHashMap<K,V>
             throw new ConcurrentModificationException();
     }
 
+    @SuppressWarnings("determinism:argument.type.incompatible")    //Issue#170
     public void replaceAll(@PolyDet LinkedHashMap<@PolyDet("down") K, @PolyDet("down") V> this, @PolyDet("use") BiFunction<? super K, ? super V, ? extends V> function) {
         if (function == null)
             throw new NullPointerException();
@@ -730,7 +743,7 @@ public class LinkedHashMap<K,V>
         }
 
         @SuppressWarnings("determinism:invalid.field.assignment")
-        final LinkedHashMap.Entry<K,V> nextNode() {
+        final LinkedHashMap.@PolyDet("up") Entry<K,V> nextNode(@PolyDet LinkedHashIterator this) {
             LinkedHashMap.Entry<K,V> e = next;
             if (modCount != expectedModCount)
                 throw new ConcurrentModificationException();
@@ -741,8 +754,8 @@ public class LinkedHashMap<K,V>
             return e;
         }
 
-        @SuppressWarnings("determinism:invalid.field.assignment")
-        public final void remove() {
+        @SuppressWarnings({"determinism:invalid.field.assignment", "determinism:argument.type.incompatible"})
+        public final void remove(@PolyDet("noOrderNonDet") LinkedHashIterator this) {
             Node<K,V> p = current;
             if (p == null)
                 throw new IllegalStateException();
@@ -757,18 +770,17 @@ public class LinkedHashMap<K,V>
 
     final class LinkedKeyIterator extends LinkedHashIterator
         implements Iterator<K> {
-        public final K next() { return nextNode().getKey(); }
+        public final @PolyDet("up") K next(@PolyDet LinkedKeyIterator this) { return nextNode().getKey(); }
     }
 
     final class LinkedValueIterator extends LinkedHashIterator
         implements Iterator<V> {
-        public final V next() { return nextNode().value; }
+        @SuppressWarnings("determinism:return.type.incompatible")
+        public final @PolyDet("up") V next(@PolyDet LinkedValueIterator this) { return nextNode().value; }
     }
 
     final class LinkedEntryIterator extends LinkedHashIterator
         implements Iterator<Map.Entry<K,V>> {
-        public final Map.Entry<K,V> next() { return nextNode(); }
+        public final Map.@PolyDet("up") Entry<K,V> next(@PolyDet LinkedEntryIterator this) { return nextNode(); }
     }
-
-
 }
