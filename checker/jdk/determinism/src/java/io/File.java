@@ -184,6 +184,7 @@ public class File
      *
      * @return true if the file path is invalid.
      */
+    @SuppressWarnings("determinism:invalid.field.assignment")
     final boolean isInvalid() {
         if (status == null) {
             status = (this.path.indexOf('\u0000') < 0) ? PathStatus.CHECKED
@@ -1154,17 +1155,17 @@ public class File
      * @see java.nio.file.Files#newDirectoryStream(Path,String)
      */
     public @NonDet String @NonDet[] list(@PolyDet File this, @PolyDet FilenameFilter filter) {
-        String names[] = list();
+        @NonDet String names @NonDet[] = list();
         if ((names == null) || (filter == null)) {
             return names;
         }
-        List<String> v = new ArrayList<>();
+        @NonDet List<String> v = new @NonDet ArrayList<>();
         for (int i = 0 ; i < names.length ; i++) {
             if (filter.accept(this, names[i])) {
                 v.add(names[i]);
             }
         }
-        return v.toArray(new String[v.size()]);
+        return v.toArray(new @NonDet String @NonDet[v.size()]);
     }
 
     /**
@@ -1206,12 +1207,12 @@ public class File
      * @since  1.2
      */
     public @NonDet File @NonDet[] listFiles(@PolyDet File this) {
-        String[] ss = list();
+        @NonDet String @NonDet[] ss = list();
         if (ss == null) return null;
         int n = ss.length;
-        File[] fs = new File[n];
+        @NonDet File @NonDet[] fs = new @NonDet File @NonDet[n];
         for (int i = 0; i < n; i++) {
-            fs[i] = new File(ss[i], this);
+            fs[i] = new @NonDet File(ss[i], this);
         }
         return fs;
     }
@@ -1247,13 +1248,13 @@ public class File
      * @see java.nio.file.Files#newDirectoryStream(Path,String)
      */
     public @NonDet File @NonDet[] listFiles(@PolyDet File this, @PolyDet FilenameFilter filter) {
-        String ss[] = list();
+        @NonDet String ss @NonDet[] = list();
         if (ss == null) return null;
-        ArrayList<File> files = new ArrayList<>();
+        @NonDet ArrayList<File> files = new @NonDet ArrayList<>();
         for (String s : ss)
             if ((filter == null) || filter.accept(this, s))
                 files.add(new File(s, this));
-        return files.toArray(new File[files.size()]);
+        return files.toArray(new @NonDet File @NonDet[files.size()]);
     }
 
     /**
@@ -1285,15 +1286,15 @@ public class File
      * @see java.nio.file.Files#newDirectoryStream(Path,java.nio.file.DirectoryStream.Filter)
      */
     public @NonDet File @NonDet[] listFiles(@PolyDet File this, @PolyDet FileFilter filter) {
-        String ss[] = list();
+        @NonDet String ss @NonDet[] = list();
         if (ss == null) return null;
-        ArrayList<File> files = new ArrayList<>();
+        @NonDet ArrayList<File> files = new @NonDet ArrayList<>();
         for (String s : ss) {
             File f = new File(s, this);
             if ((filter == null) || filter.accept(f))
                 files.add(f);
         }
-        return files.toArray(new File[files.size()]);
+        return files.toArray(new @NonDet File @NonDet[files.size()]);
     }
 
     /**
@@ -1901,6 +1902,7 @@ public class File
 
         // file name generation
         private static final SecureRandom random = new SecureRandom();
+        @SuppressWarnings("determinism:throw.type.invalid")
         static File generateFile(String prefix, String suffix, File dir)
             throws IOException
         {
@@ -2227,6 +2229,7 @@ public class File
      * @since   1.7
      * @see Path#toFile
      */
+    @SuppressWarnings("determinism:invalid.field.assignment")
     public Path toPath() {
         Path result = filePath;
         if (result == null) {
