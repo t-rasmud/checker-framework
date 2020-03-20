@@ -363,6 +363,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                     var, iteratedType, node.getExpression(), "enhancedfor.type.incompatible");
         }
 
+        scan(node.getVariable(), p);
+        scan(node.getExpression(), p);
+        scan(node.getStatement(), p);
         return null;
     }
 
