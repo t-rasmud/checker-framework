@@ -335,10 +335,15 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             } else if (varTree.getKind() == Kind.ARRAY_ACCESS) {
                 checker.reportError(varTree, INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno);
             } else {
-                if (!ElementUtils.isFinal(TreeUtils.elementFromTree(varTree))) {
-                    checker.reportError(varTree, INVALID_FIELD_ASSIGNMENT, varAnno, exprAnno);
-                } else {
+                Element varElem = TreeUtils.elementFromTree(varTree);
+                MethodTree enclosingMethod =
+                        TreeUtils.enclosingMethod(atypeFactory.getPath(varTree));
+                Element enclosingElem = TreeUtils.elementFromTree(enclosingMethod);
+                if (ElementUtils.isFinal(varElem)
+                        && enclosingElem.getKind() == ElementKind.CONSTRUCTOR) {
                     super.commonAssignmentCheck(varTree, valueExp, errorKey);
+                } else {
+                    checker.reportError(varTree, INVALID_FIELD_ASSIGNMENT, varAnno, exprAnno);
                 }
             }
         } else {
