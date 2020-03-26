@@ -13,5 +13,5 @@ echo "BUILDJDK=${BUILDJDK}"
 source "$SCRIPTDIR"/build.sh "${BUILDJDK}"
 
 
-## Run the tests for the type systems that use the annotated JDK
-./gradlew DeterminismTest IndexTest LockTest NullnessFbcTest OptionalTest -PuseLocalJdk --console=plain --warning-mode=all --no-daemon
+
+./gradlew test --console=plain --warning-mode=all --no-daemon
