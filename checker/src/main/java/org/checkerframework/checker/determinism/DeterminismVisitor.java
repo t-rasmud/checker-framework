@@ -356,14 +356,17 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             iteratedType.replaceAnnotation(atypeFactory.NONDET);
         }
         if (iterableType.hasAnnotation(atypeFactory.POLYDET)) {
-            iteratedType.replaceAnnotation(atypeFactory.POLYDET);
+            iteratedType.replaceAnnotation(atypeFactory.POLYDET_UP);
         }
         if (valid) {
             this.commonAssignmentCheck(
                     var, iteratedType, node.getExpression(), "enhancedfor.type.incompatible");
         }
 
-        return super.visitEnhancedForLoop(node, p);
+        scan(node.getVariable(), p);
+        scan(node.getExpression(), p);
+        scan(node.getStatement(), p);
+        return null;
     }
 
     /**

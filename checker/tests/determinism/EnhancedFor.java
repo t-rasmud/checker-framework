@@ -1,5 +1,6 @@
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import org.checkerframework.checker.determinism.qual.*;
 
@@ -20,5 +21,10 @@ public class EnhancedFor {
     void testArr(@Det int @OrderNonDet [] arr) {
         // :: error: (enhancedfor.type.incompatible)
         for (@Det int x : arr) {}
+    }
+
+    void testPoly(@PolyDet List<@PolyDet String> list) {
+        // :: error: (enhancedfor.type.incompatible)
+        for (@PolyDet String s : list) {}
     }
 }
