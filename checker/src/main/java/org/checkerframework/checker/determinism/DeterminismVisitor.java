@@ -79,6 +79,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     public static final @CompilerMessageKey String INVALID_COLLECTION_CONSTRUCTOR_INVOCATION =
             "invalid.collection.constructor.invocation";
 
+    /** Returns toString() method from String class. */
     private final ExecutableElement stringToString =
             TreeUtils.getMethod("java.lang.Object", "toString", 0, atypeFactory.getProcessingEnv());
     /**
