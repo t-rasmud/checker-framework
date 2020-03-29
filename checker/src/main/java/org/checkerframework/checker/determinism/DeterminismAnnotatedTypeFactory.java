@@ -164,8 +164,14 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 new DeterminismAnnotatedTypeFactory.DeterminismTypeAnnotator(this));
     }
 
+    /** TreeAnnotator for the Determinism checker. */
     private class DeterminismTreeAnnotator extends TreeAnnotator {
 
+        /**
+         * DeterminismTreeAnnotator constructor.
+         *
+         * @param atypeFactory AnnotatedTypeFactory
+         */
         public DeterminismTreeAnnotator(AnnotatedTypeFactory atypeFactory) {
             super(atypeFactory);
         }
@@ -865,8 +871,15 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         return fromNewClass(tree).getAnnotationInHierarchy(NONDET);
     }
 
+    /** GraphQualifierHierarchy for the Determinism checker. */
     class DeterminismQualifierHierarchy extends GraphQualifierHierarchy {
 
+        /**
+         * DeterminismQualifierHierarchy constructor.
+         *
+         * @param f MultiGraphFactory
+         * @param bottom AnnotationMirror
+         */
         public DeterminismQualifierHierarchy(MultiGraphFactory f, AnnotationMirror bottom) {
             super(f, bottom);
         }
