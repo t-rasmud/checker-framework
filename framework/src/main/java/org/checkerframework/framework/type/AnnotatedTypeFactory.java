@@ -3157,7 +3157,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
 
         Set<AnnotationMirror> results = AnnotationUtils.createAnnotationSet();
         // Retrieving the annotations from the element.
-        // This includes annotation inherited from superclasses, but not superinterfaces or
+        // This includes annotations inherited from superclasses, but not superinterfaces or
         // overriden methods.
         List<? extends AnnotationMirror> fromEle = elements.getAllAnnotationMirrors(elt);
         for (AnnotationMirror annotation : fromEle) {
