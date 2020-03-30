@@ -843,7 +843,7 @@ public final class Class<T> implements java.io.Serializable,
      *
      * @return an array of interfaces implemented by this class.
      */
-    public @PolyDet Class<?> @PolyDet("upDet") [] getInterfaces(@PolyDet Class<T> this) {
+    public @PolyDet Class<?> @PolyDet [] getInterfaces(@PolyDet Class<T> this) {
         ReflectionData<T> rd = reflectionData();
         if (rd == null) {
             // no cloning required
@@ -3432,7 +3432,7 @@ public final class Class<T> implements java.io.Serializable,
      * @since 1.8
      */
     @Override
-    public <A extends Annotation> A @OrderNonDet[] getAnnotationsByType(@PolyDet Class<T> this, @PolyDet Class<A> annotationClass) {
+    public <A extends Annotation> A @PolyDet("upDet") [] getAnnotationsByType(@PolyDet Class<T> this, @PolyDet Class<A> annotationClass) {
         Objects.requireNonNull(annotationClass);
 
         AnnotationData annotationData = annotationData();
@@ -3465,7 +3465,7 @@ public final class Class<T> implements java.io.Serializable,
      * @since 1.8
      */
     @Override
-    public <A extends Annotation> A @OrderNonDet[] getDeclaredAnnotationsByType(@PolyDet Class<T> this, @PolyDet Class<A> annotationClass) {
+    public <A extends Annotation> A @PolyDet("upDet") [] getDeclaredAnnotationsByType(@PolyDet Class<T> this, @PolyDet Class<A> annotationClass) {
         Objects.requireNonNull(annotationClass);
 
         return AnnotationSupport.getDirectlyAndIndirectlyPresent(annotationData().declaredAnnotations,

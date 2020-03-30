@@ -18,7 +18,7 @@ public class LocalizableKeyAnnotatedTypeFactory extends PropertyKeyAnnotatedType
     /**
      * Constructor.
      *
-     * @param checker
+     * @param checker BaseTypeChecker
      */
     public LocalizableKeyAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker);
