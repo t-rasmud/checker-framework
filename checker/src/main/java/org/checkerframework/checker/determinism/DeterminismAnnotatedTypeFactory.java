@@ -120,7 +120,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
      * Returns a list of properties supplied by the user via the command line option
      * "-AinputProperties".
      *
-     * @return List<String>
+     * @return List of properties
      */
     private List<String> buildInputProperties() {
         List<String> result = new ArrayList<>();

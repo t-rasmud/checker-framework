@@ -688,6 +688,11 @@ public class AnnotatedTypes {
      * {@code type} for a type that overrides {@code overridenMethod}. If one of the supertypes
      * overrides the method, then a pair of that supertype and the ExecutableElement for the method
      * are return. Otherwise, null is returned.
+     *
+     * @param type AnnotatedTypeMirror
+     * @param overridenMethod ExecutableElement
+     * @param env ProcessingEnvironment
+     * @return Pair<AnnotatedDeclaredType, ExecutableElement>
      */
     public static Pair<AnnotatedDeclaredType, ExecutableElement> getOverriddenMethod(
             AnnotatedTypeMirror type,
@@ -716,6 +721,11 @@ public class AnnotatedTypes {
     /**
      * Returns the method in type that overrides {@code overridenMethod} or null if no such method
      * exists.
+     *
+     * @param overridenMethod ExecutableElement
+     * @param type AnnotatedDeclaredType
+     * @param env ProcessingEnvironment
+     * @return ExecutableElement
      */
     private static ExecutableElement getMethod(
             ExecutableElement overridenMethod,

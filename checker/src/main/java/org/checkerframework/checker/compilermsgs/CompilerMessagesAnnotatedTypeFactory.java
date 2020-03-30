@@ -12,7 +12,7 @@ public class CompilerMessagesAnnotatedTypeFactory extends PropertyKeyAnnotatedTy
     /**
      * Constructor.
      *
-     * @param checker
+     * @param checker BaseTypeChecker
      */
     public CompilerMessagesAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker);
