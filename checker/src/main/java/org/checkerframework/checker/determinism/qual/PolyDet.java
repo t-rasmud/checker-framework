@@ -45,6 +45,8 @@ public @interface PolyDet {
      *
      * <p>If {@code @PolyDet} resolves to {@link Det}, {@code @PolyDet("upDet"} gets replaced by
      * {@link OrderNonDet}.
+     *
+     * @return default value
      */
     String value() default "";
 }

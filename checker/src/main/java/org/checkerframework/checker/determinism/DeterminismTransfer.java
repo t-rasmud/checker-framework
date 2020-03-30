@@ -56,7 +56,11 @@ import org.checkerframework.javacutil.TypesUtils;
  * </ul>
  */
 public class DeterminismTransfer extends CFTransfer {
-    /** Calls the superclass constructor. */
+    /**
+     * Calls the superclass constructor.
+     *
+     * @param analysis CFAbstractAnalysis
+     */
     public DeterminismTransfer(CFAbstractAnalysis<CFValue, CFStore, CFTransfer> analysis) {
         super(analysis);
     }

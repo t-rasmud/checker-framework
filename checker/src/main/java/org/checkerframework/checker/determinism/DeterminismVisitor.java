@@ -33,7 +33,11 @@ import org.checkerframework.javacutil.*;
 
 /** Visitor for the determinism type-system. */
 public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedTypeFactory> {
-    /** Calls the superclass constructor. */
+    /**
+     * Calls the superclass constructor.
+     *
+     * @param checker BaseTypeChecker
+     */
     public DeterminismVisitor(BaseTypeChecker checker) {
         super(checker);
     }
@@ -243,6 +247,10 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      *
      * <p>Example 2: If this method is called with {@code argTypeUpperBound} as {@code @Det Z}, it
      * returns {@code Det}.
+     *
+     * @param factory DeterminismAnnotatedTypeFactory
+     * @param argTypeUpperBound AnnotatedTypeMirror
+     * @return Upper bound annotation of {@code argTypeUpperBound}
      */
     public static AnnotationMirror getUpperBound(
             DeterminismAnnotatedTypeFactory factory, AnnotatedTypeMirror argTypeUpperBound) {
@@ -280,7 +288,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      *
      * &nbsp; @Det d1 = ...;
      * &nbsp; @Det d2 = ...;
-     * &nbsp; Set s = new HashSet<>();
+     * &nbsp; Set s = new HashSet {@literal <}{@literal >}();
      * &nbsp; s.add(d1); s.add(d2);
      * &nbsp; @NonDet nd = s.iterator().next();
      * &nbsp; nd.df = 22;
@@ -417,7 +425,11 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         return result;
     }
 
-    /** if {@code conditionalExpression} does not have the type {@code @Det}, reports an error. */
+    /**
+     * if {@code conditionalExpression} does not have the type {@code @Det}, reports an error.
+     *
+     * @param conditionalExpression ExpressionTree
+     */
     private void checkForDetConditional(ExpressionTree conditionalExpression) {
         // TODO-rashmi: conditionalExpression is null for some condition in buildJdk
         if (conditionalExpression == null) {
@@ -453,6 +465,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      *
      * <p>Polymorphic qualifiers that do affect instantiation: {@code @PolyDet} and
      * {@code @PolyDet("noOrderNonDet")} on a parameter or receiver type.
+     *
+     * @param methodTree MethodTree
      */
     private void checkMethodSignatureForPolyQuals(MethodTree methodTree) {
         // Errors that should be issued if @PolyDet or @PolyDet("noOrderNonDet") are not found.
@@ -618,6 +632,10 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      * Reports the given {@code errorMessage} if {@code subAnnotation} is not a subtype of {@code
      * superAnnotation}.
      *
+     * @param superAnnotation supertype AnnotationMirror
+     * @param subAnnotation subtype AnnotationMirror
+     * @param tree Tree
+     * @param errorMessage error message
      * @return true if {@code subAnnotation} is a subtype of {@code superAnnotation}, false
      *     otherwise
      */

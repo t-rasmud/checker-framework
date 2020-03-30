@@ -92,7 +92,11 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** The Object.equals method. */
     private final ExecutableElement equals;
 
-    /** Creates {@code @PolyDet} annotation mirror constants. */
+    /**
+     * Creates {@code @PolyDet} annotation mirror constants.
+     *
+     * @param checker BaseTypeChecker
+     */
     public DeterminismAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker);
 
@@ -336,12 +340,22 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             }
         }
 
-        /** Returns true if the node is an invocation of Map.get. */
+        /**
+         * Returns true if the node is an invocation of Map.get.
+         *
+         * @param tree Tree
+         * @return Returns true if the node is an invocation of Map.get
+         */
         boolean isMapGet(Tree tree) {
             return TreeUtils.isMethodInvocation(tree, mapGet, getProcessingEnv());
         }
 
-        /** Returns true if the node is an invocation of Map.getOrDefault. */
+        /**
+         * Returns true if the node is an invocation of Map.getOrDefault.
+         *
+         * @param tree Tree
+         * @return Returns true if the node is an invocation of Map.getOrDefault
+         */
         boolean isMapGetOrDefault(Tree tree) {
             return TreeUtils.isMethodInvocation(tree, mapGetOrDefault, getProcessingEnv());
         }
@@ -540,7 +554,11 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
      * Adds implicit annotation for main method formal parameter.
      */
     protected class DeterminismTypeAnnotator extends TypeAnnotator {
-        /** Calls the superclass constructor. */
+        /**
+         * Calls the superclass constructor.
+         *
+         * @param atypeFactory DeterminismAnnotatedTypeFactory
+         */
         public DeterminismTypeAnnotator(DeterminismAnnotatedTypeFactory atypeFactory) {
             super(atypeFactory);
         }
@@ -814,7 +832,11 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         return type;
     }
 
-    /** @return true if {@code subClass} is a subtype of {@code superClass} */
+    /**
+     * @param subClass subClass AnnotatedTypeMirror
+     * @param superClass superClass AnnotatedTypeMirror
+     * @return true if {@code subClass} is a subtype of {@code superClass}
+     */
     private boolean isSubClassOf(AnnotatedTypeMirror subClass, TypeMirror superClass) {
         return types.isSubtype(
                 types.erasure(subClass.getUnderlyingType()), types.erasure(superClass));
@@ -831,18 +853,27 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 types.erasure(tm.getUnderlyingType()), types.erasure(treeSetTypeMirror));
     }
 
-    /** @return true if {@code tm} is a List or a subtype of List */
+    /**
+     * @param tm TypeMirror
+     * @return true if {@code tm} is a List or a subtype of List
+     */
     public boolean isList(TypeMirror tm) {
         return types.isSubtype(types.erasure(tm), types.erasure(listInterfaceTypeMirror));
     }
 
-    /** @return true if {@code tm} is a TreeMap or a subtype of TreeMap */
+    /**
+     * @param tm AnnotatedTypeMirror
+     * @return true if {@code tm} is a TreeMap or a subtype of TreeMap
+     */
     public boolean isTreeMap(AnnotatedTypeMirror tm) {
         return types.isSubtype(
                 types.erasure(tm.getUnderlyingType()), types.erasure(treeMapTypeMirror));
     }
 
-    /** @return true if {@code tm} is the Arrays class */
+    /**
+     * @param tm TypeMirror
+     * @return true if {@code tm} is the Arrays class
+     */
     public boolean isArrays(TypeMirror tm) {
         return types.isSameType(tm, arraysTypeMirror);
     }
