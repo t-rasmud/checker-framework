@@ -743,7 +743,17 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     /** Creates OverrideChecker for DeterminismChecker */
     protected class DeterminismOverrideChecker extends OverrideChecker {
 
-        /** Constructor for DeterminismOverrideChecker */
+        /**
+         * Constructor for DeterminismOverrideChecker
+         *
+         * @param overriderTree Tree
+         * @param overrider AnnotatedExecutableType
+         * @param overridingType AnnotatedTypeMirror
+         * @param overridingReturnType AnnotatedTypeMirror
+         * @param overridden AnnotatedExecutableType
+         * @param overriddenType AnnotatedDeclaredType
+         * @param overriddenReturnType AnnotatedTypeMirror
+         */
         public DeterminismOverrideChecker(
                 Tree overriderTree,
                 AnnotatedTypeMirror.AnnotatedExecutableType overrider,
