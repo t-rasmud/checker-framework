@@ -115,12 +115,11 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                                             && AnnotationUtils.containsSame(
                                                     replacementsPolyDetUse, factory.NONDET))
                                     || (AnnotationUtils.containsSame(
-                                                            replacementsPolyDet, factory.DET)
-                                                    && (AnnotationUtils.containsSame(
-                                                            replacementsPolyDetUse, factory.NONDET))
-                                            || AnnotationUtils.containsSame(
-                                                    replacementsPolyDetUse,
-                                                    factory.ORDERNONDET)))) {
+                                                    replacementsPolyDet, factory.DET)
+                                            && AnnotationUtils.containsSame(
+                                                    replacementsPolyDetUse, factory.NONDET))
+                                    || AnnotationUtils.containsSame(
+                                            replacementsPolyDetUse, factory.ORDERNONDET))) {
                         type.replaceAnnotations(replacementsPolyDet);
                     } else {
                         type.replaceAnnotations(replacementsPolyDetUse);
