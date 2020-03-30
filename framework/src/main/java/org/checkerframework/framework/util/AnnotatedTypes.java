@@ -692,7 +692,8 @@ public class AnnotatedTypes {
      * @param type AnnotatedTypeMirror
      * @param overridenMethod ExecutableElement
      * @param env ProcessingEnvironment
-     * @return Pair<AnnotatedDeclaredType, ExecutableElement>
+     * @return the pair of {@code type} and the ExecutableElement that overrides {@code
+     *     overridenMethod}
      */
     public static Pair<AnnotatedDeclaredType, ExecutableElement> getOverriddenMethod(
             AnnotatedTypeMirror type,
