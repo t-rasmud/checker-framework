@@ -119,6 +119,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /**
      * Returns a list of properties supplied by the user via the command line option
      * "-AinputProperties".
+     *
+     * @return List<String>
      */
     private List<String> buildInputProperties() {
         List<String> result = new ArrayList<>();
@@ -131,7 +133,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         return result;
     }
 
-    /** Creates an AnnotationMirror for {@code @PolyDet} with {@code arg} as its value. */
+    /**
+     * Creates an AnnotationMirror for {@code @PolyDet} with {@code arg} as its value.
+     *
+     * @param arg String value
+     * @return the created AnnotationMirror
+     */
     private AnnotationMirror newPolyDet(String arg) {
         AnnotationBuilder builder = new AnnotationBuilder(processingEnv, PolyDet.class);
         builder.setValue("value", arg);
@@ -441,6 +448,11 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
      * This is because {@code @PolyDet("up")} is imprecise if no {@code @PolyDet} argument could be
      * {@code @OrderNonDet}. replaces the annotation on {@code methodInvocationType} with
      * {@code @NonDet}.
+     *
+     * @param node MethodInvocationTree
+     * @param methodInvocationType AnnotatedTypeMirror
+     * @param receiverType AnnotatedTypeMirror
+     * @param m ExecutableElement
      */
     private void refinePolyUp(
             MethodInvocationTree node,
@@ -482,8 +494,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
-     * Returns true if {@code @OrderNonDet List} appears as a top-level type argument in {@code
-     * atm}.
+     * @param atm AnnotatedTypeMirror
+     * @return true if {@code @OrderNonDet List} appears as a top-level type argument in {@code atm}
      */
     private boolean hasOrderNonDetListAsTypeArgument(AnnotatedTypeMirror atm) {
         AnnotatedDeclaredType declaredType = (AnnotatedDeclaredType) atm;
@@ -620,6 +632,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /**
      * If {@code type} is an array type that is not explicitly annotated, defaults all its nested
      * component types as {@code annotation}.
+     *
+     * @param type AnnotatedTypeMirror
+     * @param annotation AnnotationMirror
      */
     private void defaultArrayComponentType(AnnotatedTypeMirror type, AnnotationMirror annotation) {
         if (type.getKind() == TypeKind.ARRAY) {
@@ -648,6 +663,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
      * <p>Example: If this method is called with {@code annoArrType} as {@code int[][]} and {@code
      * annotation} as {@code @PolyDet}, the resulting {@code annoArrType} will be {@code @PolyDet
      * int @PolyDet[][]}
+     *
+     * @param annoArrType AnnotatedArrayType
+     * @param annotation AnnotationMirror
      */
     void recursiveDefaultArrayComponentType(
             AnnotatedArrayType annoArrType, AnnotationMirror annotation) {
@@ -686,6 +704,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
      * <p>Example: If this method is called with {@code annoArrType} as {@code List<List<Integer>>}
      * and {@code annotation} as {@code @PolyDet}, the resulting {@code type} will be {@code
      * List<@PolyDet List<@PolyDet Integer>>}
+     *
+     * @param type AnnotatedDeclaredType
+     * @param annotation AnnotationMirror
      */
     private void recursiveDefaultCollectionComponentType(
             AnnotatedDeclaredType type, AnnotationMirror annotation) {
@@ -702,12 +723,18 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
     }
 
-    /** Returns true if the node is an invocation of Object.equals. */
+    /**
+     * @param tree Tree
+     * @return true if the node is an invocation of Object.equals
+     */
     boolean isEqualsMethod(Tree tree) {
         return TreeUtils.isMethodInvocation(tree, equals, getProcessingEnv());
     }
 
-    /** @return true if {@code method} is a main method */
+    /**
+     * @param method ExecutableElement
+     * @return true if {@code method} is a main method
+     */
     public static boolean isMainMethod(ExecutableElement method) {
         if (method.getReturnType().getKind() == TypeKind.VOID
                 && method.getSimpleName().contentEquals("main")
@@ -878,7 +905,10 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         return types.isSameType(tm, arraysTypeMirror);
     }
 
-    /** @return true if {@code tm} is the Collections class */
+    /**
+     * @param tm TypeMirror
+     * @return true if {@code tm} is the Collections class
+     */
     public boolean isCollections(TypeMirror tm) {
         return types.isSameType(tm, collectionsTypeMirror);
     }
