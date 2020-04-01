@@ -785,12 +785,6 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                                 type.getAnnotationInHierarchy(NONDET));
                     }
                     type.addMissingAnnotations(Collections.singleton(DET));
-                } else if (isList(type.getUnderlyingType())
-                        && !type.isAnnotatedInHierarchy(NONDET)) {
-
-                    type.addAnnotation(DET);
-                    defaultCollectionComponentType(type, DET);
-
                 } else {
                     defaultArrayComponentType(type, POLYDET);
                 }
