@@ -6,4 +6,9 @@ public class PolyListDefault {
         // :: error: (assignment.type.incompatible)
         @Det List<@Det String> copy = list;
     }
+
+    public static void g(Set<@PolyDet String> set) {
+        // :: error: (assignment.type.incompatible)
+        @Det Set<@Det String> copy = set;
+    }
 }
