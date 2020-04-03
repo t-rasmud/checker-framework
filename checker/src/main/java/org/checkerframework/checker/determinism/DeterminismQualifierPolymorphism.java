@@ -99,32 +99,58 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                         type.replaceAnnotation(factory.POLYDET_USENOORDERNONDET);
                     }
                 }
-                if (replacementsPolyDet != null
-                        && !replacementsPolyDet.contains(factory.POLYDET)
-                        && !replacementsPolyDet.contains(factory.POLYDET_NOORDERNONDET)
-                        && !replacementsPolyDet.contains(factory.POLYDET_UP)
-                        && !replacementsPolyDet.contains(factory.POLYDET_DOWN)
-                        && !replacementsPolyDet.contains(factory.POLYDET_UPDET)
-                        && !replacementsPolyDet.contains(factory.POLYDET_USE)
-                        && !replacementsPolyDet.contains(factory.POLYDET_USENOORDERNONDET)) {
+                if (replacementsPolyDet != null) {
                     AnnotationMirrorSet replacementsPolyDetUse =
                             replacementsMapping.get(factory.POLYDET_USE);
-                    if (replacementsPolyDetUse == null
-                            || ((AnnotationUtils.containsSame(
-                                                    replacementsPolyDet, factory.ORDERNONDET)
-                                            && AnnotationUtils.containsSame(
-                                                    replacementsPolyDetUse, factory.NONDET))
-                                    || (AnnotationUtils.containsSame(
-                                                    replacementsPolyDet, factory.DET)
-                                            && AnnotationUtils.containsSame(
-                                                    replacementsPolyDetUse, factory.NONDET))
-                                    || AnnotationUtils.containsSame(
-                                            replacementsPolyDetUse, factory.ORDERNONDET))) {
-                        type.replaceAnnotations(replacementsPolyDet);
+                    if (replacementsPolyDetUse != null) {
+                        boolean replaceWithPolyUse = true;
+                        for (AnnotationMirror poly : replacementsPolyDet) {
+                            for (AnnotationMirror polyUse : replacementsPolyDetUse) {
+                                if (!atypeFactory
+                                        .getQualifierHierarchy()
+                                        .isSubtype(polyUse, poly)) {
+                                    replaceWithPolyUse = false;
+                                    break;
+                                }
+                            }
+                            if (!replaceWithPolyUse) {
+                                break;
+                            }
+                        }
+                        if (replaceWithPolyUse) {
+                            type.replaceAnnotations(replacementsPolyDetUse);
+                        } else {
+                            type.replaceAnnotations(replacementsPolyDet);
+                        }
                     } else {
-                        type.replaceAnnotations(replacementsPolyDetUse);
+                        type.replaceAnnotations(replacementsPolyDet);
                     }
                 }
+
+                //                if (replacementsPolyDet != null) {
+                //                    AnnotationMirrorSet replacementsPolyDetUse =
+                //                            replacementsMapping.get(factory.POLYDET_USE);
+                //                    if (replacementsPolyDetUse == null
+                //                            || ((AnnotationUtils.containsSame(
+                //                                                    replacementsPolyDet,
+                // factory.ORDERNONDET)
+                //                                            && AnnotationUtils.containsSame(
+                //                                                    replacementsPolyDetUse,
+                // factory.NONDET))
+                //                                    || (AnnotationUtils.containsSame(
+                //                                                    replacementsPolyDet,
+                // factory.DET)
+                //                                            && AnnotationUtils.containsSame(
+                //                                                    replacementsPolyDetUse,
+                // factory.NONDET))
+                //                                    || AnnotationUtils.containsSame(
+                //                                            replacementsPolyDetUse,
+                // factory.ORDERNONDET))) {
+                //                        type.replaceAnnotations(replacementsPolyDet);
+                //                    } else {
+                //                        type.replaceAnnotations(replacementsPolyDetUse);
+                //                    }
+                //                }
                 return;
             case "up":
                 if (replacements.contains(factory.DET)) {
