@@ -336,6 +336,10 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 super.commonAssignmentCheck(varTree, valueExp, errorKey);
                 // Assigning to a specific index of an "OrderNonDet" array is invalid.
                 if (varTree.getKind() == Kind.ARRAY_ACCESS) {
+                    varAnno =
+                            atypeFactory
+                                    .getAnnotatedType(((ArrayAccessTree) varTree).getExpression())
+                                    .getAnnotationInHierarchy(atypeFactory.NONDET);
                     if (AnnotationUtils.areSame(varAnno, atypeFactory.ORDERNONDET)
                             || AnnotationUtils.areSame(varAnno, atypeFactory.POLYDET)) {
                         checker.reportError(varTree, INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno);

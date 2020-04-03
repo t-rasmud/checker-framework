@@ -32,6 +32,7 @@ public class TestLocalArrays<T> {
     }
 
     void assignElement1(@Det int @OrderNonDet [] a, @Det int x, @Det int index) {
+        // :: error: (invalid.array.assignment)
         a[index] = x;
     }
 
@@ -44,7 +45,7 @@ public class TestLocalArrays<T> {
     void assignElement2(@Det int @OrderNonDet [] a, @Det int x, @NonDet int index) {
         // :: error: (invalid.array.assignment)
         a[index] = x;
-        // :: error: (assignment.type.incompatible)
+        // :: error: (assignment.type.incompatible)  :: error: (invalid.array.assignment)
         a[x] = index;
     }
 
