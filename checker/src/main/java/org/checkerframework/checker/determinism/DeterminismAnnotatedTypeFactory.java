@@ -243,7 +243,32 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             refineSystemGet(node, methodInvocationType);
             refineMapGet(node, methodInvocationType, receiverType);
 
+            checkMutationReceiver(node, methodInvocationType, receiverType);
+
             return super.visitMethodInvocation(node, methodInvocationType);
+        }
+
+        private void checkMutationReceiver(
+                MethodInvocationTree node,
+                AnnotatedTypeMirror methodInvocationType,
+                AnnotatedTypeMirror receiverType) {
+            if (isCollectionType(receiverType)) {
+                ExecutableElement m = TreeUtils.elementFromUse(node);
+                ExecutableElement listAdd =
+                        TreeUtils.getMethod("java.util.List", "add", 1, getProcessingEnv());
+                if (ElementUtils.isMethod(m, listAdd, getProcessingEnv())) {
+                    if (receiverType.hasAnnotation(NONDET)) {
+                        AnnotatedDeclaredType receiverDeclaredType =
+                                (AnnotatedDeclaredType) receiverType;
+                        AnnotatedTypeMirror argType =
+                                receiverDeclaredType.getTypeArguments().get(0);
+                        if (!argType.hasAnnotation(NONDET)) {
+                            //                            System.out.println("error mutation: " +
+                            // receiverType);
+                        }
+                    }
+                }
+            }
         }
 
         /**

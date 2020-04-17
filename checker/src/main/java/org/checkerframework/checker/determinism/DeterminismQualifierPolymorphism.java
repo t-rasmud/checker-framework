@@ -126,31 +126,6 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                         type.replaceAnnotations(replacementsPolyDet);
                     }
                 }
-
-                //                if (replacementsPolyDet != null) {
-                //                    AnnotationMirrorSet replacementsPolyDetUse =
-                //                            replacementsMapping.get(factory.POLYDET_USE);
-                //                    if (replacementsPolyDetUse == null
-                //                            || ((AnnotationUtils.containsSame(
-                //                                                    replacementsPolyDet,
-                // factory.ORDERNONDET)
-                //                                            && AnnotationUtils.containsSame(
-                //                                                    replacementsPolyDetUse,
-                // factory.NONDET))
-                //                                    || (AnnotationUtils.containsSame(
-                //                                                    replacementsPolyDet,
-                // factory.DET)
-                //                                            && AnnotationUtils.containsSame(
-                //                                                    replacementsPolyDetUse,
-                // factory.NONDET))
-                //                                    || AnnotationUtils.containsSame(
-                //                                            replacementsPolyDetUse,
-                // factory.ORDERNONDET))) {
-                //                        type.replaceAnnotations(replacementsPolyDet);
-                //                    } else {
-                //                        type.replaceAnnotations(replacementsPolyDetUse);
-                //                    }
-                //                }
                 return;
             case "up":
                 if (replacements.contains(factory.DET)) {
@@ -185,14 +160,7 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                 }
                 return;
             case "useNoOrderNonDet":
-                if (replacementsPolyDetNoOND != null
-                        && !replacementsPolyDetNoOND.contains(factory.POLYDET)
-                        && !replacementsPolyDetNoOND.contains(factory.POLYDET_NOORDERNONDET)
-                        && !replacementsPolyDetNoOND.contains(factory.POLYDET_UP)
-                        && !replacementsPolyDetNoOND.contains(factory.POLYDET_DOWN)
-                        && !replacementsPolyDetNoOND.contains(factory.POLYDET_UPDET)
-                        && !replacementsPolyDetNoOND.contains(factory.POLYDET_USE)
-                        && !replacementsPolyDetNoOND.contains(factory.POLYDET_USENOORDERNONDET)) {
+                if (replacementsPolyDetNoOND != null) {
                     AnnotationMirrorSet replacementsPolyDetUseNoOrderNonDet =
                             replacementsMapping.get(factory.POLYDET_USENOORDERNONDET);
                     if (replacementsPolyDetUseNoOrderNonDet != null
