@@ -15,7 +15,7 @@ class Issue953 {
     @SuppressWarnings("determinism")
     public static void test(MyStream<Integer> y) {
         // Type argument inference fails, so a checker may report a type checking error.
-        @SuppressWarnings("")
+        @SuppressWarnings("all")
         List<Integer> counts = y.collect(toList());
     }
 

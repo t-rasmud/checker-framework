@@ -12,7 +12,7 @@ pr:
 jobs:
 - job: all_tests_jdk8
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-latest'
   container: mdernst/cf-ubuntu-jdk8:latest
   steps:
   - checkout: self
@@ -22,7 +22,7 @@ jobs:
 ## TODO: Copy JDK annotations to JDK 11.
 # - job: all_tests_jdk11
 #   pool:
-#     vmImage: 'ubuntu-16.04'
+#     vmImage: 'ubuntu-latest'
 #   container: mdernst/cf-ubuntu-jdk11:latest
 #   steps:
 #   - checkout: self
@@ -31,7 +31,7 @@ jobs:
 #     displayName: test-cftests-all.sh
 - job: jdk_jar_jdk8
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-latest'
   container: mdernst/cf-ubuntu-jdk8:latest
   steps:
   - checkout: self
@@ -40,7 +40,7 @@ jobs:
     displayName: test-jdk-jar.sh
 - job: misc_jdk8
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-latest'
   container: mdernst/cf-ubuntu-jdk8-plus:latest
   steps:
   - checkout: self
@@ -49,7 +49,7 @@ jobs:
     displayName: test-misc.sh
 - job: misc_jdk11
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-latest'
   container: mdernst/cf-ubuntu-jdk11-plus:latest
   steps:
   - checkout: self
@@ -58,52 +58,43 @@ jobs:
     displayName: test-misc.sh
 - job: cf_inference_jdk8
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-latest'
   container: mdernst/cf-ubuntu-jdk8:latest
   steps:
   - checkout: self
     fetchDepth: 25
   - bash: ./checker/bin-devel/test-cf-inference.sh
     displayName: test-cf-inference.sh
-- job: plume_lib_jdk8
+- job: cf_inference_jdk11
   pool:
-    vmImage: 'ubuntu-16.04'
-  container: mdernst/cf-ubuntu-jdk8:latest
-  steps:
-  - checkout: self
-    fetchDepth: 25
-  - bash: ./checker/bin-devel/test-plume-lib.sh
-    displayName: test-plume-lib.sh
-- job: plume_lib_jdk11
-  pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-latest'
   container: mdernst/cf-ubuntu-jdk11:latest
   steps:
   - checkout: self
     fetchDepth: 25
-  - bash: ./checker/bin-devel/test-plume-lib.sh
-    displayName: test-plume-lib.sh
+  - bash: ./checker/bin-devel/test-cf-inference.sh
+    displayName: test-cf-inference.sh
 - job: daikon_jdk8
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-latest'
   container: mdernst/cf-ubuntu-jdk8:latest
   steps:
   - checkout: self
     fetchDepth: 25
   - bash: ./checker/bin-devel/test-daikon.sh
     displayName: test-daikon.sh
-#- job: daikon_jdk11
-#  pool:
-#    vmImage: 'ubuntu-16.04'
-#  container: mdernst/cf-ubuntu-jdk11:latest
-#  steps:
-#  - checkout: self
-#    fetchDepth: 25
-#  - bash: ./checker/bin-devel/test-daikon.sh
-#    displayName: test-daikon.sh
+- job: daikon_jdk11
+  pool:
+    vmImage: 'ubuntu-latest'
+  container: mdernst/cf-ubuntu-jdk11:latest
+  steps:
+  - checkout: self
+    fetchDepth: 25
+  - bash: ./checker/bin-devel/test-daikon.sh
+    displayName: test-daikon.sh
 - job: guava_jdk8
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-latest'
   container: mdernst/cf-ubuntu-jdk8:latest
   timeoutInMinutes: 300
   steps:
@@ -113,7 +104,7 @@ jobs:
     displayName: test-guava.sh
 - job: guava_jdk11
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-latest'
   container: mdernst/cf-ubuntu-jdk11:latest
   timeoutInMinutes: 300
   steps:
@@ -121,9 +112,27 @@ jobs:
     fetchDepth: 25
   - bash: ./checker/bin-devel/test-guava.sh
     displayName: test-guava.sh
+- job: plume_lib_jdk8
+  pool:
+    vmImage: 'ubuntu-latest'
+  container: mdernst/cf-ubuntu-jdk8:latest
+  steps:
+  - checkout: self
+    fetchDepth: 25
+  - bash: ./checker/bin-devel/test-plume-lib.sh
+    displayName: test-plume-lib.sh
+- job: plume_lib_jdk11
+  pool:
+    vmImage: 'ubuntu-latest'
+  container: mdernst/cf-ubuntu-jdk11:latest
+  steps:
+  - checkout: self
+    fetchDepth: 25
+  - bash: ./checker/bin-devel/test-plume-lib.sh
+    displayName: test-plume-lib.sh
 - job: downstream_jdk11
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-latest'
   container: mdernst/cf-ubuntu-jdk11:latest
   steps:
   - checkout: self
@@ -132,7 +141,7 @@ jobs:
     displayName: test-downstream.sh
 - job: downstream_jdk8
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-latest'
   container: mdernst/cf-ubuntu-jdk8:latest
   steps:
   - checkout: self
