@@ -26,12 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -1365,14 +1360,15 @@ public abstract class GenericAnnotatedTypeFactory<
         if (dependentTypesHelper != null) {
             dependentTypesHelper.viewpointAdaptConstructor(tree, method);
         }
+        poly.resolve(tree, method);
         return mType;
     }
 
-    @Override
-    protected void constructorFromUsePreSubstitution(
-            NewClassTree tree, AnnotatedExecutableType type) {
-        poly.resolve(tree, type);
-    }
+    //    @Override
+    //    protected void constructorFromUsePreSubstitution(
+    //            NewClassTree tree, AnnotatedExecutableType type) {
+    //        poly.resolve(tree, type);
+    //    }
 
     @Override
     public AnnotatedTypeMirror getMethodReturnType(MethodTree m) {
@@ -1574,16 +1570,19 @@ public abstract class GenericAnnotatedTypeFactory<
         if (dependentTypesHelper != null) {
             dependentTypesHelper.viewpointAdaptMethod(tree, method);
         }
+        poly.resolve(tree, method);
         return mType;
     }
 
-    @Override
-    public void methodFromUsePreSubstitution(ExpressionTree tree, AnnotatedExecutableType type) {
-        super.methodFromUsePreSubstitution(tree, type);
-        if (tree instanceof MethodInvocationTree) {
-            poly.resolve((MethodInvocationTree) tree, type);
-        }
-    }
+    //    @Override
+    //    public void methodFromUsePreSubstitution(ExpressionTree tree, AnnotatedExecutableType
+    // type) {
+    //        super.methodFromUsePreSubstitution(tree, type);
+    //        System.out.println("method from use pre: " + type);
+    //        if (tree instanceof MethodInvocationTree) {
+    //            poly.resolve((MethodInvocationTree) tree, type);
+    //        }
+    //    }
 
     @Override
     public List<AnnotatedTypeParameterBounds> typeVariablesFromUse(
