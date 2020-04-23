@@ -466,7 +466,7 @@ public class ArrayList<E> extends AbstractList<E>
      * @param e element to be appended to this list
      * @return <tt>true</tt> (as specified by {@link Collection#add})
      */
-    @SuppressWarnings("determinism:unary.increment.type.incompatible")
+    @SuppressWarnings({"determinism:unary.increment.type.incompatible", "determinism:invalid.array.assignment"})
     @CheckReceiverForMutation
     public @PolyDet("down") boolean add(@PolyDet ArrayList<@PolyDet("use") E> this, @PolyDet("use") E e) {
         ensureCapacityInternal(size + 1);  // Increments modCount!!
@@ -483,7 +483,7 @@ public class ArrayList<E> extends AbstractList<E>
      * @param element element to be inserted
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
-    @SuppressWarnings("determinism:unary.increment.type.incompatible")
+    @SuppressWarnings({"determinism:unary.increment.type.incompatible", "determinism:invalid.array.assignment"})
     @CheckReceiverForMutation
     public void add(@PolyDet ArrayList<@PolyDet("use") E> this, @PolyDet("use") int index, @PolyDet("use") E element) {
         rangeCheckForAdd(index);
@@ -555,7 +555,7 @@ public class ArrayList<E> extends AbstractList<E>
      * Private remove method that skips bounds checking and does not
      * return the value removed.
      */
-    @SuppressWarnings("determinism:unary.decrement.type.incompatible")
+    @SuppressWarnings({"determinism:unary.decrement.type.incompatible", "determinism:invalid.array.assignment"})
     private void fastRemove(int index) {
         modCount++;
         int numMoved = size - index - 1;
@@ -569,7 +569,7 @@ public class ArrayList<E> extends AbstractList<E>
      * Removes all of the elements from this list.  The list will
      * be empty after this call returns.
      */
-    @SuppressWarnings("determinism:invalid.field.assignment")
+    @SuppressWarnings({"determinism:invalid.field.assignment", "determinism:invalid.array.assignment"})
     @CheckReceiverForMutation
     public void clear(@PolyDet ArrayList<@PolyDet("use") E> this) {
         modCount++;
@@ -741,7 +741,7 @@ public class ArrayList<E> extends AbstractList<E>
         return batchRemove(c, true);
     }
 
-    @SuppressWarnings({"determinism:invalid.field.assignment", "determinism:assignment.type.incompatible", "determinism:method.invocation.invalid"})
+    @SuppressWarnings({"determinism:invalid.field.assignment", "determinism:assignment.type.incompatible", "determinism:method.invocation.invalid", "determinism:invalid.array.assignment"})
     private @PolyDet("down") boolean batchRemove(@PolyDet Collection<?> c, @PolyDet boolean complement) {
         final @PolyDet("use") Object @PolyDet[] elementData = this.elementData;
         int r = 0, w = 0;
@@ -802,6 +802,7 @@ public class ArrayList<E> extends AbstractList<E>
      * Reconstitute the <tt>ArrayList</tt> instance from a stream (that is,
      * deserialize it).
      */
+    @SuppressWarnings("determinism:invalid.array.assignment")
     private void readObject(java.io.ObjectInputStream s)
         throws java.io.IOException, ClassNotFoundException {
         elementData = EMPTY_ELEMENTDATA;
@@ -1447,7 +1448,7 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     @Override
-    @SuppressWarnings({"determinism:invalid.field.assignment", "determinism:assignment.type.incompatible"})
+    @SuppressWarnings({"determinism:invalid.field.assignment", "determinism:assignment.type.incompatible", "determinism:invalid.array.assignment"})
     @CheckReceiverForMutation
     public @PolyDet("down") boolean removeIf(@PolyDet ArrayList<@PolyDet("use") E> this, @PolyDet("use") Predicate<? super E> filter) {
         Objects.requireNonNull(filter);
@@ -1492,7 +1493,7 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "determinism:invalid.array.assignment"})
     @CheckReceiverForMutation
     public void replaceAll(@PolyDet ArrayList<@PolyDet("use") E> this, @PolyDet("use") UnaryOperator<E> operator) {
         Objects.requireNonNull(operator);

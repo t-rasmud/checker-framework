@@ -1383,7 +1383,7 @@ public class Arrays {
     /**
      * Swaps x[a] with x[b].
      */
-    @SuppressWarnings("determinism:assignment.type.incompatible")
+    @SuppressWarnings({"determinism:assignment.type.incompatible", "determinism:invalid.array.assignment"})
     private static void swap(@PolyDet("down") Object @PolyDet [] x, @PolyDet("down") int a, @PolyDet("down") int b) {
         Object t = x[a];
         x[a] = x[b];
@@ -3182,7 +3182,7 @@ public class Arrays {
      * @since 1.6
      */
     @SuppressWarnings("unchecked")
-    public static <@PolyDet("down") T extends @PolyDet("use") Object> @PolyDet("down") T @PolyDet[] copyOf(T @PolyDet[] original, @PolyDet("use") int newLength) {
+    public static <T extends @PolyDet("use") Object> @PolyDet("down") T @PolyDet[] copyOf(T @PolyDet[] original, @PolyDet("use") int newLength) {
         return (@PolyDet("down") T @PolyDet[]) copyOf(original, newLength, (Class<? extends T[]>) original.getClass());
     }
 
@@ -3841,7 +3841,7 @@ public class Arrays {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "determinism:invalid.array.assignment"})
         public <T extends @PolyDet("down") Object> @PolyDet("down") T @PolyDet [] toArray(@PolyDet ArrayList<@PolyDet("down") E> this, T @PolyDet [] a) {
             int size = size();
             if (a.length < size)
@@ -3900,6 +3900,7 @@ public class Arrays {
         }
 
         @Override
+        @SuppressWarnings("determinism:invalid.array.assignment")
         public void replaceAll(UnaryOperator<E> operator) {
             Objects.requireNonNull(operator);
             @PolyDet("use") E @PolyDet[] a = this.a;
@@ -4711,7 +4712,7 @@ public class Arrays {
      * @throws NullPointerException if the generator is null
      * @since 1.8
      */
-    @SuppressWarnings("assignment.type.incompatible")
+    @SuppressWarnings({"determinism:assignment.type.incompatible", "determinism:invalid.array.assignment"})
     public static <@PolyDet("down") T extends @PolyDet("down") Object> void setAll(T @PolyDet [] array, @PolyDet("use") IntFunction<? extends T> generator) {
         Objects.requireNonNull(generator);
         for (int i = 0; i < array.length; i++)
@@ -4752,7 +4753,7 @@ public class Arrays {
      * @throws NullPointerException if the generator is null
      * @since 1.8
      */
-    @SuppressWarnings("assignment.type.incompatible")
+    @SuppressWarnings({"determinism:assignment.type.incompatible", "determinism:invalid.array.assignment"})
     public static void setAll(@PolyDet("down") int @PolyDet [] array, @PolyDet("use") IntUnaryOperator generator) {
         Objects.requireNonNull(generator);
         for (int i = 0; i < array.length; i++)
@@ -4792,7 +4793,7 @@ public class Arrays {
      * @throws NullPointerException if the generator is null
      * @since 1.8
      */
-    @SuppressWarnings("assignment.type.incompatible")
+    @SuppressWarnings({"determinism:assignment.type.incompatible", "determinism:invalid.array.assignment"})
     public static void setAll(@PolyDet("down") long @PolyDet [] array, @PolyDet("use") IntToLongFunction generator) {
         Objects.requireNonNull(generator);
         for (int i = 0; i < array.length; i++)
@@ -4832,7 +4833,7 @@ public class Arrays {
      * @throws NullPointerException if the generator is null
      * @since 1.8
      */
-    @SuppressWarnings("assignment.type.incompatible")
+    @SuppressWarnings({"determinism:assignment.type.incompatible", "determinism:invalid.array.assignment"})
     public static void setAll(@PolyDet("down") double @PolyDet [] array, @PolyDet("use") IntToDoubleFunction generator) {
         Objects.requireNonNull(generator);
         for (int i = 0; i < array.length; i++)

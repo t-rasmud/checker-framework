@@ -163,12 +163,26 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                 if (replacementsPolyDetNoOND != null) {
                     AnnotationMirrorSet replacementsPolyDetUseNoOrderNonDet =
                             replacementsMapping.get(factory.POLYDET_USENOORDERNONDET);
-                    if (replacementsPolyDetUseNoOrderNonDet != null
-                            && (AnnotationUtils.containsSame(
-                                            replacementsPolyDetNoOND, factory.NONDET)
-                                    && AnnotationUtils.containsSame(
-                                            replacementsPolyDetUseNoOrderNonDet, factory.DET))) {
-                        type.replaceAnnotations(replacementsPolyDetUseNoOrderNonDet);
+                    if (replacementsPolyDetUseNoOrderNonDet != null) {
+                        boolean replaceWithPolyUseNoOnd = true;
+                        for (AnnotationMirror poly : replacementsPolyDetNoOND) {
+                            for (AnnotationMirror polyUse : replacementsPolyDetUseNoOrderNonDet) {
+                                if (!atypeFactory
+                                        .getQualifierHierarchy()
+                                        .isSubtype(polyUse, poly)) {
+                                    replaceWithPolyUseNoOnd = false;
+                                    break;
+                                }
+                            }
+                            if (!replaceWithPolyUseNoOnd) {
+                                break;
+                            }
+                        }
+                        if (replaceWithPolyUseNoOnd) {
+                            type.replaceAnnotations(replacementsPolyDetUseNoOrderNonDet);
+                        } else {
+                            type.replaceAnnotations(replacementsPolyDetNoOND);
+                        }
                     } else {
                         type.replaceAnnotations(replacementsPolyDetNoOND);
                     }

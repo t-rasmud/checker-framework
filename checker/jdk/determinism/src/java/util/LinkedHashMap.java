@@ -567,6 +567,7 @@ public class LinkedHashMap<K,V>
         }
         @SuppressWarnings("determinism:method.invocation.invalid")
         public final @PolyDet("down") boolean contains(@PolyDet LinkedKeySet this, @PolyDet Object o) { return containsKey(o); }
+        @SuppressWarnings("determinism:argument.type.incompatible")
         public final @PolyDet("down") boolean remove(@PolyDet LinkedKeySet this, @PolyDet Object key) {
             return removeNode(hash(key), key, null, false, true) != null;
         }
@@ -677,6 +678,7 @@ public class LinkedHashMap<K,V>
             @PolyDet("down") Node<K,V> candidate = getNode(hash(key), key);
             return candidate != null && candidate.equals(e);
         }
+        @SuppressWarnings("determinism:argument.type.incompatible")
         public final @PolyDet("down") boolean remove(@PolyDet LinkedEntrySet this, @PolyDet Object o) {
             if (o instanceof Map.Entry) {
                 Map.Entry<?,?> e = (Map.Entry<?,?>) o;
