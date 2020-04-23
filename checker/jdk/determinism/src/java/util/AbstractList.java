@@ -108,7 +108,8 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws IllegalArgumentException if some property of this element
      *         prevents it from being added to this list
      */
-    @PolyDet("down") public boolean add(@PolyDet AbstractList<@PolyDet("down") E>this, @PolyDet("use") E e) {
+    @CheckReceiverForMutation
+    @PolyDet("down") public boolean add(@PolyDet AbstractList<@PolyDet("use") E>this, @PolyDet("use") E e) {
         add(size(), e);
         return true;
     }
@@ -148,7 +149,8 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws IllegalArgumentException      {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public void add(@PolyDet AbstractList<@PolyDet("down") E> this, @PolyDet("use") int index, @PolyDet("use") E element) {
+    @CheckReceiverForMutation
+    public void add(@PolyDet AbstractList<@PolyDet("use") E> this, @PolyDet("use") int index, @PolyDet("use") E element) {
         throw new UnsupportedOperationException();
     }
 
@@ -234,7 +236,8 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws UnsupportedOperationException if the {@code clear} operation
      *         is not supported by this list
      */
-    public void clear(@PolyDet AbstractList<@PolyDet("down") E> this) {
+    @CheckReceiverForMutation
+    public void clear(@PolyDet AbstractList<@PolyDet("use") E> this) {
         removeRange(0, size());
     }
 
@@ -257,7 +260,8 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws IllegalArgumentException      {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public @PolyDet("down") boolean addAll(@PolyDet AbstractList<@PolyDet("down") E> this, @PolyDet("use") int index, @PolyDet("use") Collection<? extends E> c) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean addAll(@PolyDet AbstractList<@PolyDet("use") E> this, @PolyDet("use") int index, @PolyDet("use") Collection<? extends E> c) {
         rangeCheckForAdd(index);
         boolean modified = false;
         for (E e : c) {

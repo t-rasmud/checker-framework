@@ -480,7 +480,8 @@ public class LinkedHashMap<K,V>
      * {@inheritDoc}
      */
     @SuppressWarnings("determinism:invalid.field.assignment")
-    public void clear(@PolyDet LinkedHashMap<@PolyDet("down") K, @PolyDet("down") V> this) {
+    @CheckReceiverForMutation
+    public void clear(@PolyDet LinkedHashMap<@PolyDet("use") K, @PolyDet("down") V> this) {
         super.clear();
         head = tail = null;
     }
@@ -704,7 +705,8 @@ public class LinkedHashMap<K,V>
     // Map overrides
 
     @SuppressWarnings("determinism:argument.type.incompatible")    //Issue#170
-    public void forEach(@PolyDet LinkedHashMap<@PolyDet("down") K, @PolyDet("down") V> this, @PolyDet("use") BiConsumer<? super @PolyDet("up") K, ? super @PolyDet("up") V> action) {
+    @CheckReceiverForMutation
+    public void forEach(@PolyDet LinkedHashMap<@PolyDet("use") K, @PolyDet("down") V> this, @PolyDet("use") BiConsumer<? super @PolyDet("up") K, ? super @PolyDet("up") V> action) {
         if (action == null)
             throw new NullPointerException();
         int mc = modCount;
@@ -715,7 +717,8 @@ public class LinkedHashMap<K,V>
     }
 
     @SuppressWarnings("determinism:argument.type.incompatible")    //Issue#170
-    public void replaceAll(@PolyDet LinkedHashMap<@PolyDet("down") K, @PolyDet("down") V> this, @PolyDet("use") BiFunction<? super K, ? super V, ? extends V> function) {
+    @CheckReceiverForMutation
+    public void replaceAll(@PolyDet LinkedHashMap<@PolyDet("use") K, @PolyDet("down") V> this, @PolyDet("use") BiFunction<? super K, ? super V, ? extends V> function) {
         if (function == null)
             throw new NullPointerException();
         int mc = modCount;

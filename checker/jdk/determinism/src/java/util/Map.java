@@ -242,7 +242,8 @@ public interface Map<K,V> {
      * @throws IllegalArgumentException if some property of the specified key
      *         or value prevents it from being stored in this map
      */
-    V put(@PolyDet Map<@PolyDet("down") K,@PolyDet("down") V> this, @PolyDet("use") K key, @PolyDet("use") V value);
+    @CheckReceiverForMutation
+    V put(@PolyDet Map<@PolyDet("use") K,@PolyDet("use") V> this, @PolyDet("use") K key, @PolyDet("use") V value);
 
     /**
      * Removes the mapping for a key from this map if it is present
@@ -274,7 +275,8 @@ public interface Map<K,V> {
      *         map does not permit null keys
      * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      */
-    V remove(@PolyDet Map<@PolyDet("down") K,@PolyDet("down") V> this, @PolyDet("use") Object key);
+    @CheckReceiverForMutation
+    V remove(@PolyDet Map<@PolyDet("use") K,@PolyDet("use") V> this, @PolyDet("use") Object key);
 
 
     // Bulk Operations
@@ -298,7 +300,8 @@ public interface Map<K,V> {
      * @throws IllegalArgumentException if some property of a key or value in
      *         the specified map prevents it from being stored in this map
      */
-    void putAll(@PolyDet Map<@PolyDet("down") K,@PolyDet("down") V> this, @PolyDet("use") Map<? extends K, ? extends V> m);
+    @CheckReceiverForMutation
+    void putAll(@PolyDet Map<@PolyDet("use") K,@PolyDet("use") V> this, @PolyDet("use") Map<? extends K, ? extends V> m);
 
     /**
      * Removes all of the mappings from this map (optional operation).
@@ -307,7 +310,8 @@ public interface Map<K,V> {
      * @throws UnsupportedOperationException if the <tt>clear</tt> operation
      *         is not supported by this map
      */
-    void clear(@PolyDet Map<@PolyDet("down") K,@PolyDet("down") V> this);
+    @CheckReceiverForMutation
+    void clear(@PolyDet Map<@PolyDet("use") K,@PolyDet("use") V> this);
 
 
     // Views
@@ -621,7 +625,8 @@ public interface Map<K,V> {
      * removed during iteration
      * @since 1.8
      */
-    default void forEach(@PolyDet Map<@PolyDet("down") K,@PolyDet("down") V> this, @PolyDet("use") BiConsumer<? super @PolyDet("up") K, ? super @PolyDet("up") V> action) {
+    @CheckReceiverForMutation
+    default void forEach(@PolyDet Map<@PolyDet("use") K,@PolyDet("use") V> this, @PolyDet("use") BiConsumer<? super @PolyDet("up") K, ? super @PolyDet("up") V> action) {
         Objects.requireNonNull(action);
         for (Map.Entry<K, V> entry : entrySet()) {
             K k;
@@ -676,7 +681,8 @@ public interface Map<K,V> {
      * removed during iteration
      * @since 1.8
      */
-    default void replaceAll(@PolyDet Map<@PolyDet("down") K,@PolyDet("down") V> this, @PolyDet("use") BiFunction<? super K, ? super V, ? extends V> function) {
+    @CheckReceiverForMutation
+    default void replaceAll(@PolyDet Map<@PolyDet("use") K,@PolyDet("use") V> this, @PolyDet("use") BiFunction<? super K, ? super V, ? extends V> function) {
         Objects.requireNonNull(function);
         for (Map.Entry<K, V> entry : entrySet()) {
             K k;
@@ -744,7 +750,8 @@ public interface Map<K,V> {
      *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      * @since 1.8
      */
-    default V putIfAbsent(@PolyDet Map<@PolyDet("down") K,@PolyDet("down") V> this, K key, V value) {
+    @CheckReceiverForMutation
+    default V putIfAbsent(@PolyDet Map<@PolyDet("use") K,@PolyDet("use") V> this, K key, V value) {
         V v = get(key);
         if (v == null) {
             v = put(key, value);
@@ -787,7 +794,8 @@ public interface Map<K,V> {
      *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      * @since 1.8
      */
-    default @PolyDet("down") boolean remove(@PolyDet Map<@PolyDet("down") K,@PolyDet("down") V> this, @PolyDet Object key, @PolyDet Object value) {
+    @CheckReceiverForMutation
+    default @PolyDet("down") boolean remove(@PolyDet Map<@PolyDet("use") K,@PolyDet("use") V> this, @PolyDet Object key, @PolyDet Object value) {
         Object curValue = get(key);
         if (!Objects.equals(curValue, value) ||
                 (curValue == null && !containsKey(key))) {
@@ -839,7 +847,8 @@ public interface Map<K,V> {
      *         or value prevents it from being stored in this map
      * @since 1.8
      */
-    default @PolyDet("down") boolean replace(@PolyDet Map<@PolyDet("down") K,@PolyDet("down") V> this, K key, V oldValue, V newValue) {
+    @CheckReceiverForMutation
+    default @PolyDet("down") boolean replace(@PolyDet Map<@PolyDet("use") K,@PolyDet("use") V> this, K key, V oldValue, V newValue) {
         Object curValue = get(key);
         if (!Objects.equals(curValue, oldValue) ||
                 (curValue == null && !containsKey(key))) {
@@ -887,7 +896,8 @@ public interface Map<K,V> {
      *         or value prevents it from being stored in this map
      * @since 1.8
      */
-    default V replace(@PolyDet Map<@PolyDet("down") K,@PolyDet("down") V> this, K key, V value) {
+    @CheckReceiverForMutation
+    default V replace(@PolyDet Map<@PolyDet("use") K,@PolyDet("use") V> this, K key, V value) {
         V curValue;
         if (((curValue = get(key)) != null) || containsKey(key)) {
             curValue = put(key, value);
@@ -954,7 +964,8 @@ public interface Map<K,V> {
      *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      * @since 1.8
      */
-    default V computeIfAbsent(@PolyDet Map<@PolyDet("down") K,@PolyDet("down") V> this, K key,
+    @CheckReceiverForMutation
+    default V computeIfAbsent(@PolyDet Map<@PolyDet("use") K,@PolyDet("use") V> this, K key,
                                        @PolyDet("use") Function<? super K, ? extends V> mappingFunction) {
         Objects.requireNonNull(mappingFunction);
         V v;
@@ -1015,7 +1026,8 @@ public interface Map<K,V> {
      *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      * @since 1.8
      */
-    default V computeIfPresent(@PolyDet Map<@PolyDet("down") K,@PolyDet("down") V> this, K key,
+    @CheckReceiverForMutation
+    default V computeIfPresent(@PolyDet Map<@PolyDet("use") K,@PolyDet("use") V> this, K key,
                                         @PolyDet("use") BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
         V oldValue;
@@ -1091,7 +1103,8 @@ public interface Map<K,V> {
      *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
      * @since 1.8
      */
-    default V compute(@PolyDet Map<@PolyDet("down") K,@PolyDet("down") V> this, K key,
+    @CheckReceiverForMutation
+    default V compute(@PolyDet Map<@PolyDet("use") K,@PolyDet("use") V> this, K key,
                                @PolyDet("use") BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
         V oldValue = get(key);
@@ -1172,7 +1185,8 @@ public interface Map<K,V> {
      *         null
      * @since 1.8
      */
-    default V merge(@PolyDet Map<@PolyDet("down") K,@PolyDet("down") V> this, K key, V value,
+    @CheckReceiverForMutation
+    default V merge(@PolyDet Map<@PolyDet("use") K,@PolyDet("use") V> this, K key, V value,
                              @PolyDet("use") BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
         Objects.requireNonNull(value);

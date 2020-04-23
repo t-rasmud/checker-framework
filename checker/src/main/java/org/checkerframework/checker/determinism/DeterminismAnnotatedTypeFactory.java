@@ -7,11 +7,7 @@ import javax.lang.model.element.*;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import org.checkerframework.checker.determinism.qual.CollectionType;
-import org.checkerframework.checker.determinism.qual.Det;
-import org.checkerframework.checker.determinism.qual.NonDet;
-import org.checkerframework.checker.determinism.qual.OrderNonDet;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.common.basetype.BaseAnnotatedTypeFactory;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.framework.flow.CFAbstractAnalysis;
@@ -252,20 +248,30 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 MethodInvocationTree node,
                 AnnotatedTypeMirror methodInvocationType,
                 AnnotatedTypeMirror receiverType) {
-            if (isCollectionType(receiverType)) {
-                ExecutableElement m = TreeUtils.elementFromUse(node);
-                ExecutableElement listAdd =
-                        TreeUtils.getMethod("java.util.List", "add", 1, getProcessingEnv());
-                if (ElementUtils.isMethod(m, listAdd, getProcessingEnv())) {
-                    if (receiverType.hasAnnotation(NONDET)) {
-                        AnnotatedDeclaredType receiverDeclaredType =
-                                (AnnotatedDeclaredType) receiverType;
-                        AnnotatedTypeMirror argType =
-                                receiverDeclaredType.getTypeArguments().get(0);
-                        if (!argType.hasAnnotation(NONDET)) {
-                            //                            System.out.println("error mutation: " +
-                            // receiverType);
-                        }
+            if (!isCollectionType(receiverType)) {
+                return;
+            }
+            ExecutableElement methodElement = TreeUtils.elementFromUse(node);
+            AnnotationMirror declAnnotation =
+                    atypeFactory.getDeclAnnotation(methodElement, CheckReceiverForMutation.class);
+            if (declAnnotation == null) {
+                return;
+            }
+            if (receiverType.hasAnnotation(NONDET)) {
+                AnnotatedDeclaredType receiverDeclaredType = (AnnotatedDeclaredType) receiverType;
+                List<AnnotatedTypeMirror> typeArgs = receiverDeclaredType.getTypeArguments();
+                for (AnnotatedTypeMirror argType : typeArgs) {
+                    if (!argType.hasAnnotation(NONDET)) {
+                        checker.reportError(node, "invalid.mutation", receiverType);
+                    }
+                }
+            }
+            if (receiverType.hasAnnotation(POLYDET_UP)) {
+                AnnotatedDeclaredType receiverDeclaredType = (AnnotatedDeclaredType) receiverType;
+                List<AnnotatedTypeMirror> typeArgs = receiverDeclaredType.getTypeArguments();
+                for (AnnotatedTypeMirror argType : typeArgs) {
+                    if (argType.hasAnnotation(POLYDET) || argType.hasAnnotation(POLYDET_DOWN)) {
+                        checker.reportError(node, "invalid.mutation", receiverType);
                     }
                 }
             }

@@ -467,7 +467,8 @@ public class ArrayList<E> extends AbstractList<E>
      * @return <tt>true</tt> (as specified by {@link Collection#add})
      */
     @SuppressWarnings("determinism:unary.increment.type.incompatible")
-    public @PolyDet("down") boolean add(@PolyDet ArrayList<@PolyDet("down") E> this, @PolyDet("use") E e) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean add(@PolyDet ArrayList<@PolyDet("use") E> this, @PolyDet("use") E e) {
         ensureCapacityInternal(size + 1);  // Increments modCount!!
         elementData[size++] = e;
         return true;
@@ -483,7 +484,8 @@ public class ArrayList<E> extends AbstractList<E>
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     @SuppressWarnings("determinism:unary.increment.type.incompatible")
-    public void add(@PolyDet ArrayList<@PolyDet("down") E> this, @PolyDet("use") int index, @PolyDet("use") E element) {
+    @CheckReceiverForMutation
+    public void add(@PolyDet ArrayList<@PolyDet("use") E> this, @PolyDet("use") int index, @PolyDet("use") E element) {
         rangeCheckForAdd(index);
 
         ensureCapacityInternal(size + 1);  // Increments modCount!!
@@ -531,7 +533,8 @@ public class ArrayList<E> extends AbstractList<E>
      * @param o element to be removed from this list, if present
      * @return <tt>true</tt> if this list contained the specified element
      */
-    public @PolyDet("down") boolean remove(@PolyDet ArrayList<@PolyDet("down") E> this, @PolyDet("use") Object o) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean remove(@PolyDet ArrayList<@PolyDet("use") E> this, @PolyDet("use") Object o) {
         if (o == null) {
             for (int index = 0; index < size; index++)
                 if (elementData[index] == null) {
@@ -567,7 +570,8 @@ public class ArrayList<E> extends AbstractList<E>
      * be empty after this call returns.
      */
     @SuppressWarnings("determinism:invalid.field.assignment")
-    public void clear(@PolyDet ArrayList<@PolyDet("down") E> this) {
+    @CheckReceiverForMutation
+    public void clear(@PolyDet ArrayList<@PolyDet("use") E> this) {
         modCount++;
 
         // clear to let GC do its work
@@ -591,7 +595,8 @@ public class ArrayList<E> extends AbstractList<E>
      * @throws NullPointerException if the specified collection is null
      */
     @SuppressWarnings("determinism:invalid.field.assignment")
-    public @PolyDet("down") boolean addAll(@PolyDet ArrayList<@PolyDet("down") E> this, @PolyDet("use") Collection<? extends E> c) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean addAll(@PolyDet ArrayList<@PolyDet("use") E> this, @PolyDet("use") Collection<? extends E> c) {
         @PolyDet("use") Object @PolyDet[] a = c.toArray();
         int numNew = a.length;
         ensureCapacityInternal(size + numNew);  // Increments modCount
@@ -616,7 +621,8 @@ public class ArrayList<E> extends AbstractList<E>
      * @throws NullPointerException if the specified collection is null
      */
     @SuppressWarnings("determinism:invalid.field.assignment")
-    public @PolyDet("down") boolean addAll(@PolyDet ArrayList<@PolyDet("down") E> this, @PolyDet("use") int index, @PolyDet("use") Collection<? extends E> c) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean addAll(@PolyDet ArrayList<@PolyDet("use") E> this, @PolyDet("use") int index, @PolyDet("use") Collection<? extends E> c) {
         rangeCheckForAdd(index);
 
         @PolyDet("use") Object @PolyDet[] a = c.toArray();
@@ -707,7 +713,8 @@ public class ArrayList<E> extends AbstractList<E>
      *         or if the specified collection is null
      * @see Collection#contains(Object)
      */
-    public @PolyDet("down") boolean removeAll(@PolyDet ArrayList<@PolyDet("down") E> this, @PolyDet("use") Collection<?> c) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean removeAll(@PolyDet ArrayList<@PolyDet("use") E> this, @PolyDet("use") Collection<?> c) {
         Objects.requireNonNull(c);
         return batchRemove(c, false);
     }
@@ -728,7 +735,8 @@ public class ArrayList<E> extends AbstractList<E>
      *         or if the specified collection is null
      * @see Collection#contains(Object)
      */
-    public @PolyDet("down") boolean retainAll(@PolyDet ArrayList<@PolyDet("down") E> this, @PolyDet("use") Collection<?> c) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean retainAll(@PolyDet ArrayList<@PolyDet("use") E> this, @PolyDet("use") Collection<?> c) {
         Objects.requireNonNull(c);
         return batchRemove(c, true);
     }
@@ -1440,7 +1448,8 @@ public class ArrayList<E> extends AbstractList<E>
 
     @Override
     @SuppressWarnings({"determinism:invalid.field.assignment", "determinism:assignment.type.incompatible"})
-    public @PolyDet("down") boolean removeIf(@PolyDet ArrayList<@PolyDet("down") E> this, @PolyDet("use") Predicate<? super E> filter) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean removeIf(@PolyDet ArrayList<@PolyDet("use") E> this, @PolyDet("use") Predicate<? super E> filter) {
         Objects.requireNonNull(filter);
         // figure out which elements are to be removed
         // any exception thrown from the filter predicate at this stage
@@ -1484,7 +1493,8 @@ public class ArrayList<E> extends AbstractList<E>
 
     @Override
     @SuppressWarnings("unchecked")
-    public void replaceAll(@PolyDet ArrayList<@PolyDet("down") E> this, @PolyDet("use") UnaryOperator<E> operator) {
+    @CheckReceiverForMutation
+    public void replaceAll(@PolyDet ArrayList<@PolyDet("use") E> this, @PolyDet("use") UnaryOperator<E> operator) {
         Objects.requireNonNull(operator);
         final int expectedModCount = modCount;
         final int size = this.size;
@@ -1499,7 +1509,8 @@ public class ArrayList<E> extends AbstractList<E>
 
     @Override
     @SuppressWarnings({"unchecked", "determinism:argument.type.incompatible"})
-    public void sort(@PolyDet ArrayList<@PolyDet("down") E> this, @PolyDet("use") Comparator<? super E> c) {
+    @CheckReceiverForMutation
+    public void sort(@PolyDet ArrayList<@PolyDet("use") E> this, @PolyDet("use") Comparator<? super E> c) {
         final int expectedModCount = modCount;
         Arrays.sort((@PolyDet("down") E @PolyDet []) elementData, 0, size, c);
         if (modCount != expectedModCount) {

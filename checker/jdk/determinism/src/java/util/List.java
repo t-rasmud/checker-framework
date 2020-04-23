@@ -238,7 +238,8 @@ public interface List<E> extends Collection<E> {
      * @throws IllegalArgumentException if some property of this element
      *         prevents it from being added to this list
      */
-    @PolyDet("down") boolean add(@PolyDet List<@PolyDet("down") E>this, @PolyDet("use") E e);
+    @CheckReceiverForMutation
+    @PolyDet("down") boolean add(@PolyDet List<@PolyDet("use") E>this, @PolyDet("use") E e);
 
     /**
      * Removes the first occurrence of the specified element from this list,
@@ -261,7 +262,8 @@ public interface List<E> extends Collection<E> {
      * @throws UnsupportedOperationException if the <tt>remove</tt> operation
      *         is not supported by this list
      */
-    @PolyDet("down") boolean remove(@PolyDet List<@PolyDet("down") E> this, @PolyDet("use") Object o);
+    @CheckReceiverForMutation
+    @PolyDet("down") boolean remove(@PolyDet List<@PolyDet("use") E> this, @PolyDet("use") Object o);
 
 
     // Bulk Modification Operations
@@ -307,7 +309,8 @@ public interface List<E> extends Collection<E> {
      *         specified collection prevents it from being added to this list
      * @see #add(Object)
      */
-    @PolyDet("down") boolean addAll(@PolyDet List<@PolyDet("down") E> this, @PolyDet("use") Collection<? extends E> c);
+    @CheckReceiverForMutation
+    @PolyDet("down") boolean addAll(@PolyDet List<@PolyDet("use") E> this, @PolyDet("use") Collection<? extends E> c);
 
     /**
      * Inserts all of the elements in the specified collection into this
@@ -336,7 +339,8 @@ public interface List<E> extends Collection<E> {
      * @throws IndexOutOfBoundsException if the index is out of range
      *         (<tt>index &lt; 0 || index &gt; size()</tt>)
      */
-    @PolyDet("down") boolean addAll(@PolyDet List<@PolyDet("down") E> this, @PolyDet("use") int index, @PolyDet("use") Collection<? extends E> c);
+    @CheckReceiverForMutation
+    @PolyDet("down") boolean addAll(@PolyDet List<@PolyDet("use") E> this, @PolyDet("use") int index, @PolyDet("use") Collection<? extends E> c);
 
     /**
      * Removes from this list all of its elements that are contained in the
@@ -356,7 +360,8 @@ public interface List<E> extends Collection<E> {
      * @see #remove(Object)
      * @see #contains(Object)
      */
-    @PolyDet("down") boolean removeAll(@PolyDet List<@PolyDet("down") E> this, @PolyDet("use") Collection<?> c);
+    @CheckReceiverForMutation
+    @PolyDet("down") boolean removeAll(@PolyDet List<@PolyDet("use") E> this, @PolyDet("use") Collection<?> c);
 
     /**
      * Retains only the elements in this list that are contained in the
@@ -378,7 +383,8 @@ public interface List<E> extends Collection<E> {
      * @see #remove(Object)
      * @see #contains(Object)
      */
-    @PolyDet("down") boolean retainAll(@PolyDet List<@PolyDet("down") E> this, @PolyDet("use") Collection<?> c);
+    @CheckReceiverForMutation
+    @PolyDet("down") boolean retainAll(@PolyDet List<@PolyDet("use") E> this, @PolyDet("use") Collection<?> c);
 
     /**
      * Replaces each element of this list with the result of applying the
@@ -409,7 +415,8 @@ public interface List<E> extends Collection<E> {
      *         (<a href="Collection.html#optional-restrictions">optional</a>)
      * @since 1.8
      */
-    default void replaceAll(@PolyDet List<@PolyDet("down") E> this, @PolyDet("use") UnaryOperator<E> operator) {
+    @CheckReceiverForMutation
+    default void replaceAll(@PolyDet List<@PolyDet("use") E> this, @PolyDet("use") UnaryOperator<E> operator) {
         Objects.requireNonNull(operator);
         final ListIterator<E> li = this.listIterator();
         while (li.hasNext()) {
@@ -476,7 +483,8 @@ public interface List<E> extends Collection<E> {
      * @since 1.8
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    default void sort(@PolyDet List<@PolyDet("down") E> this, @PolyDet("use") Comparator<? super E> c) {
+    @CheckReceiverForMutation
+    default void sort(@PolyDet List<@PolyDet("use") E> this, @PolyDet("use") Comparator<? super E> c) {
         Object[] a = this.toArray();
         Arrays.sort(a, (Comparator) c);
         ListIterator<E> i = this.listIterator();
@@ -585,7 +593,8 @@ public interface List<E> extends Collection<E> {
      * @throws IndexOutOfBoundsException if the index is out of range
      *         (<tt>index &lt; 0 || index &gt; size()</tt>)
      */
-    void add(@PolyDet List<@PolyDet("down") E> this, @PolyDet("use") int index, @PolyDet("use") E element);
+    @CheckReceiverForMutation
+    void add(@PolyDet List<@PolyDet("use") E> this, @PolyDet("use") int index, @PolyDet("use") E element);
 
     /**
      * Removes the element at the specified position in this list (optional

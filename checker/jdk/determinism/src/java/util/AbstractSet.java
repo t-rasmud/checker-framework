@@ -169,7 +169,8 @@ public abstract class AbstractSet<E> extends AbstractCollection<E> implements Se
      * @see #remove(Object)s
      * @see #contains(Object)
      */
-    public @PolyDet("down") boolean removeAll(@PolyDet AbstractSet<@PolyDet("down") E> this, @PolyDet("use") Collection<?> c) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean removeAll(@PolyDet AbstractSet<@PolyDet("use") E> this, @PolyDet("use") Collection<?> c) {
         Objects.requireNonNull(c);
         boolean modified = false;
 

@@ -218,7 +218,8 @@ public class HashSet<E>
      * @return <tt>true</tt> if this set did not already contain the specified
      * element
      */
-    public @PolyDet("down") boolean add(@PolyDet HashSet<@PolyDet("down") E> this, @PolyDet("use") E e) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean add(@PolyDet HashSet<@PolyDet("use") E> this, @PolyDet("use") E e) {
         return map.put(e, PRESENT)==null;
     }
 
@@ -234,7 +235,8 @@ public class HashSet<E>
      * @param o object to be removed from this set, if present
      * @return <tt>true</tt> if the set contained the specified element
      */
-    public @PolyDet("down") boolean remove(@PolyDet HashSet<@PolyDet("down") E> this, @PolyDet("use") Object o) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean remove(@PolyDet HashSet<@PolyDet("use") E> this, @PolyDet("use") Object o) {
         return map.remove(o)==PRESENT;
     }
 
@@ -242,7 +244,8 @@ public class HashSet<E>
      * Removes all of the elements from this set.
      * The set will be empty after this call returns.
      */
-    public void clear(@PolyDet HashSet<@PolyDet("down") E> this) {
+    @CheckReceiverForMutation
+    public void clear(@PolyDet HashSet<@PolyDet("use") E> this) {
         map.clear();
     }
 

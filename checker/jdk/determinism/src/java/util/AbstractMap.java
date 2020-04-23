@@ -209,7 +209,8 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * @throws NullPointerException          {@inheritDoc}
      * @throws IllegalArgumentException      {@inheritDoc}
      */
-    public @PolyDet("down") V put(@PolyDet AbstractMap<@PolyDet("down") K,@PolyDet("down") V> this, @PolyDet("use") K key, @PolyDet("use") V value) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") V put(@PolyDet AbstractMap<@PolyDet("use") K,@PolyDet("use") V> this, @PolyDet("use") K key, @PolyDet("use") V value) {
         throw new UnsupportedOperationException();
     }
 
@@ -235,7 +236,8 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * @throws ClassCastException            {@inheritDoc}
      * @throws NullPointerException          {@inheritDoc}
      */
-    public @PolyDet("down") V remove(@PolyDet AbstractMap<@PolyDet("down") K,@PolyDet("down") V> this, @PolyDet("use") Object key) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") V remove(@PolyDet AbstractMap<@PolyDet("use") K,@PolyDet("use") V> this, @PolyDet("use") Object key) {
         Iterator<Entry<K,V>> i = entrySet().iterator();
         Entry<K,V> correctEntry = null;
         if (key==null) {
@@ -280,7 +282,8 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * @throws NullPointerException          {@inheritDoc}
      * @throws IllegalArgumentException      {@inheritDoc}
      */
-    public void putAll(@PolyDet AbstractMap<@PolyDet("down") K,@PolyDet("down") V> this, @PolyDet("use") Map<? extends K, ? extends V> m) {
+    @CheckReceiverForMutation
+    public void putAll(@PolyDet AbstractMap<@PolyDet("use") K,@PolyDet("use") V> this, @PolyDet("use") Map<? extends K, ? extends V> m) {
         for (Map.Entry<? extends K, ? extends V> e : m.entrySet())
             put(e.getKey(), e.getValue());
     }
@@ -297,7 +300,8 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      *
      * @throws UnsupportedOperationException {@inheritDoc}
      */
-    public void clear(@PolyDet AbstractMap<@PolyDet("down") K,@PolyDet("down") V> this) {
+    @CheckReceiverForMutation
+    public void clear(@PolyDet AbstractMap<@PolyDet("use") K,@PolyDet("use") V> this) {
         entrySet().clear();
     }
 

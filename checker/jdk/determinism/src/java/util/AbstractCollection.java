@@ -262,7 +262,8 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      * @throws IllegalArgumentException      {@inheritDoc}
      * @throws IllegalStateException         {@inheritDoc}
      */
-    public @PolyDet("down") boolean add(@PolyDet AbstractCollection<@PolyDet("down") E> this, @PolyDet("use") E e) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean add(@PolyDet AbstractCollection<@PolyDet("use") E> this, @PolyDet("use") E e) {
         throw new UnsupportedOperationException();
     }
 
@@ -282,7 +283,8 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      * @throws ClassCastException            {@inheritDoc}
      * @throws NullPointerException          {@inheritDoc}
      */
-    public @PolyDet("down") boolean remove(@PolyDet AbstractCollection<@PolyDet("down") E> this, @PolyDet("use") Object o) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean remove(@PolyDet AbstractCollection<@PolyDet("use") E> this, @PolyDet("use") Object o) {
         Iterator<E> it = iterator();
         if (o==null) {
             while (it.hasNext()) {
@@ -342,7 +344,8 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      *
      * @see #add(Object)
      */
-    public @PolyDet("down") boolean addAll(@PolyDet AbstractCollection<@PolyDet("down") E> this, @PolyDet("use") Collection<? extends E> c) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean addAll(@PolyDet AbstractCollection<@PolyDet("use") E> this, @PolyDet("use") Collection<? extends E> c) {
         boolean modified = false;
         for (E e : c)
             if (add(e))
@@ -371,7 +374,8 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      * @see #remove(Object)
      * @see #contains(Object)
      */
-    public @PolyDet("down") boolean removeAll(@PolyDet AbstractCollection<@PolyDet("down") E> this, @PolyDet("use") Collection<?> c) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean removeAll(@PolyDet AbstractCollection<@PolyDet("use") E> this, @PolyDet("use") Collection<?> c) {
         Objects.requireNonNull(c);
         boolean modified = false;
         Iterator<?> it = iterator();
@@ -405,7 +409,8 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      * @see #remove(Object)
      * @see #contains(Object)
      */
-    public @PolyDet("down") boolean retainAll(@PolyDet AbstractCollection<@PolyDet("down") E> this, @PolyDet("use") Collection<?> c) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean retainAll(@PolyDet AbstractCollection<@PolyDet("use") E> this, @PolyDet("use") Collection<?> c) {
         Objects.requireNonNull(c);
         boolean modified = false;
         Iterator<E> it = iterator();
@@ -433,7 +438,8 @@ public abstract class AbstractCollection<E> implements Collection<E> {
      *
      * @throws UnsupportedOperationException {@inheritDoc}
      */
-    public void clear(@PolyDet AbstractCollection<@PolyDet("down") E> this) {
+    @CheckReceiverForMutation
+    public void clear(@PolyDet AbstractCollection<@PolyDet("use") E> this) {
         Iterator<E> it = iterator();
         while (it.hasNext()) {
             it.next();

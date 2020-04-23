@@ -256,7 +256,8 @@ public class TreeSet<E> extends AbstractSet<E>
      *         and this set uses natural ordering, or its comparator
      *         does not permit null elements
      */
-    public @PolyDet("down") boolean add(@PolyDet TreeSet<@PolyDet("down") E> this, @PolyDet("use") E e) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean add(@PolyDet TreeSet<@PolyDet("use") E> this, @PolyDet("use") E e) {
         return m.put(e, PRESENT)==null;
     }
 
@@ -277,7 +278,8 @@ public class TreeSet<E> extends AbstractSet<E>
      *         and this set uses natural ordering, or its comparator
      *         does not permit null elements
      */
-    public @PolyDet("down") boolean remove(@PolyDet TreeSet<@PolyDet("down") E> this, @PolyDet("use") Object o) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean remove(@PolyDet TreeSet<@PolyDet("use") E> this, @PolyDet("use") Object o) {
         return m.remove(o)==PRESENT;
     }
 
@@ -285,7 +287,8 @@ public class TreeSet<E> extends AbstractSet<E>
      * Removes all of the elements from this set.
      * The set will be empty after this call returns.
      */
-    public void clear(@PolyDet TreeSet<@PolyDet("down") E> this) {
+    @CheckReceiverForMutation
+    public void clear(@PolyDet TreeSet<@PolyDet("use") E> this) {
         m.clear();
     }
 
@@ -300,7 +303,8 @@ public class TreeSet<E> extends AbstractSet<E>
      *         if any element is null and this set uses natural ordering, or
      *         its comparator does not permit null elements
      */
-    public @PolyDet("down") boolean addAll(@PolyDet TreeSet<@PolyDet("down") E> this, @PolyDet("use") Collection<? extends E> c) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") boolean addAll(@PolyDet TreeSet<@PolyDet("use") E> this, @PolyDet("use") Collection<? extends E> c) {
         // Use linear-time version if applicable
         if (m.size()==0 && c.size() > 0 &&
             c instanceof SortedSet &&
@@ -455,7 +459,8 @@ public class TreeSet<E> extends AbstractSet<E>
     /**
      * @since 1.6
      */
-    public @PolyDet("down") E pollFirst(@PolyDet TreeSet<@PolyDet("down") E> this) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") E pollFirst(@PolyDet TreeSet<@PolyDet("use") E> this) {
         Map.@PolyDet("down") Entry<E,?> e = m.pollFirstEntry();
         return (e == null) ? null : e.getKey();
     }
@@ -463,7 +468,8 @@ public class TreeSet<E> extends AbstractSet<E>
     /**
      * @since 1.6
      */
-    public @PolyDet("down") E pollLast(@PolyDet TreeSet<@PolyDet("down") E> this) {
+    @CheckReceiverForMutation
+    public @PolyDet("down") E pollLast(@PolyDet TreeSet<@PolyDet("use") E> this) {
         Map.Entry<E,?> e = m.pollLastEntry();
         return (e == null) ? null : e.getKey();
     }
