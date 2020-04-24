@@ -131,7 +131,8 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                 if (replacements.contains(factory.DET)) {
                     type.replaceAnnotations(replacements);
                 } else if (replacements.contains(factory.ORDERNONDET)
-                        || replacements.contains(factory.NONDET)) {
+                        || replacements.contains(factory.NONDET)
+                        || replacements.contains(factory.POLYDET_UPDET)) {
                     type.replaceAnnotation(factory.NONDET);
                 }
                 return;
