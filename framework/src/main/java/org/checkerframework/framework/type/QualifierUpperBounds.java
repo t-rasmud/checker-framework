@@ -96,8 +96,13 @@ public class QualifierUpperBounds {
         }
     }
 
-    /** Returns the set of qualifiers that are the upper bounds for a use of the type. */
-    protected Set<AnnotationMirror> getBoundQualifiers(TypeMirror type) {
+    /**
+     * Returns the set of qualifiers that are the upper bounds for a use of the type.
+     *
+     * @param type the TypeMirror
+     * @return the set of qualifiers that are the upper bounds for a use of the type
+     */
+    public Set<AnnotationMirror> getBoundQualifiers(TypeMirror type) {
         AnnotationMirrorSet bounds = new AnnotationMirrorSet();
         String qname;
         if (type.getKind() == TypeKind.DECLARED) {

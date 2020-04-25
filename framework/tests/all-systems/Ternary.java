@@ -1,5 +1,6 @@
 import java.lang.ref.WeakReference;
 
+@SuppressWarnings("determinism")
 class Ternary<F> {
     void m1(boolean b) {
         String s = b ? new String("foo") : null;

@@ -19,6 +19,7 @@ interface BiFunctionMR<T, U, R> {
 
 /** super # instMethod */
 // SUPER(ReferenceMode.INVOKE, false),
+@SuppressWarnings("determinism")
 class Super {
 
     Object func1(Object o) {
@@ -40,6 +41,7 @@ class Super {
     }
 }
 
+@SuppressWarnings("determinism")
 class SuperWithArg<U> {
 
     void func1(U o) {}
@@ -97,6 +99,7 @@ class Static {
 
 /** Expr # instMethod. */
 // BOUND(ReferenceMode.INVOKE, false),
+@SuppressWarnings("determinism")
 class Bound {
     <T> T func1(T o) {
         return o;
@@ -112,6 +115,7 @@ class Bound {
     }
 }
 
+@SuppressWarnings("determinism")
 class BoundWithArg<U> {
     void func1(U param) {}
 
@@ -123,6 +127,7 @@ class BoundWithArg<U> {
 
 /** Inner # new. */
 // IMPLICIT_INNER(ReferenceMode.NEW, false),
+@SuppressWarnings("determinism")
 class Outer {
     void context(Outer other) {
         Supplier<Inner> f1 = Inner::new;
@@ -131,6 +136,7 @@ class Outer {
     class Inner extends Outer {}
 }
 
+@SuppressWarnings("determinism")
 class OuterWithArg {
     void context() {
         // TODO: Issue 802: type argument inference
@@ -180,6 +186,7 @@ class ArrayType {
         @SuppressWarnings({"signedness"})
         FunctionMR<Integer, String[]> string = String[]::new;
         FunctionMR<String[], String[]> clone = String[]::clone;
+        @SuppressWarnings({"determinism:methodref.return.invalid"})
         FunctionMR<String[], String> toString = String[]::toString;
     }
 }

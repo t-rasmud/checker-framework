@@ -4,6 +4,7 @@
 abstract class Issue1419 {
     class Map<A> {}
 
+    @SuppressWarnings("super.invocation.invalid")
     class EnumMap<C extends Enum<C>> extends Map<C> {}
 
     abstract <E extends Enum<E>> Map<E> foo(Map<E> map);

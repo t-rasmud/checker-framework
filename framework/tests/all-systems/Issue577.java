@@ -5,6 +5,7 @@ class Banana<T extends Number> extends Apple<int[]> {
     @Override
     void fooIssue577Outer(int[] array) {}
 
+    @SuppressWarnings("super.invocation.invalid")
     class InnerBanana extends InnerApple<long[]> {
         @Override
         <F2> void foo(int[] array, long[] array2, F2 param3) {}
@@ -34,6 +35,7 @@ class IntersectionAsMemberOf {
     }
 }
 
+@SuppressWarnings("determinism")
 class UnionAsMemberOf {
     interface MyInterface<T> {
         T getT();

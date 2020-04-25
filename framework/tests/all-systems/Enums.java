@@ -2,6 +2,7 @@ import java.lang.annotation.ElementType;
 
 class MyEnumSet<E extends Enum<E>> {}
 
+@SuppressWarnings("determinism")
 class Enumeration {
     public enum VarFlags {
         IS_PARAM,

@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("invalid.upper.bound.on.type.argument")
 public abstract class MemRefInfere<K, V> implements Map<K, V>, Serializable {
     public static <K1, V1> MemRefInfere<K1, V1> copyOf(Map<? extends K1, ? extends V1> map) {
         throw new RuntimeException();

@@ -1,0 +1,27 @@
+import org.checkerframework.checker.determinism.qual.*;
+
+class MyClass<T> {
+    T data;
+
+    MyClass() {}
+
+    MyClass(T data) {
+        this.data = data;
+    }
+
+    MyClass(int x) {}
+}
+
+public class TestTypeParams {
+    void testtypes(@Det int a, @NonDet int y) {
+        MyClass<Integer> obj = new MyClass<Integer>(a);
+        // :: error: (nondeterministic.tostring)
+        System.out.println(obj);
+        MyClass<String> sobj = new MyClass<String>();
+        // :: error: (nondeterministic.tostring)
+        System.out.println(sobj);
+        MyClass<Integer> nobj = new MyClass<Integer>(y);
+        // :: error: (argument.type.incompatible)
+        System.out.println(nobj);
+    }
+}

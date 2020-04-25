@@ -3,6 +3,7 @@
 
 class Issue1698 {
     static class B {
+        @SuppressWarnings("return.type.incompatible")
         static C f() {
             return new B().new C();
         }

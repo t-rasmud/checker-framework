@@ -11,8 +11,10 @@ public class FieldAccess {
         Object field = new Object();
     }
 
+    @SuppressWarnings("super.invocation.invalid")
     class MyExceptionA extends MyException {}
 
+    @SuppressWarnings("super.invocation.invalid")
     class MyExceptionB extends MyException {}
 
     @SuppressWarnings("nullness")
@@ -20,6 +22,7 @@ public class FieldAccess {
         T myClass = null;
     }
 
+    @SuppressWarnings("determinism:invalid.field.assignment")
     void test(Object o, MyGen raw) {
         // Raw type field access:
         raw.myClass.field = new Object();

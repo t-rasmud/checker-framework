@@ -21,6 +21,7 @@ interface MyMap<K, V> {
 
 class MyRec<E extends MyList<E>> {}
 
+@SuppressWarnings("determinism")
 class RecMyList extends MyRec<RecMyList> implements MyList<RecMyList> {
     @SuppressWarnings("return.type.incompatible")
     public RecMyList getZZ() {
@@ -49,6 +50,10 @@ class RecImpl implements Rec<RecImpl> {}
 
 class SubRec extends RecImpl {}
 
+@SuppressWarnings({
+    "determinism:argument.type.incompatible",
+    "determinism:invalid.field.assignment"
+})
 class CrazyGen2<TT extends MyList<EE>, EE extends MyMap<TT, TT>> {
     TT t2;
     EE e2;
@@ -64,6 +69,10 @@ class CrazyGen2<TT extends MyList<EE>, EE extends MyMap<TT, TT>> {
     }
 }
 
+@SuppressWarnings({
+    "determinism:argument.type.incompatible",
+    "determinism:invalid.field.assignment"
+})
 class CrazyGen3<TTT extends MyList<TTT>, EEE extends MyMap<TTT, TTT>> {
     TTT t3;
     EEE e3;

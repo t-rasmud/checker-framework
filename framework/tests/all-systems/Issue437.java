@@ -5,6 +5,7 @@ abstract class I437Bar<T> {
     private final T t;
 
     class Norf {
+        @SuppressWarnings("determinism:return.type.incompatible")
         T getT() {
             return t;
         }
@@ -17,6 +18,7 @@ abstract class I437Bar<T> {
     abstract void quux(Norf norf);
 }
 
+@SuppressWarnings("determinism")
 class I437Foo extends I437Bar<Integer> {
     I437Foo(Integer i) {
         super(i);

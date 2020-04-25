@@ -27,6 +27,7 @@ class Issue946 {
         }
     }
 
+    @SuppressWarnings("determinism")
     class MethodRefInnerB {
         MethodRefInnerB(Issue946 Issue946.this) {}
 
@@ -35,6 +36,7 @@ class Issue946 {
         }
     }
 
+    @SuppressWarnings("determinism")
     void method() {
         Supply946<MethodRefInnerB> constructorReference = MethodRefInnerB::new;
     }

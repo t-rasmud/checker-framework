@@ -3,6 +3,7 @@
 
 abstract class Outer<T> {
 
+    @SuppressWarnings("determinism")
     public class Inner {
         private T t;
 
@@ -18,6 +19,7 @@ abstract class Outer<T> {
     public abstract Inner getInner();
 }
 
+@SuppressWarnings("determinism")
 class Harness {
     public Harness(Outer<String> outer) {
         this.outer = outer;
