@@ -164,7 +164,7 @@ public abstract class AbstractSet<E> extends AbstractCollection<E> implements Se
      *         specified collection does not permit null elements
      * (<a href="Collection.html#optional-restrictions">optional</a>),
      *         or if the specified collection is null
-     * @see #remove(Object)s
+     * @see #remove(Object)
      * @see #contains(Object)
      */
     public @PolyDet("down") boolean removeAll(@PolyDet AbstractSet<E> this, @PolyDet("use") Collection<?> c) {
