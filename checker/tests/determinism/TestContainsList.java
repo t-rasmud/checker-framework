@@ -22,6 +22,7 @@ public class TestContainsList {
     }
 
     void TestList3(@NonDet int rand) {
+        @SuppressWarnings("deprecation")
         @NonDet Integer ndInt = new Integer(rand);
     }
 
