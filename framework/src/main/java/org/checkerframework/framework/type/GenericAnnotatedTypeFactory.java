@@ -1420,6 +1420,7 @@ public abstract class GenericAnnotatedTypeFactory<
                 : "GenericAnnotatedTypeFactory.addComputedTypeAnnotations: "
                         + " root needs to be set when used on trees; factory: "
                         + this.getClass();
+
         addAnnotationsFromDefaultQualifierForUse(TreeUtils.elementFromTree(tree), type);
         applyQualifierParameterDefaults(tree, type);
         treeAnnotator.visit(tree, type);
