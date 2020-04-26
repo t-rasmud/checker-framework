@@ -12,9 +12,9 @@ class Arrays {
     String[] vis = new String[] {"a", "b"};
 
     @SuppressWarnings({
-        "nullness",
+        "nullness", // Don't want to depend on @Nullable
         "determinism:invalid.array.component.type"
-    }) // Don't want to depend on @Nullable
+    })
     void m() {
         class VarInfo {}
         VarInfo v1 = null;
