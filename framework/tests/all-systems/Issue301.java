@@ -1,5 +1,6 @@
 // Test case for Issue 301:
 // https://github.com/typetools/checker-framework/issues/301
+
 @SuppressWarnings("determinism:assignment.type.incompatible")
 class Issue301 {
 
