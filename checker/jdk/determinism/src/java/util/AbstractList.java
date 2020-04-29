@@ -329,7 +329,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      *
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
-    public @PolyDet ListIterator<E> listIterator(@PolyDet AbstractList<E> this, @PolyDet final int index) {
+    public @PolyDet ListIterator<E> listIterator(@PolyDet AbstractList<E> this, final @PolyDet int index) {
         rangeCheckForAdd(index);
 
         return new ListItr(index);
