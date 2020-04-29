@@ -1360,15 +1360,14 @@ public abstract class GenericAnnotatedTypeFactory<
         if (dependentTypesHelper != null) {
             dependentTypesHelper.viewpointAdaptConstructor(tree, method);
         }
-        poly.resolve(tree, method);
         return mType;
     }
 
-    //    @Override
-    //    protected void constructorFromUsePreSubstitution(
-    //            NewClassTree tree, AnnotatedExecutableType type) {
-    //        poly.resolve(tree, type);
-    //    }
+    @Override
+    protected void constructorFromUsePreSubstitution(
+            NewClassTree tree, AnnotatedExecutableType type) {
+        poly.resolve(tree, type);
+    }
 
     @Override
     public AnnotatedTypeMirror getMethodReturnType(MethodTree m) {
