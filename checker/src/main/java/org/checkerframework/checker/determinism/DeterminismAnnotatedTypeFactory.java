@@ -174,6 +174,22 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 new DeterminismAnnotatedTypeFactory.DeterminismTypeAnnotator(this));
     }
 
+    @Override
+    public ParameterizedExecutableType methodFromUse(MethodInvocationTree tree) {
+        ParameterizedExecutableType mType = super.methodFromUse(tree);
+        AnnotatedExecutableType method = mType.executableType;
+        if (dependentTypesHelper != null) {
+            dependentTypesHelper.viewpointAdaptMethod(tree, method);
+        }
+        poly.resolve(tree, method);
+        return mType;
+    }
+
+    @Override
+    public void methodFromUsePreSubstitution(ExpressionTree tree, AnnotatedExecutableType type) {
+        return;
+    }
+
     /** TreeAnnotator for the Determinism checker. */
     private class DeterminismTreeAnnotator extends TreeAnnotator {
 

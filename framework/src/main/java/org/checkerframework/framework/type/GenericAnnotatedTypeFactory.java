@@ -1571,19 +1571,16 @@ public abstract class GenericAnnotatedTypeFactory<
         if (dependentTypesHelper != null) {
             dependentTypesHelper.viewpointAdaptMethod(tree, method);
         }
-        poly.resolve(tree, method);
         return mType;
     }
 
-    //    @Override
-    //    public void methodFromUsePreSubstitution(ExpressionTree tree, AnnotatedExecutableType
-    // type) {
-    //        super.methodFromUsePreSubstitution(tree, type);
-    //        System.out.println("method from use pre: " + type);
-    //        if (tree instanceof MethodInvocationTree) {
-    //            poly.resolve((MethodInvocationTree) tree, type);
-    //        }
-    //    }
+    @Override
+    public void methodFromUsePreSubstitution(ExpressionTree tree, AnnotatedExecutableType type) {
+        super.methodFromUsePreSubstitution(tree, type);
+        if (tree instanceof MethodInvocationTree) {
+            poly.resolve((MethodInvocationTree) tree, type);
+        }
+    }
 
     @Override
     public List<AnnotatedTypeParameterBounds> typeVariablesFromUse(
