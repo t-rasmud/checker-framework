@@ -255,15 +255,13 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             refineSystemGet(node, methodInvocationType);
             refineMapGet(node, methodInvocationType, receiverType);
 
-            checkMutationReceiver(node, methodInvocationType, receiverType);
+            checkMutationReceiver(node, receiverType);
 
             return super.visitMethodInvocation(node, methodInvocationType);
         }
 
         private void checkMutationReceiver(
-                MethodInvocationTree node,
-                AnnotatedTypeMirror methodInvocationType,
-                AnnotatedTypeMirror receiverType) {
+                MethodInvocationTree node, AnnotatedTypeMirror receiverType) {
             if (!isCollectionType(receiverType)) {
                 return;
             }
