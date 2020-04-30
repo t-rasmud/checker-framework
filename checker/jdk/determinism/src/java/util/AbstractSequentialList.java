@@ -171,7 +171,7 @@ public abstract class AbstractSequentialList<E> extends AbstractList<E> {
      * @throws UnsupportedOperationException {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public @PolyDet("up") E remove(@PolyDet("noOrderNonDet") AbstractSequentialList<@PolyDet("noOrderNonDet") E> this, @PolyDet("use") int index) {
+    public @PolyDet("up") E remove(@PolyDet("noOrderNonDet") AbstractSequentialList<@PolyDet("noOrderNonDet") E> this, @PolyDet("useNoOrderNonDet") int index) {
         try {
             ListIterator<E> e = listIterator(index);
             E outCast = e.next();

@@ -31,7 +31,6 @@ import java.util.function.UnaryOperator;
 
 import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.framework.qual.HasQualifierParameter;
-import org.checkerframework.framework.qual.PolymorphicQualifier;
 
 /**
  * Resizable-array implementation of the <tt>List</tt> interface.  Implements
@@ -1049,7 +1048,7 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     @HasQualifierParameter(NonDet.class)
-    private @PolyDet class SubList extends AbstractList<E> implements RandomAccess {
+    private class SubList extends AbstractList<E> implements RandomAccess {
         private final @PolyDet AbstractList<E> parent;
         private final @PolyDet("down") int parentOffset;
         private final @PolyDet("down") int offset;
@@ -1096,7 +1095,7 @@ public class ArrayList<E> extends AbstractList<E>
         }
 
         @SuppressWarnings({"determinism:method.invocation.invalid", "determinism:return.type.incompatible", "determinism:unary.decrement.type.incompatible"})
-        public @PolyDet("useNoOrderNonDet") E remove(@PolyDet("noOrderNonDet") ArrayList<E>. @PolyDet("noOrderNonDet") SubList this, @PolyDet("useNoOrderNonDet") int index) {
+        public @PolyDet("noOrderNonDet") E remove(@PolyDet("noOrderNonDet") ArrayList<E>. @PolyDet("noOrderNonDet") SubList this, @PolyDet("useNoOrderNonDet") int index) {
             rangeCheck(index);
             checkForComodification();
             E result = parent.remove(parentOffset + index);
@@ -1370,7 +1369,7 @@ public class ArrayList<E> extends AbstractList<E>
         private int expectedModCount; // initialized when fence set
 
         /** Create new spliterator covering the given  range */
-        ArrayListSpliterator(@PolyDet ArrayList<E> list, @PolyDet("use") int origin, @PolyDet("use") int fence,
+        @PolyDet ArrayListSpliterator(@PolyDet ArrayList<E> list, @PolyDet("use") int origin, @PolyDet("use") int fence,
                              @PolyDet("use") int expectedModCount) {
             this.list = list; // OK if null unless traversed
             this.index = origin;
@@ -1458,7 +1457,7 @@ public class ArrayList<E> extends AbstractList<E>
         int removeCount = 0;
         final BitSet removeSet = new BitSet(size);
         final int expectedModCount = modCount;
-        int size = this.size;
+        final int size = this.size;
         for (int i=0; modCount == expectedModCount && i < size; i++) {
             @SuppressWarnings("unchecked")
             final E element = (E) elementData[i];
