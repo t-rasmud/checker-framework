@@ -260,6 +260,15 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             return super.visitMethodInvocation(node, methodInvocationType);
         }
 
+        /**
+         * If a method has the declaration annotation {@code @CheckReceiverForMutation}, reports an
+         * error if the receiver is a collection of type {@code @NonDet<@OrderNonDet>},
+         * {@code @NonDet<@Det>}, {@code @PolyDet("up")<@PolyDet>}, or
+         * {@code @PolyDet("up")<@PolyDet("down")>}
+         *
+         * @param node MethodInvocationTree
+         * @param receiverType AnnotatedTypeMirror
+         */
         private void checkMutationReceiver(
                 MethodInvocationTree node, AnnotatedTypeMirror receiverType) {
             if (!isCollectionType(receiverType)) {
