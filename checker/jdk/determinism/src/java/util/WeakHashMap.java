@@ -25,9 +25,6 @@
 
 package java.util;
 
-import org.checkerframework.checker.determinism.qual.NonDet;
-import org.checkerframework.framework.qual.HasQualifierParameter;
-
 import java.lang.ref.WeakReference;
 import java.lang.ref.ReferenceQueue;
 import java.util.concurrent.ThreadLocalRandom;
@@ -136,7 +133,6 @@ import java.util.function.Consumer;
  * @see         java.util.HashMap
  * @see         java.lang.ref.WeakReference
  */
-@HasQualifierParameter(NonDet.class)
 public class WeakHashMap<K,V>
     extends AbstractMap<K,V>
     implements Map<K,V> {

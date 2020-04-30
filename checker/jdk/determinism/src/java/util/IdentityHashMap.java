@@ -25,9 +25,6 @@
 
 package java.util;
 
-import org.checkerframework.checker.determinism.qual.NonDet;
-import org.checkerframework.framework.qual.HasQualifierParameter;
-
 import java.lang.reflect.Array;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -137,7 +134,6 @@ import java.util.function.Consumer;
  * @author  Doug Lea and Josh Bloch
  * @since   1.4
  */
-@HasQualifierParameter(NonDet.class)
 public class IdentityHashMap<K,V>
     extends AbstractMap<K,V>
     implements Map<K,V>, java.io.Serializable, Cloneable

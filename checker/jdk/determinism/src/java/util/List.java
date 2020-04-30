@@ -501,7 +501,8 @@ public interface List<E> extends Collection<E> {
      * @throws UnsupportedOperationException if the <tt>clear</tt> operation
      *         is not supported by this list
      */
-    void clear(@PolyDet List<E> this);
+    @CheckReceiverForMutation
+    void clear(@PolyDet List<@PolyDet("use") E> this);
 
 
     // Comparison and hashing

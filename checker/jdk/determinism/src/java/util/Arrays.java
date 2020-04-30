@@ -4815,7 +4815,7 @@ public class Arrays {
      * @since 1.8
      */
     @SuppressWarnings("determinism:invalid.array.assignment") // Issue#170
-    public static void parallelSetAll(@PolyDet("down") long @PolyDet [] array, @PolyDet("down") IntToLongFunction generator) {
+    public static void parallelSetAll(@PolyDet("down") long @PolyDet [] array, @PolyDet("use") IntToLongFunction generator) {
         Objects.requireNonNull(generator);
         IntStream.range(0, array.length).parallel().forEach(i -> { array[i] = generator.applyAsLong(i); });
     }

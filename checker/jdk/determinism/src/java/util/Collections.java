@@ -836,7 +836,7 @@ public class Collections {
      *         its list-iterator does not support the <tt>set</tt> operation.
      * @since  1.4
      */
-    public static <@PolyDet("down") T extends @PolyDet("use") Object> boolean replaceAll(@PolyDet List<T> list, T oldVal, T newVal) {
+    public static <@PolyDet("down") T extends @PolyDet("use") Object> @PolyDet("down") boolean replaceAll(@PolyDet List<T> list, T oldVal, T newVal) {
         boolean result = false;
         int size = list.size();
         if (size < REPLACEALL_THRESHOLD || list instanceof RandomAccess) {

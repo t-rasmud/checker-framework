@@ -31,8 +31,6 @@ import java.util.function.BiFunction;
 import java.io.IOException;
 
 import org.checkerframework.checker.determinism.qual.*;
-import org.checkerframework.framework.qual.HasQualifierParameter;
-import org.checkerframework.framework.qual.PolymorphicQualifier;
 
 /**
  * <p>Hash table and linked list implementation of the <tt>Map</tt> interface,
