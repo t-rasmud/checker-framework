@@ -119,7 +119,7 @@ import org.checkerframework.javacutil.AnnotationUtils;
 import org.checkerframework.javacutil.BugInCF;
 import org.checkerframework.javacutil.ElementUtils;
 import org.checkerframework.javacutil.Pair;
-import org.checkerframework.javacutil.PluginUtil;
+import org.checkerframework.javacutil.SystemUtil;
 import org.checkerframework.javacutil.TreeUtils;
 import org.checkerframework.javacutil.TypesUtils;
 
@@ -4083,7 +4083,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
             return;
         }
         checkedJDK = true;
-        if (PluginUtil.getJreVersion() != 8
+        if (SystemUtil.getJreVersion() != 8
                 || checker.hasOption("permitMissingJdk")
                 // temporary, for backward compatibility
                 || checker.hasOption("nocheckjdk")) {
@@ -4126,7 +4126,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
                 }
             }
 
-            String jdkJarName = PluginUtil.getJdkJarName();
+            String jdkJarName = SystemUtil.getJdkJarName();
             checker.message(
                     Kind.WARNING,
                     "You do not seem to be using the distributed annotated JDK. "
