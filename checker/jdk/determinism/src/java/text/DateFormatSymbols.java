@@ -539,7 +539,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
      * @return the time zone strings.
      * @see #setZoneStrings(String[][])
      */
-    public @Det String @OrderNonDet[] @OrderNonDet[] getZoneStrings(@PolyDet DateFormatSymbols this) {
+    public @PolyDet String @PolyDet("upDet")[] @PolyDet("upDet")[] getZoneStrings(@PolyDet DateFormatSymbols this) {
         return getZoneStringsImpl(true);
     }
 
