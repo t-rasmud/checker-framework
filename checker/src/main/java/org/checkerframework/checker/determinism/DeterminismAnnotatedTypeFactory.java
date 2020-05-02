@@ -938,6 +938,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     type.addMissingAnnotations(Collections.singleton(DET));
                 } else {
                     defaultArrayComponentType(type, POLYDET);
+                    defaultCollectionComponentType(type, POLYDET);
                 }
             } else if (elt.getEnclosingElement().getKind() == ElementKind.CONSTRUCTOR) {
                 type.addMissingAnnotations(Collections.singleton(DET));
