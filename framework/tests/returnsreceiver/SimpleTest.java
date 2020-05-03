@@ -50,6 +50,8 @@ class SimpleTest {
     // can write @This on receiver
     void thisOnReceiver(@This SimpleTest this) {}
 
+    @SuppressWarnings(
+            "invalid.polymorphic.qualifier.use") // determinism (changes in implicitTypeParameter)
     // :: error: type.invalid.this.location
     @This Object f;
 
