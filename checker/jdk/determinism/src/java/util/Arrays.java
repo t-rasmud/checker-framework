@@ -3810,7 +3810,7 @@ public class Arrays {
      */
     @SafeVarargs
     @SuppressWarnings("varargs")
-    public static <T> @PolyDet List<@PolyDet T> asList(@PolyDet T... a) {
+    public static <@PolyDet T> @PolyDet List<@PolyDet T> asList(@PolyDet T... a) {
         return new ArrayList<>(a);
     }
 
