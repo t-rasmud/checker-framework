@@ -1,0 +1,24 @@
+package java.lang;
+
+import org.checkerframework.checker.determinism.qual.Det;
+
+class Thread implements Runnable {
+  void run(@Det Thread this);
+}
+
+interface Runnable {
+    abstract void run(@Det Runnable this);
+}
+
+package java.lang.instrument;
+
+public interface ClassFileTransformer {
+    default @Det byte @Nullable @Det []
+    transform(  @Det ClassFileTransformer this,
+                @Det @Nullable ClassLoader         loader,
+                @Det @InternalForm String              className,
+                @Det @Nullable Class<?>            classBeingRedefined,
+                @Det ProtectionDomain    protectionDomain,
+                @Det byte @Det []              classfileBuffer)
+        throws IllegalClassFormatException;
+}
