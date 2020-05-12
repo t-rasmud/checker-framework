@@ -2,46 +2,85 @@ package com.github.javaparser.ast;
 
 import org.checkerframework.checker.determinism.qual.*;
 
-class NodeList<N extends @PolyDet Node> implements List<N>, Iterable<N>, HasParentNode<@PolyDet NodeList<N>>, Visitable, Observable {
-}
+class NodeList<N extends @PolyDet Node>
+    implements List<N>, Iterable<N>, HasParentNode<@PolyDet NodeList<N>>, Visitable, Observable {}
 
 class CompilationUnit extends Node {
-    CompilationUnit setImports(NodeList<@PolyDet ImportDeclaration> imports);
-    CompilationUnit setTypes(NodeList<@PolyDet TypeDeclaration<?>> types);
+  CompilationUnit setImports(NodeList<@PolyDet ImportDeclaration> imports);
+
+  CompilationUnit setTypes(NodeList<@PolyDet TypeDeclaration<?>> types);
 }
 
 package com.github.javaparser.ast.body;
 
-abstract class BodyDeclaration<T extends BodyDeclaration<?>> extends Node implements NodeWithAnnotations<T> {
-    T setAnnotations(NodeList<@PolyDet AnnotationExpr> annotations);
+abstract class BodyDeclaration<T extends BodyDeclaration<?>> extends Node
+    implements NodeWithAnnotations<T> {
+  T setAnnotations(NodeList<@PolyDet AnnotationExpr> annotations);
 }
 
-class ClassOrInterfaceDeclaration extends TypeDeclaration<ClassOrInterfaceDeclaration> implements NodeWithImplements<ClassOrInterfaceDeclaration>, NodeWithExtends<ClassOrInterfaceDeclaration>, NodeWithTypeParameters<ClassOrInterfaceDeclaration>, NodeWithAbstractModifier<ClassOrInterfaceDeclaration>, NodeWithFinalModifier<ClassOrInterfaceDeclaration>, Resolvable<ResolvedReferenceTypeDeclaration> {
-    ClassOrInterfaceDeclaration(NodeList<@PolyDet Modifier> modifiers, boolean isInterface, String name);
+class ClassOrInterfaceDeclaration extends TypeDeclaration<ClassOrInterfaceDeclaration>
+    implements NodeWithImplements<ClassOrInterfaceDeclaration>,
+        NodeWithExtends<ClassOrInterfaceDeclaration>,
+        NodeWithTypeParameters<ClassOrInterfaceDeclaration>,
+        NodeWithAbstractModifier<ClassOrInterfaceDeclaration>,
+        NodeWithFinalModifier<ClassOrInterfaceDeclaration>,
+        Resolvable<ResolvedReferenceTypeDeclaration> {
+  ClassOrInterfaceDeclaration(
+      NodeList<@PolyDet Modifier> modifiers, boolean isInterface, String name);
 }
 
-abstract class TypeDeclaration<T extends TypeDeclaration<?>> extends BodyDeclaration<T> implements NodeWithSimpleName<T>, NodeWithJavadoc<T>, NodeWithMembers<T>, NodeWithAccessModifiers<T>, NodeWithStaticModifier<T>, NodeWithStrictfpModifier<T> {
-    T setMembers(NodeList<@PolyDet BodyDeclaration<?>> members);
+abstract class TypeDeclaration<T extends TypeDeclaration<?>> extends BodyDeclaration<T>
+    implements NodeWithSimpleName<T>,
+        NodeWithJavadoc<T>,
+        NodeWithMembers<T>,
+        NodeWithAccessModifiers<T>,
+        NodeWithStaticModifier<T>,
+        NodeWithStrictfpModifier<T> {
+  T setMembers(NodeList<@PolyDet BodyDeclaration<?>> members);
 }
 
-class MethodDeclaration extends CallableDeclaration<MethodDeclaration> implements NodeWithType<MethodDeclaration, Type>, NodeWithOptionalBlockStmt<MethodDeclaration>, NodeWithJavadoc<MethodDeclaration>, NodeWithDeclaration, NodeWithSimpleName<MethodDeclaration>, NodeWithParameters<MethodDeclaration>, NodeWithThrownExceptions<MethodDeclaration>, NodeWithTypeParameters<MethodDeclaration>, NodeWithAccessModifiers<MethodDeclaration>, NodeWithAbstractModifier<MethodDeclaration>, NodeWithStaticModifier<MethodDeclaration>, NodeWithFinalModifier<MethodDeclaration>, NodeWithStrictfpModifier<MethodDeclaration>, Resolvable<ResolvedMethodDeclaration> {
-    MethodDeclaration(NodeList<@PolyDet Modifier> modifiers, Type type, String name);
-    MethodDeclaration setParameters(NodeList<@PolyDet Parameter> parameters);
-    MethodDeclaration setThrownExceptions(NodeList<@PolyDet ReferenceType> thrownExceptions);
+class MethodDeclaration extends CallableDeclaration<MethodDeclaration>
+    implements NodeWithType<MethodDeclaration, Type>,
+        NodeWithOptionalBlockStmt<MethodDeclaration>,
+        NodeWithJavadoc<MethodDeclaration>,
+        NodeWithDeclaration,
+        NodeWithSimpleName<MethodDeclaration>,
+        NodeWithParameters<MethodDeclaration>,
+        NodeWithThrownExceptions<MethodDeclaration>,
+        NodeWithTypeParameters<MethodDeclaration>,
+        NodeWithAccessModifiers<MethodDeclaration>,
+        NodeWithAbstractModifier<MethodDeclaration>,
+        NodeWithStaticModifier<MethodDeclaration>,
+        NodeWithFinalModifier<MethodDeclaration>,
+        NodeWithStrictfpModifier<MethodDeclaration>,
+        Resolvable<ResolvedMethodDeclaration> {
+  MethodDeclaration(NodeList<@PolyDet Modifier> modifiers, Type type, String name);
+
+  MethodDeclaration setParameters(NodeList<@PolyDet Parameter> parameters);
+
+  MethodDeclaration setThrownExceptions(NodeList<@PolyDet ReferenceType> thrownExceptions);
 }
 
 package com.github.javaparser.ast.expr;
 
-class MethodCallExpr extends Expression implements NodeWithTypeArguments<MethodCallExpr>, NodeWithArguments<MethodCallExpr>, NodeWithSimpleName<MethodCallExpr>, NodeWithOptionalScope<MethodCallExpr>, Resolvable<ResolvedMethodDeclaration> {
-    MethodCallExpr setArguments(NodeList<@PolyDet Expression> arguments);
+class MethodCallExpr extends Expression
+    implements NodeWithTypeArguments<MethodCallExpr>,
+        NodeWithArguments<MethodCallExpr>,
+        NodeWithSimpleName<MethodCallExpr>,
+        NodeWithOptionalScope<MethodCallExpr>,
+        Resolvable<ResolvedMethodDeclaration> {
+  MethodCallExpr setArguments(NodeList<@PolyDet Expression> arguments);
 }
 
-class VariableDeclarationExpr extends Expression implements NodeWithFinalModifier<VariableDeclarationExpr>, NodeWithAnnotations<VariableDeclarationExpr>, NodeWithVariables<VariableDeclarationExpr> {
-    VariableDeclarationExpr(NodeList<@PolyDet VariableDeclarator> variables);
+class VariableDeclarationExpr extends Expression
+    implements NodeWithFinalModifier<VariableDeclarationExpr>,
+        NodeWithAnnotations<VariableDeclarationExpr>,
+        NodeWithVariables<VariableDeclarationExpr> {
+  VariableDeclarationExpr(NodeList<@PolyDet VariableDeclarator> variables);
 }
 
 package com.github.javaparser.ast.stmt;
 
 class BlockStmt extends Statement implements NodeWithStatements<BlockStmt> {
-    BlockStmt setStatements(NodeList<@PolyDet Statement> statements);
+  BlockStmt setStatements(NodeList<@PolyDet Statement> statements);
 }
