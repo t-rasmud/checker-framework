@@ -6,8 +6,8 @@ class NodeList<N extends @PolyDet Node> implements List<N>, Iterable<N>, HasPare
 }
 
 class CompilationUnit extends Node {
-    CompilationUnit setImports(NodeList<@PolyDet ImportDeclaration> imports) {
-    CompilationUnit setTypes(NodeList<@PolyDet TypeDeclaration<?>> types) {
+    CompilationUnit setImports(NodeList<@PolyDet ImportDeclaration> imports);
+    CompilationUnit setTypes(NodeList<@PolyDet TypeDeclaration<?>> types);
 }
 
 package com.github.javaparser.ast.body;
@@ -37,11 +37,11 @@ class MethodCallExpr extends Expression implements NodeWithTypeArguments<MethodC
 }
 
 class VariableDeclarationExpr extends Expression implements NodeWithFinalModifier<VariableDeclarationExpr>, NodeWithAnnotations<VariableDeclarationExpr>, NodeWithVariables<VariableDeclarationExpr> {
-    VariableDeclarationExpr(NodeList<@PolyDet VariableDeclarator> variables) {
+    VariableDeclarationExpr(NodeList<@PolyDet VariableDeclarator> variables);
 }
 
 package com.github.javaparser.ast.stmt;
 
 class BlockStmt extends Statement implements NodeWithStatements<BlockStmt> {
-    BlockStmt setStatements(NodeList<@PolyDet Statement> statements) {
+    BlockStmt setStatements(NodeList<@PolyDet Statement> statements);
 }
