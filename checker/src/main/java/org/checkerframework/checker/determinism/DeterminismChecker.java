@@ -21,5 +21,5 @@ import org.checkerframework.framework.source.SupportedOptions;
     // Comma separated list of system properties that should be treated as deterministic.
     "inputProperties"
 })
-@StubFiles("junit.astub")
+@StubFiles({"junit.astub", "javaparser.astub", "utilplume.astub", "jdk.astub"})
 public class DeterminismChecker extends BaseTypeChecker {}
