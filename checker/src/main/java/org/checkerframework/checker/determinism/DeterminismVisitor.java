@@ -638,7 +638,89 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 }
             }
         }
+
         return super.visitMethodInvocation(node, p);
+    }
+
+    /**
+     * If none of the arguments is a collection type, treat {@code @PolyDet("up")} the same as
+     * {@code @PolyDet}.
+     *
+     * @param requiredArgs List of AnnotatedTypeMirror
+     * @param passedArgs List of AnnotatedTypeMirror
+     */
+    @Override
+    protected void checkArguments(
+            List<? extends AnnotatedTypeMirror> requiredArgs,
+            List<? extends ExpressionTree> passedArgs) {
+        for (ExpressionTree arg : passedArgs) {
+            AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+            if (atypeFactory.isCollectionType(argType)) {
+                super.checkArguments(requiredArgs, passedArgs);
+            }
+        }
+        boolean hasPolyUp = false;
+        for (ExpressionTree arg : passedArgs) {
+            AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+            if (argType.hasAnnotation(atypeFactory.POLYDET_UP)) {
+                hasPolyUp = true;
+                break;
+            }
+        }
+        if (hasPolyUp) {
+            return;
+        }
+        super.checkArguments(requiredArgs, passedArgs);
+    }
+
+    /**
+     * If none of the arguments is a collection type, treat {@code @PolyDet("up")} the same as
+     * {@code @PolyDet}.
+     *
+     * @param node MethodInvocationTree
+     * @param methodDefinitionReceiver AnnotatedTypeMirror
+     * @param methodCallReceiver AnnotatedTypeMirror
+     * @return boolean
+     */
+    @Override
+    protected boolean skipReceiverSubtypeCheck(
+            MethodInvocationTree node,
+            AnnotatedTypeMirror methodDefinitionReceiver,
+            AnnotatedTypeMirror methodCallReceiver) {
+        AnnotatedTypeMirror receiverType = atypeFactory.getReceiverType(node);
+        if (receiverType == null) {
+            return super.skipReceiverSubtypeCheck(
+                    node, methodDefinitionReceiver, methodCallReceiver);
+        }
+        if (atypeFactory.isCollectionType(receiverType)) {
+            return super.skipReceiverSubtypeCheck(
+                    node, methodDefinitionReceiver, methodCallReceiver);
+        }
+        List<? extends ExpressionTree> arguments = node.getArguments();
+        for (ExpressionTree arg : arguments) {
+            AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+            if (atypeFactory.isCollectionType(argType)) {
+                return super.skipReceiverSubtypeCheck(
+                        node, methodDefinitionReceiver, methodCallReceiver);
+            }
+        }
+        boolean hasPolyUp = false;
+        if (receiverType.hasAnnotation(atypeFactory.POLYDET_UP)) {
+            hasPolyUp = true;
+        }
+        if (!hasPolyUp) {
+            for (ExpressionTree arg : arguments) {
+                AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+                if (argType.hasAnnotation(atypeFactory.POLYDET_UP)) {
+                    hasPolyUp = true;
+                    break;
+                }
+            }
+        }
+        if (hasPolyUp) {
+            return true;
+        }
+        return super.skipReceiverSubtypeCheck(node, methodDefinitionReceiver, methodCallReceiver);
     }
 
     /**
