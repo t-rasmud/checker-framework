@@ -24,11 +24,13 @@ public class PolyUpNonCollection {
     void callCollectionMethod(
             @PolyDet List<@PolyDet Integer> lst, @OrderNonDet List<@Det Integer> lst1) {
         collectionMethod(lst);
+        // :: error: (argument.type.incompatible)  // :: error: (method.invocation.invalid)
         collectionMethod(lst1);
     }
 
     static void collectionMethod2(@PolyDet ClassWithListField c) {
         for (@PolyDet("up") String elt : c.list) {
+            // :: error: (assignment.type.incompatible)    // TODO: fix this
             @PolyDet String s = elt;
         }
     }
