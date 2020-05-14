@@ -30,8 +30,6 @@ public class PolyUpNonCollection {
 
     static void collectionMethod2(@PolyDet ClassWithListField c) {
         for (@PolyDet("up") String elt : c.list) {
-            // TODO: fix this
-            // :: error: (assignment.type.incompatible)
             @PolyDet String s = elt;
         }
     }

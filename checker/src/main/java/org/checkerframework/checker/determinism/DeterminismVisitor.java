@@ -360,6 +360,16 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 }
             }
         } else {
+            AnnotatedTypeMirror lVal = atypeFactory.getAnnotatedType(varTree);
+            if (!atypeFactory.isCollectionType(lVal)) {
+                AnnotatedTypeMirror rVal = atypeFactory.getAnnotatedType(valueExp);
+                if (!atypeFactory.isCollectionType(lVal)) {
+                    if (lVal.hasAnnotation(atypeFactory.POLYDET)
+                            && rVal.hasAnnotation(atypeFactory.POLYDET_UP)) {
+                        return;
+                    }
+                }
+            }
             super.commonAssignmentCheck(varTree, valueExp, errorKey);
         }
     }
