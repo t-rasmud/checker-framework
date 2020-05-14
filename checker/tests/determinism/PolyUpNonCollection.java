@@ -11,7 +11,7 @@ public class PolyUpNonCollection {
 
     void nonCollection1(@PolyDet int x, @PolyDet PolyUpNonCollection arg) {}
 
-    void collectionMethod(@PolyDet List<@PolyDet Integer> lst) {
+    void collectionMethod(@PolyDet List<@PolyDet("down") Integer> lst) {
         int x = lst.get(0);
         nonCollection(x);
     }
@@ -22,15 +22,16 @@ public class PolyUpNonCollection {
     }
 
     void callCollectionMethod(
-            @PolyDet List<@PolyDet Integer> lst, @OrderNonDet List<@Det Integer> lst1) {
+            @PolyDet List<@PolyDet("down") Integer> lst, @OrderNonDet List<@Det Integer> lst1) {
         collectionMethod(lst);
-        // :: error: (argument.type.incompatible)  // :: error: (method.invocation.invalid)
+        // :: error: (argument.type.incompatible) :: error: (method.invocation.invalid)
         collectionMethod(lst1);
     }
 
     static void collectionMethod2(@PolyDet ClassWithListField c) {
         for (@PolyDet("up") String elt : c.list) {
-            // :: error: (assignment.type.incompatible)    // TODO: fix this
+            // TODO: fix this
+            // :: error: (assignment.type.incompatible)
             @PolyDet String s = elt;
         }
     }
