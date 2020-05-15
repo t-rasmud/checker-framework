@@ -370,6 +370,19 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                     }
                 }
             }
+            if (TreeUtils.isClassLiteral(valueExp)) {
+                AnnotationMirror lhsAnno =
+                        atypeFactory
+                                .getAnnotatedType(varTree)
+                                .getAnnotationInHierarchy(atypeFactory.NONDET);
+                AnnotationMirror rhsAnno =
+                        atypeFactory
+                                .getAnnotatedType(valueExp)
+                                .getAnnotationInHierarchy(atypeFactory.NONDET);
+                if (AnnotationUtils.areSame(lhsAnno, rhsAnno)) {
+                    return;
+                }
+            }
             super.commonAssignmentCheck(varTree, valueExp, errorKey);
         }
     }
