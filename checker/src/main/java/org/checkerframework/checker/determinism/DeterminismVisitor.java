@@ -796,8 +796,17 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         return new BaseTypeValidator(checker, this, atypeFactory) {
             @Override
             protected boolean shouldCheckTopLevelDeclaredType(AnnotatedTypeMirror type, Tree tree) {
-                // Always check.
+                Element elem = TreeUtils.elementFromTree(tree);
+                if (elem == null) {
+                    return true;
+                }
+                if (ElementUtils.isTypeDeclaration(elem)
+                        || elem.getKind() == ElementKind.CONSTRUCTOR) {
+                    return false;
+                }
                 return true;
+                //                // Always check.
+                //                return true;
             }
 
             @Override
