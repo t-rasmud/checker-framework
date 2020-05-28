@@ -360,6 +360,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 }
             }
         } else {
+            // Reduces FPs: For a non-collection, it's ok to assign @PolyDet("up") to @PolyDet.
+            // Example: @PolyDet("up") int y; @PolyDet int x = y;
             AnnotatedTypeMirror lVal = atypeFactory.getAnnotatedType(varTree);
             if (!atypeFactory.isCollectionType(lVal)) {
                 AnnotatedTypeMirror rVal = atypeFactory.getAnnotatedType(valueExp);
@@ -370,6 +372,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                     }
                 }
             }
+
+            // Reduces FPs: Ignores the type qualifier on type parameter
+            // of a class while checking assignability of its class literal.
             if (TreeUtils.isClassLiteral(valueExp)) {
                 AnnotationMirror lhsAnno =
                         atypeFactory
@@ -661,7 +666,6 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 }
             }
         }
-
         return super.visitMethodInvocation(node, p);
     }
 
@@ -698,7 +702,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
 
     /**
      * If none of the arguments is a collection type, treat {@code @PolyDet("up")} the same as
-     * {@code @PolyDet}.
+     * {@code @PolyDet} on a receiver.
      *
      * @param node MethodInvocationTree
      * @param methodDefinitionReceiver AnnotatedTypeMirror
@@ -796,6 +800,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         return new BaseTypeValidator(checker, this, atypeFactory) {
             @Override
             protected boolean shouldCheckTopLevelDeclaredType(AnnotatedTypeMirror type, Tree tree) {
+                // Reduces FPs: Do not report the error "invalid.upper.bound.on type.argument" on
+                // class declarations.
                 Element elem = TreeUtils.elementFromTree(tree);
                 if (elem == null) {
                     return true;
@@ -805,8 +811,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                     return false;
                 }
                 return true;
-                //                // Always check.
-                //                return true;
+                // Always check.
+                // return true;
             }
 
             @Override
