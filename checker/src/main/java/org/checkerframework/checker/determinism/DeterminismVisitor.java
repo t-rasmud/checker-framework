@@ -360,6 +360,34 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 }
             }
         } else {
+            // Reduces FPs: For a non-collection, it's ok to assign @PolyDet("up") to @PolyDet.
+            // Example: @PolyDet("up") int y; @PolyDet int x = y;
+            AnnotatedTypeMirror lVal = atypeFactory.getAnnotatedType(varTree);
+            if (!atypeFactory.isCollectionType(lVal)) {
+                AnnotatedTypeMirror rVal = atypeFactory.getAnnotatedType(valueExp);
+                if (!atypeFactory.isCollectionType(lVal)) {
+                    if (lVal.hasAnnotation(atypeFactory.POLYDET)
+                            && rVal.hasAnnotation(atypeFactory.POLYDET_UP)) {
+                        return;
+                    }
+                }
+            }
+
+            // Reduces FPs: Ignores the type qualifier on type parameter
+            // of a class while checking assignability of its class literal.
+            if (TreeUtils.isClassLiteral(valueExp)) {
+                AnnotationMirror lhsAnno =
+                        atypeFactory
+                                .getAnnotatedType(varTree)
+                                .getAnnotationInHierarchy(atypeFactory.NONDET);
+                AnnotationMirror rhsAnno =
+                        atypeFactory
+                                .getAnnotatedType(valueExp)
+                                .getAnnotationInHierarchy(atypeFactory.NONDET);
+                if (AnnotationUtils.areSame(lhsAnno, rhsAnno)) {
+                    return;
+                }
+            }
             super.commonAssignmentCheck(varTree, valueExp, errorKey);
         }
     }
@@ -642,6 +670,87 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     }
 
     /**
+     * If none of the arguments is a collection type, treat {@code @PolyDet("up")} the same as
+     * {@code @PolyDet}.
+     *
+     * @param requiredArgs List of AnnotatedTypeMirror
+     * @param passedArgs List of AnnotatedTypeMirror
+     */
+    @Override
+    protected void checkArguments(
+            List<? extends AnnotatedTypeMirror> requiredArgs,
+            List<? extends ExpressionTree> passedArgs) {
+        for (ExpressionTree arg : passedArgs) {
+            AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+            if (atypeFactory.isCollectionType(argType)) {
+                super.checkArguments(requiredArgs, passedArgs);
+            }
+        }
+        boolean hasPolyUp = false;
+        for (ExpressionTree arg : passedArgs) {
+            AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+            if (argType.hasAnnotation(atypeFactory.POLYDET_UP)) {
+                hasPolyUp = true;
+                break;
+            }
+        }
+        if (hasPolyUp) {
+            return;
+        }
+        super.checkArguments(requiredArgs, passedArgs);
+    }
+
+    /**
+     * If none of the arguments is a collection type, treat {@code @PolyDet("up")} the same as
+     * {@code @PolyDet} on a receiver.
+     *
+     * @param node MethodInvocationTree
+     * @param methodDefinitionReceiver AnnotatedTypeMirror
+     * @param methodCallReceiver AnnotatedTypeMirror
+     * @return boolean
+     */
+    @Override
+    protected boolean skipReceiverSubtypeCheck(
+            MethodInvocationTree node,
+            AnnotatedTypeMirror methodDefinitionReceiver,
+            AnnotatedTypeMirror methodCallReceiver) {
+        AnnotatedTypeMirror receiverType = atypeFactory.getReceiverType(node);
+        if (receiverType == null) {
+            return super.skipReceiverSubtypeCheck(
+                    node, methodDefinitionReceiver, methodCallReceiver);
+        }
+        if (atypeFactory.isCollectionType(receiverType)) {
+            return super.skipReceiverSubtypeCheck(
+                    node, methodDefinitionReceiver, methodCallReceiver);
+        }
+        List<? extends ExpressionTree> arguments = node.getArguments();
+        for (ExpressionTree arg : arguments) {
+            AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+            if (atypeFactory.isCollectionType(argType)) {
+                return super.skipReceiverSubtypeCheck(
+                        node, methodDefinitionReceiver, methodCallReceiver);
+            }
+        }
+        boolean hasPolyUp = false;
+        if (receiverType.hasAnnotation(atypeFactory.POLYDET_UP)) {
+            hasPolyUp = true;
+        }
+        if (!hasPolyUp) {
+            for (ExpressionTree arg : arguments) {
+                AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+                if (argType.hasAnnotation(atypeFactory.POLYDET_UP)) {
+                    hasPolyUp = true;
+                    break;
+                }
+            }
+        }
+        if (hasPolyUp) {
+            return true;
+        }
+        return super.skipReceiverSubtypeCheck(node, methodDefinitionReceiver, methodCallReceiver);
+    }
+
+    /**
      * Reports the given {@code errorMessage} if {@code subAnnotation} is not a subtype of {@code
      * superAnnotation}.
      *
@@ -691,8 +800,19 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         return new BaseTypeValidator(checker, this, atypeFactory) {
             @Override
             protected boolean shouldCheckTopLevelDeclaredType(AnnotatedTypeMirror type, Tree tree) {
-                // Always check.
+                // Reduces FPs: Do not report the error "invalid.upper.bound.on type.argument" on
+                // class declarations.
+                Element elem = TreeUtils.elementFromTree(tree);
+                if (elem == null) {
+                    return true;
+                }
+                if (ElementUtils.isTypeDeclaration(elem)
+                        || elem.getKind() == ElementKind.CONSTRUCTOR) {
+                    return false;
+                }
                 return true;
+                // Always check.
+                // return true;
             }
 
             @Override
