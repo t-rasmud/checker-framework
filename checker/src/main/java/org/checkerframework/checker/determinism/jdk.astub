@@ -1,6 +1,7 @@
 package java.lang;
 
 import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 
 class Thread implements Runnable {
   void run(@Det Thread this);
@@ -21,4 +22,20 @@ public interface ClassFileTransformer {
       @Det ProtectionDomain protectionDomain,
       @Det byte @Det [] classfileBuffer)
       throws IllegalClassFormatException;
+}
+
+package javax.tools;
+
+interface JavaCompiler extends Tool, OptionChecker {
+    CompilationTask getTask(Writer out,
+                            JavaFileManager fileManager,
+                            DiagnosticListener<? super JavaFileObject> diagnosticListener,
+                            Iterable<@PolyDet String> options,
+                            Iterable<@PolyDet String> classes,
+                            Iterable<? extends @PolyDet JavaFileObject> compilationUnits);
+}
+
+interface StandardJavaFileManager extends JavaFileManager {
+    Iterable<? extends @PolyDet JavaFileObject> getJavaFileObjectsFromFiles(
+        Iterable<? extends @PolyDet File> files);
 }
