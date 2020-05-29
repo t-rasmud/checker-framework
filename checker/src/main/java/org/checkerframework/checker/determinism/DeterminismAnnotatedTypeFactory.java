@@ -57,6 +57,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     public final AnnotationMirror POLYDET_UPDET;
     /** The @PolyDet("noOrderNonDet") annotation. */
     public final AnnotationMirror POLYDET_NOORDERNONDET;
+    /** The @PolyDet("useNoOrderNonDet") annotation. */
+    public final AnnotationMirror POLYDET_USENOORDERNONDET;
 
     /** The java.util.Set interface. */
     private final TypeMirror setInterfaceTypeMirror =
@@ -106,6 +108,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         POLYDET_USE = newPolyDet("use");
         POLYDET_UPDET = newPolyDet("upDet");
         POLYDET_NOORDERNONDET = newPolyDet("noOrderNonDet");
+        POLYDET_USENOORDERNONDET = newPolyDet("useNoOrderNonDet");
 
         this.inputProperties = Collections.unmodifiableList(buildInputProperties());
 
@@ -926,7 +929,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         return fromNewClass(tree).getAnnotationInHierarchy(NONDET);
     }
 
-    /** GraphQualifierHierarchy for the Determinism checker. */
+    /** Defines LUB and subtyping relationships. */
     class DeterminismQualifierHierarchy extends GraphQualifierHierarchy {
 
         /**
@@ -940,73 +943,122 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
 
         /**
+         * LUB of {@code @PolyDet("down")} and {@code @PolyDet("noOrderNonDet")} is {@code @PolyDet}
+         * since they are unrelated to each other and are subtypes of {@code @PolyDet}.
+         */
+        @Override
+        public AnnotationMirror leastUpperBound(AnnotationMirror a1, AnnotationMirror a2) {
+            if ((AnnotationUtils.areSame(a1, POLYDET_DOWN)
+                            && AnnotationUtils.areSame(a2, POLYDET_NOORDERNONDET))
+                    || (AnnotationUtils.areSame(a1, POLYDET_NOORDERNONDET)
+                            && AnnotationUtils.areSame(a2, POLYDET_DOWN))) {
+                return POLYDET;
+            }
+            return super.leastUpperBound(a1, a2);
+        }
+
+        /**
          * Adds the following subtyping rules for {@code @PolyDet}:
          *
          * <ol>
          *   <li>{@code @PolyDet("down")} {@literal <}: {@code @PolyDet} {@literal <}:
          *       {@code @PolyDet("up")}.
+         *   <li>{@code @PolyDet} {@literal <}: {@code @PolyDet("upDet")}.
+         *   <li>{@code @PolyDet("noOrderNonDet")} {@literal <}: {@code @PolyDet}.
          *   <li>{@code @PolyDet("use")} and {@code @PolyDet} are considered to be equal.
+         *   <li>{@code @PolyDet("useNoOrderNonDet")} and {@code @PolyDet("noOrderNonDet")} are also
+         *       considered to be equal.
+         *   <li>{@code @PolyDet("upDet")} {@literal <}: {@code @OrderNonDet}.
          *   <li>Treats {@code @PolyDet("up")} and {@code @PolyDet("down")} as {@code @PolyDet} when
          *       they are compared with {@code @NonDet}, {@code @OrderNonDet}, or {@code @Det}.
          * </ol>
          */
         @Override
         public boolean isSubtype(AnnotationMirror subAnno, AnnotationMirror superAnno) {
-            if (AnnotationUtils.areSame(subAnno, POLYDET)
-                    && AnnotationUtils.areSame(superAnno, POLYDET_UP)) {
-                return true;
+            if (!AnnotationUtils.areSameByClass(subAnno, PolyDet.class)
+                    && !AnnotationUtils.areSameByClass(superAnno, PolyDet.class)) {
+                return super.isSubtype(subAnno, superAnno);
             }
-            if (AnnotationUtils.areSame(subAnno, POLYDET_UP)
-                    && AnnotationUtils.areSame(superAnno, POLYDET)) {
-                return false;
+            if (AnnotationUtils.areSameByClass(subAnno, PolyDet.class)
+                    && !AnnotationUtils.areSameByClass(superAnno, PolyDet.class)) {
+                if (AnnotationUtils.areSame(subAnno, POLYDET_UPDET)
+                        && AnnotationUtils.areSame(superAnno, ORDERNONDET)) {
+                    return false;
+                }
+                return super.isSubtype(POLYDET, superAnno);
             }
-            if (AnnotationUtils.areSame(subAnno, POLYDET_DOWN)
-                    && AnnotationUtils.areSame(superAnno, POLYDET)) {
-                return true;
+            if (!AnnotationUtils.areSameByClass(subAnno, PolyDet.class)
+                    && AnnotationUtils.areSameByClass(superAnno, PolyDet.class)) {
+                if (AnnotationUtils.areSame(subAnno, ORDERNONDET)
+                        && AnnotationUtils.areSame(superAnno, POLYDET_UPDET)) {
+                    return true;
+                }
+                return super.isSubtype(subAnno, POLYDET);
             }
-            if (AnnotationUtils.areSame(subAnno, POLYDET)
-                    && AnnotationUtils.areSame(superAnno, POLYDET_DOWN)) {
-                return false;
+            String subAnnoValue =
+                    AnnotationUtils.getElementValue(subAnno, "value", String.class, true);
+            String superAnnoValue =
+                    AnnotationUtils.getElementValue(superAnno, "value", String.class, true);
+            switch (subAnnoValue) {
+                case "":
+                    switch (superAnnoValue) {
+                        case "down":
+                        case "noOrderNonDet":
+                        case "useNoOrderNonDet":
+                            return false;
+                        default:
+                            return true;
+                    }
+                case "up":
+                    switch (superAnnoValue) {
+                        case "":
+                        case "down":
+                        case "upDet":
+                        case "noOrderNonDet":
+                        case "use":
+                        case "useNoOrderNonDet":
+                            return false;
+                        default:
+                            return true;
+                    }
+                case "down":
+                    switch (superAnnoValue) {
+                        case "noOrderNonDet":
+                            return false;
+                        default:
+                            return true;
+                    }
+                case "upDet":
+                    switch (superAnnoValue) {
+                        case "":
+                        case "up":
+                        case "down":
+                        case "noOrderNonDet":
+                        case "use":
+                        case "useNoOrderNonDet":
+                            return false;
+                        default:
+                            return true;
+                    }
+                case "noOrderNonDet":
+                    switch (superAnnoValue) {
+                        case "down":
+                            return false;
+                        default:
+                            return true;
+                    }
+                case "use":
+                    switch (superAnnoValue) {
+                        case "down":
+                        case "noOrderNonDet":
+                        case "useNoOrderNonDet":
+                            return false;
+                        default:
+                            return true;
+                    }
+                default:
+                    return true;
             }
-            if (AnnotationUtils.areSame(subAnno, POLYDET_DOWN)
-                    && AnnotationUtils.areSame(superAnno, POLYDET_UP)) {
-                return true;
-            }
-            if (AnnotationUtils.areSame(subAnno, POLYDET_UP)
-                    && AnnotationUtils.areSame(superAnno, POLYDET_DOWN)) {
-                return false;
-            }
-            if (AnnotationUtils.areSame(subAnno, POLYDET_UPDET)
-                    && AnnotationUtils.areSame(superAnno, POLYDET_UP)) {
-                return false;
-            }
-            if (AnnotationUtils.areSame(subAnno, POLYDET_UP)
-                    && AnnotationUtils.areSame(superAnno, POLYDET_UPDET)) {
-                return false;
-            }
-            if (AnnotationUtils.areSame(subAnno, POLYDET_UPDET)
-                    && AnnotationUtils.areSame(superAnno, POLYDET)) {
-                return false;
-            }
-            if (AnnotationUtils.areSame(subAnno, POLYDET)
-                    && AnnotationUtils.areSame(superAnno, POLYDET_UPDET)) {
-                return true;
-            }
-            if (AnnotationUtils.areSame(subAnno, POLYDET_UPDET)
-                    && AnnotationUtils.areSame(superAnno, POLYDET_DOWN)) {
-                return false;
-            }
-            if (AnnotationUtils.areSame(subAnno, POLYDET_DOWN)
-                    && AnnotationUtils.areSame(superAnno, POLYDET_UPDET)) {
-                return true;
-            }
-            if (AnnotationUtils.areSameByName(subAnno, POLYDET)) {
-                subAnno = POLYDET;
-            }
-            if (AnnotationUtils.areSameByName(superAnno, POLYDET)) {
-                superAnno = POLYDET;
-            }
-            return super.isSubtype(subAnno, superAnno);
         }
     }
     /**

@@ -562,7 +562,7 @@ public interface List<E> extends Collection<E> {
      * @throws IndexOutOfBoundsException if the index is out of range
      *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
      */
-    @PolyDet("up") E set(@PolyDet("noOrderNonDet") List<E> this, @PolyDet("use") int index, E element);
+    @PolyDet("up") E set(@PolyDet("noOrderNonDet") List<@PolyDet("noOrderNonDet") E> this, @PolyDet("useNoOrderNonDet") int index, @PolyDet("useNoOrderNonDet") E element);
 
     /**
      * Inserts the specified element at the specified position in this list
@@ -598,7 +598,7 @@ public interface List<E> extends Collection<E> {
      * @throws IndexOutOfBoundsException if the index is out of range
      *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
      */
-    @PolyDet("up") E remove(@PolyDet("noOrderNonDet") List<E> this, @PolyDet("use") int index);
+    @PolyDet("up") E remove(@PolyDet("noOrderNonDet") List<@PolyDet("noOrderNonDet") E> this, @PolyDet("useNoOrderNonDet") int index);
 
 
     // Search Operations

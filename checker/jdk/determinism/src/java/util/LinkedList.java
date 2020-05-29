@@ -488,7 +488,7 @@ public class LinkedList<E>
      * @return the element previously at the specified position
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
-    public @PolyDet("up") E set(@PolyDet("noOrderNonDet") LinkedList<E> this, @PolyDet("use") int index, E element) {
+    public @PolyDet("up") E set(@PolyDet("noOrderNonDet") LinkedList<@PolyDet("noOrderNonDet") E> this, @PolyDet("useNoOrderNonDet") int index, @PolyDet("useNoOrderNonDet") E element) {
         checkElementIndex(index);
         Node<E> x = node(index);
         E oldVal = x.item;
@@ -523,7 +523,7 @@ public class LinkedList<E>
      * @return the element previously at the specified position
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
-    public @PolyDet("up") E remove(@PolyDet("noOrderNonDet") LinkedList<E> this, @PolyDet("use") int index) {
+    public @PolyDet("up") E remove(@PolyDet("noOrderNonDet") LinkedList<@PolyDet("noOrderNonDet") E> this, @PolyDet("useNoOrderNonDet") int index) {
         checkElementIndex(index);
         return unlink(node(index));
     }

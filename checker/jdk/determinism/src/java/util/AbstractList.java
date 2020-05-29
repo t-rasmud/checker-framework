@@ -129,7 +129,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws IllegalArgumentException      {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public @PolyDet("up") E set(@PolyDet("noOrderNonDet") AbstractList<E> this, @PolyDet("use") int index, E element) {
+    public @PolyDet("up") E set(@PolyDet("noOrderNonDet") AbstractList<@PolyDet("noOrderNonDet") E> this, @PolyDet("useNoOrderNonDet") int index, @PolyDet("useNoOrderNonDet") E element) {
         throw new UnsupportedOperationException();
     }
 
@@ -158,7 +158,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @throws UnsupportedOperationException {@inheritDoc}
      * @throws IndexOutOfBoundsException     {@inheritDoc}
      */
-    public @PolyDet("up") E remove(@PolyDet("noOrderNonDet") AbstractList<E> this, @PolyDet("use") int index) {
+    public @PolyDet("up") E remove(@PolyDet("noOrderNonDet") AbstractList<@PolyDet("noOrderNonDet") E> this, @PolyDet("useNoOrderNonDet") int index) {
         throw new UnsupportedOperationException();
     }
 
