@@ -1001,6 +1001,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     AnnotationUtils.getElementValue(superAnno, "value", String.class, true);
             switch (subAnnoValue) {
                 case "":
+                case "use":
                     switch (superAnnoValue) {
                         case "down":
                         case "noOrderNonDet":
@@ -1041,23 +1042,17 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                             return true;
                     }
                 case "noOrderNonDet":
+                case "useNoOrderNonDet":
                     switch (superAnnoValue) {
                         case "down":
-                            return false;
-                        default:
-                            return true;
-                    }
-                case "use":
-                    switch (superAnnoValue) {
-                        case "down":
-                        case "noOrderNonDet":
-                        case "useNoOrderNonDet":
                             return false;
                         default:
                             return true;
                     }
                 default:
-                    return true;
+                    throw new BugInCF(
+                            "Subtypeing relationship not defined for %s and %s",
+                            subAnno, superAnno);
             }
         }
     }
