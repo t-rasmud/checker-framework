@@ -1051,8 +1051,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     }
                 default:
                     throw new BugInCF(
-                            "Subtypeing relationship not defined for %s and %s",
-                            subAnno, superAnno);
+                            "Subtyping relationship not defined for %s and %s", subAnno, superAnno);
             }
         }
     }

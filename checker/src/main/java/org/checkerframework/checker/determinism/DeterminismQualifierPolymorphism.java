@@ -94,10 +94,7 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
             case "use":
                 if (replacementsPolyDet != null
                         && replacementsPolyDet.contains(factory.POLYDET_NOORDERNONDET)) {
-                    if (AnnotationUtils.containsSame(
-                            replacementsPolyDet, factory.POLYDET_NOORDERNONDET)) {
-                        type.replaceAnnotation(factory.POLYDET_USENOORDERNONDET);
-                    }
+                    type.replaceAnnotation(factory.POLYDET_USENOORDERNONDET);
                 }
                 if (replacementsPolyDet != null) {
                     AnnotationMirrorSet replacementsPolyDetUse =
