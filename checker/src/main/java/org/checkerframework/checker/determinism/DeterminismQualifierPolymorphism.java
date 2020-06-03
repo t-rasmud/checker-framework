@@ -96,6 +96,10 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                         && replacementsPolyDet.contains(factory.POLYDET_NOORDERNONDET)) {
                     type.replaceAnnotation(factory.POLYDET_USENOORDERNONDET);
                 }
+                // If @PolyDet("use") resolves to a qualifier that is a subtype of
+                // the qualifier that @PolyDet resolves to,
+                // replace type annotation with qualifier in replacementsPolyDetUse;
+                // else replace type annotation with qualifier in replacementsPolyDetUse.
                 if (replacementsPolyDet != null) {
                     AnnotationMirrorSet replacementsPolyDetUse =
                             replacementsMapping.get(factory.POLYDET_USE);
@@ -158,6 +162,10 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                 }
                 return;
             case "useNoOrderNonDet":
+                // If @PolyDet("useNoOrderNonDet") resolves to a qualifier that is a subtype of
+                // the qualifier that @PolyDet("NoOrderNonDet") resolves to,
+                // replace type annotation with qualifier in replacementsPolyDetUseNoOrderNonDet;
+                // else replace type annotation with qualifier in replacementsPolyDetNoOND.
                 if (replacementsPolyDetNoOND != null) {
                     AnnotationMirrorSet replacementsPolyDetUseNoOrderNonDet =
                             replacementsMapping.get(factory.POLYDET_USENOORDERNONDET);
