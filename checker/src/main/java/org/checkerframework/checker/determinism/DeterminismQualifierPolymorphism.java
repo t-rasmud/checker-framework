@@ -96,10 +96,17 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                         && replacementsPolyDet.contains(factory.POLYDET_NOORDERNONDET)) {
                     type.replaceAnnotation(factory.POLYDET_USENOORDERNONDET);
                 }
-                // If @PolyDet("use") resolves to a qualifier that is a subtype of
-                // the qualifier that @PolyDet resolves to,
-                // replace type annotation with qualifier in replacementsPolyDetUse;
-                // else replace type annotation with qualifier in replacementsPolyDetUse.
+                // Replace @PolyDet("use") with @PolyDet if @PolyDet("use") doesn't
+                // resolve to a type that is a subtype of what @PolyDet resolves to.
+                // Example: Suppose a method signature is annotated as
+                // void m(@PolyDet List<@PolyDet Object> o, @PolyDet("use") Object p);
+                // Consider the method call: @NonDet List<@NonDet Object> a; @Det Object b; m(a, b);
+                // Here, @PolyDet resolves to @NonDet and @PolyDet("use") resolves to @Det.
+                // Since @Det is a subtype of @NonDet, @PolyDet("use") will be replaced by @Det.
+                // Consider the method call: @Det List<@Det Object> a; @NonDet Object b; m(a, b);
+                // Here, @PolyDet resolves to @Det. @PolyDet("use") resolves to @NonDet which is not
+                // a subtype of what @PolyDet resolves to (@Det). Therefore, @PolyDet("use")
+                // will be replaced with @Det.
                 if (replacementsPolyDet != null) {
                     AnnotationMirrorSet replacementsPolyDetUse =
                             replacementsMapping.get(factory.POLYDET_USE);
@@ -162,10 +169,10 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                 }
                 return;
             case "useNoOrderNonDet":
-                // If @PolyDet("useNoOrderNonDet") resolves to a qualifier that is a subtype of
-                // the qualifier that @PolyDet("NoOrderNonDet") resolves to,
-                // replace type annotation with qualifier in replacementsPolyDetUseNoOrderNonDet;
-                // else replace type annotation with qualifier in replacementsPolyDetNoOND.
+                // Replace @PolyDet("useNoOrderNonDet") with @PolyDet("noOrderNonDet")
+                // if @PolyDet("useNoOrderNonDet") doesn't
+                // resolve to a type that is a subtype of what @PolyDet("noOrderNonDet") resolves
+                // to.
                 if (replacementsPolyDetNoOND != null) {
                     AnnotationMirrorSet replacementsPolyDetUseNoOrderNonDet =
                             replacementsMapping.get(factory.POLYDET_USENOORDERNONDET);
