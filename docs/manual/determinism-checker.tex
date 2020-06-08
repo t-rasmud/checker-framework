@@ -238,7 +238,6 @@ may not be annotated as \code{@OrderNonDet}.
 % }
 % \end{verbatim}
 
-%TODO: Rashmi: remove this
 \subsectionAndLabel{Sorting}{determinism-sorting}
 If a collection is of type \<@OrderNonDet>, sorting it puts
 its elements in a deterministic order. Thus, the Determinism Checker automatically
@@ -433,9 +432,11 @@ is annotated as:
 E set(@PolyDet List<E> this, @PolyDet("use") int index, E element)
 \end{Verbatim}
 
-As alluded to earlier, we allow \<@PolyDet("use")> to resolve to any
-type qualifier as long as it is a subtype of the qualifier
-that \<@PolyDet> resolves to. To illustrate why the subtyping relationship helps precision,
+As alluded to earlier, \<@PolyDet("use")> is resolved as a
+separate polymorphic qualifier. If that qualifier is a supertype
+of the instantiation of \<@PolyDet>, then the instantiation of \<@PolyDet>
+is used as the instantiation of \<@PolyDet("use")>.
+To illustrate how this helps precision,
 consider the \<List.addAll> method. There should be six versions of it:
 
 \begin{Verbatim}
