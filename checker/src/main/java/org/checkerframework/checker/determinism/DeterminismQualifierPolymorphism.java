@@ -92,10 +92,6 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                 type.replaceAnnotations(replacements);
                 return;
             case "use":
-                if (replacementsPolyDet != null
-                        && replacementsPolyDet.contains(factory.POLYDET_NOORDERNONDET)) {
-                    type.replaceAnnotation(factory.POLYDET_USENOORDERNONDET);
-                }
                 // Replace @PolyDet("use") with @PolyDet if @PolyDet("use") doesn't
                 // resolve to a type that is a subtype of what @PolyDet resolves to.
                 // Example: Suppose a method signature is annotated as
