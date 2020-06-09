@@ -385,7 +385,7 @@ following conditions are true:
 
 \begin{description}
 \item[\refqualclass{checker/determinism/qual}{PolyDet}\<("use")>]
-  Has the same type as any \<@PolyDet> annotations in the method
+  Has a type qualifier that is a subtype of \<@PolyDet> qualifiers in the method
   declaration, but does not affect their instantiation.
 \end{description}
 
@@ -394,7 +394,7 @@ all of the \<@PolyDet> annotations in a method declaration are given the same
 instantiation, which is one that works for all of the actual arguments
 (their least upper bound).
 
-The \<@PolyDet("use")> annotation is given the same instantiation as all of the
+The \<@PolyDet("use")> annotation is given an instantiation that is a subtype of all of the
 \<@PolyDet> annotations, but does not affect the instantiation. This is especially
 useful in preventing methods from non-deterministically modifying the
 state of a deterministic receiver.
@@ -431,6 +431,35 @@ is annotated as:
 \begin{Verbatim}
 E set(@PolyDet List<E> this, @PolyDet("use") int index, E element)
 \end{Verbatim}
+
+As alluded to earlier, \<@PolyDet("use")> is resolved as a
+separate polymorphic qualifier. If that qualifier is a supertype
+of the instantiation of \<@PolyDet>, then the instantiation of \<@PolyDet>
+is used as the instantiation of \<@PolyDet("use")>.
+To illustrate how this helps precision,
+consider the \<List.addAll> method. There should be six versions of it:
+
+\begin{Verbatim}
+@NonDet boolean addAll(@NonDet List<E> this, @NonDet Collection<? extends E> c)
+@NonDet boolean addAll(@NonDet List<E> this, @OrderNonDet Collection<? extends E> c)
+@NonDet boolean addAll(@NonDet List<E> this, @Det Collection<? extends E> c)
+@Det    boolean addAll(@OrderNonDet List<E> this, @OrderNonDet Collection<? extends E> c)
+@Det    boolean addAll(@OrderNonDet List<E> this, @Det Collection<? extends E> c)
+@Det    boolean addAll(        @Det List<E> this, @Det Collection<? extends E> c)
+\end{Verbatim}
+
+To allow all six instantiations shown above, the library method
+is annotated as:
+
+\begin{Verbatim}
+@PolyDet("down") boolean addAll(@PolyDet List<E> this, @PolyDet("use") Collection<? extends E> c)
+\end{Verbatim}
+%TODO: Rashmi create a section for invariant collections (when creating a related PR)
+We treat collections as invariant with respect to determinism type qualifiers,
+a \<@Det> collection is unrelated an \<@OrderNonDet> collection, which is unrelated
+to a \<@Det> collection. Therefore, \<@PolyDet("use")> must allow qualifiers that
+are subtypes of the qualifiers that \<@PolyDet> resolves to in order to allow
+instantiations like \code{@Det boolean addAll(@OrderNonDet List<E> this, @Det Collection<? extends E> c)}.
 
 Whenever \<@PolyDet("up")>, \<@PolyDet("down")>, and \<@PolyDet("upDet")> are written on formal parameters,
 they are treated as \<@PolyDet("use")> sites that are instantiated with the corresponding \<@PolyDet> mappings.
@@ -487,7 +516,7 @@ Since the list is \<@OrderNonDet>, removing an element at index 0 could remove a
 making the resulting list \<@NonDet> which is unsound.
 
 Similar to \<@PolyDet("use")>, \<@PolyDet("useNoOrderNonDet")>
-annotation is given the same instantiation as all of the
+annotation is given an instantiation that is a subtype of the
 \<@PolyDet("noOrderNonDet")> annotations, but does not affect the instantiation.
 
 \subsectionAndLabel{Type qualifier hierarchy}{determinism-hierarchy}
