@@ -101,29 +101,19 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                 if (replacementsPolyDet != null) {
                     AnnotationMirrorSet replacementsPolyDetUse =
                             replacementsMapping.get(factory.POLYDET_USE);
-                    if (replacementsPolyDetUse != null) {
-                        boolean replaceWithPolyUse = true;
-                        for (AnnotationMirror poly : replacementsPolyDet) {
-                            for (AnnotationMirror polyUse : replacementsPolyDetUse) {
-                                if (!atypeFactory
-                                        .getQualifierHierarchy()
-                                        .isSubtype(polyUse, poly)) {
-                                    replaceWithPolyUse = false;
-                                    break;
-                                }
-                            }
-                            if (!replaceWithPolyUse) {
-                                break;
-                            }
-                        }
-                        if (replaceWithPolyUse) {
-                            type.replaceAnnotations(replacementsPolyDetUse);
-                        } else {
-                            type.replaceAnnotations(replacementsPolyDet);
-                        }
-                    } else {
+                    if (replacementsPolyDetUse == null) {
                         type.replaceAnnotations(replacementsPolyDet);
+                        return;
                     }
+                    for (AnnotationMirror poly : replacementsPolyDet) {
+                        for (AnnotationMirror polyUse : replacementsPolyDetUse) {
+                            if (!atypeFactory.getQualifierHierarchy().isSubtype(polyUse, poly)) {
+                                type.replaceAnnotations(replacementsPolyDet);
+                                return;
+                            }
+                        }
+                    }
+                    type.replaceAnnotations(replacementsPolyDetUse);
                 }
                 return;
             case "up":
