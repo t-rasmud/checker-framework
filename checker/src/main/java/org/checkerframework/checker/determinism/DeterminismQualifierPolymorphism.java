@@ -53,11 +53,16 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
      * replacementsMapping}. Replaces {@code @PolyDet("up")} with {@code @NonDet} if it resolves to
      * {@code OrderNonDet}. Replaces {@code @PolyDet("down")} with {@code @Det} if it resolves to
      * {@code OrderNonDet}. Replaces {@code @PolyDet("use")} with the same annotation that
-     * {@code @PolyDet} resolves to. Replaces {@code @PolyDet("upDet")} with {@code @OrderNonDet} if
-     * it resolves to {@code @Det}. Replaces {@code @PolyDet("noOrderNonDet")} with {@code @Det} if
-     * it resolves to {@code OrderNonDet}. Replaces {@code @PolyDet("useNoOrderNonDet")} with the
-     * same annotation that {@code @PolyDet("noOrderNonDet")} resolves to.
+     * {@code @PolyDet} resolves to if {@code @PolyDet("use")} resolves to an annotation that is a
+     * supertype of the annotation that {@code @PolyDet} resolves to. Replaces
+     * {@code @PolyDet("upDet")} with {@code @OrderNonDet} if it resolves to {@code @Det}. Replaces
+     * {@code @PolyDet("noOrderNonDet")} with {@code @Det} if it resolves to {@code OrderNonDet}.
+     * Replaces {@code @PolyDet("useNoOrderNonDet")} with the same annotation that
+     * {@code @PolyDet("noOrderNonDet")} resolves to if {@code @PolyDet("useNoOrderNonDet")}
+     * resolves to an annotation that is a supertype of the annotation that
+     * {@code @PolyDet("noOrderNonDet")} resolves to.
      *
+     * @checker_framework.manual #determinism-polymorphism Determinism Polymorphism
      * @param type annotated type whose poly annotations are replaced
      * @param replacementsMapping mapping from polymorphic annotation to instantiation
      */
@@ -92,10 +97,6 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                 type.replaceAnnotations(replacements);
                 return;
             case "use":
-                if (replacementsPolyDet != null
-                        && replacementsPolyDet.contains(factory.POLYDET_NOORDERNONDET)) {
-                    type.replaceAnnotation(factory.POLYDET_USENOORDERNONDET);
-                }
                 // Replace @PolyDet("use") with @PolyDet if @PolyDet("use") doesn't
                 // resolve to a type that is a subtype of what @PolyDet resolves to.
                 if (replacementsPolyDet != null) {
