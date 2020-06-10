@@ -1023,12 +1023,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                             return true;
                     }
                 case "down":
-                    switch (superAnnoValue) {
-                        case "noOrderNonDet":
-                            return false;
-                        default:
-                            return true;
-                    }
+                    return !"noOrderNonDet".equals(superAnnoValue);
                 case "upDet":
                     switch (superAnnoValue) {
                         case "":
@@ -1043,12 +1038,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     }
                 case "noOrderNonDet":
                 case "useNoOrderNonDet":
-                    switch (superAnnoValue) {
-                        case "down":
-                            return false;
-                        default:
-                            return true;
-                    }
+                    return !"down".equals(superAnnoValue);
                 default:
                     throw new BugInCF(
                             "Subtyping relationship not defined for %s and %s", subAnno, superAnno);
