@@ -75,12 +75,18 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** The java.util.Collections class. */
     private final TypeMirror collectionsTypeMirror =
             TypesUtils.typeFromClass(Collections.class, types, processingEnv.getElementUtils());
-    /** The java.util.HashSet class. */
+    /** The java.util.TreeSet class. */
     private final TypeMirror treeSetTypeMirror =
             TypesUtils.typeFromClass(TreeSet.class, types, processingEnv.getElementUtils());
     /** The java.util.TreeMap class. */
     private final TypeMirror treeMapTypeMirror =
             TypesUtils.typeFromClass(TreeMap.class, types, processingEnv.getElementUtils());
+    /** The java.util.HashSet class. */
+    private final TypeMirror hashSetTypeMirror =
+            TypesUtils.typeFromClass(HashSet.class, types, processingEnv.getElementUtils());
+    /** The java.util.HashMap class. */
+    private final TypeMirror hashMapTypeMirror =
+            TypesUtils.typeFromClass(HashMap.class, types, processingEnv.getElementUtils());
 
     /** Comma separated list of deterministic system properties */
     private final List<String> inputProperties;
@@ -878,6 +884,17 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
+     * Returns true if {@code tm} is a HashSet
+     *
+     * @param tm AnnotatedTypeMirror
+     * @return true if {@code tm} is a HashSet
+     */
+    public boolean isHashSet(AnnotatedTypeMirror tm) {
+        return types.isSameType(
+                types.erasure(tm.getUnderlyingType()), types.erasure(hashSetTypeMirror));
+    }
+
+    /**
      * @param tm TypeMirror
      * @return true if {@code tm} is a List or a subtype of List
      */
@@ -892,6 +909,17 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     public boolean isTreeMap(AnnotatedTypeMirror tm) {
         return types.isSubtype(
                 types.erasure(tm.getUnderlyingType()), types.erasure(treeMapTypeMirror));
+    }
+
+    /**
+     * Returns true if {@code tm} is a HashMap
+     *
+     * @param tm AnnotatedTypeMirror
+     * @return true if {@code tm} is a HashMap
+     */
+    public boolean isHashMap(AnnotatedTypeMirror tm) {
+        return types.isSameType(
+                types.erasure(tm.getUnderlyingType()), types.erasure(hashMapTypeMirror));
     }
 
     /**

@@ -5,10 +5,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
-import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedArrayType;
-import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedDeclaredType;
 import org.checkerframework.framework.type.poly.DefaultQualifierPolymorphism;
-import org.checkerframework.framework.type.visitor.AnnotatedTypeScanner;
 import org.checkerframework.framework.util.AnnotationMirrorMap;
 import org.checkerframework.framework.util.AnnotationMirrorSet;
 import org.checkerframework.javacutil.AnnotationUtils;
@@ -141,7 +138,7 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                     type.replaceAnnotations(replacements);
                 } else if (replacements.contains(factory.ORDERNONDET)
                         || replacements.contains(factory.DET)) {
-                    replaceForPolyWithModifier(type, factory.DET);
+                    type.replaceAnnotation(factory.DET);
                 }
                 return;
             case "upDet":
@@ -195,70 +192,6 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                 return;
             default:
                 throw new BugInCF("Unexpected value in @PolyDet: " + value);
-        }
-    }
-
-    /**
-     * This method replaces the annotation of {@code type} and all its nested type arguments (if
-     * {@code type} is a Collection or Iterator) or component types (if {@code type} is an array)
-     * with {@code replaceType}.
-     *
-     * @param type the polymorphic type to be replaced
-     * @param replaceType the type to be replaced with
-     */
-    private void replaceForPolyWithModifier(
-            AnnotatedTypeMirror type, AnnotationMirror replaceType) {
-        type.replaceAnnotation(replaceType);
-        if (!factory.isCollectionType(type)) {
-            return;
-        }
-        new CollectionReplacer().visit(type, replaceType);
-    }
-
-    /**
-     * Replaces the annotation on {@code type} with {@code replaceType}. If {@code type} is a
-     * Collection (or a subtype) or an Iterator (or a subtype), iterates over all the nested
-     * Collection/Iterator type arguments of {@code type} and replaces their top-level annotations
-     * with {@code replaceType}. If {@code type} is an array, iterates over all nested component
-     * types of {@code type} and replaces their top level annotations with {@code replaceType}.
-     *
-     * <p>Example1: If this method is called with {@code type} as {@code @OrderNonDet Integer} and
-     * {@code replaceType} as {@code @NonDet}, the resulting {@code type} will be {@code @NonDet
-     * Integer}.
-     *
-     * <p>Example2: If this method is called with {@code type} as {@code @OrderNonDet Set<@Det
-     * Integer>} and {@code replaceType} as {@code @NonDet}, the resulting {@code type} will be
-     * {@code @NonDet Set<@Det Integer>}.
-     *
-     * <p>Example3: If this method is called with {@code type} as {@code @OrderNonDet
-     * Set<@OrderNonDet Set<@Det Integer>>} and {@code replaceType} as {@code @NonDet}, the result
-     * will be {@code @NonDet Set<@NonDet Set<@Det Integer>>}.
-     *
-     * <p>Example4: If this method is called with {@code type} as {@code @OrderNonDet
-     * Set<@OrderNonDet Set<@OrderNonDet List<@Det Integer>>>} and {@code replaceType} as
-     * {@code @Det}, the result will be {@code @Det Set<@Det Set<@Det List<@Det Integer>>>}.
-     *
-     * <p>Example5: If this method is called with {@code type} as {@code @Det
-     * int @OrderNonDet[] @OrderNonDet} and {@code replaceType} as {@code @NonDet}, the result will
-     * be {@code @Det int @NonDet[] @NonDet}.
-     */
-    class CollectionReplacer extends AnnotatedTypeScanner<Void, AnnotationMirror> {
-        @Override
-        public Void visitDeclared(AnnotatedDeclaredType type, AnnotationMirror annotationMirror) {
-            if (!factory.isCollectionType(type)) {
-                // Don't look further.
-                return null;
-            }
-            if (!type.getTypeArguments().isEmpty()) {
-                type.replaceAnnotation(annotationMirror);
-            }
-            return super.visitDeclared(type, annotationMirror);
-        }
-
-        @Override
-        public Void visitArray(AnnotatedArrayType type, AnnotationMirror annotationMirror) {
-            type.replaceAnnotation(annotationMirror);
-            return super.visitArray(type, annotationMirror);
         }
     }
 }

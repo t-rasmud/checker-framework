@@ -11,7 +11,7 @@ public class TestPolyUpHashSet {
     }
 
     void testDet(@Det String str) {
-        // :: warning: (cast.unsafe.constructor.invocation)
+        // :: warning: (cast.unsafe.constructor.invocation)  :: error:(invalid.hashset.or.hashmap)
         @Det HashSet<@Det String> set = new @Det HashSet<>();
         set.add(str);
     }

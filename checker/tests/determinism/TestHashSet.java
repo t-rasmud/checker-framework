@@ -29,7 +29,7 @@ class TestHashSet {
     }
 
     void testExplicitDet() {
-        // :: warning: (cast.unsafe.constructor.invocation)
+        // :: warning: (cast.unsafe.constructor.invocation) :: error: (invalid.hashset.or.hashmap)
         @OrderNonDet Set<String> s = new @Det HashSet<String>();
     }
 
