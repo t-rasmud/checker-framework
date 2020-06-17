@@ -1,11 +1,6 @@
 package org.checkerframework.framework.qual;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * This is a declaration annotation that applies to type declarations and packages. On a type, it
@@ -66,6 +61,7 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.PACKAGE})
+@Inherited
 public @interface HasQualifierParameter {
 
     /**

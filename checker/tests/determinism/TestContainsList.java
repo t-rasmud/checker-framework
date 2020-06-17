@@ -4,20 +4,20 @@ import org.checkerframework.checker.determinism.qual.*;
 public class TestContainsList {
     void TestList(@Det ArrayList<@Det Integer> myDetList, @NonDet Integer rand) {
         @Det boolean ret;
-        // :: error: (assignment.type.incompatible)
+        // :: error: (assignment.type.incompatible) :: error: (method.invocation.invalid)
         ret = myDetList.contains(rand);
     }
 
     void TestList1(
             @Det ArrayList<@Det Integer> myDetList, @NonDet ArrayList<@NonDet Integer> rand) {
         @Det boolean ret;
-        // :: error: (assignment.type.incompatible)
+        // :: error: (assignment.type.incompatible) :: error: (method.invocation.invalid)
         ret = myDetList.contains(rand);
     }
 
     void TestList2(@Det ArrayList<@Det Integer> myDetList, @NonDet int rand) {
         @Det boolean ret;
-        // :: error: (assignment.type.incompatible)
+        // :: error: (assignment.type.incompatible) :: error: (method.invocation.invalid)
         ret = myDetList.contains(rand);
     }
 

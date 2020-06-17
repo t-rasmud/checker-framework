@@ -37,6 +37,7 @@ public class TestArraysSort {
     void testSort5(
             @OrderNonDet List<@Det Integer> @OrderNonDet [] a,
             @Det Comparator<@OrderNonDet List<@Det Integer>> c) {
+        // :: error: (type.argument.type.incompatible)
         Arrays.sort(a, c);
         // :: error: argument.type.incompatible :: error: invalid.element.type
         System.out.println(a[0]);
@@ -48,8 +49,9 @@ public class TestArraysSort {
     }
 
     void testSort7(@PolyDet int @PolyDet [] a) {
+        // :: error: (argument.type.incompatible)
         Arrays.sort(a);
-        // ::error: assignment.type.incompatible
+        // :: error: assignment.type.incompatible
         @PolyDet("down") int @PolyDet("down") [] tmp = a;
     }
 

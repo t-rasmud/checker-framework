@@ -16,6 +16,7 @@ public class TestPolyReplace {
     }
 
     @PolyDet("up") List<List<Integer>> polyList(@PolyDet List<List<Integer>> list) {
+        // :: error: (return.type.incompatible)
         return list;
     }
 }

@@ -16,13 +16,14 @@ public class TestListtoArray {
 
     void ListToObjectArray3(@OrderNonDet List<@OrderNonDet List<@Det String>> ondList) {
         @Det Object @OrderNonDet [] objArr = ondList.toArray();
-        // :: warning: [unchecked] unchecked cast :: warning: (cast.unsafe)
+        // :: warning: [unchecked] unchecked cast :: error: (invariant.cast.unsafe)
         @Det List<@Det String> elem = (@Det List<@Det String>) objArr[0];
     }
 
     void ListToObjectArray4(@OrderNonDet List<@Det String> ondetList) {
         @Det String @OrderNonDet [] arg = new @Det String @OrderNonDet [10];
         @NonDet String @NonDet [] objArr = ondetList.toArray(arg);
+        // :: error: (type.argument.type.incompatible) :: error: (argument.type.incompatible)
         @NonDet String @NonDet [] objArr1 = ondetList.toArray(new @NonDet String @NonDet [10]);
     }
 }

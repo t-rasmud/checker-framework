@@ -22,7 +22,7 @@ public class TestMaps {
         @Det String val = map.get(dKey);
         // :: error: (assignment.type.incompatible)
         @Det List<@Det String> val1 = map1.get(dKey);
-        // :: error: (assignment.type.incompatible)
+        // :: error: (assignment.type.incompatible) :: error: (method.invocation.invalid)
         @Det String val2 = map.get(nKey);
     }
 
@@ -33,7 +33,7 @@ public class TestMaps {
             @NonDet Integer nKey) {
         @Det String val = map.get(dKey);
         @Det List<@Det String> val1 = map1.get(dKey);
-        // :: error: (assignment.type.incompatible)
+        // :: error: (assignment.type.incompatible) :: error: (method.invocation.invalid)
         @Det String val2 = map.get(nKey);
     }
 

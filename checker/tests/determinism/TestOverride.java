@@ -19,6 +19,7 @@ public class TestOverride {
     }
 
     protected @NonDet int getList1(@Det ArrayList<Integer> a, @NonDet int b) {
+        // :: error: (method.invocation.invalid)
         return a.get(b);
     }
 }
@@ -30,6 +31,7 @@ class Child extends TestOverride {
     }
 
     @Override
+    // :: error: (override.return.invalid)
     protected @Det ArrayList<@Det Integer> newList(@NonDet int a) {
         // :: warning: (cast.unsafe.constructor.invocation)
         return new @Det ArrayList<Integer>(a);
