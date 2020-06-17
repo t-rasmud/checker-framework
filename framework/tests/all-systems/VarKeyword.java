@@ -9,7 +9,10 @@ public class VarKeyword {
         s.toString();
         for (var i : list) {}
 
-        @SuppressWarnings("determinism:assignment.type.incompatible") // TODO: fix
+        @SuppressWarnings({
+            "determinism:assignment.type.incompatible",
+            "determinism:argument.type.incompatible"
+        }) // TODO: fix
         var listVar = list;
         method((listVar));
     }
