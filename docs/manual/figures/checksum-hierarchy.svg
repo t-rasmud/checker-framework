@@ -13,7 +13,7 @@
    id="svg3577"
    version="1.1"
    inkscape:version="0.92.2 5c3e80d, 2017-08-06"
-   sodipodi:docname="checksum-hierarchy.pdf">
+   sodipodi:docname="checksum-hierarchy.svg">
   <metadata
      id="metadata3693">
     <rdf:RDF>
@@ -27,7 +27,78 @@
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs3691" />
+     id="defs3691">
+    <marker
+       inkscape:stockid="Arrow2Lstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="marker1536"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path1534"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(1.1) translate(1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="marker1496"
+       style="overflow:visible;"
+       inkscape:isstock="true">
+      <path
+         id="path1494"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(1.1) rotate(180) translate(1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Lstart"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path1134"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(1.1) translate(1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Lend"
+       style="overflow:visible;"
+       inkscape:isstock="true">
+      <path
+         id="path1137"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(1.1) rotate(180) translate(1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lstart"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path1116"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         transform="scale(0.8) translate(12.5,0)" />
+    </marker>
+  </defs>
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -42,12 +113,12 @@
      id="namedview3689"
      showgrid="false"
      inkscape:zoom="1.6651112"
-     inkscape:cx="21.24973"
+     inkscape:cx="-89.2534"
      inkscape:cy="70.457598"
      inkscape:window-x="0"
      inkscape:window-y="1"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g4330"
+     inkscape:current-layer="svg3577"
      inkscape:connector-spacing="5"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -55,16 +126,17 @@
      fit-margin-bottom="0" />
   <g
      id="g3589"
-     transform="translate(24.600084,-18.999985)">
+     transform="matrix(0.62994393,0,0,0.60198947,186.49325,47.051405)"
+     style="stroke-width:1.62388241">
     <rect
-       style="fill:#ffffff"
+       style="fill:#ffffff;stroke-width:1.62388241"
        x="360"
        y="120"
        width="201"
        height="44"
        id="rect3591" />
     <rect
-       style="fill:none;fill-opacity:0;stroke:#7f7f7f;stroke-width:2.18256378;stroke-opacity:1"
+       style="fill:none;fill-opacity:0;stroke:#7f7f7f;stroke-width:3.54422712;stroke-opacity:1"
        x="340.9155"
        y="120.09128"
        width="240.36746"
@@ -72,7 +144,7 @@
        id="rect3593" />
     <text
        font-size="15.8044"
-       style="font-style:normal;font-weight:normal;font-size:14.32277775px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#7f7f7f;fill-opacity:1"
+       style="font-style:normal;font-weight:normal;font-size:14.32277775px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#7f7f7f;fill-opacity:1;stroke-width:1.62388241"
        x="460.5"
        y="146.772"
        id="text3595">
@@ -80,7 +152,7 @@
          x="460.5"
          y="146.772"
          id="tspan3597"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.63888741px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#7f7f7f;fill-opacity:1">@UnknownChecksum</tspan>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.63888741px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#7f7f7f;fill-opacity:1;stroke-width:1.62388241">@UnknownChecksum</tspan>
     </text>
   </g>
   <text
@@ -112,11 +184,11 @@
      d="m 604.16876,233.39773 v 0"
      style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.41111112px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   <g
-     transform="matrix(0.94595829,0,0,0.88996763,42.712189,158.76692)"
+     transform="matrix(0.62737945,0,0,0.59654417,125.811,176.41315)"
      id="g4844"
-     style="stroke-width:1.08987546">
+     style="stroke-width:1.63460767">
     <rect
-       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.11697304;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.67524898;stroke-miterlimit:4;stroke-dasharray:none"
        x="257.38934"
        y="31.008766"
        width="176.92526"
@@ -124,7 +196,7 @@
        id="rect4846" />
     <text
        font-size="15.8044"
-       style="font-style:normal;font-weight:normal;font-size:21.16666603px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#000000;stroke-width:1.08987546"
+       style="font-style:normal;font-weight:normal;font-size:21.16666603px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#000000;stroke-width:1.63460767"
        x="344.43689"
        y="57.950584"
        id="text4848">
@@ -132,31 +204,31 @@
          x="344.43689"
          y="57.950584"
          id="tspan4850"
-         style="font-size:21.16666603px;stroke-width:1.08987546">@<tspan
-   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.00340843px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.08987546"
+         style="font-size:21.16666603px;stroke-width:1.63460767">@<tspan
+   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.00340843px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.63460767"
    id="tspan871">NotChecksummed</tspan>
 </tspan>
     </text>
   </g>
   <g
      id="g4330"
-     transform="matrix(1.1624786,0,0,0.8567998,173.49797,159.72)"
-     style="stroke-width:1.00200021">
+     transform="matrix(0.69897982,0,0,0.59926577,235.8006,176.46712)"
+     style="stroke-width:1.54510474">
     <rect
        id="rect4332"
        height="43.360073"
        width="186.6907"
        y="31.008766"
        x="247.62392"
-       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.02691293;stroke-miterlimit:4;stroke-dasharray:none" />
+       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.58352053;stroke-miterlimit:4;stroke-dasharray:none" />
     <text
        id="text4334"
        y="57.421669"
        x="343.34415"
-       style="font-style:normal;font-weight:normal;font-size:21.16666603px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#000000;stroke-width:1.00200021"
+       style="font-style:normal;font-weight:normal;font-size:21.16666603px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#000000;stroke-width:1.54510474"
        font-size="15.8044">
       <tspan
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.90675354px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.00200021"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.90675354px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.54510474"
          id="tspan4336"
          y="57.421669"
          x="343.34415">@ChecksummedBy(&quot;a&quot;)</tspan>
@@ -169,160 +241,210 @@
      inkscape:connector-type="polyline"
      inkscape:connector-curvature="2" />
   <g
-     transform="matrix(1,0,0,1.1386104,143.34003,234.94144)"
-     id="g4344"
-     style="stroke-width:0.93715715">
-    <rect
-       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.17569983;stroke-miterlimit:4;stroke-dasharray:none"
-       x="233.47319"
-       y="31.123606"
-       width="221.23582"
-       height="34.390987"
-       id="rect4346" />
-    <text
-       font-size="15.8044"
-       style="font-style:normal;font-weight:normal;font-size:21.16666603px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#000000;stroke-width:0.93715715"
-       x="346.53928"
-       y="53.18364"
-       id="text4348">
-      <tspan
-         sodipodi:role="line"
-         id="tspan873"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.63888741px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:0.93715715"
-         x="346.53928"
-         y="53.18364">@ChecksumBottom</tspan>
-    </text>
-  </g>
-  <g
-     id="g4375"
-     transform="matrix(0.57937742,0.81505938,-0.81505938,0.57937742,345.91225,-324.02303)">
-    <line
-       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2"
-       x1="460.5"
-       y1="200"
-       x2="460.5"
-       y2="173.73599"
-       id="line4377" />
-    <polygon
-       style="fill:#000000"
-       points="455.5,176.236 460.5,166.236 465.5,176.236 460.5,173.736 "
-       id="polygon4379" />
-    <polygon
-       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2"
-       points="455.5,176.236 460.5,166.236 465.5,176.236 460.5,173.736 "
-       id="polygon4381" />
-  </g>
-  <path
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.47461903px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     d="m 452.17656,165.75609 -30.10954,20.41858 z"
-     id="path4397"
-     inkscape:connector-curvature="0" />
-  <path
-     inkscape:connector-curvature="0"
-     id="path4401"
-     d="m 450.67845,166.05571 -30.10954,20.41858 z"
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.47461903px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-  <g
-     id="g4427"
-     transform="matrix(-1.0978673,0,0,1.1437421,935.78581,-133.53313)"
-     style="stroke-width:0.89240301">
-    <g
-       id="g4403"
-       transform="rotate(54.593234,326.46831,257.27778)"
-       style="stroke-width:0.89240301">
-      <line
-         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.78480601"
-         x1="460.5"
-         y1="200"
-         x2="460.5"
-         y2="173.73599"
-         id="line4405" />
-      <polygon
-         style="fill:#000000;stroke-width:0.89240301"
-         points="465.5,176.236 460.5,173.736 455.5,176.236 460.5,166.236 "
-         id="polygon4407" />
-      <polygon
-         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.78480601"
-         points="465.5,176.236 460.5,173.736 455.5,176.236 460.5,166.236 "
-         id="polygon4409" />
-    </g>
-    <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.31595445px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 453.28092,331.9049 -30.10954,20.41858 z"
-       id="path4423"
-       inkscape:connector-curvature="0" />
-    <path
-       inkscape:connector-curvature="0"
-       id="path4425"
-       d="M 451.78281,332.20452 421.67327,352.6231 Z"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.31595445px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-  </g>
-  <g
-     transform="matrix(1.0699052,0,0,1.1232075,48.855589,-127.09531)"
-     id="g4443"
-     style="stroke-width:0.91221529">
+     transform="matrix(-1.1371763,0,0,1.2365288,1083.9436,-242.21292)"
+     id="g4457"
+     style="stroke-width:0.84330362">
     <g
        transform="rotate(54.593234,326.46831,257.27778)"
-       id="g4445"
-       style="stroke-width:0.91221529">
-      <line
-         id="line4447"
-         y2="173.73599"
-         x2="460.5"
-         y1="200"
-         x1="460.5"
-         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.82443058" />
-      <polygon
-         id="polygon4449"
-         points="455.5,176.236 460.5,166.236 465.5,176.236 460.5,173.736 "
-         style="fill:#000000;stroke-width:0.91221529" />
-      <polygon
-         id="polygon4451"
-         points="455.5,176.236 460.5,166.236 465.5,176.236 460.5,173.736 "
-         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.82443058" />
-    </g>
-    <path
-       inkscape:connector-curvature="0"
-       id="path4453"
-       d="m 453.28092,331.9049 -30.10954,20.41858 z"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.34517002px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-    <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.34517002px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 451.78281,332.20452 421.67327,352.6231 Z"
-       id="path4455"
-       inkscape:connector-curvature="0" />
-  </g>
-  <g
-     transform="matrix(-1,0,0,1,981.48056,-166.75232)"
-     id="g4457">
-    <g
-       transform="matrix(0.57937742,0.81505938,-0.81505938,0.57937742,347.01661,-157.87422)"
-       id="g4459">
+       id="g4459"
+       style="stroke-width:0.84330362">
       <line
          id="line4461"
          y2="173.73599"
          x2="460.5"
          y1="200"
          x1="460.5"
-         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.68660724" />
       <polygon
          id="polygon4463"
-         points="460.5,173.736 455.5,176.236 460.5,166.236 465.5,176.236 "
-         style="fill:#000000" />
+         points="460.5,166.236 465.5,176.236 460.5,173.736 455.5,176.236 "
+         style="fill:#000000;stroke-width:0.84330362" />
       <polygon
          id="polygon4465"
-         points="460.5,173.736 455.5,176.236 460.5,166.236 465.5,176.236 "
-         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+         points="460.5,166.236 465.5,176.236 460.5,173.736 455.5,176.236 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.68660724" />
     </g>
     <path
        inkscape:connector-curvature="0"
        id="path4467"
        d="m 453.28092,331.9049 -30.10954,20.41858 z"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.47461903px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.24355161px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.47461903px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.24355161px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="M 451.78281,332.20452 421.67327,352.6231 Z"
        id="path4469"
        inkscape:connector-curvature="0" />
   </g>
+  <g
+     id="g4330-0"
+     transform="matrix(0.69897982,0,0,0.59926577,375.25467,176.52936)"
+     style="stroke-width:1.54510474">
+    <rect
+       id="rect4332-6"
+       height="43.360073"
+       width="186.6907"
+       y="31.008766"
+       x="247.62392"
+       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.58352053;stroke-miterlimit:4;stroke-dasharray:none" />
+    <text
+       id="text4334-4"
+       y="57.421669"
+       x="343.34415"
+       style="font-style:normal;font-weight:normal;font-size:21.16666603px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#000000;stroke-width:1.54510474"
+       font-size="15.8044">
+      <tspan
+         sodipodi:role="line"
+         id="tspan910"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.80728054px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle"
+         x="343.34415"
+         y="57.421669">@ChecksummedBy(&quot;b&quot;)</tspan>
+    </text>
+  </g>
+  <g
+     id="g3589-9"
+     transform="matrix(0.62994393,0,0,0.60198947,188.8496,199.68713)"
+     style="stroke-width:1.62388241">
+    <rect
+       style="fill:#ffffff;stroke-width:1.62388241"
+       x="360"
+       y="120"
+       width="201"
+       height="44"
+       id="rect3591-9" />
+    <rect
+       style="fill:none;fill-opacity:0;stroke:#7f7f7f;stroke-width:3.54422712;stroke-opacity:1"
+       x="340.9155"
+       y="120.09128"
+       width="240.36746"
+       height="43.817436"
+       id="rect3593-4" />
+    <text
+       font-size="15.8044"
+       style="font-style:normal;font-weight:normal;font-size:14.32277775px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#7f7f7f;fill-opacity:1;stroke-width:1.62388241"
+       x="460.5"
+       y="146.772"
+       id="text3595-9">
+      <tspan
+         sodipodi:role="line"
+         id="tspan941"
+         x="460.5"
+         y="146.772"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.61574173px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle">@ChecksumBottom</tspan>
+    </text>
+  </g>
+  <g
+     transform="matrix(-1.0671461,0,0,1.3184633,877.93657,-192.68954)"
+     id="g4457-7"
+     style="stroke-width:0.84305131">
+    <g
+       transform="rotate(54.593234,326.46831,257.27778)"
+       id="g4459-0"
+       style="stroke-width:0.84305131">
+      <line
+         id="line4461-9"
+         y2="173.73599"
+         x2="460.5"
+         y1="200"
+         x1="460.5"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.68610263" />
+      <polygon
+         id="polygon4463-5"
+         points="460.5,173.736 455.5,176.236 460.5,166.236 465.5,176.236 "
+         style="fill:#000000;stroke-width:0.84305131" />
+      <polygon
+         id="polygon4465-7"
+         points="460.5,173.736 455.5,176.236 460.5,166.236 465.5,176.236 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.68610263" />
+    </g>
+    <path
+       inkscape:connector-curvature="0"
+       id="path4467-2"
+       d="m 453.28092,331.9049 -30.10954,20.41858 z"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.24317956px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.24317956px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 451.78281,332.20452 421.67327,352.6231 Z"
+       id="path4469-9"
+       inkscape:connector-curvature="0" />
+  </g>
+  <g
+     transform="matrix(0.93525126,0,0,1.2817213,149.60769,-179.66096)"
+     id="g4457-7-7"
+     style="stroke-width:0.91335374">
+    <g
+       transform="rotate(54.593234,326.46831,257.27778)"
+       id="g4459-0-6"
+       style="stroke-width:0.91335374">
+      <line
+         id="line4461-9-8"
+         y2="173.73599"
+         x2="460.5"
+         y1="200"
+         x1="460.5"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.82670748" />
+      <polygon
+         id="polygon4463-5-2"
+         points="460.5,166.236 465.5,176.236 460.5,173.736 455.5,176.236 "
+         style="fill:#000000;stroke-width:0.91335374" />
+      <polygon
+         id="polygon4465-7-9"
+         points="460.5,166.236 465.5,176.236 460.5,173.736 455.5,176.236 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.82670748" />
+    </g>
+    <path
+       inkscape:connector-curvature="0"
+       id="path4467-2-9"
+       d="m 453.28092,331.9049 -30.10954,20.41858 z"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.34684896px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.34684896px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 451.78281,332.20452 421.67327,352.6231 Z"
+       id="path4469-9-8"
+       inkscape:connector-curvature="0" />
+  </g>
+  <g
+     transform="matrix(0.93525127,0,0,1.2817213,-12.064178,-256.69819)"
+     id="g4457-7-7-3"
+     style="stroke-width:0.91335374">
+    <g
+       transform="rotate(54.593234,326.46831,257.27778)"
+       id="g4459-0-6-7"
+       style="stroke-width:0.91335374">
+      <line
+         id="line4461-9-8-1"
+         y2="173.73599"
+         x2="460.5"
+         y1="200"
+         x1="460.5"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.82670748" />
+      <polygon
+         id="polygon4463-5-2-2"
+         points="465.5,176.236 460.5,173.736 455.5,176.236 460.5,166.236 "
+         style="fill:#000000;stroke-width:0.91335374" />
+      <polygon
+         id="polygon4465-7-9-6"
+         points="465.5,176.236 460.5,173.736 455.5,176.236 460.5,166.236 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:1.82670748" />
+    </g>
+    <path
+       inkscape:connector-curvature="0"
+       id="path4467-2-9-1"
+       d="m 453.28092,331.9049 -30.10954,20.41858 z"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.34684896px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.34684896px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 451.78281,332.20452 421.67327,352.6231 Z"
+       id="path4469-9-8-7"
+       inkscape:connector-curvature="0" />
+  </g>
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1.32291663px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#marker1536)"
+     d="m 476.93279,223.10146 0.79449,49.3563"
+     id="path1108"
+     inkscape:connector-curvature="0" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1.32291663px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+     d="m 476.1383,196.23193 0.79449,-50.09831"
+     id="path1112"
+     inkscape:connector-curvature="0" />
 </svg>
