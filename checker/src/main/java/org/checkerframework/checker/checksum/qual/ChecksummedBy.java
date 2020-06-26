@@ -19,6 +19,6 @@ import org.checkerframework.framework.qual.SubtypeOf;
 @Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})
 @SubtypeOf({UnknownChecksum.class})
 public @interface ChecksummedBy {
-    /** Expression that checksums this value. */
+    /* Expression that checksums this value. */
     String value() default "";
 }
