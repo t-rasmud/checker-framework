@@ -14,13 +14,15 @@ import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
 
 public class ChecksumAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
-    protected final AnnotationMirror UNKNOWN_CHECKSUM =
-            AnnotationBuilder.fromClass(elements, UnknownChecksum.class);
+
+    /** The {@link @ChecksummedBy} annotation. */
     protected final AnnotationMirror CHECKSUMMEDBY =
             AnnotationBuilder.fromClass(elements, ChecksummedBy.class);
+    /** The {@link @NotChecksummed} annotation. */
     protected final AnnotationMirror NOT_CHECKSUMMED =
             AnnotationBuilder.fromClass(elements, NotChecksummed.class);
 
+    /** Create a new ChecksumAnnotatedTypeFactory. */
     public ChecksumAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker);
         this.postInit();
@@ -37,22 +39,30 @@ public class ChecksumAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                         PolyChecksum.class));
     }
 
+    /** The Checksum qualifier hierarchy. */
     @Override
     public QualifierHierarchy createQualifierHierarchy(
             MultiGraphQualifierHierarchy.MultiGraphFactory factory) {
         return new ChecksumQualifierHierarchy(factory);
     }
 
+    /** Checksum qualifier hierarchy. */
     class ChecksumQualifierHierarchy extends MultiGraphQualifierHierarchy {
 
+        /** ChecksumQualifierHierarchy constructor */
         public ChecksumQualifierHierarchy(MultiGraphFactory f) {
             super(f);
         }
 
+        /** Returns true if {@code am} is {@code @ChecksummedBy}. */
         boolean isChecksummedBy(AnnotationMirror am) {
             return AnnotationUtils.areSameByName(am, CHECKSUMMEDBY);
         }
 
+        /**
+         * Defines subtyping relationship for {@link ChecksummedBy}. Two {@code @ChecksummedBy}
+         * annotations are unrelated unless their values are the same.
+         */
         @Override
         public boolean isSubtype(AnnotationMirror subAnno, AnnotationMirror superAnno) {
             boolean isLhsChecksummedBy = isChecksummedBy(superAnno);

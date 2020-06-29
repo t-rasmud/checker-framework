@@ -18,6 +18,10 @@ public class ChecksumVisitor extends BaseTypeVisitor<ChecksumAnnotatedTypeFactor
         return new ChecksumAnnotatedTypeFactory(checker);
     }
 
+    /**
+     * Reports an error if the return type of a constructor is not annotated with {@code
+     * NotChecksummed}.
+     */
     @Override
     protected void checkConstructorResult(
             AnnotatedTypeMirror.AnnotatedExecutableType constructorType,
@@ -28,6 +32,7 @@ public class ChecksumVisitor extends BaseTypeVisitor<ChecksumAnnotatedTypeFactor
         checker.reportError(constructorElement, "invalid.constructor.return.type");
     }
 
+    /** Makes {@code @NotChecksummed} the default lower bound on Exception parameters. */
     @Override
     protected Set<? extends AnnotationMirror> getExceptionParameterLowerBoundAnnotations() {
         return Collections.singleton(atypeFactory.NOT_CHECKSUMMED);
