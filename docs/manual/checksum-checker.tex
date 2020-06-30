@@ -3,6 +3,8 @@
 
 The Checksum Checker ensures that all data that passes from labelled sources
 to labelled sinks are correctly protected by checksums.
+A labelled source could be a method in a reliable library that creates checksums.
+A labelled source could be a method in a reliable library that accesses checksummed data.
 
 If an expression \<D>'s type has the type qualifier
 \<\refqualclass{checker/checksum/qual}{ChecksummedBy}{\small("\emph{checksumexpr}")}>,
@@ -16,6 +18,10 @@ The programmer has indicated that the first argument (\<data>) of a call to
 \<myMethod> must be checksummed by the second argument (\<cs>).
 Given the above annotation on \<myMethod>, the Checksum Checker verifies that at
 every call to \<myMethod>, the second argument is a checksum for the first argument.
+
+Any operation on a \<@ChecksummedBy> type is illegal.
+In other words, it is illegal to call a method, perform binary or unary
+operations on a \<@ChecksummedBy> type.
 
 To run the Checksum Checker, supply the
 \code{-processor org.checkerframework.checker.checksum.ChecksumChecker}
