@@ -13,6 +13,7 @@ import org.checkerframework.framework.util.MultiGraphQualifierHierarchy;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
 
+/** Annotated type factory for the Checksum type system. */
 public class ChecksumAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
     /** The {@link @ChecksummedBy} annotation. */

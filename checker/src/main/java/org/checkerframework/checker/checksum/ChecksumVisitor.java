@@ -8,7 +8,9 @@ import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 
+/** Checksum visitor. */
 public class ChecksumVisitor extends BaseTypeVisitor<ChecksumAnnotatedTypeFactory> {
+    /** ChecksumVisitor constructor. */
     public ChecksumVisitor(BaseTypeChecker checker) {
         super(checker);
     }
