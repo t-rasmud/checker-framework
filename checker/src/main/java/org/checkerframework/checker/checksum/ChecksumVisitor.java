@@ -10,7 +10,11 @@ import org.checkerframework.framework.type.AnnotatedTypeMirror;
 
 /** Checksum visitor. */
 public class ChecksumVisitor extends BaseTypeVisitor<ChecksumAnnotatedTypeFactory> {
-    /** ChecksumVisitor constructor. */
+    /**
+     * ChecksumVisitor constructor.
+     *
+     * @param checker BaseTypeChecker
+     */
     public ChecksumVisitor(BaseTypeChecker checker) {
         super(checker);
     }

@@ -16,14 +16,18 @@ import org.checkerframework.javacutil.AnnotationUtils;
 /** Annotated type factory for the Checksum type system. */
 public class ChecksumAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
-    /** The {@link @ChecksummedBy} annotation. */
+    /** The @{@link ChecksummedBy} annotation. */
     protected final AnnotationMirror CHECKSUMMEDBY =
             AnnotationBuilder.fromClass(elements, ChecksummedBy.class);
-    /** The {@link @NotChecksummed} annotation. */
+    /** The @{@link NotChecksummed} annotation. */
     protected final AnnotationMirror NOT_CHECKSUMMED =
             AnnotationBuilder.fromClass(elements, NotChecksummed.class);
 
-    /** Create a new ChecksumAnnotatedTypeFactory. */
+    /**
+     * Create a new ChecksumAnnotatedTypeFactory.
+     *
+     * @param checker BaseTypeChecker
+     */
     public ChecksumAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker);
         this.postInit();
@@ -50,12 +54,21 @@ public class ChecksumAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** Checksum qualifier hierarchy. */
     class ChecksumQualifierHierarchy extends MultiGraphQualifierHierarchy {
 
-        /** ChecksumQualifierHierarchy constructor */
+        /**
+         * ChecksumQualifierHierarchy constructor
+         *
+         * @param f MultiGraphFactory
+         */
         public ChecksumQualifierHierarchy(MultiGraphFactory f) {
             super(f);
         }
 
-        /** Returns true if {@code am} is {@code @ChecksummedBy}. */
+        /**
+         * Returns true if {@code am} is {@code @ChecksummedBy}.
+         *
+         * @param am AnnotationMirror
+         * @return true if {@code am} is {@code @ChecksummedBy}
+         */
         boolean isChecksummedBy(AnnotationMirror am) {
             return AnnotationUtils.areSameByName(am, CHECKSUMMEDBY);
         }
