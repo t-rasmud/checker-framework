@@ -1,3 +1,5 @@
+// @skip-test
+
 import java.util.function.Function;
 import javafx.util.Pair;
 
