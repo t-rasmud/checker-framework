@@ -4,25 +4,22 @@
 The Checksum Checker ensures that all data that passes from labelled sources
 to labelled sinks are correctly protected by checksums.
 
-A user can specify checksumming relationship among
-variables with the type qualifier
-\<\refqualclass{checker/checksum/qual}{ChecksummedBy}{\small("\emph{checksumexpr}")}>.
-This indicates that the variable can only be assigned values that are
-checksummed by another variable \<\small\emph{checksumexpr}>.
-
-To run the Checksum Checker, supply the
-\code{-processor org.checkerframework.checker.checksum.ChecksumChecker}
-command-line option to javac.
+If an expression \<D>'s type has the type qualifier
+\<\refqualclass{checker/checksum/qual}{ChecksummedBy}{\small("\emph{checksumexpr}")}>,
+then \<\small\emph{checksumexpr}> holds \<D>'s checksum
 
 As an illustration, consider the following annotated method signature:
 \begin{Verbatim}
-    void myMethod(@ChecksummedBy("cs") int data, int cs) { ... }
+    void myMethod(@ChecksummedBy("#2") int data, int cs) { ... }
 \end{Verbatim}
 The programmer has indicated that the first argument (\<data>) of a call to
 \<myMethod> must be checksummed by the second argument (\<cs>).
 Given the above annotation on \<myMethod>, the Checksum Checker verifies that at
 every call to \<myMethod>, the second argument is a checksum for the first argument.
 
+To run the Checksum Checker, supply the
+\code{-processor org.checkerframework.checker.checksum.ChecksumChecker}
+command-line option to javac.
 
 \sectionAndLabel{Checksum annotations}{checksum-annotations}
 
@@ -33,26 +30,26 @@ This section describes the checksum annotations you can write on parameters, fie
 \begin{description}
 
     \item[\refqualclass{checker/checksum/qual}{NotChecksummed}]
-    This qualifier represents values that are not checksummed.
-    This is the default type;  programmers do not need to write it.
+    A type having the qualifier \<@NotChecksummed> represents values that are not checksummed.
+    This is the default type qualifier;  programmers do not need to write it.
 
     \item[\refqualclass{checker/checksum/qual}{ChecksummedBy}]
-    This qualifier represents values that are expected to be checksummed by
+    A type having the qualifier \<@ChecksummedBy> represents values that are checksummed by
     the checksum expression as in \<@ChecksummedBy{\small("\emph{checksumexpr}")}>.
     This is unrelated to \<@NotChecksummed> in the type hierarchy,
     and \<@ChecksummedBy{\small("\emph{a}")}> is unrelated to
     \<@ChecksummedBy{\small("\emph{b}")}>.
 
     \item[\refqualclass{checker/checksum/qual}{UnknownChecksum}]
-    This qualifier represents a value that might or might not be protected by a checksum.
-    A value annotated with this qualifier cannot be used where
+    A type having the qualifier \<@UnknownChecksum> represents values
+    that might or might not be protected by checksums.
+    A type annotated with this qualifier cannot be used where
     \<@NotChecksummed> is expected, and it cannot be used where
     \<@ChecksummedBy> is expected. Programmers should not write it.
-    It generally indicates a programming error or unnecessarily complex code where
-    the meaning of a value depends on some external condition.
+    It generally indicates a programming error or unnecessarily complex code.
 
     \item[\refqualclass{checker/checksum/qual}{ChecksumBottom}]
-    This qualifier represents the bottom type. It is used only for the null value.
+    This is the bottom type qualifier. It is used only for the null value.
     Programmers should never write it (except in rare cases in wildcard types).
 
     \item[\refqualclass{checker/checksum/qual}{PolyChecksum}]
@@ -69,7 +66,7 @@ This section describes the checksum annotations you can write on parameters, fie
 Figure~\ref{fig-checksum-hierarchy} shows the type hierarchy of these
 qualifiers.
 
-\subsectionAndLabel{Fields and intrinsic checksums}{intrinsic-checksums}
+\sectionAndLabel{Fields and intrinsic checksums}{intrinsic-checksums}
 An extrinsic checksum is stored in addition to the data, as when two variables
 \<int data> and \<int checksum> are passed to a routine.  An intrinsic checksum is part of the data,
 as when a class contains some fields and a checksum field.  For intrinsic checksums, the annotation
@@ -88,5 +85,3 @@ When one field of an object is checksummed by another field, it is annotated as 
     }
 \end{Verbatim}
 
-
-%TODO: Checksum on multiple fields

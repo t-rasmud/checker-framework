@@ -8,11 +8,11 @@ import java.lang.annotation.Target;
 import org.checkerframework.framework.qual.SubtypeOf;
 
 /**
- * This qualifier represents a value that might or might not be protected by a checksum. A value
- * annotated with this qualifier cannot be used where {@code @}{@link NotChecksummed} is expected,
- * and it cannot be used where {@code @}{@link ChecksummedBy} is expected. Programmers should not
- * write it. It generally indicates a programming error or unnecessarily complex code where the
- * meaning of a value depends on some external condition.
+ * A type having the qualifier {@code @UnknownChecksum} represents values that might or might not be
+ * protected by checksums. A type annotated with this qualifier cannot be used where {@code @}{@link
+ * NotChecksummed} is expected, and it cannot be used where {@code @}{@link ChecksummedBy} is
+ * expected. Programmers should not write it. It generally indicates a programming error or
+ * unnecessarily complex code where the meaning of a value depends on some external condition.
  *
  * <p>{@code @UnknownChecksum} is the top of the Checksum qualifier hierarchy.
  *

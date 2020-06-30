@@ -14,9 +14,7 @@ public class TestLibrary {
     }
 
     void testTransformCS(
-            @ChecksummedBy("cs") Object data, int cs, Function<Object, Object> lambda) {
-        // False positive!?!
-        // :: error: (argument.type.incompatible)
+            @ChecksummedBy("#2") Object data, int cs, Function<Object, Object> lambda) {
         Map.Entry<Object, Integer> result = ChecksumLibrary.TransformChecksum(data, cs, lambda);
         Object newData = result.getKey();
     }
@@ -32,7 +30,7 @@ class ChecksumLibrary {
     }
 
     static Map.Entry<Object, Integer> TransformChecksum(
-            @ChecksummedBy("checksum") Object data, int checksum, Function<Object, Object> lambda) {
+            @ChecksummedBy("#2") Object data, int checksum, Function<Object, Object> lambda) {
         // False positive!?!
         // :: error: (argument.type.incompatible)
         Object newData = lambda.apply(data);

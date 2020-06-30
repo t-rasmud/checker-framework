@@ -8,8 +8,8 @@ import java.lang.annotation.Target;
 import org.checkerframework.framework.qual.SubtypeOf;
 
 /**
- * This qualifier represents the bottom type. It is used only for the null value. Programmers should
- * never write it (except in rare cases in wildcard types).
+ * This is the bottom type qualifier. It is used only for the null value. Programmers should never
+ * write it (except in rare cases in wildcard types).
  *
  * @checker_framework.manual #checksum-checker Checksum Checker
  */
