@@ -25,15 +25,15 @@ class ChecksumLibrary {
         return 0;
     }
 
-    static @ChecksummedBy("cs") Object validateChecksum(@ChecksummedBy("cs") Object data, int cs) {
+    static Object validateChecksum(@ChecksummedBy("cs") Object data, int cs) {
         return data;
     }
 
     static Map.Entry<Object, Integer> TransformChecksum(
             @ChecksummedBy("#2") Object data, int checksum, Function<Object, Object> lambda) {
-        // False positive!?!
-        // :: error: (argument.type.incompatible)
-        Object newData = lambda.apply(data);
-        return new AbstractMap.SimpleImmutableEntry<>(newData, checksum);
+        Object oldData = validateChecksum(data);
+        Object newData = lambda.apply(oldData);
+        int newChecksum = computeChecksum(newData);
+        return new AbstractMap.SimpleImmutableEntry<>(newData, newChecksum);
     }
 }
