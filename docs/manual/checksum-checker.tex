@@ -3,8 +3,8 @@
 
 The Checksum Checker ensures that all data that passes from labelled sources
 to labelled sinks are correctly protected by checksums.
-A labelled source could be a method in a reliable library that creates checksums.
-A labelled source could be a method in a reliable library that accesses checksummed data.
+A labelled source could be a method in a library that computes checksums.
+A labelled source could be a method in a library that accesses checksummed data.
 
 If an expression \<D>'s type has the type qualifier
 \<\refqualclass{checker/checksum/qual}{ChecksummedBy}{\small("\emph{checksumexpr}")}>,
@@ -19,9 +19,11 @@ The programmer has indicated that the first argument (\<data>) of a call to
 Given the above annotation on \<myMethod>, the Checksum Checker verifies that at
 every call to \<myMethod>, the second argument is a checksum for the first argument.
 
-Any operation on a \<@ChecksummedBy> type is illegal.
-In other words, it is illegal to call a method, perform binary or unary
-operations on a \<@ChecksummedBy> type.
+The only legal operations on a \<@ChecksummedBy> type are performed by the
+checksum libarary.  It is illegal to perform other operations (e.g.,
+addition, string concatenation, etc.) on a \<@ChecksummedBy> type.
+A user must first use the checksum library to validate the checksum, then
+can use the data.
 
 To run the Checksum Checker, supply the
 \code{-processor org.checkerframework.checker.checksum.ChecksumChecker}
@@ -29,7 +31,7 @@ command-line option to javac.
 
 \sectionAndLabel{Checksum annotations}{checksum-annotations}
 
-This section describes the checksum annotations you can write on parameters, fields, objects, and variables.
+This section describes the checksum annotations you can write on a type.
 
 \subsectionAndLabel{Type qualifiers}{checksum-type-qualifiers}
 
@@ -40,8 +42,7 @@ This section describes the checksum annotations you can write on parameters, fie
     This is the default type qualifier;  programmers do not need to write it.
 
     \item[\refqualclass{checker/checksum/qual}{ChecksummedBy}]
-    A type having the qualifier \<@ChecksummedBy> represents values that are checksummed by
-    the checksum expression as in \<@ChecksummedBy{\small("\emph{checksumexpr}")}>.
+    A type having the qualifier \<@ChecksummedBy> represents values that are checksummed.
     This is unrelated to \<@NotChecksummed> in the type hierarchy,
     and \<@ChecksummedBy{\small("\emph{a}")}> is unrelated to
     \<@ChecksummedBy{\small("\emph{b}")}>.
@@ -51,15 +52,15 @@ This section describes the checksum annotations you can write on parameters, fie
     that might or might not be protected by checksums.
     A type annotated with this qualifier cannot be used where
     \<@NotChecksummed> is expected, and it cannot be used where
-    \<@ChecksummedBy> is expected. Programmers should not write it.
+    \<@ChecksummedBy> is expected. Programmers should never write it.
     It generally indicates a programming error or unnecessarily complex code.
 
     \item[\refqualclass{checker/checksum/qual}{ChecksumBottom}]
     This is the bottom type qualifier. It is used only for the null value.
-    Programmers should never write it (except in rare cases in wildcard types).
+    Programmers should not write it (except in rare cases in wildcard types).
 
     \item[\refqualclass{checker/checksum/qual}{PolyChecksum}]
-    This is the polymorphic qualifier for the Checkchum type system.
+    This is the polymorphic qualifier for the Checksum type system.
 
 \end{description}
 
