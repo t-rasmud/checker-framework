@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -167,7 +166,11 @@ public class MultiGraphQualifierHierarchy extends QualifierHierarchy {
      */
     protected final AnnotationMirror polymorphicQualifier;
 
-    /** @see MultiGraphQualifierHierarchy.MultiGraphFactory#polyQualifiers */
+    /**
+     * See {@link MultiGraphQualifierHierarchy.MultiGraphFactory#polyQualifiers}.
+     *
+     * @see MultiGraphQualifierHierarchy.MultiGraphFactory#polyQualifiers
+     */
     protected final Map<AnnotationMirror, AnnotationMirror> polyQualifiers;
 
     /** All qualifiers, including polymorphic qualifiers. */
@@ -212,6 +215,11 @@ public class MultiGraphQualifierHierarchy extends QualifierHierarchy {
         // System.out.println("MGH: " + this);
     }
 
+    @Override
+    public boolean isValid() {
+        return !typeQualifiers.isEmpty();
+    }
+
     /**
      * Method to finalize the qualifier hierarchy before it becomes unmodifiable. The parameters
      * pass all fields and allow modification.
@@ -230,13 +238,14 @@ public class MultiGraphQualifierHierarchy extends QualifierHierarchy {
         StringJoiner sj = new StringJoiner(System.lineSeparator());
         sj.add("Supertypes Graph: ");
 
-        for (Entry<AnnotationMirror, Set<AnnotationMirror>> qual : supertypesDirect.entrySet()) {
+        for (Map.Entry<AnnotationMirror, Set<AnnotationMirror>> qual :
+                supertypesDirect.entrySet()) {
             sj.add("\t" + qual.getKey() + " = " + qual.getValue());
         }
 
         sj.add("Supertypes Map: ");
 
-        for (Entry<AnnotationMirror, Set<AnnotationMirror>> qual :
+        for (Map.Entry<AnnotationMirror, Set<AnnotationMirror>> qual :
                 supertypesTransitive.entrySet()) {
             String keyOpen = "\t" + qual.getKey() + " = [";
 
@@ -360,13 +369,7 @@ public class MultiGraphQualifierHierarchy extends QualifierHierarchy {
         return true;
     }
 
-    @Override
-    @Deprecated
-    public Set<? extends AnnotationMirror> getTypeQualifiers() {
-        return typeQualifiers;
-    }
-
-    // For caching results of lubs
+    /** For caching results of lubs * */
     private Map<AnnotationPair, AnnotationMirror> lubs = null;
 
     @Override

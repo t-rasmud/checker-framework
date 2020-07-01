@@ -1,13 +1,11 @@
 package org.checkerframework.checker.determinism;
 
-import java.util.Set;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.poly.DefaultQualifierPolymorphism;
 import org.checkerframework.framework.util.AnnotationMirrorMap;
-import org.checkerframework.framework.util.AnnotationMirrorSet;
 import org.checkerframework.javacutil.AnnotationUtils;
 import org.checkerframework.javacutil.BugInCF;
 
@@ -65,111 +63,105 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
      */
     @Override
     protected void replace(
-            AnnotatedTypeMirror type,
-            AnnotationMirrorMap<AnnotationMirrorSet> replacementsMapping) {
+            AnnotatedTypeMirror type, AnnotationMirrorMap<AnnotationMirror> replacementsMapping) {
         AnnotationMirror anno = type.getAnnotation(PolyDet.class);
         if (anno == null) {
             return;
         }
         String value = AnnotationUtils.getElementValue(anno, "value", String.class, true);
-        AnnotationMirrorSet replacementsPolyDet = replacementsMapping.get(factory.POLYDET);
-        AnnotationMirrorSet replacementsPolyDetNoOND =
+        AnnotationMirror replacementPolyDet = replacementsMapping.get(factory.POLYDET);
+        AnnotationMirror replacementPolyDetNoOND =
                 replacementsMapping.get(factory.POLYDET_NOORDERNONDET);
-        AnnotationMirrorSet replacements;
-        if (replacementsPolyDet == null) {
-            replacements = replacementsPolyDetNoOND;
-        } else if (replacementsPolyDetNoOND == null) {
-            replacements = replacementsPolyDet;
+        AnnotationMirror replacement;
+        if (replacementPolyDet == null) {
+            replacement = replacementPolyDetNoOND;
+        } else if (replacementPolyDetNoOND == null) {
+            replacement = replacementPolyDet;
         } else {
-            Set<? extends AnnotationMirror> lub =
-                    qualHierarchy.leastUpperBounds(replacementsPolyDet, replacementsPolyDetNoOND);
-            replacements = new AnnotationMirrorSet(lub);
+            replacement =
+                    qualHierarchy.leastUpperBound(replacementPolyDet, replacementPolyDetNoOND);
         }
-        if (replacements == null) {
+        if (replacement == null) {
             return;
         }
 
         switch (value) {
             case "":
-                type.replaceAnnotations(replacements);
+                type.replaceAnnotation(replacement);
                 return;
             case "up":
-                if (replacements.contains(factory.DET)) {
-                    type.replaceAnnotations(replacements);
-                } else if (replacements.contains(factory.ORDERNONDET)
-                        || replacements.contains(factory.NONDET)
-                        || replacements.contains(factory.POLYDET_UPDET)) {
+                if (AnnotationUtils.areSameByName(replacement, factory.DET)) {
+                    type.replaceAnnotation(replacement);
+                } else if (AnnotationUtils.areSameByName(replacement, factory.ORDERNONDET)
+                        || AnnotationUtils.areSameByName(replacement, factory.NONDET)
+                        || AnnotationUtils.areSameByName(replacement, factory.POLYDET_UPDET)) {
                     type.replaceAnnotation(factory.NONDET);
                 }
                 return;
             case "down":
-                if (replacements.contains(factory.NONDET)) {
-                    type.replaceAnnotations(replacements);
-                } else if (replacements.contains(factory.ORDERNONDET)
-                        || replacements.contains(factory.DET)) {
+                if (AnnotationUtils.areSameByName(replacement, factory.NONDET)) {
+                    type.replaceAnnotation(replacement);
+                } else if (AnnotationUtils.areSameByName(replacement, factory.ORDERNONDET)
+                        || AnnotationUtils.areSameByName(replacement, factory.DET)) {
                     type.replaceAnnotation(factory.DET);
                 }
                 return;
             case "upDet":
-                if (replacements.contains(factory.NONDET)
-                        || replacements.contains(factory.ORDERNONDET)) {
-                    type.replaceAnnotations(replacements);
-                } else if (replacements.contains(factory.DET)) {
+                if (AnnotationUtils.areSameByName(replacement, factory.NONDET)
+                        || AnnotationUtils.areSameByName(replacement, factory.ORDERNONDET)) {
+                    type.replaceAnnotation(replacement);
+                } else if (AnnotationUtils.areSameByName(replacement, factory.DET)) {
                     type.replaceAnnotation(factory.ORDERNONDET);
                 }
                 return;
             case "noOrderNonDet":
-                if (replacements.contains(factory.ORDERNONDET)
-                        || replacements.contains(factory.POLYDET)) {
+                if (AnnotationUtils.areSameByName(replacement, factory.ORDERNONDET)
+                        || AnnotationUtils.areSameByName(replacement, factory.POLYDET)) {
                     type.replaceAnnotation(factory.DET);
                 } else {
-                    type.replaceAnnotations(replacements);
+                    type.replaceAnnotation(replacement);
                 }
                 return;
             case "use":
-                if (replacementsPolyDet == null) {
+                if (replacementPolyDet == null) {
                     return;
                 }
                 // Replace @PolyDet("use") with @PolyDet if @PolyDet("use") doesn't
                 // resolve to a type that is a subtype of what @PolyDet resolves to.
-                AnnotationMirrorSet replacementsPolyDetUse =
+                AnnotationMirror replacementPolyDetUse =
                         replacementsMapping.get(factory.POLYDET_USE);
-                if (replacementsPolyDetUse == null) {
-                    type.replaceAnnotations(replacementsPolyDet);
+                if (replacementPolyDetUse == null) {
+                    type.replaceAnnotation(replacementPolyDet);
                     return;
                 }
-                for (AnnotationMirror poly : replacementsPolyDet) {
-                    for (AnnotationMirror polyUse : replacementsPolyDetUse) {
-                        if (!atypeFactory.getQualifierHierarchy().isSubtype(polyUse, poly)) {
-                            type.replaceAnnotations(replacementsPolyDet);
-                            return;
-                        }
-                    }
+                if (!atypeFactory
+                        .getQualifierHierarchy()
+                        .isSubtype(replacementPolyDetUse, replacementPolyDet)) {
+                    type.replaceAnnotation(replacementPolyDet);
+                    return;
                 }
-                type.replaceAnnotations(replacementsPolyDetUse);
+                type.replaceAnnotation(replacementPolyDetUse);
                 return;
             case "useNoOrderNonDet":
-                if (replacementsPolyDetNoOND == null) {
+                if (replacementPolyDetNoOND == null) {
                     return;
                 }
                 // Replace @PolyDet("useNoOrderNonDet") with @PolyDet("noOrderNonDet")
                 // if @PolyDet("useNoOrderNonDet") doesn't resolve to a type that is a subtype of
                 // what @PolyDet("noOrderNonDet") resolves to.
-                AnnotationMirrorSet replacementsPolyDetUseNoOrderNonDet =
+                AnnotationMirror replacementPolyDetUseNoOrderNonDet =
                         replacementsMapping.get(factory.POLYDET_USENOORDERNONDET);
-                if (replacementsPolyDetUseNoOrderNonDet == null) {
-                    type.replaceAnnotations(replacementsPolyDetNoOND);
+                if (replacementPolyDetUseNoOrderNonDet == null) {
+                    type.replaceAnnotation(replacementPolyDetNoOND);
                     return;
                 }
-                for (AnnotationMirror poly : replacementsPolyDetNoOND) {
-                    for (AnnotationMirror polyUse : replacementsPolyDetUseNoOrderNonDet) {
-                        if (!atypeFactory.getQualifierHierarchy().isSubtype(polyUse, poly)) {
-                            type.replaceAnnotations(replacementsPolyDetNoOND);
-                            return;
-                        }
-                    }
+                if (!atypeFactory
+                        .getQualifierHierarchy()
+                        .isSubtype(replacementPolyDetUseNoOrderNonDet, replacementPolyDetNoOND)) {
+                    type.replaceAnnotation(replacementPolyDetNoOND);
+                    return;
                 }
-                type.replaceAnnotations(replacementsPolyDetUseNoOrderNonDet);
+                type.replaceAnnotation(replacementPolyDetUseNoOrderNonDet);
 
                 return;
             default:

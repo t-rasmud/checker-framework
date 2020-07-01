@@ -593,7 +593,11 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         return new QualifierUpperBounds(this);
     }
 
-    /** @return {@link QualifierUpperBounds} for this type factory */
+    /**
+     * Return {@link QualifierUpperBounds} for this type factory.
+     *
+     * @return {@link QualifierUpperBounds} for this type factory
+     */
     public QualifierUpperBounds getQualifierUpperBounds() {
         return qualifierUpperBounds;
     }
@@ -1143,7 +1147,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     /**
      * Returns the set of qualifiers that are the upper bounds for a use of the type.
      *
-     * @param type
+     * @param type a type whose upper bounds to obtain
      */
     public Set<AnnotationMirror> getTypeDeclarationBounds(TypeMirror type) {
         return qualifierUpperBounds.getBoundQualifiers(type);
@@ -2510,42 +2514,74 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     // with appropriate casts to reduce casts on the client side
     // **********************************************************************
 
-    /** @see #getAnnotatedType(Tree) */
+    /**
+     * See {@link #getAnnotatedType(Tree)}.
+     *
+     * @see #getAnnotatedType(Tree)
+     */
     public final AnnotatedDeclaredType getAnnotatedType(ClassTree tree) {
         return (AnnotatedDeclaredType) getAnnotatedType((Tree) tree);
     }
 
-    /** @see #getAnnotatedType(Tree) */
+    /**
+     * See {@link #getAnnotatedType(Tree)}.
+     *
+     * @see #getAnnotatedType(Tree)
+     */
     public final AnnotatedDeclaredType getAnnotatedType(NewClassTree tree) {
         return (AnnotatedDeclaredType) getAnnotatedType((Tree) tree);
     }
 
-    /** @see #getAnnotatedType(Tree) */
+    /**
+     * See {@link #getAnnotatedType(Tree)}.
+     *
+     * @see #getAnnotatedType(Tree)
+     */
     public final AnnotatedArrayType getAnnotatedType(NewArrayTree tree) {
         return (AnnotatedArrayType) getAnnotatedType((Tree) tree);
     }
 
-    /** @see #getAnnotatedType(Tree) */
+    /**
+     * See {@link #getAnnotatedType(Tree)}.
+     *
+     * @see #getAnnotatedType(Tree)
+     */
     public final AnnotatedExecutableType getAnnotatedType(MethodTree tree) {
         return (AnnotatedExecutableType) getAnnotatedType((Tree) tree);
     }
 
-    /** @see #getAnnotatedType(Element) */
+    /**
+     * See {@link #getAnnotatedType(Element)}.
+     *
+     * @see #getAnnotatedType(Element)
+     */
     public final AnnotatedDeclaredType getAnnotatedType(TypeElement elt) {
         return (AnnotatedDeclaredType) getAnnotatedType((Element) elt);
     }
 
-    /** @see #getAnnotatedType(Element) */
+    /**
+     * See {@link #getAnnotatedType(Element)}.
+     *
+     * @see #getAnnotatedType(Element)
+     */
     public final AnnotatedExecutableType getAnnotatedType(ExecutableElement elt) {
         return (AnnotatedExecutableType) getAnnotatedType((Element) elt);
     }
 
-    /** @see #fromElement(Element) */
+    /**
+     * See {@link #fromElement(Element)}.
+     *
+     * @see #fromElement(Element)
+     */
     public final AnnotatedDeclaredType fromElement(TypeElement elt) {
         return (AnnotatedDeclaredType) fromElement((Element) elt);
     }
 
-    /** @see #fromElement(Element) */
+    /**
+     * See {@link #fromElement(Element)}.
+     *
+     * @see #fromElement(Element)
+     */
     public final AnnotatedExecutableType fromElement(ExecutableElement elt) {
         return (AnnotatedExecutableType) fromElement((Element) elt);
     }
@@ -3539,7 +3575,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     }
 
     /**
-     * Whether or not the {@code annotatedTypeMirror} has an implicit qualifier parameter.
+     * Whether or not the {@code annotatedTypeMirror} has a qualifier parameter.
      *
      * @param annotatedTypeMirror AnnotatedTypeMirror to check
      * @param top the top of the hierarchy to check
@@ -3552,7 +3588,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     }
 
     /**
-     * Whether or not the {@code element} has an implicit qualifier parameter.
+     * Whether or not the {@code element} has a qualifier parameter.
      *
      * @param element element to check
      * @param top the top of the hierarchy to check
@@ -3607,6 +3643,15 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      */
     public Set<AnnotationMirror> getQualifierParameterHierarchies(
             AnnotatedTypeMirror annotatedType) {
+        while (annotatedType.getKind() == TypeKind.TYPEVAR
+                || annotatedType.getKind() == TypeKind.WILDCARD) {
+            if (annotatedType.getKind() == TypeKind.TYPEVAR) {
+                annotatedType = ((AnnotatedTypeVariable) annotatedType).getUpperBound();
+            } else if (annotatedType.getKind() == TypeKind.WILDCARD) {
+                annotatedType = ((AnnotatedWildcardType) annotatedType).getSuperBound();
+            }
+        }
+
         if (annotatedType.getKind() != TypeKind.DECLARED) {
             return Collections.emptySet();
         }

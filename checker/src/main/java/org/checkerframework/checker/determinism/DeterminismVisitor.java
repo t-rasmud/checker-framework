@@ -262,6 +262,14 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         return null;
     }
 
+    @Override
+    protected void checkHasQualifierParameterAsTypeArgument(
+            AnnotatedTypeMirror typeArgument,
+            AnnotatedTypeMirror typeParameterUpperBound,
+            Tree reportError) {
+        return;
+    }
+
     /**
      * Returns annotation on the upper bound of {@code argTypeUpperBound}
      *
