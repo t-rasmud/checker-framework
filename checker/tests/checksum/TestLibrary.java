@@ -15,7 +15,7 @@ public class TestLibrary {
 
     void testTransformCS(
             @ChecksummedBy("#2") Object data, int cs, Function<Object, Object> lambda) {
-        Map.Entry<Object, Integer> result = ChecksumLibrary.TransformChecksum(data, cs, lambda);
+        Map.Entry<Object, Integer> result = ChecksumLibrary.transformChecksum(data, cs, lambda);
         Object newData = result.getKey();
     }
 }
@@ -29,7 +29,7 @@ class ChecksumLibrary {
         return data;
     }
 
-    static Map.Entry<Object, Integer> TransformChecksum(
+    static Map.Entry<Object, Integer> transformChecksum(
             @ChecksummedBy("#2") Object data, int checksum, Function<Object, Object> lambda) {
         Object oldData = validateChecksum(data);
         Object newData = lambda.apply(oldData);
