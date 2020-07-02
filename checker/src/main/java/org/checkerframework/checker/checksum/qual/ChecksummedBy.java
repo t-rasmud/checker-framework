@@ -22,6 +22,8 @@ public @interface ChecksummedBy {
     /**
      * If an expression D has type {@code @ChecksummedBy("CS")}, then the expression CS checksums
      * the value of expression D.
+     *
+     * @return Java expression
      */
     String value() default "";
 }
