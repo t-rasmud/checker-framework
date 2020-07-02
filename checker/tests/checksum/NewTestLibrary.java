@@ -12,6 +12,7 @@ public class NewTestLibrary {
     }
 }
 
+@SuppressWarnings("unchecked")
 class Checksummed<T> {
     private T data;
     private int checksum;
