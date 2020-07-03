@@ -539,7 +539,11 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     /**
      * Reports an error if {@code methodTree} represents a method annotated with
      * {@code @RequiresDetToString} but it overrides a method that is not annotated with
-     * {@code @RequiresDetToString}.
+     * {@code @RequiresDetToString} for the same parameters. If no parameters are specified in the
+     * method's annotation, then no parameters may be specified in the overridden method's
+     * annotation. For each specific parameter specified in the method's annotation, either that
+     * same parameter must be specified in the overridden method's annotation or no parameters must
+     * be specified there.
      *
      * @param methodTree tree for the method to check
      */
@@ -554,15 +558,53 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         Map<AnnotatedDeclaredType, ExecutableElement> overridden =
                 AnnotatedTypes.overriddenMethods(elements, atypeFactory, methodElement);
         for (Map.Entry<AnnotatedDeclaredType, ExecutableElement> entry : overridden.entrySet()) {
-            AnnotationMirror overiddenAnnotation =
+            AnnotationMirror overriddenAnnotation =
                     atypeFactory.getDeclAnnotation(entry.getValue(), RequiresDetToString.class);
-            if (overiddenAnnotation == null) {
+            if (overriddenAnnotation == null
+                    || !isValidDetToStringOverride(declAnnotation, overriddenAnnotation)) {
                 checker.reportError(
                         methodTree,
                         "invalid.requiresdettostring",
                         ElementUtils.enclosingClass(entry.getValue()).asType());
             }
         }
+    }
+
+    /**
+     * Checks if {@code overrideAnnotation} is a {@code @RequiresDetToString} annotation that can
+     * override the corresponding annotation {@code overriddenAnnotation}.
+     *
+     * @param overrideAnnotation a {@code @RequiresDetToString} annotation on the override method
+     * @param overriddenAnnotation a {@code @RequiresDetToString} annotation on the overridden
+     *     method
+     * @return true if both annotations have no indices or if {@code overrideAnnotation} is
+     *     non-empty and for each index, the same index appears in {@code overriddenAnnotation} or
+     *     {@code overriddenAnnotation} is empty. Returns false otherwise.
+     */
+    private boolean isValidDetToStringOverride(
+            AnnotationMirror overrideAnnotation, AnnotationMirror overriddenAnnotation) {
+        List<Integer> overrideIndices =
+                AnnotationUtils.getElementValueArray(
+                        overrideAnnotation, "value", Integer.class, true);
+        Set<Integer> overriddenIndices =
+                new HashSet<>(
+                        AnnotationUtils.getElementValueArray(
+                                overriddenAnnotation, "value", Integer.class, true));
+        if (overriddenIndices.isEmpty()) {
+            return true;
+        }
+
+        if (overrideIndices.isEmpty()) {
+            return false;
+        }
+
+        for (int index : overrideIndices) {
+            if (!overriddenIndices.contains(index)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -639,8 +681,6 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 TypeMirror compType = ((ArrayType) paramType).getComponentType();
                 isParamObjectArray = TypesUtils.isObject(compType);
             }
-
-            System.out.println("index " + index + " has type " + paramType);
 
             AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
             if (argType.hasAnnotation(atypeFactory.DET)) {
