@@ -11,4 +11,6 @@ import org.checkerframework.framework.qual.InheritedAnnotation;
 @Retention(RetentionPolicy.RUNTIME)
 @InheritedAnnotation
 @Target({ElementType.METHOD})
-public @interface RequiresDetToString {}
+public @interface RequiresDetToString {
+    int[] value() default {};
+}

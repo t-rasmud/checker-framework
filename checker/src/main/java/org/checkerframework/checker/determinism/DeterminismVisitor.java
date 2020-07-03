@@ -6,6 +6,7 @@ import com.sun.source.tree.*;
 import com.sun.source.tree.Tree.Kind;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -610,11 +611,20 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             return super.visitMethodInvocation(node, p);
         }
 
+        Set<Integer> paramIndices =
+                new HashSet<>(
+                        AnnotationUtils.getElementValueArray(
+                                declAnnotation, "value", Integer.class, true));
+
         List<? extends VariableElement> params = methodElement.getParameters();
         List<? extends ExpressionTree> args = node.getArguments();
 
         int lastParamIndex = params.size() - 1;
         for (int index = 0; index < args.size(); index++) {
+            if (!paramIndices.isEmpty() && !paramIndices.contains(index)) {
+                continue;
+            }
+
             ExpressionTree arg = args.get(index);
 
             // If the last parameter is a VarArg, then the number of arguments
@@ -629,9 +639,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 TypeMirror compType = ((ArrayType) paramType).getComponentType();
                 isParamObjectArray = TypesUtils.isObject(compType);
             }
-            if (!TypesUtils.isObject(paramType) && !isParamObjectArray) {
-                continue;
-            }
+
+            System.out.println("index " + index + " has type " + paramType);
 
             AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
             if (argType.hasAnnotation(atypeFactory.DET)) {
