@@ -663,7 +663,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
 
         int lastParamIndex = params.size() - 1;
         for (int index = 0; index < args.size(); index++) {
-            if (!paramIndices.isEmpty() && !paramIndices.contains(index)) {
+            int paramIndex = Math.min(index, lastParamIndex);
+            if (!paramIndices.isEmpty() && !paramIndices.contains(paramIndex)) {
                 continue;
             }
 
@@ -673,7 +674,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             // could be greater than the number of parameters.
             // In this case, check all the arguments at indices greater than
             // size of the paremeter list against the last parameter.
-            VariableElement param = params.get(Math.min(lastParamIndex, index));
+            VariableElement param = params.get(paramIndex);
 
             boolean isParamObjectArray = false;
             TypeMirror paramType = param.asType();

@@ -25,6 +25,13 @@ public class TestRequiresDetToString {
         bothRequired(det, nonDet);
     }
 
+    public void testVarArgs(@Det Object o) {
+        // :: error: (nondeterministic.tostring)
+        varArgs1("", o);
+        // :: error: (nondeterministic.tostring)
+        varArgs2("", o);
+    }
+
     @RequiresDetToString(0)
     public void onlyFirstRequired(Object o1, Object o2) {}
 
@@ -33,6 +40,12 @@ public class TestRequiresDetToString {
 
     @RequiresDetToString({0, 1})
     public void bothRequired(Object o1, Object o2) {}
+
+    @RequiresDetToString(0)
+    public void varArgs1(Object... args) {}
+
+    @RequiresDetToString
+    public void varArgs2(Object... args) {}
 
     public void method1() {}
 
