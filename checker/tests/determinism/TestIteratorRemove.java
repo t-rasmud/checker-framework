@@ -1,5 +1,6 @@
 package determinism;
 
+// @skip-test
 import java.util.*;
 import org.checkerframework.checker.determinism.qual.*;
 
