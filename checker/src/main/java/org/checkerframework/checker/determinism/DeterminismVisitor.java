@@ -267,7 +267,11 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             AnnotatedTypeMirror typeArgument,
             AnnotatedTypeMirror typeParameterUpperBound,
             Tree reportError) {
-        return;
+        if (atypeFactory.isCollectionType(typeArgument)) {
+            return;
+        }
+        super.checkHasQualifierParameterAsTypeArgument(
+                typeArgument, typeParameterUpperBound, reportError);
     }
 
     /**
