@@ -2,6 +2,7 @@ import java.util.*;
 import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.framework.qual.*;
 
+@SuppressWarnings("type.argument.invalid.hasqualparam")
 @HasQualifierParameter(NonDet.class)
 public class Issue168 {
     public static void testDetVariable(@OrderNonDet List<@Det Issue168> list) {

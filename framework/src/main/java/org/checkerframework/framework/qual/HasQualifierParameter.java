@@ -1,12 +1,6 @@
 package org.checkerframework.framework.qual;
 
 import java.lang.annotation.*;
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
  * This is a declaration annotation that applies to type declarations and packages. On a type, it
@@ -20,9 +14,9 @@ import java.lang.annotation.Target;
  * <ol>
  *   <li>Invariant subtyping is used for occurrences of the type: no two occurrences of the type
  *       with different qualifiers have a subtyping relationship.
- *   <li>The polymorphic qualifier is the default for all occurrences of that type in a method
- *       signature in its own compilation unit, including as the receiver, as another formal
- *       parameter, or as a return type.
+ *   <li>The polymorphic qualifier is the default for all occurrences of that type in its own
+ *       compilation unit, including as the receiver, as another formal parameter, or as a return
+ *       type.
  * </ol>
  *
  * Here is an example of the effect of invariant subtyping. Suppose we have the following

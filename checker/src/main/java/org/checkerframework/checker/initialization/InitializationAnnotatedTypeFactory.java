@@ -104,7 +104,7 @@ public abstract class InitializationAnnotatedTypeFactory<
      *
      * @param checker the checker to which the new type factory belongs
      */
-    public InitializationAnnotatedTypeFactory(BaseTypeChecker checker) {
+    protected InitializationAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker, true);
 
         INITIALIZED = AnnotationBuilder.fromClass(elements, Initialized.class);
@@ -153,7 +153,11 @@ public abstract class InitializationAnnotatedTypeFactory<
      * commitment type-system.
      */
 
-    /** @return the list of annotations that is forbidden for the constructor return type */
+    /**
+     * Returns the list of annotations that is forbidden for the constructor return type.
+     *
+     * @return the list of annotations that is forbidden for the constructor return type
+     */
     public Set<Class<? extends Annotation>> getInvalidConstructorReturnTypeAnnotations() {
         return getInitializationAnnotations();
     }
@@ -170,7 +174,7 @@ public abstract class InitializationAnnotatedTypeFactory<
      * Returns whether or not {@code field} has the invariant annotation.
      *
      * <p>This method is a convenience method for {@link
-     * #hasFieldInvariantAnnotation(AnnotatedTypeMirror)}.
+     * #hasFieldInvariantAnnotation(AnnotatedTypeMirror, VariableElement)}.
      *
      * <p>If the {@code field} is a type variable, this method returns true if any possible
      * instantiation of the type parameter could have the invariant annotation. See {@link
@@ -181,7 +185,8 @@ public abstract class InitializationAnnotatedTypeFactory<
      */
     protected final boolean hasFieldInvariantAnnotation(VariableTree field) {
         AnnotatedTypeMirror type = getAnnotatedType(field);
-        return hasFieldInvariantAnnotation(type);
+        VariableElement fieldElement = TreeUtils.elementFromDeclaration(field);
+        return hasFieldInvariantAnnotation(type, fieldElement);
     }
 
     /**
@@ -192,9 +197,12 @@ public abstract class InitializationAnnotatedTypeFactory<
      * NullnessAnnotatedTypeFactory#hasFieldInvariantAnnotation(VariableTree)} for an example.
      *
      * @param type of field that might have invariant annotation
+     * @param fieldElement the field element, which can be used to check annotations on the
+     *     declaration
      * @return whether or not the type has the invariant annotation
      */
-    protected abstract boolean hasFieldInvariantAnnotation(AnnotatedTypeMirror type);
+    protected abstract boolean hasFieldInvariantAnnotation(
+            AnnotatedTypeMirror type, VariableElement fieldElement);
 
     /**
      * Creates a {@link UnderInitialization} annotation with the given type as its type frame
@@ -742,7 +750,14 @@ public abstract class InitializationAnnotatedTypeFactory<
      */
     protected abstract class InitializationQualifierHierarchy extends MultiGraphQualifierHierarchy {
 
-        public InitializationQualifierHierarchy(MultiGraphFactory f, Object... arg) {
+        /**
+         * Create an InitializationQualifierHierarchy.
+         *
+         * @param f a factory to create to create a {@link
+         *     org.checkerframework.framework.util.GraphQualifierHierarchy}
+         * @param arg seems to be ignored
+         */
+        protected InitializationQualifierHierarchy(MultiGraphFactory f, Object... arg) {
             super(f, arg);
         }
 

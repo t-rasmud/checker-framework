@@ -46,6 +46,14 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     /** Error message key for use of {@code @OrderNonDet} on non-collections and non-arrays. */
     private static final @CompilerMessageKey String ORDERNONDET_ON_NONCOLLECTION =
             "ordernondet.on.noncollection.and.nonarray";
+
+    /** Error message key for use of {@code @OrderNonDet} on TreeSet and TreeMap types. */
+    private static final @CompilerMessageKey String ORDERNONDET_ON_TREESET_TREEMAP =
+            "invalid.treeset.or.treemap";
+
+    /** Error message key for use of {@code @Det} on HashSet and HashMap types. */
+    private static final @CompilerMessageKey String DET_ON_HASHSET_HASHMAP =
+            "invalid.hashset.or.hashmap";
     /**
      * Error message key for collections whose type is a subtype of their element types, or whose
      * type is {@code @NonDet} with element type {@code @Det} or {@code @OrderNonDet}.
@@ -101,6 +109,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      *
      * <ol>
      *   <li>When a non-collection is annotated as {@code @OrderNonDet}.
+     *   <li>When a TreeSet or a TreeMap is annotated as {@code OrderNonDet}
+     *   <li>When a HashSet or a HashMap is annotated as {@code @Det}
      *   <li>When the annotation on the type argument of a Collection or Iterator is a supertype of
      *       the annotation on the Collection. Example: {@code @Det List<@OrderNonDet String>}.
      *   <li>When the annotation on the upper bound of the type argument of a Collection or Iterator
@@ -128,10 +138,23 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             return false;
         }
 
-        // Raises an error if the annotation on the type argument of a collection (or iterator) is
-        // a supertype of the annotation on the collection (or iterator).
         AnnotationMirror baseAnnotation = useType.getAnnotationInHierarchy(atypeFactory.NONDET);
         if (atypeFactory.isCollectionType(useType)) {
+            if (atypeFactory.isTreeSet(useType) || atypeFactory.isTreeMap(useType)) {
+                if (AnnotationUtils.areSameByName(baseAnnotation, atypeFactory.ORDERNONDET)) {
+                    checker.reportError(tree, ORDERNONDET_ON_TREESET_TREEMAP);
+                    return false;
+                }
+            }
+            if (atypeFactory.isHashSet(useType) || atypeFactory.isHashMap(useType)) {
+                if (AnnotationUtils.areSameByName(baseAnnotation, atypeFactory.DET)) {
+                    checker.reportError(tree, DET_ON_HASHSET_HASHMAP);
+                    return false;
+                }
+            }
+            // Raises an error if the annotation on the type argument of a collection (or iterator)
+            // is
+            // a supertype of the annotation on the collection (or iterator).
             for (AnnotatedTypeMirror argType : useType.getTypeArguments()) {
                 if (!argType.getAnnotations().isEmpty()) {
                     AnnotationMirror argAnnotation =
@@ -237,6 +260,20 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     public Void visitInstanceOf(InstanceOfTree node, Void p) {
         // skip super call.  There's no need to validate the type in the instanceOf.
         return null;
+    }
+
+    @Override
+    protected void checkHasQualifierParameterAsTypeArgument(
+            AnnotatedTypeMirror typeArgument,
+            AnnotatedTypeMirror typeParameterUpperBound,
+            Tree reportError) {
+        // Coolections as type parameters are legal since we do not allow
+        // unsafe mutations.
+        if (atypeFactory.isCollectionType(typeArgument)) {
+            return;
+        }
+        super.checkHasQualifierParameterAsTypeArgument(
+                typeArgument, typeParameterUpperBound, reportError);
     }
 
     /**

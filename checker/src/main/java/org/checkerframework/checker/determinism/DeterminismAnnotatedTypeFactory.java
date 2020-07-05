@@ -71,12 +71,18 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** The java.util.Collections class. */
     private final TypeMirror collectionsTypeMirror =
             TypesUtils.typeFromClass(Collections.class, types, processingEnv.getElementUtils());
-    /** The java.util.HashSet class. */
+    /** The java.util.TreeSet class. */
     private final TypeMirror treeSetTypeMirror =
             TypesUtils.typeFromClass(TreeSet.class, types, processingEnv.getElementUtils());
     /** The java.util.TreeMap class. */
     private final TypeMirror treeMapTypeMirror =
             TypesUtils.typeFromClass(TreeMap.class, types, processingEnv.getElementUtils());
+    /** The java.util.HashSet class. */
+    private final TypeMirror hashSetTypeMirror =
+            TypesUtils.typeFromClass(HashSet.class, types, processingEnv.getElementUtils());
+    /** The java.util.HashMap class. */
+    private final TypeMirror hashMapTypeMirror =
+            TypesUtils.typeFromClass(HashMap.class, types, processingEnv.getElementUtils());
 
     /** Comma separated list of deterministic system properties */
     private final List<String> inputProperties;
@@ -883,6 +889,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
+     * Returns true if {@code method} is a main method.
+     *
      * @param method ExecutableElement
      * @return true if {@code method} is a main method
      */
@@ -1027,6 +1035,19 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
+     * Returns true if {@code tm} is a HashSet
+     *
+     * @param tm AnnotatedTypeMirror
+     * @return true if {@code tm} is a HashSet
+     */
+    public boolean isHashSet(AnnotatedTypeMirror tm) {
+        return types.isSameType(
+                types.erasure(tm.getUnderlyingType()), types.erasure(hashSetTypeMirror));
+    }
+
+    /**
+     * Returns true of {@code tm} is a List or a subtype of List.
+     *
      * @param tm TypeMirror
      * @return true if {@code tm} is a List or a subtype of List
      */
@@ -1035,6 +1056,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
+     * Returns true if {@code tm} is a TreeMap or a subtype of TreeMap.
+     *
      * @param tm AnnotatedTypeMirror
      * @return true if {@code tm} is a TreeMap or a subtype of TreeMap
      */
@@ -1044,6 +1067,19 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
+     * Returns true if {@code tm} is a HashMap
+     *
+     * @param tm AnnotatedTypeMirror
+     * @return true if {@code tm} is a HashMap
+     */
+    public boolean isHashMap(AnnotatedTypeMirror tm) {
+        return types.isSameType(
+                types.erasure(tm.getUnderlyingType()), types.erasure(hashMapTypeMirror));
+    }
+
+    /**
+     * Returns true of {@code tm} is the Arrays class.
+     *
      * @param tm TypeMirror
      * @return true if {@code tm} is the Arrays class
      */
@@ -1052,6 +1088,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
+     * Returns true if {@code tm} is the Collections class.
+     *
      * @param tm TypeMirror
      * @return true if {@code tm} is the Collections class
      */
@@ -1149,6 +1187,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     AnnotationUtils.getElementValue(superAnno, "value", String.class, true);
             switch (subAnnoValue) {
                 case "":
+                case "use":
                     switch (superAnnoValue) {
                         case "down":
                         case "noOrderNonDet":
@@ -1170,12 +1209,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                             return true;
                     }
                 case "down":
-                    switch (superAnnoValue) {
-                        case "noOrderNonDet":
-                            return false;
-                        default:
-                            return true;
-                    }
+                    return !"noOrderNonDet".equals(superAnnoValue);
                 case "upDet":
                     switch (superAnnoValue) {
                         case "":
@@ -1189,23 +1223,11 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                             return true;
                     }
                 case "noOrderNonDet":
-                    switch (superAnnoValue) {
-                        case "down":
-                            return false;
-                        default:
-                            return true;
-                    }
-                case "use":
-                    switch (superAnnoValue) {
-                        case "down":
-                        case "noOrderNonDet":
-                        case "useNoOrderNonDet":
-                            return false;
-                        default:
-                            return true;
-                    }
+                case "useNoOrderNonDet":
+                    return !"down".equals(superAnnoValue);
                 default:
-                    return true;
+                    throw new BugInCF(
+                            "Subtyping relationship not defined for %s and %s", subAnno, superAnno);
             }
         }
     }

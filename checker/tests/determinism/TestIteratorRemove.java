@@ -1,5 +1,6 @@
 package determinism;
 
+// @skip-test
 import java.util.*;
 import org.checkerframework.checker.determinism.qual.*;
 
@@ -7,6 +8,7 @@ class TestIteratorRemove {
     static void testRemoveDet(@Det List<@Det String> list) {
         @Det Iterator<@Det String> iter = list.iterator();
         iter.next();
+        // :: error: (method.invocation.invalid)
         iter.remove();
     }
 

@@ -518,7 +518,7 @@ public abstract class BaseTypeChecker extends SourceChecker implements BaseTypeC
 
     /**
      * Issues a warning about any {@code @SuppressWarnings} that isn't used by this checker, but
-     * contains a key that would suppress a warning from this checker.
+     * contains a string that would suppress a warning from this checker.
      *
      * <p>Collects needed warning suppressions for all subcheckers.
      */
@@ -533,16 +533,16 @@ public abstract class BaseTypeChecker extends SourceChecker implements BaseTypeC
         }
         Set<Element> elementsSuppress = new HashSet<>(this.elementsWithSuppressedWarnings);
         this.elementsWithSuppressedWarnings.clear();
-        Set<String> checkerKeys = new HashSet<>(getSuppressWarningsKeys());
+        Set<String> prefixes = new HashSet<>(getSuppressWarningsPrefixes());
         Set<String> errorKeys = new HashSet<>(messagesProperties.stringPropertyNames());
         for (BaseTypeChecker subChecker : subcheckers) {
             elementsSuppress.addAll(subChecker.elementsWithSuppressedWarnings);
             subChecker.elementsWithSuppressedWarnings.clear();
-            checkerKeys.addAll(subChecker.getSuppressWarningsKeys());
+            prefixes.addAll(subChecker.getSuppressWarningsPrefixes());
             errorKeys.addAll(subChecker.messagesProperties.stringPropertyNames());
             subChecker.getVisitor().treesWithSuppressWarnings.clear();
         }
-        warnUnneededSuppressions(elementsSuppress, checkerKeys, errorKeys);
+        warnUnneededSuppressions(elementsSuppress, prefixes, errorKeys);
 
         getVisitor().treesWithSuppressWarnings.clear();
     }
@@ -653,7 +653,7 @@ public abstract class BaseTypeChecker extends SourceChecker implements BaseTypeC
      * @param o1 the first CheckerMessage
      * @param o2 the second CheckerMessage
      * @return a negative integer, zero, or a positive integer if the first CheckerMessage is less
-     *     than, equal to, or greater than the second.
+     *     than, equal to, or greater than the second
      */
     private int compareCheckerMessages(CheckerMessage o1, CheckerMessage o2) {
         int byPos = InternalUtils.compareDiagnosticPosition(o1.source, o2.source);

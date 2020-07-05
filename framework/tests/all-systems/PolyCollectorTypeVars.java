@@ -8,6 +8,7 @@ abstract class Ordering<T> implements Comparator<T> {
     public static <C extends Comparable> Ordering<C> natural() {
         return new Ordering<C>() {
             @Override
+            @SuppressWarnings("override.param.invalid")
             public int compare(C o1, C o2) {
                 return 0;
             }

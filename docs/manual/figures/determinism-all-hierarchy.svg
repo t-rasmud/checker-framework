@@ -209,17 +209,17 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="2155"
-     inkscape:window-height="1171"
+     inkscape:window-width="1440"
+     inkscape:window-height="785"
      id="namedview114"
      showgrid="false"
      inkscape:zoom="3.276275"
-     inkscape:cx="-40.673197"
-     inkscape:cy="87.336509"
-     inkscape:window-x="129"
-     inkscape:window-y="36"
-     inkscape:window-maximized="0"
-     inkscape:current-layer="svg2"
+     inkscape:cx="47.526138"
+     inkscape:cy="172.87744"
+     inkscape:window-x="0"
+     inkscape:window-y="1"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g24-8-8"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
@@ -230,38 +230,38 @@
      style="stroke-width:1.217237" />
   <g
      id="g24"
-     transform="matrix(0.31546678,0,0,0.4472573,241.52436,57.783604)"
-     style="stroke-width:2.66222334">
+     transform="matrix(0.35551807,0,0,0.4472573,227.8827,57.783604)"
+     style="stroke-width:2.50778604">
     <rect
-       style="fill:#ffffff;stroke-width:2.66222334"
+       style="fill:#ffffff;stroke-width:2.50778604"
        x="360"
        y="280"
        width="201"
        height="44"
        id="rect26" />
     <rect
-       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:5.32444668"
-       x="360"
+       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:5.01557207"
+       x="360.03601"
        y="280"
-       width="201"
+       width="177.9716"
        height="44"
        id="rect28" />
     <text
        font-size="15.8044"
-       style="font-style:normal;font-weight:normal;font-size:15.80440044px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#000000;stroke-width:2.66222334"
-       x="460.5"
-       y="306.772"
+       style="font-style:normal;font-weight:normal;font-size:15.80440044px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#000000;stroke-width:2.50778604"
+       x="449.02182"
+       y="306.07016"
        id="text30">
       <tspan
-         x="460.5"
-         y="306.772"
+         x="449.02182"
+         y="306.07016"
          id="tspan32"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.25262642px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:2.66222334">@PolyDet(&quot;down&quot;)</tspan>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.19377899px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:2.50778604">@PolyDet(&quot;down&quot;)</tspan>
     </text>
   </g>
   <g
      id="g34"
-     transform="matrix(0.6147936,0,0,0.51528258,133.23762,24.831578)"
+     transform="matrix(0.6147936,0,0,0.51528258,133.55152,18.553571)"
      style="stroke-width:1.77669394">
     <rect
        style="fill:#ffffff;stroke-width:1.77669394"
@@ -273,9 +273,9 @@
     <rect
        style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:3.55338788"
        x="360"
-       y="200"
+       y="199.92451"
        width="201"
-       height="44"
+       height="64.253944"
        id="rect38" />
     <text
        font-size="15.8044"
@@ -287,7 +287,20 @@
          x="460.5"
          y="226.772"
          id="tspan42"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12.18129635px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:1.77669394">@PolyDet, @PolyDet(&quot;use&quot;)</tspan>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12.18129612px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr;text-anchor:middle;stroke-width:1.77669394">@PolyDet,</tspan>
+    </text>
+    <text
+       font-size="15.8044"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.80450058px;line-height:0%;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#000000;stroke-width:1.77669394"
+       x="459.83493"
+       y="250.03015"
+       id="text40-9">
+      <tspan
+         sodipodi:role="line"
+         id="tspan1272"
+         x="459.83493"
+         y="250.03015"
+         style="-inkscape-font-specification:'courier new, Normal';font-family:'courier new';font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-size:12.18129612px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal">@PolyDet(&quot;use&quot;)</tspan>
     </text>
   </g>
   <text
@@ -314,44 +327,57 @@
   </text>
   <path
      style="fill:none;stroke:#000000;stroke-width:1.02842391px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#marker1033-5)"
-     d="m 407.53658,151.80683 c -23.65974,29.22529 -23.65974,29.22529 -23.65974,29.22529 v 0 -0.37231"
+     d="m 399.10008,155.88734 c -15.00118,25.12799 -15.00118,25.12799 -15.00118,25.12799 v 0 -0.32011"
      id="path1357-5"
      inkscape:connector-curvature="0" />
   <g
      id="g24-2"
-     transform="matrix(0.44991458,0,0,0.45724651,268.15305,54.542703)"
-     style="stroke-width:2.20475221">
+     transform="matrix(0.48859656,0,0,0.60709399,256.49778,5.6782208)"
+     style="stroke-width:1.83610225">
     <rect
-       style="fill:#ffffff;stroke-width:2.20475221"
+       style="fill:#ffffff;stroke-width:1.83610225"
        x="366.90677"
        y="280"
        width="201"
        height="44"
        id="rect26-2" />
     <rect
-       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:4.40950441"
-       x="344.20187"
+       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:3.67220449"
+       x="344.2002"
        y="280"
-       width="239.45726"
+       width="240.83658"
        height="44"
        id="rect28-7" />
     <text
        font-size="15.8044"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.80442619px;line-height:0%;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#000000;stroke-width:2.20475221"
-       x="464.8082"
-       y="306.05115"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.80424309px;line-height:0%;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#000000;stroke-width:1.83610225"
+       x="466.18414"
+       y="296.74417"
        id="text30-1">
       <tspan
          sodipodi:role="line"
-         id="tspan1334"
-         x="464.8082"
-         y="306.05115"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.11613178px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;stroke-width:2.20475221">@PolyDet(&quot;noOrderNonDet&quot;)</tspan>
+         id="tspan1788"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12.58860874px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle"
+         x="466.18414"
+         y="296.74417">@PolyDet(&quot;noOrderNonDet&quot;),</tspan>
+    </text>
+    <text
+       font-size="15.8044"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.8043499px;line-height:0%;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#000000;stroke-width:1.83610225"
+       x="466.64633"
+       y="312.11575"
+       id="text30-1-0">
+      <tspan
+         sodipodi:role="line"
+         id="tspan1790"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12.58860874px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle"
+         x="466.64633"
+         y="312.11575">@PolyDet(&quot;use,noOrderNonDet&quot;)</tspan>
     </text>
   </g>
   <path
      style="fill:none;stroke:#000000;stroke-width:1.02842391;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#Arrow1Lstart-4)"
-     d="m 442.66196,152.5563 28.48341,28.24931"
+     d="m 453.39099,155.216 17.52104,19.14808"
      id="path875-0"
      inkscape:connector-curvature="0" />
   <g
@@ -368,17 +394,17 @@
   </g>
   <g
      id="g24-8"
-     transform="matrix(0.36610439,0,0,0.4472573,223.5747,-42.829736)"
-     style="stroke-width:2.47126222">
+     transform="matrix(0.38645615,0,0,0.4472573,216.24307,-42.829736)"
+     style="stroke-width:2.40531063">
     <rect
-       style="fill:#ffffff;stroke-width:2.47126222"
+       style="fill:#ffffff;stroke-width:2.40531063"
        x="360"
        y="280"
        width="201"
        height="44"
        id="rect26-6" />
     <rect
-       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:4.94252443"
+       style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:4.81062126"
        x="360"
        y="280"
        width="201"
@@ -386,16 +412,16 @@
        id="rect28-9" />
     <text
        font-size="15.8044"
-       style="font-style:normal;font-weight:normal;font-size:15.80440044px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#000000;stroke-width:2.47126222"
-       x="460.5"
+       style="font-style:normal;font-weight:normal;font-size:15.80440044px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#000000;stroke-width:2.40531063"
+       x="463.74902"
        y="306.772"
        id="text30-0">
       <tspan
          sodipodi:role="line"
          id="tspan3099"
-         x="460.5"
+         x="463.74902"
          y="306.772"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.943367px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle">@PolyDet(&quot;up&quot;)</tspan>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.49119282px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr;text-anchor:middle;stroke-width:2.40531063">@PolyDet(&quot;up&quot;)</tspan>
     </text>
   </g>
   <g
@@ -411,9 +437,9 @@
        id="rect26-6-5" />
     <rect
        style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:4.94252443"
-       x="276.35251"
+       x="276.34412"
        y="343.56921"
-       width="186.41156"
+       width="192.43021"
        height="51.847477"
        id="rect28-9-7" />
     <text
@@ -427,12 +453,12 @@
          id="tspan3202"
          x="375.62106"
          y="375.25748"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.943367px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle">@OrderNonDet</tspan>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.9433668px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr;text-anchor:middle">@OrderNonDet</tspan>
     </text>
   </g>
   <path
      style="fill:none;stroke:#000000;stroke-width:1.02842391;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#Arrow1Lstart-4-8)"
-     d="m 386.58984,102.47289 22.71329,24.2534"
+     d="m 386.47744,102.33073 17.36898,17.70049"
      id="path875-0-4"
      inkscape:connector-curvature="0" />
   <g
@@ -448,33 +474,33 @@
        id="rect26-6-0" />
     <rect
        style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:4.94252443"
-       x="360"
-       y="280"
-       width="201"
+       x="399.13776"
+       y="281.13416"
+       width="259.45499"
        height="44"
        id="rect28-9-2" />
     <text
        font-size="15.8044"
        style="font-style:normal;font-weight:normal;font-size:15.80440044px;line-height:0%;font-family:'courier new';text-anchor:middle;fill:#000000;stroke-width:2.47126222"
-       x="460.5"
-       y="306.772"
+       x="535.09436"
+       y="308.8775"
        id="text30-0-4">
       <tspan
          sodipodi:role="line"
          id="tspan929"
-         x="460.5"
-         y="306.772"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.943367px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle">@PolyDet(&quot;upDet&quot;)</tspan>
+         x="535.09436"
+         y="308.8775"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.943367px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle">@PolyDet(&quot;shuffle&quot;)</tspan>
     </text>
   </g>
   <path
      style="fill:none;stroke:#000000;stroke-width:1.02842391px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#marker1033-5-7)"
-     d="m 469.99808,103.30402 c -29.56444,24.88962 -29.56444,24.88962 -29.56444,24.88962 v 0 -0.31708"
+     d="m 470.1064,103.24731 c -21.98783,17.09895 -21.98783,17.09895 -21.98783,17.09895 v 0 -0.21783"
      id="path1357-5-0"
      inkscape:connector-curvature="0" />
   <g
      id="g24-8-6"
-     transform="matrix(0.72836057,0,0,0.50911479,129.81375,-103.74664)"
+     transform="matrix(0.72836057,0,0,0.50911479,139.23076,-104.06054)"
      style="stroke-width:1.64217317">
     <rect
        style="fill:#ffffff;stroke-width:1.64217317"
@@ -501,7 +527,7 @@
          id="tspan1383"
          x="460.5"
          y="306.772"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.25899982px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle">@NonDet</tspan>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.25900027px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr;text-anchor:middle">@NonDet</tspan>
     </text>
     <rect
        style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:3.28434634"
@@ -521,7 +547,7 @@
          id="tspan1403"
          x="463.88678"
          y="664.87396"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.25899982px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle">@Det</tspan>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.25900027px;font-family:'courier new';-inkscape-font-specification:'courier new, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr;text-anchor:middle">@Det</tspan>
     </text>
   </g>
   <path
@@ -546,12 +572,12 @@
      inkscape:connector-curvature="0" />
   <path
      style="fill:none;stroke:#000000;stroke-width:1.02842391;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#Arrow1Lstart-4-9-0)"
-     d="m 533.71975,154.96725 0.23769,63.75226"
+     d="m 545.02016,154.65335 0.23769,63.75226"
      id="path875-0-9-2"
      inkscape:connector-curvature="0" />
   <path
      style="fill:none;stroke:#000000;stroke-width:1.02842391;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#Arrow1Lstart-4-1-9)"
-     d="m 492.73361,102.59522 27.09616,24.35007"
+     d="m 502.86379,102.90332 16.7591,24.03546"
      id="path875-0-45-5"
      inkscape:connector-curvature="0" />
 </svg>

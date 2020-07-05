@@ -7,9 +7,9 @@ import org.checkerframework.framework.qual.HasQualifierParameter;
 
 @HasQualifierParameter(NonDet.class)
 public class PolyUpNonCollection {
-    void nonCollection(@PolyDet int x) {}
+    static void nonCollection(@PolyDet int x) {}
 
-    void nonCollection1(@PolyDet int x, @PolyDet PolyUpNonCollection arg) {}
+    static void nonCollection1(@PolyDet int x, @PolyDet PolyUpNonCollection arg) {}
 
     void collectionMethod(@PolyDet List<@PolyDet("down") Integer> lst) {
         int x = lst.get(0);
@@ -18,6 +18,7 @@ public class PolyUpNonCollection {
 
     void collectionMethod1(@PolyDet List<@PolyDet Integer> lst, @PolyDet PolyUpNonCollection arg) {
         int x = lst.get(0);
+        // :: error: (argument.type.incompatible)
         nonCollection1(x, arg);
     }
 
