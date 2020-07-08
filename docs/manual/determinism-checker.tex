@@ -562,10 +562,12 @@ deterministic.  If it is be too restrictive for your program:
 
 The default annotation for most unannotated types is \<@PolyDet>.
 
-\subsectionAndLabel{Method signatures}{determinism-method-defaults}
+\subsectionAndLabel{Method and constructor signatures}{determinism-method-defaults}
 \begin{itemize}
 \item
   Formal parameter and return types default to \<@PolyDet>.
+\item
+  Constructor results default to \<@PolyDet>.
 \item
   If a formal parameter/return type is an array, its component type defaults to
   \<@PolyDet>.
@@ -579,7 +581,8 @@ The default annotation for most unannotated types is \<@PolyDet>.
   including all static fields, is \<@Det>.
 \end{itemize}
 
-These choices permit all possible arguments to an unannotated method.
+These choices permit all possible arguments to an unannotated method or
+constructor.
 
 \subsectionAndLabel{Local array and generic types}{determinism-array-defaults}
 According to the CLIMB to top rule (see Section~\ref{climb-to-top}), the default

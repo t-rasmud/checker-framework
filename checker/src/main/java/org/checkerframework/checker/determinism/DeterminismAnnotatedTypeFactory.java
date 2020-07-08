@@ -786,21 +786,24 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     @Override
     public void addComputedTypeAnnotations(Element elt, AnnotatedTypeMirror type) {
         if (elt.getKind() == ElementKind.PARAMETER) {
+            boolean isMain = false;
             if (elt.getEnclosingElement().getKind() == ElementKind.METHOD) {
                 ExecutableElement method = (ExecutableElement) elt.getEnclosingElement();
                 if (isMainMethod(method)) {
-                    if (!type.getAnnotations().isEmpty() && !type.hasAnnotation(DET)) {
-                        checker.reportError(
-                                elt,
-                                "invalid.annotation.on.parameter",
-                                type.getAnnotationInHierarchy(NONDET));
-                    }
-                    type.addMissingAnnotations(Collections.singleton(DET));
-                } else {
-                    defaultArrayComponentType(type, POLYDET);
+                    isMain = true;
                 }
-            } else if (elt.getEnclosingElement().getKind() == ElementKind.CONSTRUCTOR) {
+            }
+
+            if (isMain) {
+                if (!type.getAnnotations().isEmpty() && !type.hasAnnotation(DET)) {
+                    checker.reportError(
+                            elt,
+                            "invalid.annotation.on.parameter",
+                            type.getAnnotationInHierarchy(NONDET));
+                }
                 type.addMissingAnnotations(Collections.singleton(DET));
+            } else {
+                defaultArrayComponentType(type, POLYDET);
             }
         }
         if (elt.getKind() == ElementKind.LOCAL_VARIABLE) {
