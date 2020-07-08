@@ -11,9 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.*;
-import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.compilermsgs.qual.CompilerMessageKey;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
@@ -677,27 +675,16 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
 
         int lastParamIndex = params.size() - 1;
         for (int index = 0; index < args.size(); index++) {
+            // If the last parameter is a VarArg, then the number of arguments
+            // could be greater than the number of parameters.
+            // In this case, check all the arguments at indices greater than
+            // size of the paremeter list against the last parameter.
             int paramIndex = Math.min(index, lastParamIndex);
             if (!paramIndices.isEmpty() && !paramIndices.contains(paramIndex)) {
                 continue;
             }
 
-            ExpressionTree arg = args.get(index);
-
-            // If the last parameter is a VarArg, then the number of arguments
-            // could be greater than the number of parameters.
-            // In this case, check all the arguments at indices greater than
-            // size of the paremeter list against the last parameter.
-            VariableElement param = params.get(paramIndex);
-
-            boolean isParamObjectArray = false;
-            TypeMirror paramType = param.asType();
-            if (paramType.getKind() == TypeKind.ARRAY) {
-                TypeMirror compType = ((ArrayType) paramType).getComponentType();
-                isParamObjectArray = TypesUtils.isObject(compType);
-            }
-
-            AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+            AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(args.get(index));
             if (argType.hasAnnotation(atypeFactory.DET)) {
                 Pair<AnnotatedDeclaredType, ExecutableElement> overriddenMethod =
                         AnnotatedTypes.getOverriddenMethod(
