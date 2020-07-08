@@ -741,6 +741,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
+     * Returns true if {@code method} is a main method.
+     *
      * @param method ExecutableElement
      * @return true if {@code method} is a main method
      */
@@ -895,6 +897,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
+     * Returns true of {@code tm} is a List or a subtype of List.
+     *
      * @param tm TypeMirror
      * @return true if {@code tm} is a List or a subtype of List
      */
@@ -903,6 +907,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
+     * Returns true if {@code tm} is a TreeMap or a subtype of TreeMap.
+     *
      * @param tm AnnotatedTypeMirror
      * @return true if {@code tm} is a TreeMap or a subtype of TreeMap
      */
@@ -923,6 +929,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
+     * Returns true of {@code tm} is the Arrays class.
+     *
      * @param tm TypeMirror
      * @return true if {@code tm} is the Arrays class
      */
@@ -931,6 +939,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
+     * Returns true if {@code tm} is the Collections class.
+     *
      * @param tm TypeMirror
      * @return true if {@code tm} is the Collections class
      */

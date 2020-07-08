@@ -260,7 +260,7 @@ public class DeterminismTransfer extends CFTransfer {
      * @param n the method invocation node to check
      * @param superAnnotation the annotation to check the arguments are subtypes of
      * @return true if the annotation on every argument except the first of {@code n} is a subtype
-     *     of {@code supperAnnotation}, false otherwise
+     *     of {@code superAnnotation}, false otherwise
      */
     private boolean restOfArgumentsAreSubtype(
             DeterminismAnnotatedTypeFactory factory,

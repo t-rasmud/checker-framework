@@ -8,10 +8,13 @@ import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.NewArrayTree;
+import com.sun.source.tree.Tree.Kind;
 import com.sun.source.tree.UnaryTree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.TreePath;
 import com.sun.tools.javac.code.Symbol.VarSymbol;
+import com.sun.tools.javac.tree.JCTree;
+import com.sun.tools.javac.tree.Pretty;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +29,7 @@ import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.ArrayAccessNode;
 import org.checkerframework.dataflow.cfg.node.ArrayCreationNode;
+import org.checkerframework.dataflow.cfg.node.BinaryOperationNode;
 import org.checkerframework.dataflow.cfg.node.ClassNameNode;
 import org.checkerframework.dataflow.cfg.node.ExplicitThisLiteralNode;
 import org.checkerframework.dataflow.cfg.node.FieldAccessNode;
@@ -61,6 +65,9 @@ import org.checkerframework.javacutil.TypesUtils;
 public class FlowExpressions {
 
     /**
+     * Returns the internal representation (as {@link FieldAccess}) of a {@link FieldAccessNode}.
+     * Can contain {@link Unknown} as receiver.
+     *
      * @return the internal representation (as {@link FieldAccess}) of a {@link FieldAccessNode}.
      *     Can contain {@link Unknown} as receiver.
      */
@@ -77,6 +84,9 @@ public class FlowExpressions {
     }
 
     /**
+     * Returns the internal representation (as {@link FieldAccess}) of a {@link FieldAccessNode}.
+     * Can contain {@link Unknown} as receiver.
+     *
      * @return the internal representation (as {@link FieldAccess}) of a {@link FieldAccessNode}.
      *     Can contain {@link Unknown} as receiver.
      */
@@ -145,6 +155,12 @@ public class FlowExpressions {
         } else if (receiverNode instanceof NarrowingConversionNode) {
             // ignore narrowing
             return internalReprOf(provider, ((NarrowingConversionNode) receiverNode).getOperand());
+        } else if (receiverNode instanceof BinaryOperationNode) {
+            BinaryOperationNode bopn = (BinaryOperationNode) receiverNode;
+            return new BinaryOperation(
+                    bopn,
+                    internalReprOf(provider, bopn.getLeftOperand(), allowNonDeterministic),
+                    internalReprOf(provider, bopn.getRightOperand(), allowNonDeterministic));
         } else if (receiverNode instanceof ClassNameNode) {
             ClassNameNode cn = (ClassNameNode) receiverNode;
             receiver = new ClassName(cn.getType());
@@ -193,6 +209,9 @@ public class FlowExpressions {
     }
 
     /**
+     * Returns the internal representation (as {@link Receiver}) of any {@link ExpressionTree}.
+     * Might contain {@link Unknown}.
+     *
      * @return the internal representation (as {@link Receiver}) of any {@link ExpressionTree}.
      *     Might contain {@link Unknown}.
      */
@@ -430,9 +449,15 @@ public class FlowExpressions {
      * type of expression, such as MethodCall, ArrayAccess, LocalVariable, etc.
      */
     public abstract static class Receiver {
+        /** The type of this expression. */
         protected final TypeMirror type;
 
-        public Receiver(TypeMirror type) {
+        /**
+         * Create a Receiver (a Java AST node representing an expression).
+         *
+         * @param type the type of the expression
+         */
+        protected Receiver(TypeMirror type) {
             assert type != null;
             this.type = type;
         }
@@ -449,9 +474,10 @@ public class FlowExpressions {
 
         /**
          * Returns true if and only if the value this expression stands for cannot be changed (with
-         * respect to ==) by a method call. This is the case for local variables, the self reference
-         * as well as final field accesses for whose receiver {@link #isUnassignableByOtherCode} is
-         * true.
+         * respect to ==) by a method call. This is the case for local variables, the self
+         * reference, final field accesses whose receiver is {@link #isUnassignableByOtherCode}, and
+         * binary operations whose left and right operands are both {@link
+         * #isUnmodifiableByOtherCode}.
          *
          * @see #isUnmodifiableByOtherCode
          */
@@ -468,14 +494,21 @@ public class FlowExpressions {
          */
         public abstract boolean isUnmodifiableByOtherCode();
 
-        /** @return true if and only if the two receiver are syntactically identical */
+        /**
+         * Returns true if and only if the two receiver are syntactically identical.
+         *
+         * @return true if and only if the two receiver are syntactically identical
+         */
         public boolean syntacticEquals(Receiver other) {
             return other == this;
         }
 
         /**
+         * Returns true if and only if this receiver contains a receiver that is syntactically equal
+         * to {@code other}.
+         *
          * @return true if and only if this receiver contains a receiver that is syntactically equal
-         *     to {@code other}.
+         *     to {@code other}
          */
         public boolean containsSyntacticEqualReceiver(Receiver other) {
             return syntacticEquals(other);
@@ -904,7 +937,11 @@ public class FlowExpressions {
             return false; // not modifiable
         }
 
-        /** @return the value of this literal */
+        /**
+         * Returns the value of this literal.
+         *
+         * @return the value of this literal
+         */
         public @Nullable Object getValue() {
             return value;
         }
@@ -944,12 +981,19 @@ public class FlowExpressions {
             return false;
         }
 
-        /** @return the method call receiver (for inspection only - do not modify) */
+        /**
+         * Returns the method call receiver (for inspection only - do not modify).
+         *
+         * @return the method call receiver (for inspection only - do not modify)
+         */
         public Receiver getReceiver() {
             return receiver;
         }
 
         /**
+         * Returns the method call parameters (for inspection only - do not modify any of the
+         * parameters).
+         *
          * @return the method call parameters (for inspection only - do not modify any of the
          *     parameters)
          */
@@ -957,7 +1001,11 @@ public class FlowExpressions {
             return Collections.unmodifiableList(parameters);
         }
 
-        /** @return the ExecutableElement for the method call */
+        /**
+         * Returns the ExecutableElement for the method call.
+         *
+         * @return the ExecutableElement for the method call
+         */
         public ExecutableElement getElement() {
             return method;
         }
@@ -1067,6 +1115,150 @@ public class FlowExpressions {
                 first = false;
             }
             result.append(")");
+            return result.toString();
+        }
+    }
+
+    /** FlowExpression.Receiver for binary operations. */
+    public static class BinaryOperation extends Receiver {
+
+        /** The binary operation kind. */
+        protected final Kind operationKind;
+        /** The binary operation kind for pretty printing. */
+        protected final JCTree.Tag tag;
+        /** The left operand. */
+        protected final Receiver left;
+        /** The right operand. */
+        protected final Receiver right;
+
+        /**
+         * Create a binary operation.
+         *
+         * @param node the binary operation node
+         * @param left the left operand
+         * @param right the right operand
+         */
+        public BinaryOperation(BinaryOperationNode node, Receiver left, Receiver right) {
+            super(node.getType());
+            this.operationKind = node.getTree().getKind();
+            this.tag = ((JCTree) node.getTree()).getTag();
+            this.left = left;
+            this.right = right;
+        }
+
+        /**
+         * Returns the operator of this binary operation.
+         *
+         * @return the binary operation kind
+         */
+        public Kind getOperationKind() {
+            return operationKind;
+        }
+
+        /**
+         * Returns the left operand of this binary operation.
+         *
+         * @return the left operand
+         */
+        public Receiver getLeft() {
+            return left;
+        }
+
+        /**
+         * Returns the right operand of this binary operation.
+         *
+         * @return the right operand
+         */
+        public Receiver getRight() {
+            return right;
+        }
+
+        @Override
+        public boolean containsOfClass(Class<? extends Receiver> clazz) {
+            if (getClass() == clazz) {
+                return true;
+            }
+            return left.containsOfClass(clazz) || right.containsOfClass(clazz);
+        }
+
+        @Override
+        public boolean isUnassignableByOtherCode() {
+            return left.isUnassignableByOtherCode() && right.isUnassignableByOtherCode();
+        }
+
+        @Override
+        public boolean isUnmodifiableByOtherCode() {
+            return left.isUnmodifiableByOtherCode() && right.isUnmodifiableByOtherCode();
+        }
+
+        @Override
+        public boolean syntacticEquals(Receiver other) {
+            if (!(other instanceof BinaryOperation)) {
+                return false;
+            }
+            BinaryOperation biOp = (BinaryOperation) other;
+            if (!(operationKind == biOp.getOperationKind())) {
+                return false;
+            }
+            return left.equals(biOp.left) && right.equals(biOp.right);
+        }
+
+        @Override
+        public boolean containsModifiableAliasOf(Store<?> store, Receiver other) {
+            return left.containsModifiableAliasOf(store, other)
+                    || right.containsModifiableAliasOf(store, other);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(operationKind, left, right);
+        }
+
+        @Override
+        public boolean equals(@Nullable Object other) {
+            if (!(other instanceof BinaryOperation)) {
+                return false;
+            }
+            BinaryOperation biOp = (BinaryOperation) other;
+            if (!(operationKind == biOp.getOperationKind())) {
+                return false;
+            }
+            if (isCommutative()) {
+                return (left.equals(biOp.left) && right.equals(biOp.right))
+                        || (left.equals(biOp.right) && right.equals(biOp.left));
+            }
+            return left.equals(biOp.left) && right.equals(biOp.right);
+        }
+
+        /**
+         * Returns true if the binary operation is commutative, e.g., x + y == y + x.
+         *
+         * @return true if the binary operation is commutative
+         */
+        private boolean isCommutative() {
+            switch (operationKind) {
+                case PLUS:
+                case MULTIPLY:
+                case AND:
+                case OR:
+                case XOR:
+                case EQUAL_TO:
+                case NOT_EQUAL_TO:
+                case CONDITIONAL_AND:
+                case CONDITIONAL_OR:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public String toString() {
+            final Pretty pretty = new Pretty(null, true);
+            StringBuilder result = new StringBuilder();
+            result.append(left.toString());
+            result.append(pretty.operatorName(tag));
+            result.append(right.toString());
             return result.toString();
         }
     }
@@ -1191,7 +1383,11 @@ public class FlowExpressions {
             this.initializers = initializers;
         }
 
-        /** @return a list of receivers representing the dimension of this array creation */
+        /**
+         * Returns a list of receivers representing the dimension of this array creation.
+         *
+         * @return a list of receivers representing the dimension of this array creation
+         */
         public List<? extends @Nullable Receiver> getDimensions() {
             return dimensions;
         }
