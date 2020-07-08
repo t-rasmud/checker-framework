@@ -263,6 +263,20 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         return null;
     }
 
+    @Override
+    protected void checkHasQualifierParameterAsTypeArgument(
+            AnnotatedTypeMirror typeArgument,
+            AnnotatedTypeMirror typeParameterUpperBound,
+            Tree reportError) {
+        // Coolections as type parameters are legal since we do not allow
+        // unsafe mutations.
+        if (atypeFactory.isCollectionType(typeArgument)) {
+            return;
+        }
+        super.checkHasQualifierParameterAsTypeArgument(
+                typeArgument, typeParameterUpperBound, reportError);
+    }
+
     /**
      * Returns annotation on the upper bound of {@code argTypeUpperBound}
      *

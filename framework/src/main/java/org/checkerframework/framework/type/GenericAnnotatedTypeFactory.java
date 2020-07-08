@@ -94,6 +94,7 @@ import org.checkerframework.framework.util.dependenttypes.DependentTypesHelper;
 import org.checkerframework.framework.util.dependenttypes.DependentTypesTreeAnnotator;
 import org.checkerframework.framework.util.typeinference.TypeArgInferenceUtil;
 import org.checkerframework.javacutil.AnnotationBuilder;
+import org.checkerframework.javacutil.AnnotationUtils;
 import org.checkerframework.javacutil.BugInCF;
 import org.checkerframework.javacutil.CollectionUtils;
 import org.checkerframework.javacutil.ElementUtils;
@@ -196,7 +197,7 @@ public abstract class GenericAnnotatedTypeFactory<
      * @param checker the checker to which this type factory belongs
      * @param useFlow whether flow analysis should be performed
      */
-    public GenericAnnotatedTypeFactory(BaseTypeChecker checker, boolean useFlow) {
+    protected GenericAnnotatedTypeFactory(BaseTypeChecker checker, boolean useFlow) {
         super(checker);
 
         this.everUseFlow = useFlow;
@@ -264,7 +265,7 @@ public abstract class GenericAnnotatedTypeFactory<
      *
      * @param checker the checker to which this type factory belongs
      */
-    public GenericAnnotatedTypeFactory(BaseTypeChecker checker) {
+    protected GenericAnnotatedTypeFactory(BaseTypeChecker checker) {
         this(checker, flowByDefault);
     }
 
@@ -882,7 +883,11 @@ public abstract class GenericAnnotatedTypeFactory<
         return returnStatementStores.get(methodTree);
     }
 
-    /** @return the store immediately before a given {@link Tree}. */
+    /**
+     * Returns the store immediately before a given {@link Tree}.
+     *
+     * @return the store immediately before a given {@link Tree}
+     */
     public Store getStoreBefore(Tree tree) {
         if (!analysis.isRunning()) {
             return flowResult.getStoreBefore(tree);
@@ -895,7 +900,11 @@ public abstract class GenericAnnotatedTypeFactory<
         }
     }
 
-    /** @return the store immediately before a given Set of {@link Node}s. */
+    /**
+     * Returns the store immediately before a given Set of {@link Node}s.
+     *
+     * @return the store immediately before a given Set of {@link Node}s
+     */
     public Store getStoreBefore(Set<Node> nodes) {
         Store merge = null;
         for (Node aNode : nodes) {
@@ -909,7 +918,11 @@ public abstract class GenericAnnotatedTypeFactory<
         return merge;
     }
 
-    /** @return the store immediately before a given {@link Node}. */
+    /**
+     * Returns the store immediately before a given {@link Node}.
+     *
+     * @return the store immediately before a given {@link Node}
+     */
     public Store getStoreBefore(Node node) {
         if (!analysis.isRunning()) {
             return flowResult.getStoreBefore(node);
@@ -924,7 +937,11 @@ public abstract class GenericAnnotatedTypeFactory<
         return store;
     }
 
-    /** @return the store immediately after a given {@link Tree}. */
+    /**
+     * Returns the store immediately after a given {@link Tree}.
+     *
+     * @return the store immediately after a given {@link Tree}
+     */
     public Store getStoreAfter(Tree tree) {
         if (!analysis.isRunning()) {
             return flowResult.getStoreAfter(tree);
@@ -933,7 +950,11 @@ public abstract class GenericAnnotatedTypeFactory<
         return getStoreAfter(nodes);
     }
 
-    /** @return the store immediately after a given set of {@link Node}s. */
+    /**
+     * Returns the store immediately after a given set of {@link Node}s.
+     *
+     * @return the store immediately after a given set of {@link Node}s
+     */
     public Store getStoreAfter(Set<Node> nodes) {
         Store merge = null;
         for (Node node : nodes) {
@@ -947,7 +968,11 @@ public abstract class GenericAnnotatedTypeFactory<
         return merge;
     }
 
-    /** @return the store immediately after a given {@link Node}. */
+    /**
+     * Returns the store immediately after a given {@link Node}.
+     *
+     * @return the store immediately after a given {@link Node}
+     */
     public Store getStoreAfter(Node node) {
         Store res =
                 AnalysisResult.runAnalysisFor(
@@ -960,8 +985,10 @@ public abstract class GenericAnnotatedTypeFactory<
     }
 
     /**
-     * @see org.checkerframework.dataflow.analysis.AnalysisResult#getNodesForTree(Tree)
+     * See {@link org.checkerframework.dataflow.analysis.AnalysisResult#getNodesForTree(Tree)}.
+     *
      * @return the {@link Node}s for a given {@link Tree}
+     * @see org.checkerframework.dataflow.analysis.AnalysisResult#getNodesForTree(Tree)
      */
     public Set<Node> getNodesForTree(Tree tree) {
         return flowResult.getNodesForTree(tree);
@@ -991,7 +1018,11 @@ public abstract class GenericAnnotatedTypeFactory<
         return null;
     }
 
-    /** @return the value of effectively final local variables */
+    /**
+     * Returns the value of effectively final local variables.
+     *
+     * @return the value of effectively final local variables
+     */
     public HashMap<Element, Value> getFinalLocalValues() {
         return flowResult.getFinalLocalValues();
     }
@@ -1175,14 +1206,20 @@ public abstract class GenericAnnotatedTypeFactory<
     }
 
     /**
-     * Analyze the AST {@code ast} and store the result.
+     * Analyze the AST {@code ast} and store the result. Additional operations that should be
+     * performed after analysis should be implemented in {@link #postAnalyze(ControlFlowGraph)}.
      *
-     * @param queue the queue to add more things to scan
-     * @param fieldValues the abstract values for all fields of the same class
+     * @param queue the queue for encountered class trees and their initial stores
+     * @param lambdaQueue the queue for encountered lambda expression trees and their initial stores
      * @param ast the AST to analyze
+     * @param fieldValues the abstract values for all fields of the same class
      * @param currentClass the class we are currently looking at
-     * @param isInitializationCode are we analyzing a (non-static) initializer block of a class
+     * @param isInitializationCode are we analyzing a (static/non-static) initializer block of a
+     *     class
+     * @param updateInitializationStore should the initialization store be updated
+     * @param isStatic are we analyzing a static construct
      * @param capturedStore the input Store to use for captured variables, e.g. in a lambda
+     * @see #postAnalyze(org.checkerframework.dataflow.cfg.ControlFlowGraph)
      */
     protected void analyze(
             Queue<Pair<ClassTree, Store>> queue,
@@ -1262,25 +1299,43 @@ public abstract class GenericAnnotatedTypeFactory<
             }
         }
 
-        if (checker.hasOption("flowdotdir") || checker.hasOption("cfgviz")) {
-            handleCFGViz();
-        }
-
-        // add classes declared in method
+        // add classes declared in CFG
         for (ClassTree cls : cfg.getDeclaredClasses()) {
             queue.add(Pair.of(cls, getStoreBefore(cls)));
         }
+        // add lambdas declared in CFG
         for (LambdaExpressionTree lambda : cfg.getDeclaredLambdas()) {
             lambdaQueue.add(Pair.of(lambda, getStoreBefore(lambda)));
         }
+
+        postAnalyze(cfg);
     }
 
     /**
-     * Handle the visualization of the CFG, by calling {@code visualizeCFG} on the analysis. This
-     * method gets invoked in {@code analyze} if one of the visualization options is provided.
+     * Perform any additional operations on a CFG. Called once per CFG, after the CFG has been
+     * analyzed by {@link #analyze(Queue, Queue, UnderlyingAST, List, ClassTree, boolean, boolean,
+     * boolean, CFAbstractStore)}. This method can be used to initialize additional state or to
+     * perform any analyses that are easier to perform on the CFG instead of the AST.
+     *
+     * @param cfg the CFG
+     * @see #analyze(java.util.Queue, java.util.Queue,
+     *     org.checkerframework.dataflow.cfg.UnderlyingAST, java.util.List,
+     *     com.sun.source.tree.ClassTree, boolean, boolean, boolean,
+     *     org.checkerframework.framework.flow.CFAbstractStore)
      */
-    protected void handleCFGViz() {
-        analysis.visualizeCFG();
+    protected void postAnalyze(ControlFlowGraph cfg) {
+        handleCFGViz(cfg);
+    }
+
+    /**
+     * Handle the visualization of the CFG, if necessary.
+     *
+     * @param cfg the CFG
+     */
+    protected void handleCFGViz(ControlFlowGraph cfg) {
+        if (checker.hasOption("flowdotdir") || checker.hasOption("cfgviz")) {
+            getCFGVisualizer().visualize(cfg, cfg.getEntryBlock(), analysis);
+        }
     }
 
     /**
@@ -1458,7 +1513,6 @@ public abstract class GenericAnnotatedTypeFactory<
                 : "GenericAnnotatedTypeFactory.addComputedTypeAnnotations: "
                         + " root needs to be set when used on trees; factory: "
                         + this.getClass();
-
         addAnnotationsFromDefaultQualifierForUse(TreeUtils.elementFromTree(tree), type);
         applyQualifierParameterDefaults(tree, type);
         treeAnnotator.visit(tree, type);
@@ -1546,7 +1600,8 @@ public abstract class GenericAnnotatedTypeFactory<
      * @param elt Element whose type is {@code type}
      * @param type where the defaults are applied
      */
-    protected void applyQualifierParameterDefaults(Element elt, AnnotatedTypeMirror type) {
+    protected void applyQualifierParameterDefaults(
+            @Nullable Element elt, AnnotatedTypeMirror type) {
         if (elt == null) {
             return;
         }
@@ -1571,15 +1626,18 @@ public abstract class GenericAnnotatedTypeFactory<
         if (tops.isEmpty()) {
             return;
         }
+        Set<AnnotationMirror> polyWithQualParam = AnnotationUtils.createAnnotationSet();
+        for (AnnotationMirror top : tops) {
+            AnnotationMirror poly = qualHierarchy.getPolymorphicAnnotation(top);
+            if (poly != null) {
+                polyWithQualParam.add(poly);
+            }
+        }
         new TypeAnnotator(this) {
             @Override
             public Void visitDeclared(AnnotatedDeclaredType type, Void aVoid) {
                 if (type.getUnderlyingType().asElement().equals(enclosingClass)) {
-                    for (AnnotationMirror top : tops) {
-                        if (!type.isAnnotatedInHierarchy(top)) {
-                            type.addAnnotation(qualHierarchy.getPolymorphicAnnotation(top));
-                        }
-                    }
+                    type.addMissingAnnotations(polyWithQualParam);
                 }
                 return super.visitDeclared(type, aVoid);
             }

@@ -23,10 +23,7 @@ public abstract class QualifierHierarchy {
      *
      * @return whether the instance is valid
      */
-    public boolean isValid() {
-        // For most QH the simplest check is that there are qualifiers.
-        return !getTypeQualifiers().isEmpty();
-    }
+    public abstract boolean isValid();
 
     // **********************************************************************
     // Getter methods about this hierarchy
@@ -40,7 +37,11 @@ public abstract class QualifierHierarchy {
         return getTopAnnotations().size();
     }
 
-    /** @return the top (ultimate super) type qualifiers in the type system */
+    /**
+     * Returns the top (ultimate super) type qualifiers in the type system.
+     *
+     * @return the top (ultimate super) type qualifiers in the type system
+     */
     public abstract Set<? extends AnnotationMirror> getTopAnnotations();
 
     /**
@@ -55,10 +56,17 @@ public abstract class QualifierHierarchy {
      */
     public abstract AnnotationMirror getBottomAnnotation(AnnotationMirror start);
 
-    /** @return the bottom type qualifier in the hierarchy */
+    /**
+     * Returns the bottom type qualifier in the hierarchy.
+     *
+     * @return the bottom type qualifier in the hierarchy
+     */
     public abstract Set<? extends AnnotationMirror> getBottomAnnotations();
 
     /**
+     * Returns the polymorphic qualifier for that hierarchy or {@code null} if there is no
+     * polymorphic qualifier in that hierarchy.
+     *
      * @param start any qualifier from the type hierarchy
      * @return the polymorphic qualifier for that hierarchy or {@code null} if there is no
      *     polymorphic qualifier in that hierarchy
@@ -66,14 +74,14 @@ public abstract class QualifierHierarchy {
     public abstract AnnotationMirror getPolymorphicAnnotation(AnnotationMirror start);
 
     /**
-     * Returns all type qualifiers in this type qualifier hierarchy.
+     * Returns {@code true} if the qualifier is a polymorphic qualifier; otherwise, returns {@code
+     * false}.
      *
-     * @return the fully qualified name represented in this hierarchy
-     * @deprecated use {@link AnnotatedTypeFactory#getSupportedTypeQualifierNames()} or {@link
-     *     AnnotatedTypeFactory#getSupportedTypeQualifiers()} instead
+     * @param qualifier qualifier
+     * @return {@code true} if the qualifier is a polymorphic qualifier; otherwise, returns {@code
+     *     false}.
      */
-    @Deprecated
-    public abstract Set<? extends AnnotationMirror> getTypeQualifiers();
+    public abstract boolean isPolymorphicQualifier(AnnotationMirror qualifier);
 
     // **********************************************************************
     // Qualifier Hierarchy Queries

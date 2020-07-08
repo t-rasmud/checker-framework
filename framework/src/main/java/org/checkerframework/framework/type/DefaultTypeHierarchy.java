@@ -182,7 +182,11 @@ public class DefaultTypeHierarchy extends AbstractAtmComboVisitor<Boolean, Void>
         return AtmCombo.accept(subtype, supertype, null, this);
     }
 
-    /** @return error message for the case when two types shouldn't be compared */
+    /**
+     * Returns error message for the case when two types shouldn't be compared.
+     *
+     * @return error message for the case when two types shouldn't be compared
+     */
     @Override
     protected String defaultErrorMessage(
             final AnnotatedTypeMirror subtype, final AnnotatedTypeMirror supertype, final Void p) {
@@ -219,6 +223,7 @@ public class DefaultTypeHierarchy extends AbstractAtmComboVisitor<Boolean, Void>
         final AnnotationMirror supertypeAnno = supertype.getAnnotationInHierarchy(currentTop);
         if (checker.getTypeFactory().hasQualifierParameterInHierarchy(supertype, currentTop)
                 && checker.getTypeFactory().hasQualifierParameterInHierarchy(subtype, currentTop)) {
+            // Qualifiers must be equivalent.
             return isAnnoSubtype(subtypeAnno, supertypeAnno, annosCanBeEmtpy)
                     && isAnnoSubtype(supertypeAnno, subtypeAnno, annosCanBeEmtpy);
         }
@@ -291,10 +296,10 @@ public class DefaultTypeHierarchy extends AbstractAtmComboVisitor<Boolean, Void>
     }
 
     /**
-     * Are all the types in {@code subtypes} a subtype of {@code superType}?
+     * Are all the types in {@code subtypes} a subtype of {@code supertype}?
      *
      * <p>The underlying type mirrors of {@code subtypes} must be subtypes of the underlying type
-     * mirror of {@code superType}.
+     * mirror of {@code supertype}.
      */
     protected boolean areAllSubtypes(
             final Iterable<? extends AnnotatedTypeMirror> subtypes,

@@ -1,3 +1,4 @@
+// @skip-test
 import org.checkerframework.checker.determinism.qual.*;
 
 public class PolyUpTest {

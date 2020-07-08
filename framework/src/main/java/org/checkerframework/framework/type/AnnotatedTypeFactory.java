@@ -107,6 +107,7 @@ import org.checkerframework.javacutil.CollectionUtils;
 import org.checkerframework.javacutil.ElementUtils;
 import org.checkerframework.javacutil.Pair;
 import org.checkerframework.javacutil.TreeUtils;
+import org.checkerframework.javacutil.TypeSystemError;
 import org.checkerframework.javacutil.TypesUtils;
 import org.checkerframework.javacutil.UserError;
 import org.checkerframework.javacutil.trees.DetachedVarSymbol;
@@ -491,9 +492,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      */
     private void checkSupportedQuals() {
         if (supportedQuals.isEmpty()) {
-            // This is throwing a CF bug, but it could also be a bug in the checker rather than in
-            // the framework itself.
-            throw new BugInCF("Found no supported qualifiers.");
+            throw new TypeSystemError("Found no supported qualifiers.");
         }
         for (Class<? extends Annotation> annotationClass : supportedQuals) {
             // Check @Target values
@@ -522,7 +521,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
                     buf.append(otherElementTypes.get(i));
                 }
                 buf.append(".");
-                throw new BugInCF(buf.toString());
+                throw new TypeSystemError(buf.toString());
             }
         }
     }
@@ -553,7 +552,8 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     protected void postInit() {
         this.qualHierarchy = createQualifierHierarchy();
         if (qualHierarchy == null) {
-            throw new BugInCF("AnnotatedTypeFactory with null qualifier hierarchy not supported.");
+            throw new TypeSystemError(
+                    "AnnotatedTypeFactory with null qualifier hierarchy not supported.");
         }
         this.typeHierarchy = createTypeHierarchy();
         this.typeVarSubstitutor = createTypeVariableSubstitutor();
@@ -593,7 +593,11 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         return new QualifierUpperBounds(this);
     }
 
-    /** @return {@link QualifierUpperBounds} for this type factory */
+    /**
+     * Return {@link QualifierUpperBounds} for this type factory.
+     *
+     * @return {@link QualifierUpperBounds} for this type factory
+     */
     public QualifierUpperBounds getQualifierUpperBounds() {
         return qualifierUpperBounds;
     }
@@ -715,7 +719,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
                 if (typeQualifier.getAnnotation(SubtypeOf.class) != null) {
                     // This is currently not supported. At some point we might add
                     // polymorphic qualifiers with upper and lower bounds.
-                    throw new BugInCF(
+                    throw new TypeSystemError(
                             "AnnotatedTypeFactory: "
                                     + typeQualifier
                                     + " is polymorphic and specifies super qualifiers. "
@@ -724,7 +728,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
                 continue;
             }
             if (typeQualifier.getAnnotation(SubtypeOf.class) == null) {
-                throw new BugInCF(
+                throw new TypeSystemError(
                         "AnnotatedTypeFactory: %s does not specify its super qualifiers.%n"
                                 + "Add an @org.checkerframework.framework.qual.SubtypeOf annotation to it,%n"
                                 + "or if it is an alias, exclude it from `createSupportedTypeQualifiers()`.%n",
@@ -734,14 +738,14 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
                     typeQualifier.getAnnotation(SubtypeOf.class).value();
             for (Class<? extends Annotation> superQualifier : superQualifiers) {
                 if (!supportedTypeQualifiers.contains(superQualifier)) {
-                    throw new BugInCF(
+                    throw new TypeSystemError(
                             "Found unsupported qualifier in SubTypeOf: %s on qualifier: %s",
                             superQualifier.getCanonicalName(), typeQualifier.getCanonicalName());
                 }
                 if (superQualifier.getAnnotation(PolymorphicQualifier.class) != null) {
                     // This is currently not supported. No qualifier can have a polymorphic
                     // qualifier as super qualifier.
-                    throw new BugInCF(
+                    throw new TypeSystemError(
                             "Found polymorphic qualifier in SubTypeOf: %s on qualifier: %s",
                             superQualifier.getCanonicalName(), typeQualifier.getCanonicalName());
                 }
@@ -753,7 +757,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         QualifierHierarchy hierarchy = factory.build();
 
         if (!hierarchy.isValid()) {
-            throw new BugInCF(
+            throw new TypeSystemError(
                     "AnnotatedTypeFactory: invalid qualifier hierarchy: "
                             + hierarchy.getClass()
                             + " "
@@ -1143,7 +1147,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     /**
      * Returns the set of qualifiers that are the upper bounds for a use of the type.
      *
-     * @param type
+     * @param type a type whose upper bounds to obtain
      */
     public Set<AnnotationMirror> getTypeDeclarationBounds(TypeMirror type) {
         return qualifierUpperBounds.getBoundQualifiers(type);
@@ -2510,42 +2514,74 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     // with appropriate casts to reduce casts on the client side
     // **********************************************************************
 
-    /** @see #getAnnotatedType(Tree) */
+    /**
+     * See {@link #getAnnotatedType(Tree)}.
+     *
+     * @see #getAnnotatedType(Tree)
+     */
     public final AnnotatedDeclaredType getAnnotatedType(ClassTree tree) {
         return (AnnotatedDeclaredType) getAnnotatedType((Tree) tree);
     }
 
-    /** @see #getAnnotatedType(Tree) */
+    /**
+     * See {@link #getAnnotatedType(Tree)}.
+     *
+     * @see #getAnnotatedType(Tree)
+     */
     public final AnnotatedDeclaredType getAnnotatedType(NewClassTree tree) {
         return (AnnotatedDeclaredType) getAnnotatedType((Tree) tree);
     }
 
-    /** @see #getAnnotatedType(Tree) */
+    /**
+     * See {@link #getAnnotatedType(Tree)}.
+     *
+     * @see #getAnnotatedType(Tree)
+     */
     public final AnnotatedArrayType getAnnotatedType(NewArrayTree tree) {
         return (AnnotatedArrayType) getAnnotatedType((Tree) tree);
     }
 
-    /** @see #getAnnotatedType(Tree) */
+    /**
+     * See {@link #getAnnotatedType(Tree)}.
+     *
+     * @see #getAnnotatedType(Tree)
+     */
     public final AnnotatedExecutableType getAnnotatedType(MethodTree tree) {
         return (AnnotatedExecutableType) getAnnotatedType((Tree) tree);
     }
 
-    /** @see #getAnnotatedType(Element) */
+    /**
+     * See {@link #getAnnotatedType(Element)}.
+     *
+     * @see #getAnnotatedType(Element)
+     */
     public final AnnotatedDeclaredType getAnnotatedType(TypeElement elt) {
         return (AnnotatedDeclaredType) getAnnotatedType((Element) elt);
     }
 
-    /** @see #getAnnotatedType(Element) */
+    /**
+     * See {@link #getAnnotatedType(Element)}.
+     *
+     * @see #getAnnotatedType(Element)
+     */
     public final AnnotatedExecutableType getAnnotatedType(ExecutableElement elt) {
         return (AnnotatedExecutableType) getAnnotatedType((Element) elt);
     }
 
-    /** @see #fromElement(Element) */
+    /**
+     * See {@link #fromElement(Element)}.
+     *
+     * @see #fromElement(Element)
+     */
     public final AnnotatedDeclaredType fromElement(TypeElement elt) {
         return (AnnotatedDeclaredType) fromElement((Element) elt);
     }
 
-    /** @see #fromElement(Element) */
+    /**
+     * See {@link #fromElement(Element)}.
+     *
+     * @see #fromElement(Element)
+     */
     public final AnnotatedExecutableType fromElement(ExecutableElement elt) {
         return (AnnotatedExecutableType) fromElement((Element) elt);
     }
@@ -3539,7 +3575,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     }
 
     /**
-     * Whether or not the {@code annotatedTypeMirror} has an implicit qualifier parameter.
+     * Whether or not the {@code annotatedTypeMirror} has a qualifier parameter.
      *
      * @param annotatedTypeMirror AnnotatedTypeMirror to check
      * @param top the top of the hierarchy to check
@@ -3552,7 +3588,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     }
 
     /**
-     * Whether or not the {@code element} has an implicit qualifier parameter.
+     * Whether or not the {@code element} has a qualifier parameter.
      *
      * @param element element to check
      * @param top the top of the hierarchy to check
@@ -3607,6 +3643,15 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      */
     public Set<AnnotationMirror> getQualifierParameterHierarchies(
             AnnotatedTypeMirror annotatedType) {
+        while (annotatedType.getKind() == TypeKind.TYPEVAR
+                || annotatedType.getKind() == TypeKind.WILDCARD) {
+            if (annotatedType.getKind() == TypeKind.TYPEVAR) {
+                annotatedType = ((AnnotatedTypeVariable) annotatedType).getUpperBound();
+            } else if (annotatedType.getKind() == TypeKind.WILDCARD) {
+                annotatedType = ((AnnotatedWildcardType) annotatedType).getSuperBound();
+            }
+        }
+
         if (annotatedType.getKind() != TypeKind.DECLARED) {
             return Collections.emptySet();
         }
@@ -3665,7 +3710,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      *
      * @param element Element to check
      * @param annoClass the class for an annotation that's written on elements, whose value element
-     *     is a list of annotation classes.
+     *     is a list of annotation classes
      * @return the set of supported annotations with classes listed in the value element of an
      *     annotation with class {@code annoClass} on the {@code element}. Returns an empty set if
      *     {@code annoClass} is not written on {@code element} or {@code element} is null.
