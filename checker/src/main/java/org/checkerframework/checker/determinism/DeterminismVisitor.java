@@ -684,23 +684,10 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 continue;
             }
 
-            AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
-            if (argType.hasAnnotation(atypeFactory.DET)) {
-                Pair<AnnotatedDeclaredType, ExecutableElement> overriddenMethod =
-                        AnnotatedTypes.getOverriddenMethod(
-                                argType, stringToString, atypeFactory.getProcessingEnv());
-                if (!atypeFactory
-                                .getAnnotatedType(overriddenMethod.second)
-                                .getReturnType()
-                                .hasAnnotation(atypeFactory.DET)
-                        && !atypeFactory
-                                .getAnnotatedType(overriddenMethod.second)
-                                .getReturnType()
-                                .hasAnnotation(atypeFactory.POLYDET)) {
-                    checker.reportError(
-                            node, "nondeterministic.tostring", argType.getUnderlyingType());
-                    break;
-                }
+            if (!argumentSatisfiesDetToString(arg)) {
+                AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+                checker.reportError(node, "nondeterministic.tostring", argType.getUnderlyingType());
+                break;
             }
         }
         return super.visitMethodInvocation(node, p);
@@ -785,6 +772,45 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             return true;
         }
         return super.skipReceiverSubtypeCheck(node, methodDefinitionReceiver, methodCallReceiver);
+    }
+
+    /**
+     * Checks if {@code argument} satisfies the requirements of an argument to a method with
+     * {@code @RequiresDetToString}.
+     *
+     * @param argument tree for the argument to check
+     * @return true if {@code argument} is not annotated with {@code @Det} or has a {@code toString}
+     *     method that returns {@code @Det} or {@code @PolyDet}, false otherwise
+     */
+    private boolean argumentSatisfiesDetToString(ExpressionTree argument) {
+        AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(argument);
+        if (!argType.hasAnnotation(atypeFactory.DET)) {
+            return true;
+        }
+
+        // In Java, the type of a ternary expression is the same as the type of the context
+        // it appears in, if such a context exists. So, in a statement like
+        // Object o = true ? "" : "";
+        // the type of the ternary expression is Object rather than String. See JLS 15.25.3. In
+        // these cases, to get the most precision we must instead check the toString methods of each
+        // branch.
+        if (argument.getKind() == Kind.CONDITIONAL_EXPRESSION) {
+            ConditionalExpressionTree conditionalTree = (ConditionalExpressionTree) argument;
+            return argumentSatisfiesDetToString(conditionalTree.getTrueExpression())
+                    && argumentSatisfiesDetToString(conditionalTree.getFalseExpression());
+        }
+
+        Pair<AnnotatedDeclaredType, ExecutableElement> overriddenMethod =
+                AnnotatedTypes.getOverriddenMethod(
+                        argType, stringToString, atypeFactory.getProcessingEnv());
+        return atypeFactory
+                        .getAnnotatedType(overriddenMethod.second)
+                        .getReturnType()
+                        .hasAnnotation(atypeFactory.DET)
+                || atypeFactory
+                        .getAnnotatedType(overriddenMethod.second)
+                        .getReturnType()
+                        .hasAnnotation(atypeFactory.POLYDET);
     }
 
     /**
