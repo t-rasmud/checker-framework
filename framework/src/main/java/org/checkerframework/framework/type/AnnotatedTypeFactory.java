@@ -59,6 +59,8 @@ import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import org.checkerframework.checker.interning.qual.FindDistinct;
+import org.checkerframework.checker.interning.qual.InternedDistinct;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
@@ -2929,7 +2931,8 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         if (res == null) {
             TreePath path = getPath(tree);
             if (path != null) {
-                MethodTree enclosingMethod = TreeUtils.enclosingMethod(path);
+                @SuppressWarnings("interning:assignment.type.incompatible") // used for == test
+                @InternedDistinct MethodTree enclosingMethod = TreeUtils.enclosingMethod(path);
                 ClassTree enclosingClass = TreeUtils.enclosingClass(path);
 
                 boolean found = false;
@@ -3004,7 +3007,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
      * @param node the {@link Tree} to get the path for
      * @return the path for {@code node} under the current root
      */
-    public final TreePath getPath(Tree node) {
+    public final TreePath getPath(@FindDistinct Tree node) {
         assert root != null
                 : "AnnotatedTypeFactory.getPath: root needs to be set when used on trees; factory: "
                         + this.getClass();
