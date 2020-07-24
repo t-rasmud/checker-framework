@@ -6,13 +6,12 @@ import com.sun.source.tree.*;
 import com.sun.source.tree.Tree.Kind;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.*;
-import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.compilermsgs.qual.CompilerMessageKey;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
@@ -555,7 +554,11 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     /**
      * Reports an error if {@code methodTree} represents a method annotated with
      * {@code @RequiresDetToString} but it overrides a method that is not annotated with
-     * {@code @RequiresDetToString}.
+     * {@code @RequiresDetToString} for the same parameters. If no parameters are specified in the
+     * method's annotation, then no parameters may be specified in the overridden method's
+     * annotation. For each specific parameter specified in the method's annotation, either that
+     * same parameter must be specified in the overridden method's annotation or no parameters must
+     * be specified there.
      *
      * @param methodTree tree for the method to check
      */
@@ -570,15 +573,53 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         Map<AnnotatedDeclaredType, ExecutableElement> overridden =
                 AnnotatedTypes.overriddenMethods(elements, atypeFactory, methodElement);
         for (Map.Entry<AnnotatedDeclaredType, ExecutableElement> entry : overridden.entrySet()) {
-            AnnotationMirror overiddenAnnotation =
+            AnnotationMirror overriddenAnnotation =
                     atypeFactory.getDeclAnnotation(entry.getValue(), RequiresDetToString.class);
-            if (overiddenAnnotation == null) {
+            if (overriddenAnnotation == null
+                    || !isValidDetToStringOverride(declAnnotation, overriddenAnnotation)) {
                 checker.reportError(
                         methodTree,
                         "invalid.requiresdettostring",
                         ElementUtils.enclosingClass(entry.getValue()).asType());
             }
         }
+    }
+
+    /**
+     * Checks if {@code overrideAnnotation} is a {@code @RequiresDetToString} annotation that can
+     * override the corresponding annotation {@code overriddenAnnotation}.
+     *
+     * @param overrideAnnotation a {@code @RequiresDetToString} annotation on the override method
+     * @param overriddenAnnotation a {@code @RequiresDetToString} annotation on the overridden
+     *     method
+     * @return true if both annotations have no indices or if {@code overrideAnnotation} is
+     *     non-empty and for each index, the same index appears in {@code overriddenAnnotation} or
+     *     {@code overriddenAnnotation} is empty. Returns false otherwise.
+     */
+    private boolean isValidDetToStringOverride(
+            AnnotationMirror overrideAnnotation, AnnotationMirror overriddenAnnotation) {
+        List<Integer> overrideIndices =
+                AnnotationUtils.getElementValueArray(
+                        overrideAnnotation, "value", Integer.class, true);
+        Set<Integer> overriddenIndices =
+                new HashSet<>(
+                        AnnotationUtils.getElementValueArray(
+                                overriddenAnnotation, "value", Integer.class, true));
+        if (overriddenIndices.isEmpty()) {
+            return true;
+        }
+
+        if (overrideIndices.isEmpty()) {
+            return false;
+        }
+
+        for (int index : overrideIndices) {
+            if (!overriddenIndices.contains(index)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -613,10 +654,10 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     }
 
     /**
-     * If the declaration of {@code node} is annotated with {@code @RequiresDetToString}, checks
-     * that the declared type of every {@code Det} argument of {@code node} corresponding to a
-     * parameter of type {@code Object} (or {@code Object[]}) overrides {@code toString} returning a
-     * {@code @Det String} or {@code @PolyDet}. Otherwise issues an error.
+     * If the declaration of {@code node} is annotated with {@code @RequiresDetToString}, then for
+     * each parameter of {@code node} specified by the annotation, checks that the declared type of
+     * any {@code Det} argument overrides {@code toString} returning a {@code @Det String} or
+     * {@code @PolyDet}. Otherwise issues an error.
      */
     @Override
     public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
@@ -627,29 +668,26 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             return super.visitMethodInvocation(node, p);
         }
 
+        Set<Integer> paramIndices =
+                new HashSet<>(
+                        AnnotationUtils.getElementValueArray(
+                                declAnnotation, "value", Integer.class, true));
+
         List<? extends VariableElement> params = methodElement.getParameters();
         List<? extends ExpressionTree> args = node.getArguments();
 
         int lastParamIndex = params.size() - 1;
         for (int index = 0; index < args.size(); index++) {
-            ExpressionTree arg = args.get(index);
-
             // If the last parameter is a VarArg, then the number of arguments
             // could be greater than the number of parameters.
             // In this case, check all the arguments at indices greater than
             // size of the paremeter list against the last parameter.
-            VariableElement param = params.get(Math.min(lastParamIndex, index));
-
-            boolean isParamObjectArray = false;
-            TypeMirror paramType = param.asType();
-            if (paramType.getKind() == TypeKind.ARRAY) {
-                TypeMirror compType = ((ArrayType) paramType).getComponentType();
-                isParamObjectArray = TypesUtils.isObject(compType);
-            }
-            if (!TypesUtils.isObject(paramType) && !isParamObjectArray) {
+            int paramIndex = Math.min(index, lastParamIndex);
+            if (!paramIndices.isEmpty() && !paramIndices.contains(paramIndex)) {
                 continue;
             }
 
+            ExpressionTree arg = args.get(index);
             if (!argumentSatisfiesDetToString(arg)) {
                 AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
                 checker.reportError(node, "nondeterministic.tostring", argType.getUnderlyingType());
