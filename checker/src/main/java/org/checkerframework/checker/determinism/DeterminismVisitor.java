@@ -744,11 +744,13 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     @Override
     protected void checkArguments(
             List<? extends AnnotatedTypeMirror> requiredArgs,
-            List<? extends ExpressionTree> passedArgs) {
+            List<? extends ExpressionTree> passedArgs,
+            Name executableName,
+            List<?> paramNames) {
         for (ExpressionTree arg : passedArgs) {
             AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
             if (atypeFactory.isCollectionType(argType)) {
-                super.checkArguments(requiredArgs, passedArgs);
+                super.checkArguments(requiredArgs, passedArgs, executableName, paramNames);
             }
         }
         boolean hasPolyUp = false;
@@ -762,7 +764,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         if (hasPolyUp) {
             return;
         }
-        super.checkArguments(requiredArgs, passedArgs);
+        super.checkArguments(requiredArgs, passedArgs, executableName, paramNames);
     }
 
     /**
