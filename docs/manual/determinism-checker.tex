@@ -238,29 +238,6 @@ may not be annotated as \code{@OrderNonDet}.
 % }
 % \end{verbatim}
 
-\subsectionAndLabel{Sorting}{determinism-sorting}
-If a collection is of type \<@OrderNonDet>, sorting it puts
-its elements in a deterministic order. Thus, the Determinism Checker automatically
-performs type refinement for the following methods: \code{Arrays.sort},
-\code{Collections.sort} and the \code{sort} method in the \code{List} interface.
-For this to occur, the element type of the collection must be \code{@Det}. Then,
-if the collection type is \code{@OrderNonDet} the sorted collection will be
-refined to \code{@Det}. If the collection type is \code{@PolyDet}, it will be
-refined to \code{@PolyDet("down")}.
-
-This ensures that accessing elements of \<@OrderNonDet> collections after sorting
-is deterministic.
-%This allows deterministic or \code{@PolyDet("down")} results on collections that
-%aren't strictly determistic.
-For example, the following code type checks as expected:
-
-\begin{Verbatim}
-    public static @Det int min(@OrderNonDet List<@Det Integer> list) {
-        Collections.sort(list);
-        return list.get(0);
-    }
-\end{Verbatim}
-
 \subsectionAndLabel{HashSet and HashMap}{determinism-hash-set}
 The \code{HashSet} and \code{HashMap} classes are special. Because iteration order is
 non-deterministic, it is impossible to construct a \code{@Det HashSet}
@@ -562,10 +539,12 @@ deterministic.  If it is be too restrictive for your program:
 
 The default annotation for most unannotated types is \<@PolyDet>.
 
-\subsectionAndLabel{Method signatures}{determinism-method-defaults}
+\subsectionAndLabel{Method and constructor signatures}{determinism-method-defaults}
 \begin{itemize}
 \item
   Formal parameter and return types default to \<@PolyDet>.
+\item
+  Constructor results default to \<@PolyDet>.
 \item
   If a formal parameter/return type is an array, its component type defaults to
   \<@PolyDet>.
@@ -579,7 +558,8 @@ The default annotation for most unannotated types is \<@PolyDet>.
   including all static fields, is \<@Det>.
 \end{itemize}
 
-These choices permit all possible arguments to an unannotated method.
+These choices permit all possible arguments to an unannotated method or
+constructor.
 
 \subsectionAndLabel{Local array and generic types}{determinism-array-defaults}
 According to the CLIMB to top rule (see Section~\ref{climb-to-top}), the default
