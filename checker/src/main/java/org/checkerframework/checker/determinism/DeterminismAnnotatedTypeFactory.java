@@ -783,8 +783,10 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         @Override
         public Void visitExecutable(final AnnotatedExecutableType executableType, final Void p) {
             if (!isMainMethod(executableType.getElement())) {
-                for (AnnotatedTypeMirror paramType : executableType.getParameterTypes()) {
-                    defaultArrayComponentType(paramType, POLYDET);
+                if (checker.getLintOption("usePolyDefault", false)) {
+                    for (AnnotatedTypeMirror paramType : executableType.getParameterTypes()) {
+                        defaultArrayComponentType(paramType, POLYDET);
+                    }
                 }
 
                 if (executableType.getReturnType().getAnnotations().isEmpty()) {
@@ -813,7 +815,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                             executableType.getReturnType().replaceAnnotation(DET);
                         }
                     }
-                    defaultArrayComponentType(executableType.getReturnType(), POLYDET);
+                    if (checker.getLintOption("usePolyDefault", false)) {
+                        defaultArrayComponentType(executableType.getReturnType(), POLYDET);
+                    }
                 }
             }
             return super.visitExecutable(executableType, p);
@@ -984,7 +988,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                             type.getAnnotationInHierarchy(NONDET));
                 }
                 type.addMissingAnnotations(Collections.singleton(DET));
-            } else {
+            } else if (checker.getLintOption("usePolyDefault", false)) {
                 defaultArrayComponentType(type, POLYDET);
             }
         }
