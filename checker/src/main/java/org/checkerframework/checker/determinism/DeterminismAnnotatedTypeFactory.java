@@ -15,6 +15,8 @@ import org.checkerframework.framework.flow.CFAnalysis;
 import org.checkerframework.framework.flow.CFStore;
 import org.checkerframework.framework.flow.CFTransfer;
 import org.checkerframework.framework.flow.CFValue;
+import org.checkerframework.framework.qual.DefaultQualifierInHierarchy;
+import org.checkerframework.framework.qual.TypeUseLocation;
 import org.checkerframework.framework.type.AnnotatedTypeFactory;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedArrayType;
@@ -30,6 +32,7 @@ import org.checkerframework.framework.type.typeannotator.TypeAnnotator;
 import org.checkerframework.framework.type.visitor.SimpleAnnotatedTypeScanner;
 import org.checkerframework.framework.util.GraphQualifierHierarchy;
 import org.checkerframework.framework.util.MultiGraphQualifierHierarchy;
+import org.checkerframework.framework.util.defaults.QualifierDefaults;
 import org.checkerframework.javacutil.*;
 
 /** The annotated type factory for the determinism type-system. */
@@ -136,6 +139,38 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
 
         return result;
+    }
+
+    @Override
+    protected void addCheckedCodeDefaults(QualifierDefaults defs) {
+        // Add defaults from @DefaultFor and @DefaultQualifierInHierarchy
+        for (Class<? extends Annotation> qual : getSupportedTypeQualifiers()) {
+            final TypeUseLocation[] locations = {
+                TypeUseLocation.PARAMETER,
+                TypeUseLocation.RETURN,
+                TypeUseLocation.RECEIVER,
+                TypeUseLocation.CONSTRUCTOR_RESULT
+            };
+            if (checker.getLintOption("useDetDefault")) {
+
+                defs.addCheckedCodeDefaults(
+                        AnnotationBuilder.fromClass(elements, Det.class), locations);
+            } else {
+                defs.addCheckedCodeDefaults(
+                        AnnotationBuilder.fromClass(elements, PolyDet.class), locations);
+            }
+            final TypeUseLocation[] detLocations = {
+                TypeUseLocation.EXCEPTION_PARAMETER, TypeUseLocation.LOWER_BOUND
+            };
+            defs.addCheckedCodeDefaults(
+                    AnnotationBuilder.fromClass(elements, Det.class), detLocations);
+
+            if (qual.getAnnotation(DefaultQualifierInHierarchy.class) != null) {
+                defs.addCheckedCodeDefault(
+                        AnnotationBuilder.fromClass(elements, qual), TypeUseLocation.OTHERWISE);
+            }
+        }
+        super.addCheckedCodeDefaults(defs);
     }
 
     /**
