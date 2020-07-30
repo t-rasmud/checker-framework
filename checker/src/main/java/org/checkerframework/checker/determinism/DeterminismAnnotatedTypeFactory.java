@@ -151,13 +151,12 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 TypeUseLocation.RECEIVER,
                 TypeUseLocation.CONSTRUCTOR_RESULT
             };
-            if (checker.getLintOption("useDetDefault")) {
-
-                defs.addCheckedCodeDefaults(
-                        AnnotationBuilder.fromClass(elements, Det.class), locations);
-            } else {
+            if (checker.getLintOption("usePolyDefault")) {
                 defs.addCheckedCodeDefaults(
                         AnnotationBuilder.fromClass(elements, PolyDet.class), locations);
+            } else {
+                defs.addCheckedCodeDefaults(
+                        AnnotationBuilder.fromClass(elements, Det.class), locations);
             }
             final TypeUseLocation[] detLocations = {
                 TypeUseLocation.EXCEPTION_PARAMETER, TypeUseLocation.LOWER_BOUND

@@ -16,7 +16,7 @@ import org.checkerframework.framework.source.SupportedOptions;
     // Enables "invalid.type.on.conditional" errors. This is currently disabled and should be
     // enabled once we fix type refinement of every statement after a conditional check.
     "enableconditionaltypecheck",
-    "useDetDefault"
+    "usePolyDefault"
 })
 @SupportedOptions({
     // Comma separated list of system properties that should be treated as deterministic.
