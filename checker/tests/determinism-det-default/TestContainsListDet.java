@@ -9,10 +9,14 @@ public class TestContainsListDet {
     }
 
     void TestList1(
-            @Det ArrayList<@Det Integer> myDetList, @NonDet ArrayList<@NonDet Integer> rand) {
+            @Det ArrayList<@Det Integer> myDetList,
+            @NonDet ArrayList<@NonDet Integer> rand,
+            @NonDet int randInt) {
         @Det boolean ret;
         // :: error: (assignment.type.incompatible) :: error: (method.invocation.invalid)
         ret = myDetList.contains(rand);
+        // :: error: (assignment.type.incompatible) :: error: (method.invocation.invalid)
+        ret = myDetList.contains(randInt);
     }
 
     void TestList2(@Det ArrayList<@Det Integer> myDetList, @NonDet int rand) {
