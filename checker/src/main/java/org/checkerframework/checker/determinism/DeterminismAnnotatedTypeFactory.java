@@ -152,11 +152,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 TypeUseLocation.CONSTRUCTOR_RESULT
             };
             if (checker.getLintOption("usePolyDefault", false)) {
-                defs.addCheckedCodeDefaults(
-                        AnnotationBuilder.fromClass(elements, PolyDet.class), locations);
+                defs.addCheckedCodeDefaults(POLYDET, locations);
             } else {
-                defs.addCheckedCodeDefaults(
-                        AnnotationBuilder.fromClass(elements, Det.class), locations);
+                defs.addCheckedCodeDefaults(DET, locations);
             }
             final TypeUseLocation[] detLocations = {
                 TypeUseLocation.EXCEPTION_PARAMETER, TypeUseLocation.LOWER_BOUND
@@ -270,6 +268,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     && !isCollectionType(methodInvocationType)) {
                 methodInvocationType.replaceAnnotation(NONDET);
             }
+
             refinePolyUp(node, methodInvocationType, receiverType, m);
 
             // ReceiverType is null for abstract classes
