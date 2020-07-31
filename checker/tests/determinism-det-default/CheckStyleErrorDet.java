@@ -23,11 +23,13 @@ public class CheckStyleErrorDet {
             Constructor<?> constructor = null;
             final Constructor<?>[] constructors = aClass.getDeclaredConstructors();
             for (Constructor<?> constr : constructors) {
+                // :: error: (method.invocation.invalid)
                 constr.setAccessible(true);
                 constructor = constr;
             }
 
             final Object objParent = ctorParent.newInstance(null, true);
+            // :: error: (method.invocation.invalid)
             final Object obj = constructor.newInstance(objParent);
 
             final Class<?>[] param =

@@ -9,7 +9,7 @@ public class Issue10Det {
     public void varLenParam(String... str) {
         Issue10Det obj = new Issue10Det();
         @Det int @OrderNonDet [] a = new @Det int @OrderNonDet [10];
-        // :: error: (assignment.type.incompatible)
+        // :: error: (assignment.type.incompatible) :: error: (argument.type.incompatible)
         @Det int x = obj.arrParam(a);
     }
 

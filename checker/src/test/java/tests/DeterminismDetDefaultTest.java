@@ -13,7 +13,7 @@ public class DeterminismDetDefaultTest extends CheckerFrameworkPerDirectoryTest 
                 org.checkerframework.checker.determinism.DeterminismChecker.class,
                 "determinism-det-default",
                 "-Anomsgtext",
-                "-Alint=enableconditionaltypecheck,useDetDefault");
+                "-Alint=enableconditionaltypecheck");
     }
 
     @Parameters
