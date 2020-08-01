@@ -159,14 +159,20 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             final TypeUseLocation[] detLocations = {
                 TypeUseLocation.EXCEPTION_PARAMETER, TypeUseLocation.LOWER_BOUND
             };
-            defs.addCheckedCodeDefaults(
-                    AnnotationBuilder.fromClass(elements, Det.class), detLocations);
+            defs.addCheckedCodeDefaults(DET, detLocations);
 
             if (qual.getAnnotation(DefaultQualifierInHierarchy.class) != null) {
                 defs.addCheckedCodeDefault(
                         AnnotationBuilder.fromClass(elements, qual), TypeUseLocation.OTHERWISE);
             }
         }
+    }
+
+    @Override
+    protected void addUncheckedCodeDefaults(QualifierDefaults defs) {
+        final TypeUseLocation[] locations = {TypeUseLocation.PARAMETER, TypeUseLocation.RETURN};
+        defs.addUncheckedCodeDefaults(DET, locations);
+        super.addUncheckedCodeDefaults(defs);
     }
 
     /**
