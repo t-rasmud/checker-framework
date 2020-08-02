@@ -794,7 +794,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     protected TypeValidator createTypeValidator() {
         return new BaseTypeValidator(checker, this, atypeFactory) {
             @Override
-            protected boolean shouldCheckTopLevelDeclaredType(AnnotatedTypeMirror type, Tree tree) {
+            protected boolean shouldCheckTopLevelDeclaredOrPrimitiveType(
+                    AnnotatedTypeMirror type, Tree tree) {
                 // Always check.
                 return true;
             }
