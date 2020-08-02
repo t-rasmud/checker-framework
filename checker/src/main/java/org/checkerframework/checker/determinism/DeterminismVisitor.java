@@ -905,7 +905,8 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     protected TypeValidator createTypeValidator() {
         return new BaseTypeValidator(checker, this, atypeFactory) {
             @Override
-            protected boolean shouldCheckTopLevelDeclaredType(AnnotatedTypeMirror type, Tree tree) {
+            protected boolean shouldCheckTopLevelDeclaredOrPrimitiveType(
+                    AnnotatedTypeMirror type, Tree tree) {
                 // Reduces FPs: Do not report the error "invalid.upper.bound.on type.argument" on
                 // class declarations.
                 Element elem = TreeUtils.elementFromTree(tree);
