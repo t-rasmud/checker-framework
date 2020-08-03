@@ -639,6 +639,11 @@ public abstract class GenericAnnotatedTypeFactory<
         defs.addUncheckedStandardDefaults();
     }
 
+    /**
+     * Adds unchecked code defaults.
+     *
+     * @param defs QualifierDefaults
+     */
     protected void addUncheckedCodeDefaults(QualifierDefaults defs) {}
 
     /**
