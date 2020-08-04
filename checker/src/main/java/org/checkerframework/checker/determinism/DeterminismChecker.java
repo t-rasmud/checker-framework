@@ -15,12 +15,12 @@ import org.checkerframework.framework.source.SupportedOptions;
 @SupportedLintOptions({
     // Enables "invalid.type.on.conditional" errors. This is currently disabled and should be
     // enabled once we fix type refinement of every statement after a conditional check.
-    "enableconditionaltypecheck",
-    "usePolyDefault"
+    "enableconditionaltypecheck"
 })
 @SupportedOptions({
     // Comma separated list of system properties that should be treated as deterministic.
-    "inputProperties"
+    "inputProperties",
+    "useDefault"
 })
 @StubFiles({"junit.astub", "javaparser.astub", "utilplume.astub", "jdk.astub"})
 public class DeterminismChecker extends BaseTypeChecker {}

@@ -151,7 +151,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 TypeUseLocation.RECEIVER,
                 TypeUseLocation.CONSTRUCTOR_RESULT
             };
-            if (checker.getLintOption("usePolyDefault", false)) {
+            if (checker.hasOption("useDefault")
+                    && checker.getOption("useDefault").equals("PolyDet")) {
                 defs.addCheckedCodeDefaults(POLYDET, locations);
             } else {
                 defs.addCheckedCodeDefaults(DET, locations);
@@ -787,7 +788,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         @Override
         public Void visitExecutable(final AnnotatedExecutableType executableType, final Void p) {
             if (!isMainMethod(executableType.getElement())) {
-                if (checker.getLintOption("usePolyDefault", false)) {
+                if (checker.hasOption("useDefault")
+                        && checker.getOption("useDefault").equals("PolyDet")) {
                     for (AnnotatedTypeMirror paramType : executableType.getParameterTypes()) {
                         defaultArrayComponentType(paramType, POLYDET);
                     }
@@ -819,7 +821,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                             executableType.getReturnType().replaceAnnotation(DET);
                         }
                     }
-                    if (checker.getLintOption("usePolyDefault", false)) {
+                    if (checker.hasOption("useDefault")
+                            && checker.getOption("useDefault").equals("PolyDet")) {
                         defaultArrayComponentType(executableType.getReturnType(), POLYDET);
                     }
                 }
@@ -992,7 +995,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                             type.getAnnotationInHierarchy(NONDET));
                 }
                 type.addMissingAnnotations(Collections.singleton(DET));
-            } else if (checker.getLintOption("usePolyDefault", false)) {
+            } else if (checker.hasOption("useDefault")
+                    && checker.getOption("useDefault").equals("PolyDet")) {
                 defaultArrayComponentType(type, POLYDET);
             }
         }
