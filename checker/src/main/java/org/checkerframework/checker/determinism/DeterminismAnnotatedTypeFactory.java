@@ -144,8 +144,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /**
      * Adds {@code @PolyDet} as the default for parameters, return, receiver, and constructor_result
      * if the user invokes the checker with the command line option -AuseDefault=PolyDet, Otherwise,
-     * adds {@Det} as the default for these locations. For all other locations, adds {@code @Det} as
-     * the default.
+     * adds {@code @Det} as the default for these locations. For all other locations, adds
+     * {@code @Det} as the default.
      *
      * @param defs QualifierDefaults
      */
