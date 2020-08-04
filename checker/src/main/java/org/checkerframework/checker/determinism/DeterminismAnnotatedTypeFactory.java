@@ -141,6 +141,14 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         return result;
     }
 
+    /**
+     * Adds {@code @PolyDet} as the default for parameters, return, receiver, and constructor_result
+     * if the user invokes the checker with the command line option -AuseDefault=PolyDet, Otherwise,
+     * adds {@Det} as the default for these locations. For all other locations, adds {@code @Det} as
+     * the default.
+     *
+     * @param defs QualifierDefaults
+     */
     @Override
     protected void addCheckedCodeDefaults(QualifierDefaults defs) {
         // Add defaults from @DefaultFor and @DefaultQualifierInHierarchy
@@ -776,7 +784,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          *
          * <ol>
          *   <li>Defaults the component types of array parameters and return types as {@code
-         *       ...[@PolyDet]} in the body of the method represented by {@code executableType}.
+         *       ...[@PolyDet]} in the body of the method represented by {@code executableType} if
+         *       the checker is invoked with the command line option -AuseDefault=PolyDet.
          *   <li>Defaults the return type for methods with no @PolyDet formal parameters (including
          *       the receiver) as {@code @Det} in the method represented by {@code executableType}.
          * </ol>
@@ -953,8 +962,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
-     * Adds implicit annotation for main method formal parameter ({@code @Det}) and default
-     * annotations for the component types of other array formal parameters ({@code ...[@PolyDet]}).
+     * Adds implicit annotation for main method formal parameter ({@code @Det}). Adds default
+     * annotations for the component types of other array formal parameters ({@code ...[@PolyDet]})
+     * if the checker is invoked with the command line option -AuseDefault=PolyDet.
      *
      * <p>Note: The annotation on an array type defaults to {@code @PolyDet[]} and this defaulting
      * is handled by declarative mechanism.
