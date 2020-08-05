@@ -539,7 +539,7 @@ deterministic.  If it is be too restrictive for your program:
 
 The default annotation for unchecked types is \<@PolyDet>.
 For checked types, if the determinism checker is invoked with the command line option
--AuseDefault=PolyDet, then the following types default to \<@PolyDet>:
+-AusePolyDefault, then the following types default to \<@PolyDet>:
 \begin{itemize}
     \item Formal parameter and return types. As an exception, the return type of a method with no unannotated or
     \<@PolyDet> formal parameters (including the receiver) defaults to
@@ -547,8 +547,7 @@ For checked types, if the determinism checker is invoked with the command line o
     \item Constructor results
     \item Component types of array parameter/return types
 \end{itemize}
-If the command line option -AuseDefault is not supplied (or is supplied with
-a value other than PolyDet), the above types default to \<@Det>.
+If the command line option -AuseDefault is not supplied, the above types default to \<@Det>.
 
 The default type qualifier for instance fields in classes annotated with
 \<@HasQualifierParameter> is \<@PolyDet>. The default for other fields,

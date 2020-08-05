@@ -14,7 +14,7 @@ public class DeterminismTest extends CheckerFrameworkPerDirectoryTest {
                 "determinism",
                 "-Anomsgtext",
                 "-Alint=enableconditionaltypecheck",
-                "-AuseDefault=PolyDet");
+                "-AusePolyDefault");
     }
 
     @Parameters

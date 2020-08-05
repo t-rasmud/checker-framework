@@ -143,7 +143,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
     /**
      * Adds {@code @PolyDet} as the default for parameters, return, receiver, and constructor_result
-     * if the user invokes the checker with the command line option -AuseDefault=PolyDet, Otherwise,
+     * if the user invokes the checker with the command line option -AusePolyDefault, Otherwise,
      * adds {@code @Det} as the default for these locations. For all other locations, adds
      * {@code @Det} as the default.
      *
@@ -159,8 +159,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 TypeUseLocation.RECEIVER,
                 TypeUseLocation.CONSTRUCTOR_RESULT
             };
-            if (checker.hasOption("useDefault")
-                    && checker.getOption("useDefault").equals("PolyDet")) {
+            if (checker.hasOption("usePolyDefault")) {
                 defs.addCheckedCodeDefaults(POLYDET, locations);
             } else {
                 defs.addCheckedCodeDefaults(DET, locations);
@@ -785,7 +784,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          * <ol>
          *   <li>Defaults the component types of array parameters and return types as {@code
          *       ...[@PolyDet]} in the body of the method represented by {@code executableType} if
-         *       the checker is invoked with the command line option -AuseDefault=PolyDet.
+         *       the checker is invoked with the command line option -AusePolyDefault.
          *   <li>Defaults the return type for methods with no @PolyDet formal parameters (including
          *       the receiver) as {@code @Det} in the method represented by {@code executableType}.
          * </ol>
@@ -797,8 +796,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         @Override
         public Void visitExecutable(final AnnotatedExecutableType executableType, final Void p) {
             if (!isMainMethod(executableType.getElement())) {
-                if (checker.hasOption("useDefault")
-                        && checker.getOption("useDefault").equals("PolyDet")) {
+                if (checker.hasOption("usePolyDefault")) {
                     for (AnnotatedTypeMirror paramType : executableType.getParameterTypes()) {
                         defaultArrayComponentType(paramType, POLYDET);
                     }
@@ -830,8 +828,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                             executableType.getReturnType().replaceAnnotation(DET);
                         }
                     }
-                    if (checker.hasOption("useDefault")
-                            && checker.getOption("useDefault").equals("PolyDet")) {
+                    if (checker.hasOption("usePolyDefault")) {
                         defaultArrayComponentType(executableType.getReturnType(), POLYDET);
                     }
                 }
@@ -964,7 +961,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /**
      * Adds implicit annotation for main method formal parameter ({@code @Det}). Adds default
      * annotations for the component types of other array formal parameters ({@code ...[@PolyDet]})
-     * if the checker is invoked with the command line option -AuseDefault=PolyDet.
+     * if the checker is invoked with the command line option -AusePolyDefault.
      *
      * <p>Note: The annotation on an array type defaults to {@code @PolyDet[]} and this defaulting
      * is handled by declarative mechanism.
@@ -1005,8 +1002,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                             type.getAnnotationInHierarchy(NONDET));
                 }
                 type.addMissingAnnotations(Collections.singleton(DET));
-            } else if (checker.hasOption("useDefault")
-                    && checker.getOption("useDefault").equals("PolyDet")) {
+            } else if (checker.hasOption("usePolyDefault")) {
                 defaultArrayComponentType(type, POLYDET);
             }
         }

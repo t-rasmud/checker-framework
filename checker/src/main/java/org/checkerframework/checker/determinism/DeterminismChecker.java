@@ -20,7 +20,7 @@ import org.checkerframework.framework.source.SupportedOptions;
 @SupportedOptions({
     // Comma separated list of system properties that should be treated as deterministic.
     "inputProperties",
-    "useDefault"
+    "usePolyDefault"
 })
 @StubFiles({"junit.astub", "javaparser.astub", "utilplume.astub", "jdk.astub"})
 public class DeterminismChecker extends BaseTypeChecker {}
