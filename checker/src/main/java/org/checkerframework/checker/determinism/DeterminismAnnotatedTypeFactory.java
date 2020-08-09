@@ -99,6 +99,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** The Object.equals method. */
     private final ExecutableElement equals;
 
+    /** The Objects.equals method. */
+    private final ExecutableElement objectsEquals;
+
     /**
      * Creates {@code @PolyDet} annotation mirror constants.
      *
@@ -120,6 +123,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         mapGet = TreeUtils.getMethod("java.util.Map", "get", 1, processingEnv);
         mapGetOrDefault = TreeUtils.getMethod("java.util.Map", "getOrDefault", 2, processingEnv);
         equals = TreeUtils.getMethod("java.lang.Object", "equals", 1, processingEnv);
+        objectsEquals = TreeUtils.getMethod("java.util.Objects", "equals", 2, processingEnv);
 
         postInit();
     }
@@ -304,6 +308,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 return super.visitMethodInvocation(node, methodInvocationType);
             }
             refineResultOfEquals(node, methodInvocationType, receiverType);
+            refineResultOfObjectsEquals(node, methodInvocationType, receiverType);
             refineSystemGet(node, methodInvocationType);
             refineMapGet(node, methodInvocationType, receiverType);
 
@@ -456,6 +461,68 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                         && getQualifierHierarchy()
                                 .isSubtype(argument.getAnnotationInHierarchy(NONDET), ORDERNONDET)
                         && !hasOrderNonDetListAsTypeArgument(argument)) {
+                    methodInvocationType.replaceAnnotation(DET);
+                }
+            }
+        }
+
+        protected void refineResultOfObjectsEquals(
+                MethodInvocationTree node,
+                AnnotatedTypeMirror methodInvocationType,
+                AnnotatedTypeMirror receiverType) {
+
+            // Annotates the return type of "equals()" method called on a Set or Map receiver
+            // as described in the specification of this method.
+
+            // Example1: @OrderNonDet Set<@OrderNonDet List<@Det Integer>> s1;
+            //           @OrderNonDet Set<@OrderNonDet List<@Det Integer>> s2;
+            // s1.equals(s2) is @NonDet
+
+            // Example 2: @OrderNonDet Set<@Det List<@Det Integer>> s1;
+            //            @OrderNonDet Set<@Det List<@Det Integer>> s2;
+            // s1.equals(s2) is @Det
+
+            if (isObjectsEqualsMethod(node)) {
+                AnnotatedTypeMirror argument1 = getAnnotatedType(node.getArguments().get(0));
+                AnnotatedTypeMirror argument2 = getAnnotatedType(node.getArguments().get(1));
+
+                boolean arg1IsList = isSubClassOf(argument1, listInterfaceTypeMirror);
+                boolean arg1IsSet = isSubClassOf(argument1, setInterfaceTypeMirror);
+                boolean arg1IsMap = isSubClassOf(argument1, mapInterfaceTypeMirror);
+
+                // Don't refine for equals() called on non-collections.
+                if (!arg1IsList && !arg1IsSet && !arg1IsMap) {
+                    return;
+                }
+
+                if (AnnotationUtils.areSameByName(
+                        methodInvocationType.getAnnotationInHierarchy(NONDET), DET)) {
+                    return;
+                }
+
+                boolean bothLists = arg1IsList && isSubClassOf(argument2, listInterfaceTypeMirror);
+                boolean bothSets = arg1IsSet && isSubClassOf(argument2, setInterfaceTypeMirror);
+                boolean bothMaps = arg1IsMap && isSubClassOf(argument2, mapInterfaceTypeMirror);
+
+                // If the receiver is a List and the argument isn't, then the return type is @Det
+                // (always false).
+                // Similarly for a Set and a Map.
+                if (!(bothLists || bothSets || bothMaps)) {
+                    methodInvocationType.replaceAnnotation(DET);
+                    return;
+                }
+                if (!haveSameTypeArguments(argument1, argument2)) {
+                    methodInvocationType.replaceAnnotation(DET);
+                    return;
+                }
+
+                if ((bothSets || bothMaps)
+                        && getQualifierHierarchy()
+                                .isSubtype(argument1.getAnnotationInHierarchy(NONDET), ORDERNONDET)
+                        && !hasOrderNonDetListAsTypeArgument(argument1)
+                        && getQualifierHierarchy()
+                                .isSubtype(argument2.getAnnotationInHierarchy(NONDET), ORDERNONDET)
+                        && !hasOrderNonDetListAsTypeArgument(argument2)) {
                     methodInvocationType.replaceAnnotation(DET);
                 }
             }
@@ -937,6 +1004,14 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
      */
     boolean isEqualsMethod(Tree tree) {
         return TreeUtils.isMethodInvocation(tree, equals, getProcessingEnv());
+    }
+
+    /**
+     * @param tree Tree
+     * @return true if the node is an invocation of Objects.equals
+     */
+    boolean isObjectsEqualsMethod(Tree tree) {
+        return TreeUtils.isMethodInvocation(tree, objectsEquals, getProcessingEnv());
     }
 
     /**
