@@ -12,6 +12,7 @@ public class ObjectsEquals {
     }
 
     @Override
+    // :: error: (override.param.invalid)  :: error: (override.receiver.invalid)
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -19,7 +20,7 @@ public class ObjectsEquals {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        final ObjectsEquals suppressionXpathFilter = (ObjectsEquals) obj;
+        final @Det ObjectsEquals suppressionXpathFilter = (ObjectsEquals) obj;
         return Objects.equals(filters, suppressionXpathFilter.filters);
     }
 }
