@@ -466,6 +466,25 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             }
         }
 
+        /**
+         * Return type of Objects.equals() gets the annotation {@code @Det}, when both the receiver
+         * and the argument satisfy these conditions (@see <a
+         * href="https://checkerframework.org/manual/#determinism-improved-precision-set-equals">Improves
+         * precision for Set.equals()</a>):
+         *
+         * <ol>
+         *   <li>the type is {@code @OrderNonDet Set}, and
+         *   <li>its type argument is not {@code @OrderNonDet List} or a subtype
+         * </ol>
+         *
+         * OR
+         *
+         * <p>The receiver and the argument do not have the same declared type.
+         *
+         * @param node method invocation tree
+         * @param methodInvocationType AnnotatedTypeMirror for a method invocation
+         * @param receiverType receiver type of the invoked method
+         */
         protected void refineResultOfObjectsEquals(
                 MethodInvocationTree node,
                 AnnotatedTypeMirror methodInvocationType,
