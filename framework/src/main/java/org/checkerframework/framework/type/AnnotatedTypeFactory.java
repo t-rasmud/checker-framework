@@ -1488,7 +1488,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
         while (declaringType.getKind() == TypeKind.WILDCARD
                 || declaringType.getKind() == TypeKind.TYPEVAR) {
             if (declaringType.getKind() == TypeKind.WILDCARD) {
-                declaringType = ((WildcardType) declaringType).getExtendsBound();
+                declaringType = TypesUtils.wildUpperBound(declaringType, processingEnv);
             } else if (declaringType.getKind() == TypeKind.TYPEVAR) {
                 declaringType = ((TypeVariable) declaringType).getUpperBound();
             }

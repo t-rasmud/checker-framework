@@ -66,6 +66,7 @@ import com.sun.tools.javac.util.Context;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -370,6 +371,13 @@ public class CFGBuilder {
         public String toString() {
             throw new BugInCF("DO NOT CALL ExtendedNode.toString(). Write your own.");
         }
+
+        /**
+         * Returns a verbose string representation of this, useful for debugging.
+         *
+         * @return a string representation of this
+         */
+        abstract String toStringDebug();
     }
 
     /** An extended node of type {@code NODE}. */
@@ -396,6 +404,11 @@ public class CFGBuilder {
         @Override
         public String toString() {
             return "NodeHolder(" + node + ")";
+        }
+
+        @Override
+        public String toStringDebug() {
+            return "NodeHolder(" + node.toStringDebug() + ")";
         }
     }
 
@@ -440,6 +453,11 @@ public class CFGBuilder {
         @Override
         public String toString() {
             return "NodeWithExceptionsHolder(" + node + ")";
+        }
+
+        @Override
+        public String toStringDebug() {
+            return "NodeWithExceptionsHolder(" + node.toStringDebug() + ")";
         }
     }
 
@@ -511,6 +529,11 @@ public class CFGBuilder {
         public String toString() {
             return "TwoTargetConditionalJump(" + getThenLabel() + ", " + getElseLabel() + ")";
         }
+
+        @Override
+        public String toStringDebug() {
+            return toString();
+        }
     }
 
     /** An extended node of type {@link ExtendedNodeType#UNCONDITIONAL_JUMP}. */
@@ -545,6 +568,26 @@ public class CFGBuilder {
         public String toString() {
             return "JumpMarker(" + getLabel() + ")";
         }
+
+        @Override
+        public String toStringDebug() {
+            return toString();
+        }
+    }
+
+    /**
+     * Return a printed representation of a collection of extended nodes.
+     *
+     * @param nodes a collection of extended nodes to format
+     * @return a printed representation of the given collection
+     */
+    public static String extendedNodeCollectionToStringDebug(
+            Collection<? extends ExtendedNode> nodes) {
+        StringJoiner result = new StringJoiner(", ", "[", "]");
+        for (ExtendedNode n : nodes) {
+            result.add(n.toStringDebug());
+        }
+        return result.toString();
     }
 
     /**
@@ -992,7 +1035,7 @@ public class CFGBuilder {
                         RegularBlockImpl rs = (RegularBlockImpl) succ;
                         if (rs.getPredecessors().size() == 1) {
                             b.setSuccessor(rs.getRegularSuccessor());
-                            b.addNodes(rs.getContents());
+                            b.addNodes(rs.getNodes());
                             rs.getRegularSuccessor().removePredecessor(rs);
                         }
                     }
@@ -1309,7 +1352,7 @@ public class CFGBuilder {
                             assert target != null;
                             missingEdges.add(
                                     new Tuple<>(
-                                            new SingleSuccessorBlockImpl(BlockType.REGULAR_BLOCK) {
+                                            new RegularBlockImpl() {
                                                 @Override
                                                 public void setSuccessor(BlockImpl successor) {
                                                     cb.setThenSuccessor(successor);
@@ -1320,7 +1363,7 @@ public class CFGBuilder {
                             assert target != null;
                             missingEdges.add(
                                     new Tuple<>(
-                                            new SingleSuccessorBlockImpl(BlockType.REGULAR_BLOCK) {
+                                            new RegularBlockImpl() {
                                                 @Override
                                                 public void setSuccessor(BlockImpl successor) {
                                                     cb.setElseSuccessor(successor);
@@ -1500,6 +1543,32 @@ public class CFGBuilder {
                 return "unbound label: " + label;
             }
             return nodeToString(nodeList.get(index));
+        }
+
+        /**
+         * Returns a verbose string representation of this, useful for debugging.
+         *
+         * @return a string representation of this
+         */
+        public String toStringDebug() {
+            StringJoiner result =
+                    new StringJoiner(
+                            String.format("%n  "),
+                            String.format("PhaseOneResult{%n  "),
+                            String.format("%n  }"));
+            result.add("treeLookupMap=" + treeLookupMap);
+            result.add("convertedTreeLookupMap=" + convertedTreeLookupMap);
+            result.add("unaryAssignNodeLookupMap=" + unaryAssignNodeLookupMap);
+            result.add("underlyingAST=" + underlyingAST);
+            result.add("bindings=" + bindings);
+            result.add("nodeList=" + extendedNodeCollectionToStringDebug(nodeList));
+            result.add("leaders=" + leaders);
+            result.add("returnNodes=" + Node.nodeCollectionToString(returnNodes));
+            result.add("regularExitLabel=" + regularExitLabel);
+            result.add("exceptionalExitLabel=" + exceptionalExitLabel);
+            result.add("declaredClasses=" + declaredClasses);
+            result.add("declaredLambdas=" + declaredLambdas);
+            return result.toString();
         }
     }
 
