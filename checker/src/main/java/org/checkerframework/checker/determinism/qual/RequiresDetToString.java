@@ -25,5 +25,10 @@ import org.checkerframework.framework.qual.InheritedAnnotation;
 @InheritedAnnotation
 @Target({ElementType.METHOD})
 public @interface RequiresDetToString {
+    /**
+     * Parameters that are required to have deterministic {@code toString} methods.
+     *
+     * @return default value
+     */
     int[] value() default {};
 }
