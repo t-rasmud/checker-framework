@@ -682,7 +682,9 @@ subprojects {
         createCheckTypeTask(project.name, 'org.checkerframework.checker.signature.SignatureChecker', 'Signature')
         // These pass on some subprojects, which nonJunitTests runs.  TODO: Incrementally add @AnnotatedFor on classes.
         createCheckTypeTask(project.name, 'org.checkerframework.checker.nullness.NullnessChecker', 'Nullness', ['-AskipUses=com.sun.*'])
-
+        if (project.name.is('dataflow')) {
+            createCheckTypeTask(project.name, 'org.checkerframework.checker.determinism.DeterminismChecker', 'Determinism')
+        }
 
         // Add jtregTests to framework and checker modules
         if (project.name.is('framework') || project.name.is('checker')) {
