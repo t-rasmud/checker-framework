@@ -26,6 +26,8 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.interning.qual.EqualsMethod;
 import org.checkerframework.checker.interning.qual.UsesObjectEquals;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -554,17 +556,20 @@ public class FlowExpressions {
             return String.format(
                     "Receiver (%s) %s type=%s", getClass().getSimpleName(), toString(), type);
         }
+
+        @Override
+        public abstract @PolyDet String toString(@PolyDet Receiver this);
     }
 
     public static class FieldAccess extends Receiver {
         protected final Receiver receiver;
         protected final VariableElement field;
 
-        public Receiver getReceiver() {
+        public @PolyDet Receiver getReceiver(@PolyDet FieldAccess this) {
             return receiver;
         }
 
-        public VariableElement getField() {
+        public @PolyDet VariableElement getField(@PolyDet FieldAccess this) {
             return field;
         }
 
@@ -589,11 +594,16 @@ public class FlowExpressions {
         }
 
         @Override
-        public boolean equals(@Nullable Object obj) {
+        public @PolyDet boolean equals(@PolyDet FieldAccess this, @PolyDet @Nullable Object obj) {
             if (!(obj instanceof FieldAccess)) {
                 return false;
             }
             FieldAccess fa = (FieldAccess) obj;
+            @Det VariableElement f1 = fa.getField();
+            @Det VariableElement f2 = getField();
+            @Det boolean b1 = fa.getField().equals(getField());
+            @Det boolean b2 = fa.getReceiver().equals(getReceiver());
+            System.out.println("" + (b1 && b2) + f1 + f2);
             return fa.getField().equals(getField()) && fa.getReceiver().equals(getReceiver());
         }
 

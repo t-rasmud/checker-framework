@@ -2,6 +2,7 @@ package org.checkerframework.dataflow.analysis;
 
 import java.util.Map;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -73,7 +74,7 @@ public abstract class TransferResult<V extends AbstractValue<V>, S extends Store
      *     org.checkerframework.dataflow.cfg.node.Node} corresponding to this transfer function
      *     result
      */
-    public abstract S getRegularStore();
+    public abstract S getRegularStore(@PolyDet TransferResult<V, S> this);
 
     /**
      * Returns the result store produced if the {@link org.checkerframework.dataflow.cfg.node.Node}

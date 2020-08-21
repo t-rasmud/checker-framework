@@ -1,6 +1,8 @@
 package org.checkerframework.dataflow.analysis;
 
 import java.util.Objects;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.Node;
 
@@ -251,6 +253,7 @@ public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> {
     }
 
     @Override
+    @SuppressWarnings("determinism") // overriding Object method
     public boolean equals(@Nullable Object o) {
         if (o instanceof TransferInput) {
             @SuppressWarnings("unchecked")
@@ -270,12 +273,12 @@ public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet TransferInput<V, S> this) {
         return Objects.hash(this.analysis, this.node, this.store, this.thenStore, this.elseStore);
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet TransferInput<V, S> this) {
         if (store == null) {
             return "[then=" + thenStore + ", else=" + elseStore + "]";
         } else {
