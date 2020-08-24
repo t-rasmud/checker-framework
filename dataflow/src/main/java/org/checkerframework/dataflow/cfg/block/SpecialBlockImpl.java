@@ -2,6 +2,7 @@ package org.checkerframework.dataflow.cfg.block;
 
 import java.util.Collections;
 import java.util.List;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.Node;
 
@@ -37,7 +38,7 @@ public class SpecialBlockImpl extends SingleSuccessorBlockImpl implements Specia
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet SpecialBlockImpl this) {
         return "SpecialBlock(" + specialType + ")";
     }
 }

@@ -18,6 +18,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.StringJoiner;
+import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.AnalysisResult;
@@ -169,10 +172,10 @@ public class ControlFlowGraph {
      *
      * @return the set of all basic blocks in this control flow graph
      */
-    public Set<Block> getAllBlocks(
+    public @OrderNonDet Set<Block> getAllBlocks(
             @UnknownInitialization(ControlFlowGraph.class) ControlFlowGraph this) {
-        Set<Block> visited = new HashSet<>();
-        Queue<Block> worklist = new ArrayDeque<>();
+        @OrderNonDet Set<Block> visited = new HashSet<>();
+        @Det Queue<Block> worklist = new ArrayDeque<>();
         Block cur = entryBlock;
         visited.add(entryBlock);
 
@@ -182,7 +185,7 @@ public class ControlFlowGraph {
                 break;
             }
 
-            Collection<Block> succs = cur.getSuccessors();
+            @Det Collection<Block> succs = cur.getSuccessors();
 
             for (Block b : succs) {
                 if (!visited.contains(b)) {
@@ -202,9 +205,10 @@ public class ControlFlowGraph {
      *
      * @return all nodes in this control flow graph
      */
-    public List<Node> getAllNodes(
+    @SuppressWarnings("determinism") // non-determinism reflected in return type
+    public @OrderNonDet List<Node> getAllNodes(
             @UnknownInitialization(ControlFlowGraph.class) ControlFlowGraph this) {
-        List<Node> result = new ArrayList<>();
+        @OrderNonDet List<Node> result = new ArrayList<>();
         for (Block b : getAllBlocks()) {
             result.addAll(b.getNodes());
         }
@@ -219,9 +223,9 @@ public class ControlFlowGraph {
      *     postorder sequence
      */
     public List<Block> getDepthFirstOrderedBlocks() {
-        List<Block> dfsOrderResult = new ArrayList<>();
-        Set<Block> visited = new HashSet<>();
-        Deque<Block> worklist = new ArrayDeque<>();
+        @Det List<Block> dfsOrderResult = new ArrayList<>();
+        @OrderNonDet Set<Block> visited = new HashSet<>();
+        @Det Deque<Block> worklist = new ArrayDeque<>();
         worklist.add(entryBlock);
         while (!worklist.isEmpty()) {
             Block cur = worklist.getLast();
@@ -230,8 +234,12 @@ public class ControlFlowGraph {
                 worklist.removeLast();
             } else {
                 visited.add(cur);
-                Collection<Block> successors = cur.getSuccessors();
-                successors.removeAll(visited);
+                @Det Collection<Block> successors = cur.getSuccessors();
+                @SuppressWarnings({
+                    "determinism",
+                    "UnusedVariable"
+                }) // removeAll is order insensitive
+                boolean ignore = successors.removeAll(visited);
                 worklist.addAll(successors);
             }
         }
@@ -296,13 +304,13 @@ public class ControlFlowGraph {
     }
 
     @Override
-    public String toString() {
-        Map<String, Object> args = new HashMap<>();
+    public @PolyDet String toString(@PolyDet ControlFlowGraph this) {
+        @OrderNonDet Map<String, Object> args = new HashMap<>();
         args.put("verbose", true);
 
         CFGVisualizer<?, ?, ?> viz = new StringCFGVisualizer<>();
         viz.init(args);
-        Map<String, Object> res = viz.visualize(this, this.getEntryBlock(), null);
+        @Det Map<String, Object> res = viz.visualize(this, this.getEntryBlock(), null);
         viz.shutdown();
         if (res == null) {
             return super.toString();

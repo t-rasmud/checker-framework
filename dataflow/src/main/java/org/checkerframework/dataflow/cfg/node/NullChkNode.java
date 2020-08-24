@@ -5,6 +5,8 @@ import com.sun.source.tree.Tree.Kind;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -27,7 +29,7 @@ public class NullChkNode extends Node {
         this.operand = operand;
     }
 
-    public Node getOperand() {
+    public @PolyDet Node getOperand(@PolyDet NullChkNode this) {
         return operand;
     }
 
@@ -42,12 +44,13 @@ public class NullChkNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet NullChkNode this) {
         return "(+ " + getOperand() + ")";
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    @SuppressWarnings("determinism") // calling equals on two @PolyDet returns @NonDet
+    public @PolyDet boolean equals(@PolyDet NullChkNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof NumericalPlusNode)) {
             return false;
         }
@@ -56,7 +59,7 @@ public class NullChkNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet NullChkNode this) {
         return Objects.hash(NullChkNode.class, getOperand());
     }
 

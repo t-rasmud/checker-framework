@@ -2,6 +2,7 @@ package org.checkerframework.dataflow.cfg.block;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.Store;
 
@@ -28,7 +29,7 @@ public abstract class SingleSuccessorBlockImpl extends BlockImpl implements Sing
 
     @Override
     public Set<Block> getSuccessors() {
-        Set<Block> result = new LinkedHashSet<>();
+        @Det Set<Block> result = new LinkedHashSet<>();
         if (successor != null) {
             result.add(successor);
         }

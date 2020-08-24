@@ -5,6 +5,8 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.StringJoiner;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.CFGBuilder;
 import org.checkerframework.dataflow.cfg.block.Block;
@@ -150,8 +152,8 @@ public abstract class Node {
      *     well as (transitively) the operands of its operands
      */
     public Collection<Node> getTransitiveOperands() {
-        ArrayDeque<Node> operands = new ArrayDeque<>(getOperands());
-        ArrayDeque<Node> transitiveOperands = new ArrayDeque<>(operands.size());
+        @Det ArrayDeque<Node> operands = new ArrayDeque<>(getOperands());
+        @Det ArrayDeque<Node> transitiveOperands = new ArrayDeque<>(operands.size());
         while (!operands.isEmpty()) {
             Node next = operands.removeFirst();
             operands.addAll(next.getOperands());
@@ -187,4 +189,7 @@ public abstract class Node {
         }
         return result.toString();
     }
+
+    @Override
+    public abstract @PolyDet String toString(@PolyDet Node this);
 }

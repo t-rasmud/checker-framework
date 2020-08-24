@@ -5,6 +5,8 @@ import com.sun.source.tree.Tree;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -31,11 +33,11 @@ public class ArrayAccessNode extends Node {
         this.index = index;
     }
 
-    public Node getArray() {
+    public @PolyDet Node getArray(@PolyDet ArrayAccessNode this) {
         return array;
     }
 
-    public Node getIndex() {
+    public @PolyDet Node getIndex(@PolyDet ArrayAccessNode this) {
         return index;
     }
 
@@ -50,13 +52,14 @@ public class ArrayAccessNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet ArrayAccessNode this) {
         String base = getArray().toString() + "[" + getIndex() + "]";
         return base;
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    @SuppressWarnings("determinism") // overriding Object method
+    public @PolyDet boolean equals(@PolyDet ArrayAccessNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ArrayAccessNode)) {
             return false;
         }
@@ -65,7 +68,7 @@ public class ArrayAccessNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet ArrayAccessNode this) {
         return Objects.hash(getArray(), getIndex());
     }
 

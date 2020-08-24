@@ -686,7 +686,7 @@ subprojects {
 			createCheckTypeTask(project.name,
 			'org.checkerframework.checker.determinism.DeterminismChecker',
 			'Determinism',
-			['-AonlyDefs=org.checkerframework.dataflow.analysis.FlowExpressions'])
+			['-AonlyDefs=org.checkerframework.dataflow.cfg.node.NumericalAdditionNode'])
 			// createCheckTypeTask(project.name, 'org.checkerframework.checker.determinism.DeterminismChecker', 'Determinism')
         }
 

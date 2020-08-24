@@ -3,6 +3,7 @@ package org.checkerframework.dataflow.cfg.block;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
 
 /** Base class of the {@link Block} implementation hierarchy. */
 public abstract class BlockImpl implements Block {
@@ -17,7 +18,7 @@ public abstract class BlockImpl implements Block {
     protected final BlockType type;
 
     /** The set of predecessors. */
-    protected final Set<BlockImpl> predecessors;
+    protected final @OrderNonDet Set<BlockImpl> predecessors;
 
     /**
      * Returns a fresh identifier.
@@ -44,7 +45,7 @@ public abstract class BlockImpl implements Block {
     }
 
     @Override
-    public Set<Block> getPredecessors() {
+    public @OrderNonDet Set<Block> getPredecessors() {
         return Collections.unmodifiableSet(predecessors);
     }
 

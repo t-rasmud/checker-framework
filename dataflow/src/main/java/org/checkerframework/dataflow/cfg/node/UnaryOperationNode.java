@@ -3,6 +3,7 @@ package org.checkerframework.dataflow.cfg.node;
 import com.sun.source.tree.UnaryTree;
 import java.util.Collection;
 import java.util.Collections;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.javacutil.TreeUtils;
 
 /**
@@ -27,7 +28,7 @@ public abstract class UnaryOperationNode extends Node {
         this.operand = operand;
     }
 
-    public Node getOperand() {
+    public @PolyDet Node getOperand(@PolyDet UnaryOperationNode this) {
         return this.operand;
     }
 

@@ -3,6 +3,7 @@ package org.checkerframework.dataflow.cfg.node;
 import com.sun.source.tree.BinaryTree;
 import java.util.ArrayList;
 import java.util.Collection;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.javacutil.TreeUtils;
 
 /**
@@ -27,11 +28,11 @@ public abstract class BinaryOperationNode extends Node {
         this.right = right;
     }
 
-    public Node getLeftOperand() {
+    public @PolyDet Node getLeftOperand(@PolyDet BinaryOperationNode this) {
         return left;
     }
 
-    public Node getRightOperand() {
+    public @PolyDet Node getRightOperand(@PolyDet BinaryOperationNode this) {
         return right;
     }
 

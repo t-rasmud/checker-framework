@@ -26,7 +26,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.interning.qual.EqualsMethod;
 import org.checkerframework.checker.interning.qual.UsesObjectEquals;
@@ -481,7 +481,7 @@ public class FlowExpressions {
             this.type = type;
         }
 
-        public TypeMirror getType() {
+        public @PolyDet TypeMirror getType(@PolyDet Receiver this) {
             return type;
         }
 
@@ -594,21 +594,17 @@ public class FlowExpressions {
         }
 
         @Override
+        @SuppressWarnings("determinism") // non-overridden equals method
         public @PolyDet boolean equals(@PolyDet FieldAccess this, @PolyDet @Nullable Object obj) {
             if (!(obj instanceof FieldAccess)) {
                 return false;
             }
             FieldAccess fa = (FieldAccess) obj;
-            @Det VariableElement f1 = fa.getField();
-            @Det VariableElement f2 = getField();
-            @Det boolean b1 = fa.getField().equals(getField());
-            @Det boolean b2 = fa.getReceiver().equals(getReceiver());
-            System.out.println("" + (b1 && b2) + f1 + f2);
             return fa.getField().equals(getField()) && fa.getReceiver().equals(getReceiver());
         }
 
         @Override
-        public int hashCode() {
+        public @NonDet int hashCode(@PolyDet FieldAccess this) {
             return Objects.hash(getField(), getReceiver());
         }
 
@@ -635,7 +631,7 @@ public class FlowExpressions {
         }
 
         @Override
-        public String toString() {
+        public @PolyDet String toString(@PolyDet FieldAccess this) {
             if (receiver instanceof ClassName) {
                 return receiver.getType() + "." + field;
             } else {
@@ -666,17 +662,17 @@ public class FlowExpressions {
         }
 
         @Override
-        public boolean equals(@Nullable Object obj) {
+        public @PolyDet boolean equals(@PolyDet ThisReference this, @PolyDet @Nullable Object obj) {
             return obj instanceof ThisReference;
         }
 
         @Override
-        public int hashCode() {
+        public int hashCode(@PolyDet ThisReference this) {
             return 0;
         }
 
         @Override
-        public String toString() {
+        public String toString(@PolyDet ThisReference this) {
             return "this";
         }
 
@@ -719,7 +715,7 @@ public class FlowExpressions {
         }
 
         @Override
-        public boolean equals(@Nullable Object obj) {
+        public @PolyDet boolean equals(@PolyDet ClassName this, @PolyDet @Nullable Object obj) {
             if (!(obj instanceof ClassName)) {
                 return false;
             }
@@ -728,12 +724,12 @@ public class FlowExpressions {
         }
 
         @Override
-        public int hashCode() {
+        public @NonDet int hashCode(@PolyDet ClassName this) {
             return Objects.hash(typeString);
         }
 
         @Override
-        public String toString() {
+        public @PolyDet String toString(@PolyDet ClassName this) {
             return typeString + ".class";
         }
 
@@ -776,17 +772,17 @@ public class FlowExpressions {
         }
 
         @Override
-        public boolean equals(@Nullable Object obj) {
+        public @PolyDet boolean equals(@PolyDet Unknown this, @PolyDet @Nullable Object obj) {
             return obj == this;
         }
 
         @Override
-        public int hashCode() {
+        public @NonDet int hashCode(@PolyDet Unknown this) {
             return System.identityHashCode(this);
         }
 
         @Override
-        public String toString() {
+        public String toString(@PolyDet Unknown this) {
             return "?";
         }
 
@@ -825,7 +821,8 @@ public class FlowExpressions {
         }
 
         @Override
-        public boolean equals(@Nullable Object obj) {
+        @SuppressWarnings("determinism") // overriding Object method
+        public @PolyDet boolean equals(@PolyDet LocalVariable this, @PolyDet @Nullable Object obj) {
             if (!(obj instanceof LocalVariable)) {
                 return false;
             }
@@ -847,7 +844,8 @@ public class FlowExpressions {
         }
 
         @Override
-        public int hashCode() {
+        @SuppressWarnings("determinism") // overriding Object method
+        public @NonDet int hashCode(@PolyDet LocalVariable this) {
             VarSymbol vs = (VarSymbol) element;
             return Objects.hash(
                     vs.name.toString(),
@@ -856,7 +854,7 @@ public class FlowExpressions {
         }
 
         @Override
-        public String toString() {
+        public @PolyDet String toString(@PolyDet LocalVariable this) {
             return element.toString();
         }
 
@@ -934,7 +932,8 @@ public class FlowExpressions {
         }
 
         @Override
-        public boolean equals(@Nullable Object obj) {
+        @SuppressWarnings("determinism") // overriding Object method
+        public @PolyDet boolean equals(@PolyDet ValueLiteral this, @PolyDet @Nullable Object obj) {
             if (!(obj instanceof ValueLiteral)) {
                 return false;
             }
@@ -946,7 +945,8 @@ public class FlowExpressions {
         }
 
         @Override
-        public String toString() {
+        @SuppressWarnings("determinism") // overriding Object method
+        public @PolyDet String toString(@PolyDet ValueLiteral this) {
             if (TypesUtils.isString(type)) {
                 return "\"" + value + "\"";
             } else if (type.getKind() == TypeKind.LONG) {
@@ -959,7 +959,8 @@ public class FlowExpressions {
         }
 
         @Override
-        public int hashCode() {
+        @SuppressWarnings("determinism") // calling method on external class requires @Det
+        public @NonDet int hashCode(@PolyDet ValueLiteral this) {
             return Objects.hash(value, type.toString());
         }
 
@@ -1109,7 +1110,8 @@ public class FlowExpressions {
         }
 
         @Override
-        public boolean equals(@Nullable Object obj) {
+        @SuppressWarnings("determinism") // overriding Object method
+        public @PolyDet boolean equals(@PolyDet MethodCall this, @PolyDet @Nullable Object obj) {
             if (this == obj) {
                 return true;
             }
@@ -1126,7 +1128,8 @@ public class FlowExpressions {
         }
 
         @Override
-        public int hashCode() {
+        @SuppressWarnings("determinism") // calling method on external class requires @Det
+        public @NonDet int hashCode(@PolyDet MethodCall this) {
             if (method.getKind() == ElementKind.CONSTRUCTOR) {
                 return super.hashCode();
             }
@@ -1134,7 +1137,8 @@ public class FlowExpressions {
         }
 
         @Override
-        public String toString() {
+        @SuppressWarnings("determinism") // calling method on external class requires @Det
+        public @PolyDet String toString(@PolyDet MethodCall this) {
             StringBuilder result = new StringBuilder();
             if (receiver instanceof ClassName) {
                 result.append(receiver.getType());
@@ -1242,12 +1246,14 @@ public class FlowExpressions {
         }
 
         @Override
-        public int hashCode() {
+        public @NonDet int hashCode(@PolyDet BinaryOperation this) {
             return Objects.hash(operationKind, left, right);
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
+        @SuppressWarnings("determinism") // calling method on external class requires @Det
+        public @PolyDet boolean equals(
+                @PolyDet BinaryOperation this, @PolyDet @Nullable Object other) {
             if (!(other instanceof BinaryOperation)) {
                 return false;
             }
@@ -1285,7 +1291,8 @@ public class FlowExpressions {
         }
 
         @Override
-        public String toString() {
+        @SuppressWarnings("determinism") // calling method on external class requires @Det
+        public @PolyDet String toString(@PolyDet BinaryOperation this) {
             final Pretty pretty = new Pretty(null, true);
             StringBuilder result = new StringBuilder();
             result.append(left.toString());
@@ -1364,7 +1371,8 @@ public class FlowExpressions {
         }
 
         @Override
-        public boolean equals(@Nullable Object obj) {
+        @SuppressWarnings("determinism") // overriding Object method
+        public @PolyDet boolean equals(@PolyDet ArrayAccess this, @PolyDet @Nullable Object obj) {
             if (!(obj instanceof ArrayAccess)) {
                 return false;
             }
@@ -1373,12 +1381,13 @@ public class FlowExpressions {
         }
 
         @Override
-        public int hashCode() {
+        public @NonDet int hashCode(@PolyDet ArrayAccess this) {
             return Objects.hash(receiver, index);
         }
 
         @Override
-        public String toString() {
+        @SuppressWarnings("determinism") // calling method on external class requires @Det
+        public @PolyDet String toString(@PolyDet ArrayAccess this) {
             StringBuilder result = new StringBuilder();
             result.append(receiver.toString());
             result.append("[");
@@ -1454,12 +1463,14 @@ public class FlowExpressions {
         }
 
         @Override
-        public int hashCode() {
+        @SuppressWarnings("determinism") // calling method on external class requires @Det
+        public @NonDet int hashCode(@PolyDet ArrayCreation this) {
             return Objects.hash(dimensions, initializers, getType().toString());
         }
 
         @Override
-        public boolean equals(@Nullable Object obj) {
+        @SuppressWarnings("determinism") // overriding Object method
+        public @PolyDet boolean equals(@PolyDet ArrayCreation this, @PolyDet @Nullable Object obj) {
             if (!(obj instanceof ArrayCreation)) {
                 return false;
             }
@@ -1482,7 +1493,8 @@ public class FlowExpressions {
         }
 
         @Override
-        public String toString() {
+        @SuppressWarnings("determinism") // calling method on external class requires @Det
+        public @PolyDet String toString(@PolyDet ArrayCreation this) {
             StringBuilder sb = new StringBuilder();
             sb.append("new " + type);
             if (!dimensions.isEmpty()) {

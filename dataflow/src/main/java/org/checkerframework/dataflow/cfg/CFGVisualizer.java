@@ -1,6 +1,7 @@
 package org.checkerframework.dataflow.cfg;
 
 import java.util.Map;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.AbstractValue;
 import org.checkerframework.dataflow.analysis.Analysis;
@@ -28,7 +29,7 @@ public interface CFGVisualizer<
      *
      * @param args implementation-dependent options
      */
-    void init(Map<String, Object> args);
+    void init(@OrderNonDet Map<String, Object> args);
 
     /**
      * Output a visualization representing the control flow graph starting at {@code entry}. The

@@ -4,6 +4,8 @@ import com.sun.source.tree.LiteralTree;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -31,7 +33,7 @@ public abstract class ValueLiteralNode extends Node {
      *
      * @return the value of the literal, null for the null literal
      */
-    public abstract @Nullable Object getValue();
+    public abstract @PolyDet @Nullable Object getValue(@PolyDet ValueLiteralNode this);
 
     protected ValueLiteralNode(LiteralTree tree) {
         super(TreeUtils.typeOf(tree));
@@ -44,13 +46,14 @@ public abstract class ValueLiteralNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet ValueLiteralNode this) {
         return String.valueOf(getValue());
     }
 
     /** Compare the value of this nodes. */
     @Override
-    public boolean equals(@Nullable Object obj) {
+    @SuppressWarnings("determinism") // Object.equals is imprecise
+    public @PolyDet boolean equals(@PolyDet ValueLiteralNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ValueLiteralNode)) {
             return false;
         }
@@ -61,7 +64,8 @@ public abstract class ValueLiteralNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    public @NonDet int hashCode(@PolyDet ValueLiteralNode this) {
         // value might be null
         return Objects.hash(this.getClass(), getValue());
     }

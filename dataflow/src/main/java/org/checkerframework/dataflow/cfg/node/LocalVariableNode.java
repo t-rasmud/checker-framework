@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.element.Element;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -63,7 +65,7 @@ public class LocalVariableNode extends Node {
         return receiver;
     }
 
-    public String getName() {
+    public @PolyDet String getName(@PolyDet LocalVariableNode this) {
         if (tree instanceof IdentifierTree) {
             return ((IdentifierTree) tree).getName().toString();
         }
@@ -81,12 +83,12 @@ public class LocalVariableNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet LocalVariableNode this) {
         return getName().toString();
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(@PolyDet LocalVariableNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof LocalVariableNode)) {
             return false;
         }
@@ -95,7 +97,7 @@ public class LocalVariableNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet LocalVariableNode this) {
         return Objects.hash(getName());
     }
 

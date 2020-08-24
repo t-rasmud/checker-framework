@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.element.VariableElement;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.ElementUtils;
 import org.checkerframework.javacutil.TreeUtils;
@@ -58,11 +60,11 @@ public class FieldAccessNode extends Node {
         return element;
     }
 
-    public Node getReceiver() {
+    public @PolyDet Node getReceiver(@PolyDet FieldAccessNode this) {
         return receiver;
     }
 
-    public String getFieldName() {
+    public @PolyDet String getFieldName(@PolyDet FieldAccessNode this) {
         return field;
     }
 
@@ -77,7 +79,7 @@ public class FieldAccessNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet FieldAccessNode this) {
         return getReceiver() + "." + field;
     }
 
@@ -87,7 +89,8 @@ public class FieldAccessNode extends Node {
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    @SuppressWarnings("determinism") // overriding Object method
+    public @PolyDet boolean equals(@PolyDet FieldAccessNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof FieldAccessNode)) {
             return false;
         }
@@ -97,7 +100,7 @@ public class FieldAccessNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet FieldAccessNode this) {
         return Objects.hash(getReceiver(), getFieldName());
     }
 

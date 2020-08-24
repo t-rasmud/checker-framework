@@ -22,6 +22,7 @@ import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
 import org.plumelib.util.ImmutableTypes;
@@ -73,7 +74,7 @@ public final class TypesUtils {
      * @param type the type
      * @return true iff type represents java.lang.String
      */
-    public static boolean isString(TypeMirror type) {
+    public static @PolyDet boolean isString(@PolyDet TypeMirror type) {
         return isDeclaredOfName(type, "java.lang.String");
     }
 

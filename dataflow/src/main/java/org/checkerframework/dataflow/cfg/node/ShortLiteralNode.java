@@ -4,6 +4,7 @@ import com.sun.source.tree.LiteralTree;
 import com.sun.source.tree.Tree;
 import java.util.Collection;
 import java.util.Collections;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -41,7 +42,7 @@ public class ShortLiteralNode extends ValueLiteralNode {
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(@PolyDet ShortLiteralNode this, @PolyDet @Nullable Object obj) {
         // test that obj is a ShortLiteralNode
         if (!(obj instanceof ShortLiteralNode)) {
             return false;

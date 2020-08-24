@@ -5,6 +5,8 @@ import com.sun.source.tree.Tree.Kind;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -28,11 +30,11 @@ public class StringConcatenateAssignmentNode extends Node {
         this.right = right;
     }
 
-    public Node getLeftOperand() {
+    public @PolyDet Node getLeftOperand(@PolyDet StringConcatenateAssignmentNode this) {
         return left;
     }
 
-    public Node getRightOperand() {
+    public @PolyDet Node getRightOperand(@PolyDet StringConcatenateAssignmentNode this) {
         return right;
     }
 
@@ -55,12 +57,14 @@ public class StringConcatenateAssignmentNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet StringConcatenateAssignmentNode this) {
         return "(" + getLeftOperand() + " += " + getRightOperand() + ")";
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    @SuppressWarnings("determinism") // calling equals on two @PolyDet returns @NonDet
+    public boolean equals(
+            @PolyDet StringConcatenateAssignmentNode this, @PolyDet @Nullable Object obj) {
         if (obj == null || !(obj instanceof StringConcatenateAssignmentNode)) {
             return false;
         }
@@ -70,7 +74,7 @@ public class StringConcatenateAssignmentNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet StringConcatenateAssignmentNode this) {
         return Objects.hash(getLeftOperand(), getRightOperand());
     }
 }

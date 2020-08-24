@@ -4,6 +4,7 @@ import com.sun.source.tree.LiteralTree;
 import com.sun.source.tree.Tree;
 import java.util.Collection;
 import java.util.Collections;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -26,7 +27,8 @@ public class NullLiteralNode extends ValueLiteralNode {
     }
 
     @Override
-    public Void getValue() {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    public @PolyDet Void getValue(@PolyDet NullLiteralNode this) {
         return (Void) tree.getValue();
     }
 
@@ -36,7 +38,7 @@ public class NullLiteralNode extends ValueLiteralNode {
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(@PolyDet NullLiteralNode this, @PolyDet @Nullable Object obj) {
         // test that obj is a NullLiteralNode
         if (!(obj instanceof NullLiteralNode)) {
             return false;

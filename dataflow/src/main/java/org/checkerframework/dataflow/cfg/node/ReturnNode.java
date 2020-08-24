@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.AssignmentContext.LambdaReturnContext;
 import org.checkerframework.dataflow.cfg.node.AssignmentContext.MethodReturnContext;
@@ -65,7 +67,7 @@ public class ReturnNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet ReturnNode this) {
         if (result != null) {
             return "return " + result;
         }
@@ -73,7 +75,8 @@ public class ReturnNode extends Node {
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    @SuppressWarnings("determinism") // overriding Object method
+    public @PolyDet boolean equals(@PolyDet ReturnNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ReturnNode)) {
             return false;
         }
@@ -82,7 +85,7 @@ public class ReturnNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet ReturnNode this) {
         return Objects.hash(ReturnNode.class, result);
     }
 

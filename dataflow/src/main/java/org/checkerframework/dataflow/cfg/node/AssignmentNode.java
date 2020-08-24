@@ -8,6 +8,8 @@ import com.sun.source.tree.VariableTree;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.AssignmentContext.AssignmentLhsContext;
 import org.checkerframework.javacutil.TreeUtils;
@@ -44,11 +46,11 @@ public class AssignmentNode extends Node {
         rhs.setAssignmentContext(new AssignmentLhsContext(lhs));
     }
 
-    public Node getTarget() {
+    public @PolyDet Node getTarget(@PolyDet AssignmentNode this) {
         return lhs;
     }
 
-    public Node getExpression() {
+    public @PolyDet Node getExpression(@PolyDet AssignmentNode this) {
         return rhs;
     }
 
@@ -63,12 +65,13 @@ public class AssignmentNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet AssignmentNode this) {
         return getTarget() + " = " + getExpression();
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    @SuppressWarnings("determinism") // overriding Object method
+    public @PolyDet boolean equals(@PolyDet AssignmentNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof AssignmentNode)) {
             return false;
         }
@@ -78,7 +81,7 @@ public class AssignmentNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet AssignmentNode this) {
         return Objects.hash(getTarget(), getExpression());
     }
 

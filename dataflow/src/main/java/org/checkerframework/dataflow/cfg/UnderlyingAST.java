@@ -4,6 +4,7 @@ import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.LambdaExpressionTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.Tree;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.plumelib.util.UtilPlume;
 
 /**
@@ -67,7 +68,7 @@ public abstract class UnderlyingAST {
         }
 
         @Override
-        public String toString() {
+        public @PolyDet String toString(@PolyDet CFGMethod this) {
             return UtilPlume.joinLines("CFGMethod(", method, ")");
         }
     }
@@ -131,7 +132,7 @@ public abstract class UnderlyingAST {
         }
 
         @Override
-        public String toString() {
+        public @PolyDet String toString(@PolyDet CFGLambda this) {
             return UtilPlume.joinLines("CFGLambda(", lambda, ")");
         }
     }
@@ -160,7 +161,7 @@ public abstract class UnderlyingAST {
         }
 
         @Override
-        public String toString() {
+        public @PolyDet String toString(@PolyDet CFGStatement this) {
             return UtilPlume.joinLines("CFGStatement(", code, ")");
         }
     }
