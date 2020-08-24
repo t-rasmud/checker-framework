@@ -94,7 +94,7 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                     type.replaceAnnotation(replacement);
                 } else if (AnnotationUtils.areSameByName(replacement, factory.ORDERNONDET)
                         || AnnotationUtils.areSameByName(replacement, factory.NONDET)
-                        || AnnotationUtils.areSameByName(replacement, factory.POLYDET_UPDET)) {
+                        || AnnotationUtils.areSame(replacement, factory.POLYDET_UPDET)) {
                     type.replaceAnnotation(factory.NONDET);
                 }
                 return;
