@@ -1,4 +1,3 @@
-// @skip-test
 import org.checkerframework.checker.determinism.qual.*;
 
 public class Issue191 {
@@ -12,5 +11,9 @@ public class Issue191 {
 
     public @PolyDet("up") boolean f2(@PolyDet Integer o1, @PolyDet Integer o2) {
         return o1.equals(o2);
+    }
+
+    static void testToString(@PolyDet Object o) {
+        @Det String res = o.toString();
     }
 }
