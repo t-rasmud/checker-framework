@@ -90,33 +90,33 @@ public class DeterminismQualifierPolymorphism extends DefaultQualifierPolymorphi
                 type.replaceAnnotation(replacement);
                 return;
             case "up":
-                if (AnnotationUtils.areSameByName(replacement, factory.DET)) {
+                if (AnnotationUtils.areSame(replacement, factory.DET)) {
                     type.replaceAnnotation(replacement);
-                } else if (AnnotationUtils.areSameByName(replacement, factory.ORDERNONDET)
-                        || AnnotationUtils.areSameByName(replacement, factory.NONDET)
-                        || AnnotationUtils.areSameByName(replacement, factory.POLYDET_UPDET)) {
+                } else if (AnnotationUtils.areSame(replacement, factory.ORDERNONDET)
+                        || AnnotationUtils.areSame(replacement, factory.NONDET)
+                        || AnnotationUtils.areSame(replacement, factory.POLYDET_UPDET)) {
                     type.replaceAnnotation(factory.NONDET);
                 }
                 return;
             case "down":
-                if (AnnotationUtils.areSameByName(replacement, factory.NONDET)) {
+                if (AnnotationUtils.areSame(replacement, factory.NONDET)) {
                     type.replaceAnnotation(replacement);
-                } else if (AnnotationUtils.areSameByName(replacement, factory.ORDERNONDET)
-                        || AnnotationUtils.areSameByName(replacement, factory.DET)) {
+                } else if (AnnotationUtils.areSame(replacement, factory.ORDERNONDET)
+                        || AnnotationUtils.areSame(replacement, factory.DET)) {
                     type.replaceAnnotation(factory.DET);
                 }
                 return;
             case "upDet":
-                if (AnnotationUtils.areSameByName(replacement, factory.NONDET)
-                        || AnnotationUtils.areSameByName(replacement, factory.ORDERNONDET)) {
+                if (AnnotationUtils.areSame(replacement, factory.NONDET)
+                        || AnnotationUtils.areSame(replacement, factory.ORDERNONDET)) {
                     type.replaceAnnotation(replacement);
-                } else if (AnnotationUtils.areSameByName(replacement, factory.DET)) {
+                } else if (AnnotationUtils.areSame(replacement, factory.DET)) {
                     type.replaceAnnotation(factory.ORDERNONDET);
                 }
                 return;
             case "noOrderNonDet":
-                if (AnnotationUtils.areSameByName(replacement, factory.ORDERNONDET)
-                        || AnnotationUtils.areSameByName(replacement, factory.POLYDET)) {
+                if (AnnotationUtils.areSame(replacement, factory.ORDERNONDET)
+                        || AnnotationUtils.areSame(replacement, factory.POLYDET)) {
                     type.replaceAnnotation(factory.DET);
                 } else {
                     type.replaceAnnotation(replacement);
