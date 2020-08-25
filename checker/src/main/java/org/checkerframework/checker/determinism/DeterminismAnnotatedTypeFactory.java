@@ -183,7 +183,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     @Override
     protected void addUncheckedCodeDefaults(QualifierDefaults defs) {
         final TypeUseLocation[] locations = {TypeUseLocation.PARAMETER, TypeUseLocation.RETURN};
-        defs.addUncheckedCodeDefaults(DET, locations);
+        defs.addUncheckedCodeDefaults(POLYDET, locations);
         super.addUncheckedCodeDefaults(defs);
     }
 

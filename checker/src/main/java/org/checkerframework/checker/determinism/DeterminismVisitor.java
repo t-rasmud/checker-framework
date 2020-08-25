@@ -846,6 +846,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         Pair<AnnotatedDeclaredType, ExecutableElement> overriddenMethod =
                 AnnotatedTypes.getOverriddenMethod(
                         argType, stringToString, atypeFactory.getProcessingEnv());
+        if (overriddenMethod == null) {
+            return true;
+        }
         return atypeFactory
                         .getAnnotatedType(overriddenMethod.second)
                         .getReturnType()
