@@ -140,7 +140,9 @@ public class BackwardAnalysisImpl<
                     TransferResult<V, S> transferResult = callTransferFunction(node, currentInput);
                     boolean addToWorklistAgain = updateNodeValues(node, transferResult);
                     // Merge transferResult with exceptionStore if there exists one
-                    S exceptionStore = exceptionStores.get(eb);
+                    @SuppressWarnings(
+                            "determinism") // https://github.com/t-rasmud/checker-framework/issues/193
+                    @Det S exceptionStore = exceptionStores.get(eb);
                     S mergedStore =
                             exceptionStore != null
                                     ? transferResult
@@ -175,7 +177,11 @@ public class BackwardAnalysisImpl<
                     final SpecialBlockType sType = sb.getSpecialType();
                     if (sType == SpecialBlockType.ENTRY) {
                         // storage the store at entry
-                        storeAtEntry = outStores.get(sb);
+                        @SuppressWarnings({
+                            "determinism",
+                            "UnusedVariable"
+                        }) // https://github.com/t-rasmud/checker-framework/issues/193
+                        S ignore = (storeAtEntry = outStores.get(sb));
                     } else {
                         assert sType == SpecialBlockType.EXIT
                                 || sType == SpecialBlockType.EXCEPTIONAL_EXIT;
@@ -290,7 +296,9 @@ public class BackwardAnalysisImpl<
                 // direction. Instead, all exception stores of exceptional successors of an
                 // exception block will merge to one exception store at the exception block
                 ExceptionBlock ebPred = (ExceptionBlock) pred;
-                S exceptionStore = exceptionStores.get(ebPred);
+                @SuppressWarnings(
+                        "determinism") // https://github.com/t-rasmud/checker-framework/issues/193
+                @Det S exceptionStore = exceptionStores.get(ebPred);
                 S newExceptionStore =
                         (exceptionStore != null) ? exceptionStore.leastUpperBound(s) : s;
                 if (!newExceptionStore.equals(exceptionStore)) {
@@ -390,7 +398,9 @@ public class BackwardAnalysisImpl<
                         TransferResult<V, S> transferResult =
                                 callTransferFunction(node, transferInput.copy());
                         // Merge transfer result with the exception store of this exceptional block
-                        S exceptionStore = exceptionStores.get(eb);
+                        @SuppressWarnings(
+                                "determinism") // https://github.com/t-rasmud/checker-framework/issues/193
+                        @Det S exceptionStore = exceptionStores.get(eb);
                         return exceptionStore == null
                                 ? transferResult.getRegularStore()
                                 : transferResult.getRegularStore().leastUpperBound(exceptionStore);

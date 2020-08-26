@@ -205,7 +205,9 @@ public abstract class AbstractAnalysis<
             }
             // fall through when the current node is not 'n', and 'n' is not a subnode.
         }
-        return nodeValues.get(n);
+        @SuppressWarnings("determinism") // https://github.com/t-rasmud/checker-framework/issues/193
+        @Det V tmp = nodeValues.get(n);
+        return tmp;
     }
 
     /**
@@ -414,6 +416,7 @@ public abstract class AbstractAnalysis<
      * @param <S> method return type should be a subtype of {@link Store}
      * @return the store for the target block
      */
+    @SuppressWarnings("determinism") // https://github.com/t-rasmud/checker-framework/issues/193
     protected static <S extends @Det Object> @Nullable S readFromStore(
             @OrderNonDet Map<Block, S> stores, Block b) {
         return stores.get(b);
