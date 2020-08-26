@@ -55,6 +55,7 @@ public class MarkerNode extends Node {
     }
 
     @Override
+    @SuppressWarnings("determinism") // contents of field @NonDet, but comparison is @Det
     public @PolyDet boolean equals(@PolyDet MarkerNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof MarkerNode)) {
             return false;

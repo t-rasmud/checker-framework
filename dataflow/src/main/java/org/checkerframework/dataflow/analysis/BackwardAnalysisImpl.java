@@ -130,7 +130,7 @@ public class BackwardAnalysisImpl<
                 }
             case EXCEPTION_BLOCK:
                 {
-                    ExceptionBlock eb = (ExceptionBlock) b;
+                    @Det ExceptionBlock eb = (ExceptionBlock) b;
                     TransferInput<V, S> inputAfter = getInput(eb);
                     assert inputAfter != null : "@AssumeAssertion(nullness): invariant";
                     currentInput = inputAfter.copy();
@@ -146,7 +146,9 @@ public class BackwardAnalysisImpl<
                                             .leastUpperBound(exceptionStore)
                                     : transferResult.getRegularStore();
                     for (Block pred : eb.getPredecessors()) {
-                        addStoreAfter(pred, node, mergedStore, addToWorklistAgain);
+                        @SuppressWarnings("determinism") // process order insensitive
+                        @Det Block tmp = pred;
+                        addStoreAfter(tmp, node, mergedStore, addToWorklistAgain);
                     }
                     break;
                 }

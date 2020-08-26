@@ -180,7 +180,7 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
      * @return the abstract value for {@link Node} {@code n}, or {@code null} if no information is
      *     available
      */
-    public @Nullable V getValue(Node n) {
+    public @Nullable V getValue(@Det Node n) {
         return nodeValues.get(n);
     }
 
