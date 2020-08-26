@@ -48,9 +48,8 @@ public class SynchronizedNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling method on external class requires @Det
     public @PolyDet String toString(@PolyDet SynchronizedNode this) {
-        StringBuilder sb = new StringBuilder();
+        @PolyDet StringBuilder sb = new @PolyDet StringBuilder();
         sb.append("synchronized (");
         sb.append(expression);
         sb.append(")");

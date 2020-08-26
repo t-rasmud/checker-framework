@@ -86,13 +86,14 @@ public class ClassNameNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // imprecise library annotation: elements
+    @SuppressWarnings("determinism") // all known implementations have @Det toString method
     public @PolyDet String toString(@PolyDet ClassNameNode this) {
         return getElement().getSimpleName().toString();
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    @SuppressWarnings(
+            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet boolean equals(@PolyDet ClassNameNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ClassNameNode)) {
             return false;

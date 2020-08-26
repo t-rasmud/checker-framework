@@ -29,7 +29,8 @@ public class CharacterLiteralNode extends ValueLiteralNode {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    @SuppressWarnings(
+            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet Character getValue(@PolyDet CharacterLiteralNode this) {
         return (Character) tree.getValue();
     }

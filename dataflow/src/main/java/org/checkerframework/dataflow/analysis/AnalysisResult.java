@@ -446,11 +446,14 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
                 node, before, transferInput, nodeValues, analysisCaches);
     }
 
+    @OrderNonDet HashMap<@Det String, @Det String> map;
+
     /**
      * Returns a verbose string representation of this, useful for debugging.
      *
      * @return a string representation of this
      */
+    @SuppressWarnings("determinism") // https://github.com/t-rasmud/checker-framework/issues/194
     public @NonDet String toStringDebug() {
         @NonDet StringJoiner result =
                 new
@@ -475,13 +478,12 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
      * @param nodeValues a map to format
      * @return a printed representation of the given map
      */
-    @SuppressWarnings("determinism") // nondeterminism reflected in return type
     public static <V extends @Det Object> @NonDet String nodeValuesToString(
             @OrderNonDet Map<@Det Node, V> nodeValues) {
         if (nodeValues.isEmpty()) {
             return "{}";
         }
-        StringJoiner result = new StringJoiner(String.format("%n    "));
+        @NonDet StringJoiner result = new @NonDet StringJoiner(String.format("%n    "));
         result.add("{");
         for (Map.Entry<Node, V> entry : nodeValues.entrySet()) {
             Node key = entry.getKey();
@@ -498,7 +500,7 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
      * @param treeLookup a map to format
      * @return a printed representation of the given map
      */
-    @SuppressWarnings("determinism") // nondeterminism reflected in return type
+    @SuppressWarnings("determinism") // rules violated, but nondeterminism reflected in return type
     public static @NonDet String treeLookupToString(
             @OrderNonDet Map<Tree, @OrderNonDet Set<Node>> treeLookup) {
         if (treeLookup.isEmpty()) {

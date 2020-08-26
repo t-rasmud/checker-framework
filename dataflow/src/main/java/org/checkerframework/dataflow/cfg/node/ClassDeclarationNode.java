@@ -34,14 +34,16 @@ public class ClassDeclarationNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // imprecise library annotation: trees
+    @SuppressWarnings(
+            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet String toString(@PolyDet ClassDeclarationNode this) {
         return tree.toString();
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling method on external class requires @Det: getClass,
-    // Objects.equals
+    @SuppressWarnings(
+            "determinism") // using unannoated methods that require @Det, should be @PolyDet:
+    // getClass
     public @PolyDet boolean equals(
             @PolyDet ClassDeclarationNode this, @PolyDet @Nullable Object o) {
         if (this == o) {

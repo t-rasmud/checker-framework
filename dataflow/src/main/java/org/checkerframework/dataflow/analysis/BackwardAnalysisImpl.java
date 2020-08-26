@@ -119,7 +119,7 @@ public class BackwardAnalysisImpl<
                     // Propagate store to predecessors
                     for (Block pred : rb.getPredecessors()) {
                         assert currentInput != null : "@AssumeAssertion(nullness): invariant";
-                        @SuppressWarnings("determinism") // process order insensitive
+                        @SuppressWarnings("determinism") // process is order insensitive
                         @Det Block tmp = pred;
                         propagateStoresTo(
                                 tmp,
@@ -150,7 +150,7 @@ public class BackwardAnalysisImpl<
                                             .leastUpperBound(exceptionStore)
                                     : transferResult.getRegularStore();
                     for (Block pred : eb.getPredecessors()) {
-                        @SuppressWarnings("determinism") // process order insensitive
+                        @SuppressWarnings("determinism") // process is order insensitive
                         @Det Block tmp = pred;
                         addStoreAfter(tmp, node, mergedStore, addToWorklistAgain);
                     }
@@ -163,7 +163,7 @@ public class BackwardAnalysisImpl<
                     assert inputAfter != null : "@AssumeAssertion(nullness): invariant";
                     TransferInput<V, S> input = inputAfter.copy();
                     for (Block pred : cb.getPredecessors()) {
-                        @SuppressWarnings("determinism") // process order insensitive
+                        @SuppressWarnings("determinism") // process is order insensitive
                         @Det Block tmp = pred;
                         propagateStoresTo(tmp, null, input, FlowRule.EACH_TO_EACH, false);
                     }
@@ -178,9 +178,9 @@ public class BackwardAnalysisImpl<
                     if (sType == SpecialBlockType.ENTRY) {
                         // storage the store at entry
                         @SuppressWarnings({
-                            "determinism",
+                            "determinism", // https://github.com/t-rasmud/checker-framework/issues/193
                             "UnusedVariable"
-                        }) // https://github.com/t-rasmud/checker-framework/issues/193
+                        })
                         S ignore = (storeAtEntry = outStores.get(sb));
                     } else {
                         assert sType == SpecialBlockType.EXIT
@@ -188,7 +188,7 @@ public class BackwardAnalysisImpl<
                         TransferInput<V, S> input = getInput(sb);
                         assert input != null : "@AssumeAssertion(nullness): invariant";
                         for (Block pred : sb.getPredecessors()) {
-                            @SuppressWarnings("determinism") // process order insensitive
+                            @SuppressWarnings("determinism") // process is order insensitive
                             @Det Block tmp = pred;
                             propagateStoresTo(tmp, null, input, FlowRule.EACH_TO_EACH, false);
                         }

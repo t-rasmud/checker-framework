@@ -66,7 +66,8 @@ public class ObjectCreationNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    @SuppressWarnings(
+            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet String toString(@PolyDet ObjectCreationNode this) {
         StringBuilder sb = new StringBuilder();
         sb.append("new " + constructor + "(");
@@ -82,8 +83,8 @@ public class ObjectCreationNode extends Node {
 
     @Override
     @SuppressWarnings(
-            "determinism") // method receiver can't be @OrderNonDet so @PolyDet("up") same as
-    // @PolyDet
+            "determinism") // method parameters can't be @OrderNonDet so @PolyDet("up") same as
+    // PolyDet
     public @PolyDet boolean equals(
             @PolyDet ObjectCreationNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ObjectCreationNode)) {

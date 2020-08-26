@@ -46,7 +46,7 @@ public class LiveVarValue implements AbstractValue<LiveVarValue> {
     }
 
     @Override
-    public @PolyDet String toString(@PolyDet LiveVarValue this) {
+    public @NonDet String toString(@PolyDet LiveVarValue this) {
         return this.liveVariable.toString();
     }
 }

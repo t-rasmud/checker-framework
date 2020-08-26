@@ -40,13 +40,13 @@ public class ArrayTypeNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // imprecise library annotation: trees
+    @SuppressWarnings("determinism") // using unnannotated methods: trees
     public @PolyDet String toString(@PolyDet ArrayTypeNode this) {
         return tree.toString();
     }
 
     @Override
-    @SuppressWarnings("determinism") // imprecise library annotation: trees
+    @SuppressWarnings("determinism") // using unnannotated methods: trees
     public @PolyDet boolean equals(@PolyDet ArrayTypeNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ArrayTypeNode)) {
             return false;

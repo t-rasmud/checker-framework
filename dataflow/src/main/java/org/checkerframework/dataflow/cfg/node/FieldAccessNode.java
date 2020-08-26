@@ -48,7 +48,8 @@ public class FieldAccessNode extends Node {
         }
     }
 
-    @SuppressWarnings("determinism") // imprecise library annotation: trees
+    @SuppressWarnings(
+            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public FieldAccessNode(Tree tree, VariableElement element, Node receiver) {
         super(element.asType());
         this.tree = tree;

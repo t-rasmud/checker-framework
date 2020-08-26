@@ -65,7 +65,8 @@ public class LocalVariableNode extends Node {
         return receiver;
     }
 
-    @SuppressWarnings("determinism") // imprecise library annotation: trees
+    @SuppressWarnings(
+            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet String getName(@PolyDet LocalVariableNode this) {
         if (tree instanceof IdentifierTree) {
             return ((IdentifierTree) tree).getName().toString();

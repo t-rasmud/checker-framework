@@ -62,8 +62,7 @@ public class StringConcatenateAssignmentNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling equals on two @PolyDet returns @NonDet
-    public boolean equals(
+    public @PolyDet boolean equals(
             @PolyDet StringConcatenateAssignmentNode this, @PolyDet @Nullable Object obj) {
         if (obj == null || !(obj instanceof StringConcatenateAssignmentNode)) {
             return false;

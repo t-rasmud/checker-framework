@@ -32,8 +32,7 @@ public class BitwiseAndNode extends BinaryOperationNode {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling equals on two @PolyDet returns @NonDet
-    public @PolyDet boolean equals(@PolyDet BitwiseAndNode this, @Nullable Object obj) {
+    public @PolyDet boolean equals(@PolyDet BitwiseAndNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof BitwiseAndNode)) {
             return false;
         }

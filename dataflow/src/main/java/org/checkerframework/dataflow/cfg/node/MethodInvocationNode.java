@@ -86,14 +86,15 @@ public class MethodInvocationNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    @SuppressWarnings(
+            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet String toString(@PolyDet MethodInvocationNode this) {
         return target + "(" + UtilPlume.join(", ", arguments) + ")";
     }
 
     @Override
     @SuppressWarnings(
-            "determinism") // method receiver can't be @OrderNonDet so @PolyDet("up") same as
+            "determinism") // method parameters can't be @OrderNonDet so @PolyDet("up") same as
     // @PolyDet
     public @PolyDet boolean equals(
             @PolyDet MethodInvocationNode this, @PolyDet @Nullable Object obj) {

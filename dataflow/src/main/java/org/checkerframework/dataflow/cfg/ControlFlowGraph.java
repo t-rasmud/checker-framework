@@ -206,7 +206,6 @@ public class ControlFlowGraph {
      *
      * @return all nodes in this control flow graph
      */
-    @SuppressWarnings("determinism") // non-determinism reflected in return type
     public @OrderNonDet List<Node> getAllNodes(
             @UnknownInitialization(ControlFlowGraph.class) ControlFlowGraph this) {
         @OrderNonDet List<Node> result = new ArrayList<>();

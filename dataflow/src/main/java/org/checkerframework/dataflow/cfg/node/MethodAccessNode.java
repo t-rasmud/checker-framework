@@ -54,7 +54,8 @@ public class MethodAccessNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    @SuppressWarnings(
+            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet String toString(@PolyDet MethodAccessNode this) {
         return getReceiver() + "." + method.getSimpleName();
     }

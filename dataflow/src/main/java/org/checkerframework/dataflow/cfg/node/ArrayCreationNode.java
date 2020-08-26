@@ -71,7 +71,8 @@ public class ArrayCreationNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    @SuppressWarnings(
+            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet String toString(@PolyDet ArrayCreationNode this) {
         StringBuilder sb = new StringBuilder();
         sb.append("new " + type);
@@ -89,7 +90,8 @@ public class ArrayCreationNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    @SuppressWarnings(
+            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet boolean equals(@PolyDet ArrayCreationNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ArrayCreationNode)) {
             return false;

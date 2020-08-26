@@ -168,7 +168,7 @@ public abstract class Node {
      *
      * @return a printed representation of this
      */
-    public @NonDet String toStringDebug() {
+    public @NonDet String toStringDebug(@NonDet Node this) {
         return String.format(
                 "%s [%s %s %s]",
                 this,
@@ -183,9 +183,8 @@ public abstract class Node {
      * @param nodes a collection of nodes to format
      * @return a printed representation of the given collection
      */
-    @SuppressWarnings("determinism") // calling method on external class requires @Det: StringJoiner
     public static @NonDet String nodeCollectionToString(Collection<? extends Node> nodes) {
-        StringJoiner result = new StringJoiner(", ", "[", "]");
+        @NonDet StringJoiner result = new @NonDet StringJoiner(", ", "[", "]");
         for (Node n : nodes) {
             result.add(n.toStringDebug());
         }
@@ -193,5 +192,5 @@ public abstract class Node {
     }
 
     @Override
-    public abstract @PolyDet String toString(@PolyDet Node this);
+    public abstract @NonDet String toString(@PolyDet Node this);
 }

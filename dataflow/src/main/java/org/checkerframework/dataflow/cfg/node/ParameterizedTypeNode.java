@@ -42,7 +42,8 @@ public class ParameterizedTypeNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // imprecise library annotation: trees
+    @SuppressWarnings(
+            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet String toString(@PolyDet ParameterizedTypeNode this) {
         return getTree().toString();
     }

@@ -253,8 +253,9 @@ public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> {
     }
 
     @Override
-    @SuppressWarnings("determinism") // overriding Object method
-    public boolean equals(@Nullable Object o) {
+    @SuppressWarnings(
+            "determinism") // using unannoated methods that require @Det, should be @PolyDet
+    public @PolyDet boolean equals(@PolyDet TransferInput<V, S> this, @PolyDet @Nullable Object o) {
         if (o instanceof TransferInput) {
             @SuppressWarnings("unchecked")
             TransferInput<V, S> other = (TransferInput<V, S>) o;

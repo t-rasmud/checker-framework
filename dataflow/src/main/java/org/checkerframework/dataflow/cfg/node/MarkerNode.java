@@ -44,10 +44,8 @@ public class MarkerNode extends Node {
     }
 
     @Override
-    @SuppressWarnings(
-            "determinism") // calling method on external class requires @Det: StringBuilder
-    public @PolyDet String toString(@PolyDet MarkerNode this) {
-        StringBuilder sb = new StringBuilder();
+    public @NonDet String toString(@PolyDet MarkerNode this) {
+        @NonDet StringBuilder sb = new @NonDet StringBuilder();
         sb.append("marker (");
         sb.append(message);
         sb.append(")");
@@ -55,7 +53,7 @@ public class MarkerNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // contents of field @NonDet, but comparison is @Det
+    @SuppressWarnings("determinism") // contents of field is @NonDet, but comparison is always @Det
     public @PolyDet boolean equals(@PolyDet MarkerNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof MarkerNode)) {
             return false;

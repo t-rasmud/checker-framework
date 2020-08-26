@@ -136,9 +136,8 @@ public class ConditionalTransferResult<V extends AbstractValue<V>, S extends Sto
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling method on external class requires @Det
     public @PolyDet String toString(@PolyDet ConditionalTransferResult<V, S> this) {
-        StringJoiner result = new StringJoiner(System.lineSeparator());
+        @PolyDet StringJoiner result = new @PolyDet StringJoiner(System.lineSeparator());
         result.add("RegularTransferResult(");
         result.add("  resultValue = " + resultValue);
         result.add("  thenStore = " + thenStore);

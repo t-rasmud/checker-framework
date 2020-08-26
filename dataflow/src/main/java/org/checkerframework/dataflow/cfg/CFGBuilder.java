@@ -1955,7 +1955,7 @@ public class CFGBuilder {
             addToLookupMap(node);
             Map<@Det TypeMirror, @OrderNonDet Set<Label>> exceptions = new HashMap<>();
             for (TypeMirror cause : causes) {
-                @SuppressWarnings("determinism") // process order insensitive
+                @SuppressWarnings("determinism") // process is order insensitive
                 @Det TypeMirror tmp = cause;
                 exceptions.put(tmp, tryStack.possibleLabels(tmp));
             }
@@ -2032,7 +2032,7 @@ public class CFGBuilder {
                 nodeList.add(index + 1, n);
                 // update bindings
                 for (Map.Entry<Label, Integer> e : bindings.entrySet()) {
-                    @SuppressWarnings("determinism") // process order insensitive
+                    @SuppressWarnings("determinism") // process is order insensitive
                     Map.@Det Entry<Label, Integer> tmp = e;
                     if (tmp.getValue() >= index + 1) {
                         bindings.put(tmp.getKey(), tmp.getValue() + 1);
@@ -2042,7 +2042,7 @@ public class CFGBuilder {
                 Set<@Det Integer> oldLeaders = new HashSet<>(leaders);
                 leaders.clear();
                 for (Integer l : oldLeaders) {
-                    @SuppressWarnings("determinism") // process order insensitive
+                    @SuppressWarnings("determinism") // process is order insensitive
                     @Det Integer tmp = l;
                     if (tmp >= index + 1) {
                         leaders.add(tmp + 1);
@@ -4655,7 +4655,7 @@ public class CFGBuilder {
                     breakLabels = oldBreakLabels;
 
                     for (Map.Entry<Name, Label> access : accessedBreakLabels.entrySet()) {
-                        @SuppressWarnings("determinism") // process order insensitive
+                        @SuppressWarnings("determinism") // process is order insensitive
                         Map.@Det Entry<Name, Label> tmp = access;
                         addLabelForNextNode(tmp.getValue());
                         extendWithNode(
@@ -4709,7 +4709,7 @@ public class CFGBuilder {
 
                     for (Map.Entry<@Det Name, @Det Label> access :
                             accessedContinueLabels.entrySet()) {
-                        @SuppressWarnings("determinism") // process order insensitive
+                        @SuppressWarnings("determinism") // process is order insensitive
                         Map.@Det Entry<@Det Name, @Det Label> tmp = access;
                         addLabelForNextNode(tmp.getValue());
                         extendWithNode(
@@ -4749,7 +4749,7 @@ public class CFGBuilder {
          * @param target label for exception
          * @return true when an exceptional node for {@code target} exists in {@link #nodeList}
          */
-        @SuppressWarnings("determinism") // process order insensitive
+        @SuppressWarnings("determinism") // process is order insensitive
         private boolean hasExceptionalPath(Label target) {
             for (ExtendedNode node : nodeList) {
                 if (node instanceof NodeWithExceptionsHolder) {
@@ -5139,7 +5139,7 @@ public class CFGBuilder {
      * Print a set of {@link Block}s and the edges between them. This is useful for examining the
      * results of phase two.
      */
-    @SuppressWarnings("determinism") // using a hashCode acceptable for debug output
+    @SuppressWarnings("determinism") // true positive: using a hashCode acceptable for debug output
     protected static void printBlocks(Set<Block> blocks) {
         for (Block b : blocks) {
             System.out.print(b.hashCode() + ": " + b);

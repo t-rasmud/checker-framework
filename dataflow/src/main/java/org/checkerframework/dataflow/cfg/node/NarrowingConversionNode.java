@@ -50,7 +50,8 @@ public class NarrowingConversionNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    @SuppressWarnings(
+            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet boolean equals(
             @PolyDet NarrowingConversionNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof NarrowingConversionNode)) {

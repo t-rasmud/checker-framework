@@ -40,13 +40,15 @@ public class PrimitiveTypeNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // imprecise library annotation: trees
+    @SuppressWarnings(
+            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet String toString(@PolyDet PrimitiveTypeNode this) {
         return tree.toString();
     }
 
     @Override
-    @SuppressWarnings("determinism") // imprecise library annotation: trees
+    @SuppressWarnings(
+            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet boolean equals(@PolyDet PrimitiveTypeNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof PrimitiveTypeNode)) {
             return false;

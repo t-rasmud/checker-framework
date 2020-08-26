@@ -3,6 +3,7 @@ package org.checkerframework.dataflow.analysis;
 import java.util.Map;
 import java.util.StringJoiner;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -133,9 +134,8 @@ public class RegularTransferResult<V extends AbstractValue<V>, S extends Store<S
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling method on external class requires @Det: StringJoiner
-    public @PolyDet String toString(@PolyDet RegularTransferResult<V, S> this) {
-        StringJoiner result = new StringJoiner(System.lineSeparator());
+    public @NonDet String toString(@PolyDet RegularTransferResult<V, S> this) {
+        @NonDet StringJoiner result = new @NonDet StringJoiner(System.lineSeparator());
         result.add("RegularTransferResult(");
         result.add("  resultValue = " + resultValue);
         // "toString().trim()" works around bug where toString ends with a newline.

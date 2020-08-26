@@ -63,7 +63,8 @@ public abstract class ValueLiteralNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    @SuppressWarnings(
+            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @NonDet int hashCode(@PolyDet ValueLiteralNode this) {
         // value might be null
         return Objects.hash(this.getClass(), getValue());
