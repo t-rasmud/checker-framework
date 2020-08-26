@@ -727,7 +727,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             ExpressionTree arg = args.get(index);
             if (!argumentSatisfiesDetToString(arg)) {
                 AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
-                checker.reportError(node, "nondeterministic.tostring", argType.getUnderlyingType());
+                checker.reportError(arg, "nondeterministic.tostring", argType.getUnderlyingType());
                 break;
             }
         }
