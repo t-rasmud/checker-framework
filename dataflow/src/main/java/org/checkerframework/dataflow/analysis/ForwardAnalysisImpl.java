@@ -169,7 +169,7 @@ public class ForwardAnalysisImpl<
                         TypeMirror cause = e.getKey();
                         S exceptionalStore = transferResult.getExceptionalStore(cause);
                         if (exceptionalStore != null) {
-                            for (Block exceptionSucc : e.getValue()) {
+                            for (@Det Block exceptionSucc : e.getValue()) {
                                 addStoreBefore(
                                         exceptionSucc,
                                         node,
@@ -178,7 +178,7 @@ public class ForwardAnalysisImpl<
                                         addToWorklistAgain);
                             }
                         } else {
-                            for (Block exceptionSucc : e.getValue()) {
+                            for (@Det Block exceptionSucc : e.getValue()) {
                                 addStoreBefore(
                                         exceptionSucc,
                                         node,

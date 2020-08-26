@@ -1,6 +1,7 @@
 package org.checkerframework.dataflow.cfg;
 
 import java.util.Map;
+import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.AbstractValue;
@@ -47,7 +48,7 @@ public interface CFGVisualizer<
      * @return visualization results, e.g. generated file names ({@link DOTCFGVisualizer}) or a
      *     String representation of the CFG ({@link StringCFGVisualizer})
      */
-    @Nullable @OrderNonDet Map<String, Object> visualize(
+    @Nullable @NonDet Map<String, @NonDet Object> visualize(
             ControlFlowGraph cfg, Block entry, @Nullable Analysis<V, S, T> analysis);
 
     /**
@@ -57,7 +58,7 @@ public interface CFGVisualizer<
      * @param store the store to visualize
      * @return the String representation of the given store
      */
-    String visualizeStore(S store);
+    @NonDet String visualizeStore(S store);
 
     /**
      * Called by a {@code CFAbstractStore} to visualize the class name before calling the {@code
@@ -136,7 +137,7 @@ public interface CFGVisualizer<
      * @param value the value of the specific information to be visualized
      * @return the String representation of the specific information
      */
-    String visualizeStoreKeyVal(String keyName, Object value);
+    @NonDet String visualizeStoreKeyVal(String keyName, @NonDet Object value);
 
     /**
      * Called by {@code CFAbstractStore} to visualize any information after the invocation of {@code
@@ -153,7 +154,7 @@ public interface CFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the given block
      */
-    String visualizeBlock(Block bb, @Nullable Analysis<V, S, T> analysis);
+    @NonDet String visualizeBlock(Block bb, @Nullable Analysis<V, S, T> analysis);
 
     /**
      * Visualize a SpecialBlock.
@@ -179,7 +180,7 @@ public interface CFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the transferInput before the given block
      */
-    String visualizeBlockTransferInputBefore(Block bb, Analysis<V, S, T> analysis);
+    @NonDet String visualizeBlockTransferInputBefore(Block bb, Analysis<V, S, T> analysis);
 
     /**
      * Visualize the transferInput after a Block based on the analysis.
@@ -188,7 +189,7 @@ public interface CFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the transferInput after the given block
      */
-    String visualizeBlockTransferInputAfter(Block bb, Analysis<V, S, T> analysis);
+    @NonDet String visualizeBlockTransferInputAfter(Block bb, Analysis<V, S, T> analysis);
 
     /**
      * Visualize a Node based on the analysis.
@@ -197,7 +198,7 @@ public interface CFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the given node
      */
-    String visualizeBlockNode(Node t, @Nullable Analysis<V, S, T> analysis);
+    @NonDet String visualizeBlockNode(Node t, @Nullable Analysis<V, S, T> analysis);
 
     /** Shutdown method called once from the shutdown hook of the {@code BaseTypeChecker}. */
     void shutdown();

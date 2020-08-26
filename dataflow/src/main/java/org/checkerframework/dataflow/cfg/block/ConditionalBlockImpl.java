@@ -69,7 +69,7 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
 
     @Override
     public @Det Set<Block> getSuccessors() {
-        Set<Block> result = new LinkedHashSet<>(2);
+        Set<@Det Block> result = new LinkedHashSet<>(2);
         result.add(getThenSuccessor());
         result.add(getElseSuccessor());
         return result;

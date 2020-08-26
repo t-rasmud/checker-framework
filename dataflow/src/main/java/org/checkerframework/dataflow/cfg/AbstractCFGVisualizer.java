@@ -11,9 +11,9 @@ import java.util.Set;
 import java.util.StringJoiner;
 import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
-import org.checkerframework.checker.determinism.qual.RequiresDetToString;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.AbstractValue;
@@ -88,7 +88,7 @@ public abstract class AbstractCFGVisualizer<
      * @param analysis the current analysis
      * @return the representation of the control flow graph
      */
-    protected String visualizeGraph(
+    protected @NonDet String visualizeGraph(
             ControlFlowGraph cfg, Block entry, @Nullable Analysis<V, S, T> analysis) {
         return visualizeGraphHeader()
                 + visualizeGraphWithoutHeaderAndFooter(cfg, entry, analysis)
@@ -103,10 +103,10 @@ public abstract class AbstractCFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the control flow graph
      */
-    protected String visualizeGraphWithoutHeaderAndFooter(
+    protected @NonDet String visualizeGraphWithoutHeaderAndFooter(
             ControlFlowGraph cfg, Block entry, @Nullable Analysis<V, S, T> analysis) {
         Set<@Det Block> visited = new LinkedHashSet<>();
-        StringBuilder sbGraph = new StringBuilder();
+        @NonDet StringBuilder sbGraph = new @NonDet StringBuilder();
         Queue<@Det Block> workList = new ArrayDeque<>();
         Block cur = entry;
         visited.add(entry);
@@ -130,7 +130,7 @@ public abstract class AbstractCFGVisualizer<
      * @param sbGraph the {@link StringBuilder} to store the graph; side effected by this method
      */
     protected void handleSuccessorsHelper(
-            Block cur, Set<Block> visited, Queue<Block> workList, StringBuilder sbGraph) {
+            Block cur, Set<Block> visited, Queue<Block> workList, @NonDet StringBuilder sbGraph) {
         if (cur.getType() == Block.BlockType.CONDITIONAL_BLOCK) {
             ConditionalBlock ccur = ((ConditionalBlock) cur);
             Block thenSuccessor = ccur.getThenSuccessor();
@@ -197,9 +197,9 @@ public abstract class AbstractCFGVisualizer<
      *     StringCFGVisualizer} to simply add a new line
      * @return the String representation of the block
      */
-    protected String visualizeBlockHelper(
+    protected @NonDet String visualizeBlockHelper(
             Block bb, @Nullable Analysis<V, S, T> analysis, String escapeString) {
-        StringBuilder sbBlock = new StringBuilder();
+        @NonDet StringBuilder sbBlock = new @NonDet StringBuilder();
         sbBlock.append(loopOverBlockContents(bb, analysis, escapeString));
 
         if (sbBlock.length() == 0) {
@@ -233,11 +233,11 @@ public abstract class AbstractCFGVisualizer<
      * @param separator the separator between the nodes of the block
      * @return the String representation of the contents of the block
      */
-    protected String loopOverBlockContents(
+    protected @NonDet String loopOverBlockContents(
             Block bb, @Nullable Analysis<V, S, T> analysis, String separator) {
 
         List<Node> contents = addBlockContent(bb);
-        StringJoiner sjBlockContents = new StringJoiner(separator, "", separator);
+        @NonDet StringJoiner sjBlockContents = new @NonDet StringJoiner(separator, "", separator);
         sjBlockContents.setEmptyValue("");
         for (Node t : contents) {
             sjBlockContents.add(visualizeBlockNode(t, analysis));
@@ -262,12 +262,11 @@ public abstract class AbstractCFGVisualizer<
      * @param obj an object
      * @return the formatted String from the given object
      */
-    @RequiresDetToString
-    protected abstract String format(Object obj);
+    protected abstract @NonDet String format(Object obj);
 
     @Override
-    public String visualizeBlockNode(Node t, @Nullable Analysis<V, S, T> analysis) {
-        StringBuilder sbBlockNode = new StringBuilder();
+    public @NonDet String visualizeBlockNode(Node t, @Nullable Analysis<V, S, T> analysis) {
+        @NonDet StringBuilder sbBlockNode = new @NonDet StringBuilder();
         sbBlockNode.append(format(t)).append("   [ ").append(getNodeSimpleName(t)).append(" ]");
         if (analysis != null) {
             V value = analysis.getValue(t);
@@ -288,7 +287,7 @@ public abstract class AbstractCFGVisualizer<
      *     StringCFGVisualizer} to simply add a new line
      * @return the visualization of the transfer input before the given block
      */
-    protected String visualizeBlockTransferInputBeforeHelper(
+    protected @NonDet String visualizeBlockTransferInputBeforeHelper(
             Block bb, Analysis<V, S, T> analysis, String escapeString) {
         if (analysis == null) {
             throw new BugInCF(
@@ -300,7 +299,7 @@ public abstract class AbstractCFGVisualizer<
         S elseStore = null;
         boolean isTwoStores = false;
 
-        StringBuilder sbStore = new StringBuilder();
+        @NonDet StringBuilder sbStore = new @NonDet StringBuilder();
         sbStore.append("Before: ");
 
         Direction analysisDirection = analysis.getDirection();
@@ -340,7 +339,7 @@ public abstract class AbstractCFGVisualizer<
      *     StringCFGVisualizer} to simply add a new line
      * @return the visualization of the transfer input after the given block
      */
-    protected String visualizeBlockTransferInputAfterHelper(
+    protected @NonDet String visualizeBlockTransferInputAfterHelper(
             Block bb, Analysis<V, S, T> analysis, String escapeString) {
         if (analysis == null) {
             throw new BugInCF(
@@ -352,7 +351,7 @@ public abstract class AbstractCFGVisualizer<
         S elseStore = null;
         boolean isTwoStores = false;
 
-        StringBuilder sbStore = new StringBuilder();
+        @NonDet StringBuilder sbStore = new @NonDet StringBuilder();
         sbStore.append("After: ");
 
         Direction analysisDirection = analysis.getDirection();
@@ -426,7 +425,7 @@ public abstract class AbstractCFGVisualizer<
     }
 
     @Override
-    public String visualizeStore(S store) {
+    public @NonDet String visualizeStore(S store) {
         return store.visualize(this);
     }
 
@@ -438,7 +437,7 @@ public abstract class AbstractCFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the nodes
      */
-    protected abstract String visualizeNodes(
+    protected abstract @NonDet String visualizeNodes(
             Set<Block> blocks, ControlFlowGraph cfg, @Nullable Analysis<V, S, T> analysis);
 
     /**

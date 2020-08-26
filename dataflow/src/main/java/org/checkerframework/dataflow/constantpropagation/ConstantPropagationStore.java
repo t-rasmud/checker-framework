@@ -92,7 +92,6 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     }
 
     @Override
-    @SuppressWarnings("determinism") // process order insensitive
     public @PolyDet boolean equals(
             @PolyDet ConstantPropagationStore this, @PolyDet @Nullable Object o) {
         if (o == null) {
@@ -171,7 +170,7 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
      */
     @Override
     @SuppressWarnings("nullness")
-    public String visualize(CFGVisualizer<?, ConstantPropagationStore, ?> viz) {
+    public @NonDet String visualize(CFGVisualizer<?, ConstantPropagationStore, ?> viz) {
         return viz.visualizeStoreKeyVal("constant propagation", null);
     }
 }

@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import org.checkerframework.checker.determinism.qual.Det;
-import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.RequiresDetToString;
 import org.checkerframework.checker.nullness.qual.KeyFor;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -26,19 +26,23 @@ public class StringCFGVisualizer<
         extends AbstractCFGVisualizer<V, S, T> {
 
     @Override
-    public @OrderNonDet Map<String, Object> visualize(
+    public @NonDet Map<String, @NonDet Object> visualize(
             ControlFlowGraph cfg, Block entry, @Nullable Analysis<V, S, T> analysis) {
         String stringGraph = visualizeGraph(cfg, entry, analysis);
-        Map<@Det String, @Det Object> res = new HashMap<>();
-        res.put("stringGraph", stringGraph);
+        @NonDet Map<@Det String, @NonDet Object> res = new @NonDet HashMap<>();
+        @SuppressWarnings({
+            "determinism",
+            "UnusedVariable"
+        }) // no aliasing, so valid to mutate @NonDet collection
+        Object ignore = res.put("stringGraph", stringGraph);
         return res;
     }
 
     @SuppressWarnings("keyfor:enhancedfor.type.incompatible")
     @Override
-    public String visualizeNodes(
+    public @NonDet String visualizeNodes(
             Set<Block> blocks, ControlFlowGraph cfg, @Nullable Analysis<V, S, T> analysis) {
-        StringJoiner sjStringNodes = new StringJoiner(lineSeparator, lineSeparator, "");
+        @NonDet StringJoiner sjStringNodes = new @NonDet StringJoiner(lineSeparator, lineSeparator, "");
         IdentityHashMap<@Det Block, @Det List<Integer>> processOrder = getProcessOrder(cfg);
 
         // Generate all the Nodes.
@@ -68,7 +72,7 @@ public class StringCFGVisualizer<
     }
 
     @Override
-    public String visualizeBlock(Block bb, @Nullable Analysis<V, S, T> analysis) {
+    public @NonDet String visualizeBlock(Block bb, @Nullable Analysis<V, S, T> analysis) {
         return super.visualizeBlockHelper(bb, analysis, lineSeparator);
     }
 
@@ -87,12 +91,12 @@ public class StringCFGVisualizer<
     }
 
     @Override
-    public String visualizeBlockTransferInputBefore(Block bb, Analysis<V, S, T> analysis) {
+    public @NonDet String visualizeBlockTransferInputBefore(Block bb, Analysis<V, S, T> analysis) {
         return super.visualizeBlockTransferInputBeforeHelper(bb, analysis, lineSeparator);
     }
 
     @Override
-    public String visualizeBlockTransferInputAfter(Block bb, Analysis<V, S, T> analysis) {
+    public @NonDet String visualizeBlockTransferInputAfter(Block bb, Analysis<V, S, T> analysis) {
         return super.visualizeBlockTransferInputAfterHelper(bb, analysis, lineSeparator);
     }
 
@@ -134,7 +138,7 @@ public class StringCFGVisualizer<
     }
 
     @Override
-    public String visualizeStoreKeyVal(String keyName, Object value) {
+    public @NonDet String visualizeStoreKeyVal(String keyName, @NonDet Object value) {
         return storeEntryIndent + keyName + " = " + value + lineSeparator;
     }
 

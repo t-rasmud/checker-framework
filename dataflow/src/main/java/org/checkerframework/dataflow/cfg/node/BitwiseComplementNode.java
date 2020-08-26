@@ -32,7 +32,6 @@ public class BitwiseComplementNode extends UnaryOperationNode {
     }
 
     @Override
-    @SuppressWarnings("determinism") // overriding Object method
     public @PolyDet boolean equals(
             @PolyDet BitwiseComplementNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof BitwiseComplementNode)) {

@@ -32,7 +32,6 @@ public class NumericalSubtractionNode extends BinaryOperationNode {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling equals on two @PolyDet returns @NonDet
     public @PolyDet boolean equals(
             @PolyDet NumericalSubtractionNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof NumericalSubtractionNode)) {

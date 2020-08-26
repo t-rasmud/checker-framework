@@ -3,6 +3,10 @@ package org.checkerframework.dataflow.livevariable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringJoiner;
+import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.FlowExpressions.Receiver;
 import org.checkerframework.dataflow.analysis.Store;
@@ -21,7 +25,7 @@ import org.checkerframework.javacutil.BugInCF;
 public class LiveVarStore implements Store<LiveVarStore> {
 
     /** A set of live variable abstract values. */
-    private final Set<LiveVarValue> liveVarValueSet;
+    private final @OrderNonDet Set<LiveVarValue> liveVarValueSet;
 
     /** Create a new LiveVarStore. */
     public LiveVarStore() {
@@ -33,7 +37,7 @@ public class LiveVarStore implements Store<LiveVarStore> {
      *
      * @param liveVarValueSet a set of live variable abstract values
      */
-    public LiveVarStore(Set<LiveVarValue> liveVarValueSet) {
+    public LiveVarStore(@OrderNonDet Set<LiveVarValue> liveVarValueSet) {
         this.liveVarValueSet = liveVarValueSet;
     }
 
@@ -87,16 +91,20 @@ public class LiveVarStore implements Store<LiveVarStore> {
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(@PolyDet LiveVarStore this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof LiveVarStore)) {
             return false;
         }
         LiveVarStore other = (LiveVarStore) obj;
-        return other.liveVarValueSet.equals(this.liveVarValueSet);
+        @SuppressWarnings(
+                "determinism") // imprecise field access rule, accessing @OrderNonDet field of
+        // @PolyDet receiver gives @NonDet, should be @PolyDet("upDet")
+        @PolyDet boolean tmp = other.liveVarValueSet.equals(this.liveVarValueSet);
+        return tmp;
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet LiveVarStore this) {
         return this.liveVarValueSet.hashCode();
     }
 
@@ -107,7 +115,7 @@ public class LiveVarStore implements Store<LiveVarStore> {
 
     @Override
     public LiveVarStore leastUpperBound(LiveVarStore other) {
-        Set<LiveVarValue> liveVarValueSetLub = new HashSet<>();
+        Set<@Det LiveVarValue> liveVarValueSetLub = new HashSet<>();
         liveVarValueSetLub.addAll(this.liveVarValueSet);
         liveVarValueSetLub.addAll(other.liveVarValueSet);
         return new LiveVarStore(liveVarValueSetLub);
@@ -125,12 +133,12 @@ public class LiveVarStore implements Store<LiveVarStore> {
     }
 
     @Override
-    public String visualize(CFGVisualizer<?, LiveVarStore, ?> viz) {
+    public @NonDet String visualize(CFGVisualizer<?, LiveVarStore, ?> viz) {
         String key = "live variables";
         if (liveVarValueSet.isEmpty()) {
             return viz.visualizeStoreKeyVal(key, "none");
         }
-        StringJoiner sjStoreVal = new StringJoiner(", ");
+        @NonDet StringJoiner sjStoreVal = new @NonDet StringJoiner(", ");
         for (LiveVarValue liveVarValue : liveVarValueSet) {
             sjStoreVal.add(liveVarValue.toString());
         }
@@ -138,7 +146,7 @@ public class LiveVarStore implements Store<LiveVarStore> {
     }
 
     @Override
-    public String toString() {
+    public @NonDet String toString(@PolyDet LiveVarStore this) {
         return liveVarValueSet.toString();
     }
 }

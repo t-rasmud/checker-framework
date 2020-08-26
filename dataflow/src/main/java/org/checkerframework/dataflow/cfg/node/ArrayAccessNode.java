@@ -58,7 +58,6 @@ public class ArrayAccessNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // overriding Object method
     public @PolyDet boolean equals(@PolyDet ArrayAccessNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ArrayAccessNode)) {
             return false;

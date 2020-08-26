@@ -90,7 +90,6 @@ public class FieldAccessNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // overriding Object method
     public @PolyDet boolean equals(@PolyDet FieldAccessNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof FieldAccessNode)) {
             return false;

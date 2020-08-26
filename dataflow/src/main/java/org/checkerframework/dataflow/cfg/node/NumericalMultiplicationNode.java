@@ -32,7 +32,6 @@ public class NumericalMultiplicationNode extends BinaryOperationNode {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling equals on two @PolyDet returns @NonDet
     public @PolyDet boolean equals(
             @PolyDet NumericalMultiplicationNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof NumericalMultiplicationNode)) {

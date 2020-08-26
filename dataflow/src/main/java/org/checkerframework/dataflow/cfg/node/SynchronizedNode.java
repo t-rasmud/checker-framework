@@ -58,7 +58,6 @@ public class SynchronizedNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling method on external class requires @Det
     public @PolyDet boolean equals(@PolyDet SynchronizedNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof SynchronizedNode)) {
             return false;

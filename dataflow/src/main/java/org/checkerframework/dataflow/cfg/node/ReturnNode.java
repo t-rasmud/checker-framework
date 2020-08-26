@@ -75,7 +75,6 @@ public class ReturnNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // overriding Object method
     public @PolyDet boolean equals(@PolyDet ReturnNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ReturnNode)) {
             return false;

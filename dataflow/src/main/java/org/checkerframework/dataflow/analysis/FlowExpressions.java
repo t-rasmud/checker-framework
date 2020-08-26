@@ -595,7 +595,6 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings("determinism") // non-overridden equals method
         public @PolyDet boolean equals(@PolyDet FieldAccess this, @PolyDet @Nullable Object obj) {
             if (!(obj instanceof FieldAccess)) {
                 return false;
@@ -855,7 +854,7 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings("determinism") // imprecise library annotation: elements
+        @SuppressWarnings("determinism") // all known implementations have @Det toString methods
         public @PolyDet String toString(@PolyDet LocalVariable this) {
             return element.toString();
         }
@@ -1373,7 +1372,6 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings("determinism") // overriding Object method
         public @PolyDet boolean equals(@PolyDet ArrayAccess this, @PolyDet @Nullable Object obj) {
             if (!(obj instanceof ArrayAccess)) {
                 return false;

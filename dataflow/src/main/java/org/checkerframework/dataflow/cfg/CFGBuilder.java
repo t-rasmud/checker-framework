@@ -1433,7 +1433,7 @@ public class CFGBuilder {
                         }
 
                         // exceptional edges
-                        for (Map.Entry<TypeMirror, Set<Label>> entry :
+                        for (Map.@Det Entry<TypeMirror, @OrderNonDet Set<Label>> entry :
                                 en.getExceptions().entrySet()) {
                             TypeMirror cause = entry.getKey();
                             for (@Det Label label : entry.getValue()) {
@@ -1456,21 +1456,22 @@ public class CFGBuilder {
                 assert index != null : "CFGBuilder: problem in CFG construction " + tmp.a;
                 ExtendedNode extendedNode = nodeList.get(index);
                 BlockImpl target = extendedNode.getBlock();
-                SingleSuccessorBlockImpl source = p.a;
+                SingleSuccessorBlockImpl source = tmp.a;
                 source.setSuccessor(target);
             }
 
             // add missing exceptional edges
-            for (Tuple<@Det ExceptionBlockImpl, @Det Integer, ?> p : missingExceptionalEdges) {
+            for (@Det Tuple<@Det ExceptionBlockImpl, @Det Integer, ?> p : missingExceptionalEdges) {
                 Integer index = p.b;
-                TypeMirror cause = (TypeMirror) p.c;
+                @SuppressWarnings("determinism") // Unknown type, but only @Det values stored
+                @Det TypeMirror cause = (TypeMirror) p.c;
                 ExceptionBlockImpl source = p.a;
                 if (index == null) {
                     // edge to exceptional exit
                     source.addExceptionalSuccessor(exceptionalExitBlock, cause);
                 } else {
                     // edge to specific target
-                    ExtendedNode extendedNode = nodeList.get(index);
+                    @Det ExtendedNode extendedNode = nodeList.get(index);
                     BlockImpl target = extendedNode.getBlock();
                     source.addExceptionalSuccessor(target, cause);
                 }
@@ -1507,7 +1508,7 @@ public class CFGBuilder {
                 unaryAssignNodeLookupMap;
         private final UnderlyingAST underlyingAST;
         private final @OrderNonDet Map<Label, Integer> bindings;
-        private final @OrderNonDet ArrayList<ExtendedNode> nodeList;
+        private final ArrayList<ExtendedNode> nodeList;
         private final @OrderNonDet Set<Integer> leaders;
         private final List<ReturnNode> returnNodes;
         private final Label regularExitLabel;
@@ -1520,7 +1521,7 @@ public class CFGBuilder {
                 @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> treeLookupMap,
                 @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> convertedTreeLookupMap,
                 @OrderNonDet IdentityHashMap<UnaryTree, AssignmentNode> unaryAssignNodeLookupMap,
-                @OrderNonDet ArrayList<ExtendedNode> nodeList,
+                ArrayList<ExtendedNode> nodeList,
                 @OrderNonDet Map<Label, Integer> bindings,
                 @OrderNonDet Set<Integer> leaders,
                 List<ReturnNode> returnNodes,
@@ -1543,8 +1544,6 @@ public class CFGBuilder {
         }
 
         @Override
-        @SuppressWarnings(
-                "determinism") // calling method on external class requires @Det: StringJoiner
         public @PolyDet String toString(@PolyDet PhaseOneResult this) {
             StringJoiner sj = new StringJoiner(System.lineSeparator());
             for (ExtendedNode n : nodeList) {
@@ -1702,8 +1701,7 @@ public class CFGBuilder {
                 unaryAssignNodeLookupMap;
 
         /** The list of extended nodes. */
-        // @OrderNonDet because of visitTry
-        protected final @OrderNonDet ArrayList<ExtendedNode> nodeList;
+        protected final ArrayList<ExtendedNode> nodeList;
 
         /** The bindings of labels to positions (i.e., indices) in the {@code nodeList}. */
         protected final @OrderNonDet Map<Label, Integer> bindings;
@@ -1758,7 +1756,7 @@ public class CFGBuilder {
             treeLookupMap = new IdentityHashMap<>();
             convertedTreeLookupMap = new IdentityHashMap<>();
             unaryAssignNodeLookupMap = new IdentityHashMap<>();
-            nodeList = new @OrderNonDet ArrayList<>();
+            nodeList = new ArrayList<>();
             bindings = new HashMap<>();
             leaders = new HashSet<>();
 
@@ -2022,8 +2020,7 @@ public class CFGBuilder {
         protected void insertExtendedNodeAfter(ExtendedNode n, @FindDistinct Node pred) {
             int index = -1;
             for (int i = 0; i < nodeList.size(); i++) {
-                @SuppressWarnings("determinism") // process order insensitive
-                @Det ExtendedNode inList = nodeList.get(i);
+                ExtendedNode inList = nodeList.get(i);
                 if (inList instanceof NodeHolder || inList instanceof NodeWithExceptionsHolder) {
                     if (inList.getNode() == pred) {
                         index = i;
@@ -5142,6 +5139,7 @@ public class CFGBuilder {
      * Print a set of {@link Block}s and the edges between them. This is useful for examining the
      * results of phase two.
      */
+    @SuppressWarnings("determinism") // using a hashCode acceptable for debug output
     protected static void printBlocks(Set<Block> blocks) {
         for (Block b : blocks) {
             System.out.print(b.hashCode() + ": " + b);

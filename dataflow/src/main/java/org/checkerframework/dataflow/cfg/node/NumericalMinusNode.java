@@ -32,7 +32,6 @@ public class NumericalMinusNode extends UnaryOperationNode {
     }
 
     @Override
-    @SuppressWarnings("determinism") // overriding Object method
     public @PolyDet boolean equals(
             @PolyDet NumericalMinusNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof NumericalMinusNode)) {

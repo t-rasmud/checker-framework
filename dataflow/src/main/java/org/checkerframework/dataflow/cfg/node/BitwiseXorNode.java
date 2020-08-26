@@ -32,7 +32,6 @@ public class BitwiseXorNode extends BinaryOperationNode {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling equals on two @PolyDet returns @NonDet
     public @PolyDet boolean equals(@PolyDet BitwiseXorNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof BitwiseXorNode)) {
             return false;

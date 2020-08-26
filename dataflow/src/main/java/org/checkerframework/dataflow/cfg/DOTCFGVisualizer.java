@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.nullness.qual.KeyFor;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -62,7 +63,7 @@ public class DOTCFGVisualizer<
     }
 
     @Override
-    public @Nullable @OrderNonDet Map<String, Object> visualize(
+    public @Nullable @NonDet Map<String, @NonDet Object> visualize(
             ControlFlowGraph cfg, Block entry, @Nullable Analysis<V, S, T> analysis) {
 
         String dotGraph = visualizeGraph(cfg, entry, analysis);
@@ -71,24 +72,32 @@ public class DOTCFGVisualizer<
         try {
             FileWriter fStream = new FileWriter(dotFileName);
             BufferedWriter out = new BufferedWriter(fStream);
-            out.write(dotGraph);
+            @SuppressWarnings(
+                    "determinism") // non-determinism caused by hashCode, acceptable for debug
+            // output
+            @Det String tmp = dotGraph;
+            out.write(tmp);
             out.close();
         } catch (IOException e) {
             throw new UserError("Error creating dot file (is the path valid?): " + dotFileName, e);
         }
 
-        Map<@Det String, @Det Object> res = new HashMap<>();
-        res.put("dotFileName", dotFileName);
+        @NonDet Map<@Det String, @NonDet Object> res = new @NonDet HashMap<>();
+        @SuppressWarnings({
+            "determinism",
+            "UnusedVariable"
+        }) // no aliasing, so valid to mutate @NonDet collection
+        Object ignore = res.put("dotFileName", dotFileName);
 
         return res;
     }
 
     @SuppressWarnings("keyfor:enhancedfor.type.incompatible")
     @Override
-    public String visualizeNodes(
+    public @NonDet String visualizeNodes(
             Set<Block> blocks, ControlFlowGraph cfg, @Nullable Analysis<V, S, T> analysis) {
 
-        StringBuilder sbDotNodes = new StringBuilder();
+        @NonDet StringBuilder sbDotNodes = new @NonDet StringBuilder();
         sbDotNodes.append(lineSeparator);
 
         IdentityHashMap<@Det Block, @Det List<Integer>> processOrder = getProcessOrder(cfg);
@@ -139,7 +148,7 @@ public class DOTCFGVisualizer<
     }
 
     @Override
-    public String visualizeBlock(Block bb, @Nullable Analysis<V, S, T> analysis) {
+    public @NonDet String visualizeBlock(Block bb, @Nullable Analysis<V, S, T> analysis) {
         return super.visualizeBlockHelper(bb, analysis, leftJustifiedTerminator);
     }
 
@@ -155,12 +164,12 @@ public class DOTCFGVisualizer<
     }
 
     @Override
-    public String visualizeBlockTransferInputBefore(Block bb, Analysis<V, S, T> analysis) {
+    public @NonDet String visualizeBlockTransferInputBefore(Block bb, Analysis<V, S, T> analysis) {
         return super.visualizeBlockTransferInputBeforeHelper(bb, analysis, leftJustifiedTerminator);
     }
 
     @Override
-    public String visualizeBlockTransferInputAfter(Block bb, Analysis<V, S, T> analysis) {
+    public @NonDet String visualizeBlockTransferInputAfter(Block bb, Analysis<V, S, T> analysis) {
         return super.visualizeBlockTransferInputAfterHelper(bb, analysis, leftJustifiedTerminator);
     }
 
@@ -182,7 +191,9 @@ public class DOTCFGVisualizer<
             @Det String clsName = cfgStatement.getClassTree().getSimpleName().toString();
             outFile.append(clsName);
             outFile.append("-initializer-");
-            outFile.append(ast.hashCode());
+            @SuppressWarnings("determinism") // using a hashCode acceptable for debug output
+            @Det int tmp = ast.hashCode();
+            outFile.append(tmp);
 
             srcLoc.append("<");
             srcLoc.append(clsName);
@@ -224,7 +235,8 @@ public class DOTCFGVisualizer<
             @Det String clsName = cfgLambda.getClassTree().getSimpleName().toString();
             @SuppressWarnings("determinism") // imprecise library annotation: trees
             @Det String methodName = cfgLambda.getMethod().getName().toString();
-            int hashCode = cfgLambda.getCode().hashCode();
+            @SuppressWarnings("determinism") // using a hashCode acceptable for debug output
+            @Det int hashCode = cfgLambda.getCode().hashCode();
             outFile.append(clsName);
             outFile.append("-");
             outFile.append(methodName);
@@ -236,7 +248,9 @@ public class DOTCFGVisualizer<
             srcLoc.append("::");
             srcLoc.append(methodName);
             srcLoc.append("(");
-            srcLoc.append(cfgLambda.getMethod().getParameters());
+            @SuppressWarnings("determinism") // all known implementations have @Det toString methods
+            @Det String tmp = cfgLambda.getMethod().getParameters().toString();
+            srcLoc.append(tmp);
             srcLoc.append(")::");
             srcLoc.append(((JCTree) cfgLambda.getCode()).pos);
             srcLoc.append(">");
@@ -313,7 +327,7 @@ public class DOTCFGVisualizer<
     }
 
     @Override
-    public String visualizeStoreKeyVal(String keyName, Object value) {
+    public @NonDet String visualizeStoreKeyVal(String keyName, @NonDet Object value) {
         return storeEntryIndent + keyName + " = " + value + leftJustifiedTerminator;
     }
 
@@ -358,9 +372,13 @@ public class DOTCFGVisualizer<
             FileWriter fstream = new FileWriter(outDir + "/methods.txt", true);
             BufferedWriter out = new BufferedWriter(fstream);
             for (Map.Entry<String, String> kv : generated.entrySet()) {
-                out.write(kv.getKey());
+                @SuppressWarnings(
+                        "determinism") // process order insensitive: order of writing files doesn't
+                // matter
+                Map.@Det Entry<String, String> tmp = kv;
+                out.write(tmp.getKey());
                 out.append("\t");
-                out.write(kv.getValue());
+                out.write(tmp.getValue());
                 out.append(lineSeparator);
             }
             out.close();

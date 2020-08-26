@@ -32,7 +32,6 @@ public class IntegerDivisionNode extends BinaryOperationNode {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling equals on two @PolyDet returns @NonDet
     public @PolyDet boolean equals(
             @PolyDet IntegerDivisionNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof IntegerDivisionNode)) {

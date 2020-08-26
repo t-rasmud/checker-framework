@@ -70,7 +70,6 @@ public class AssignmentNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // overriding Object method
     public @PolyDet boolean equals(@PolyDet AssignmentNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof AssignmentNode)) {
             return false;

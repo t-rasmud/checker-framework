@@ -32,7 +32,6 @@ public class SignedRightShiftNode extends BinaryOperationNode {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling equals on two @PolyDet returns @NonDet
     public @PolyDet boolean equals(
             @PolyDet SignedRightShiftNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof SignedRightShiftNode)) {

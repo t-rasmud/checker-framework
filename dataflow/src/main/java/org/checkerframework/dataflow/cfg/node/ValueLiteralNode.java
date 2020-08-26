@@ -52,7 +52,6 @@ public abstract class ValueLiteralNode extends Node {
 
     /** Compare the value of this nodes. */
     @Override
-    @SuppressWarnings("determinism") // Object.equals is imprecise
     public @PolyDet boolean equals(@PolyDet ValueLiteralNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ValueLiteralNode)) {
             return false;

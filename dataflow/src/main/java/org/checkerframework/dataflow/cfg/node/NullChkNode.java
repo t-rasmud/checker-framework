@@ -49,7 +49,6 @@ public class NullChkNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling equals on two @PolyDet returns @NonDet
     public @PolyDet boolean equals(@PolyDet NullChkNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof NumericalPlusNode)) {
             return false;

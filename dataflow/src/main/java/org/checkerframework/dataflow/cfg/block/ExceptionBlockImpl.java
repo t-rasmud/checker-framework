@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.Node;
@@ -91,7 +92,7 @@ public class ExceptionBlockImpl extends SingleSuccessorBlockImpl implements Exce
     }
 
     @Override
-    public String toString(@PolyDet ExceptionBlockImpl this) {
+    public @NonDet String toString(@PolyDet ExceptionBlockImpl this) {
         return "ExceptionBlock(" + node + ")";
     }
 }
