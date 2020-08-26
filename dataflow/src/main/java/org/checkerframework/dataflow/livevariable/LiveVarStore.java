@@ -97,7 +97,7 @@ public class LiveVarStore implements Store<LiveVarStore> {
         }
         LiveVarStore other = (LiveVarStore) obj;
         @SuppressWarnings(
-                "determinism") // imprecise field access rule, accessing @OrderNonDet field of
+                "determinism") // imprecise field access rule: accessing @OrderNonDet field of
         // @PolyDet receiver gives @NonDet, should be @PolyDet("upDet")
         @PolyDet boolean tmp = other.liveVarValueSet.equals(this.liveVarValueSet);
         return tmp;

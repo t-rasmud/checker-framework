@@ -281,7 +281,7 @@ public abstract class AbstractAnalysis<
         }
         V merged = null;
         for (Node aNode : nodesCorrespondingToTree) {
-            @SuppressWarnings("determinism") // process order insensitive
+            @SuppressWarnings("determinism") // process is order insensitive
             @Det Node tmp = aNode;
             if (tmp.isLValue()) {
                 return null;
@@ -395,12 +395,13 @@ public abstract class AbstractAnalysis<
      * @param transferResult the transfer result being updated
      * @return true if the node's value changed, or a store was updated
      */
-    @SuppressWarnings("determinism") // Object.equals is imprecise
     protected boolean updateNodeValues(Node node, TransferResult<V, S> transferResult) {
         V newVal = transferResult.getResultValue();
         boolean nodeValueChanged = false;
         if (newVal != null) {
-            V oldVal = nodeValues.get(node);
+            @SuppressWarnings(
+                    "determinism") // https://github.com/t-rasmud/checker-framework/issues/193
+            @Det V oldVal = nodeValues.get(node);
             nodeValues.put(node, newVal);
             nodeValueChanged = !Objects.equals(oldVal, newVal);
         }
@@ -451,8 +452,9 @@ public abstract class AbstractAnalysis<
         public class ForwardDFOComparator implements Comparator<Block> {
             @SuppressWarnings({
                 "nullness:unboxing.of.nullable",
-                "determinism"
-            }) // imprecision of map get
+                "determinism" // @OrderNonDet Map get on @PolyDet returns @NonDet, should be
+                // @PolyDet
+            })
             @Override
             public @PolyDet int compare(
                     @PolyDet ForwardDFOComparator this, @PolyDet Block b1, @PolyDet Block b2) {
@@ -467,8 +469,9 @@ public abstract class AbstractAnalysis<
         public class BackwardDFOComparator implements Comparator<Block> {
             @SuppressWarnings({
                 "nullness:unboxing.of.nullable",
-                "determinism"
-            }) // imprecision of map get
+                "determinism" // @OrderNonDet Map get on @PolyDet returns @NonDet, should be
+                // @PolyDet
+            })
             @Override
             public @PolyDet int compare(
                     BackwardDFOComparator this, @PolyDet Block b1, @PolyDet Block b2) {

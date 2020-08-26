@@ -149,7 +149,7 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
      * @param treeLookup a map from abstract syntax trees to sets of nodes
      * @param otherTreeLookup another treeLookup that will be merged into {@code treeLookup}
      */
-    @SuppressWarnings("determinism") // process order insensitive
+    @SuppressWarnings("determinism") // process is order insensitive
     private static void mergeTreeLookup(
             @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> treeLookup,
             @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> otherTreeLookup) {
@@ -195,7 +195,7 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
      * @return the abstract value for {@link Tree} {@code t}, or {@code null} if no information is
      *     available
      */
-    @SuppressWarnings("determinism") // process order insensitive
+    @SuppressWarnings("determinism") // process is order insensitive
     public @Nullable V getValue(Tree t) {
         @OrderNonDet Set<Node> nodes = treeLookup.get(t);
 
@@ -264,7 +264,7 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
         }
         S merged = null;
         for (Node node : nodes) {
-            @SuppressWarnings("determinism") // process order insensitive
+            @SuppressWarnings("determinism") // process is order insensitive
             @Det S s = getStoreBefore(node);
             if (merged == null) {
                 merged = s;
@@ -362,7 +362,7 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
         }
         S merged = null;
         for (Node node : nodes) {
-            @SuppressWarnings("determinism") // process order insensitive
+            @SuppressWarnings("determinism") // process is order insensitive
             @Det S s = getStoreAfter(node);
             if (merged == null) {
                 merged = s;
@@ -451,10 +451,10 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
      *
      * @return a string representation of this
      */
-    @SuppressWarnings("determinism") // nondeterminism reflected in return type
     public @NonDet String toStringDebug() {
-        StringJoiner result =
-                new StringJoiner(
+        @NonDet StringJoiner result =
+                new
+                @NonDet StringJoiner(
                         String.format("%n  "),
                         String.format("AnalysisResult{%n  "),
                         String.format("%n}"));
