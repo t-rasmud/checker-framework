@@ -17,6 +17,7 @@ import org.checkerframework.dataflow.cfg.block.ExceptionBlock;
 import org.checkerframework.dataflow.cfg.node.AssignmentNode;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.javacutil.BugInCF;
+import org.checkerframework.javacutil.TreeUtils;
 
 /**
  * An {@link AnalysisResult} represents the result of a org.checkerframework.dataflow analysis by
@@ -506,11 +507,10 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
         result.add("{");
         for (Map.Entry<Tree, Set<Node>> entry : treeLookup.entrySet()) {
             Tree key = entry.getKey();
-            String treeString = key.toString().replaceAll("[ \n\t]+", " ");
-            if (treeString.length() > 65) {
-                treeString = "\"" + treeString.substring(0, 60) + "...\"";
-            }
-            result.add(treeString + " => " + Node.nodeCollectionToString(entry.getValue()));
+            result.add(
+                    TreeUtils.toStringTruncated(key, 65)
+                            + " => "
+                            + Node.nodeCollectionToString(entry.getValue()));
         }
         result.add("}");
         return result.toString();

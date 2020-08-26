@@ -71,6 +71,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -994,10 +995,11 @@ public class CFGBuilder {
                 if (tmp.getType() == BlockType.REGULAR_BLOCK) {
                     RegularBlockImpl b = (RegularBlockImpl) tmp;
                     if (b.isEmpty()) {
-                        Set<@Det RegularBlockImpl> empty = new HashSet<>();
+                        Set<@Det RegularBlockImpl> emptyBlocks = new HashSet<>();
                         Set<@Det PredecessorHolder> predecessors = new HashSet<>();
-                        BlockImpl succ = computeNeighborhoodOfEmptyBlock(b, empty, predecessors);
-                        for (RegularBlockImpl e : empty) {
+                        BlockImpl succ =
+                                computeNeighborhoodOfEmptyBlock(b, emptyBlocks, predecessors);
+                        for (RegularBlockImpl e : emptyBlocks) {
                             @SuppressWarnings("determinism") // process order insensitive
                             @Det RegularBlockImpl tmp2 = e;
                             succ.removePredecessor(tmp2);
@@ -1066,32 +1068,32 @@ public class CFGBuilder {
         }
 
         /**
-         * Compute the set of empty regular basic blocks {@code empty}, starting at {@code start}
-         * and going both forward and backwards. Furthermore, compute the predecessors of these
-         * empty blocks ({@code predecessors} ), and their single successor (return value).
+         * Compute the set of empty regular basic blocks {@code emptyBlocks}, starting at {@code
+         * start} and going both forward and backwards. Furthermore, compute the predecessors of
+         * these empty blocks ({@code predecessors} ), and their single successor (return value).
          *
          * @param start the starting point of the search (an empty, regular basic block)
-         * @param empty an empty set to be filled by this method with all empty basic blocks found
+         * @param emptyBlocks a set to be filled by this method with all empty basic blocks found
          *     (including {@code start}).
-         * @param predecessors an empty set to be filled by this method with all predecessors
+         * @param predecessors a set to be filled by this method with all predecessors
          * @return the single successor of the set of the empty basic blocks
          */
         @SuppressWarnings("interning:not.interned") // AST node comparisons
         protected static BlockImpl computeNeighborhoodOfEmptyBlock(
                 RegularBlockImpl start,
-                @OrderNonDet Set<RegularBlockImpl> empty,
+                @OrderNonDet Set<RegularBlockImpl> emptyBlocks,
                 @OrderNonDet Set<PredecessorHolder> predecessors) {
 
             // get empty neighborhood that come before 'start'
-            computeNeighborhoodOfEmptyBlockBackwards(start, empty, predecessors);
+            computeNeighborhoodOfEmptyBlockBackwards(start, emptyBlocks, predecessors);
 
             // go forward
             BlockImpl succ = (BlockImpl) start.getSuccessor();
             while (succ.getType() == BlockType.REGULAR_BLOCK) {
                 RegularBlockImpl cur = (RegularBlockImpl) succ;
                 if (cur.isEmpty()) {
-                    computeNeighborhoodOfEmptyBlockBackwards(cur, empty, predecessors);
-                    assert empty.contains(cur) : "cur ought to be in empty";
+                    computeNeighborhoodOfEmptyBlockBackwards(cur, emptyBlocks, predecessors);
+                    assert emptyBlocks.contains(cur) : "cur ought to be in emptyBlocks";
                     succ = (BlockImpl) cur.getSuccessor();
                     if (succ == cur) {
                         // An infinite loop, making exit block unreachable
@@ -1105,22 +1107,22 @@ public class CFGBuilder {
         }
 
         /**
-         * Compute the set of empty regular basic blocks {@code empty}, starting at {@code start}
-         * and looking only backwards in the control flow graph. Furthermore, compute the
-         * predecessors of these empty blocks ( {@code predecessors}).
+         * Compute the set of empty regular basic blocks {@code emptyBlocks}, starting at {@code
+         * start} and looking only backwards in the control flow graph. Furthermore, compute the
+         * predecessors of these empty blocks ({@code predecessors}).
          *
          * @param start the starting point of the search (an empty, regular basic block)
-         * @param empty a set to be filled by this method with all empty basic blocks found
+         * @param emptyBlocks a set to be filled by this method with all empty basic blocks found
          *     (including {@code start}).
          * @param predecessors a set to be filled by this method with all predecessors
          */
         protected static void computeNeighborhoodOfEmptyBlockBackwards(
                 RegularBlockImpl start,
-                @OrderNonDet Set<RegularBlockImpl> empty,
+                @OrderNonDet Set<RegularBlockImpl> emptyBlocks,
                 @OrderNonDet Set<PredecessorHolder> predecessors) {
 
             RegularBlockImpl cur = start;
-            empty.add(cur);
+            emptyBlocks.add(cur);
             for (final Block p : cur.getPredecessors()) {
                 @SuppressWarnings("determinism") // process order insensitive
                 @Det BlockImpl pred = (BlockImpl) p;
@@ -1141,8 +1143,9 @@ public class CFGBuilder {
                         RegularBlockImpl r = (RegularBlockImpl) pred;
                         if (r.isEmpty()) {
                             // recursively look backwards
-                            if (!empty.contains(r)) {
-                                computeNeighborhoodOfEmptyBlockBackwards(r, empty, predecessors);
+                            if (!emptyBlocks.contains(r)) {
+                                computeNeighborhoodOfEmptyBlockBackwards(
+                                        r, emptyBlocks, predecessors);
                             }
                         } else {
                             // add pred correctly to predecessor list
@@ -1320,7 +1323,7 @@ public class CFGBuilder {
 
             // missing exceptional edges
             Set<@Det Tuple<ExceptionBlockImpl, Integer, TypeMirror>> missingExceptionalEdges =
-                    new HashSet<>();
+                    new LinkedHashSet<>();
 
             // create start block
             SpecialBlockImpl startBlock = new SpecialBlockImpl(SpecialBlockType.ENTRY);
