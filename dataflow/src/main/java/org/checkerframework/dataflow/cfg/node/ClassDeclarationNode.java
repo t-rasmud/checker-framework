@@ -4,6 +4,8 @@ import com.sun.source.tree.ClassTree;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -22,7 +24,7 @@ public class ClassDeclarationNode extends Node {
     }
 
     @Override
-    public ClassTree getTree() {
+    public @PolyDet ClassTree getTree(@PolyDet ClassDeclarationNode this) {
         return tree;
     }
 
@@ -32,12 +34,16 @@ public class ClassDeclarationNode extends Node {
     }
 
     @Override
-    public String toString() {
+    @SuppressWarnings("determinism") // imprecise library annotation: trees
+    public @PolyDet String toString(@PolyDet ClassDeclarationNode this) {
         return tree.toString();
     }
 
     @Override
-    public boolean equals(@Nullable Object o) {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det: getClass,
+    // Objects.equals
+    public @PolyDet boolean equals(
+            @PolyDet ClassDeclarationNode this, @PolyDet @Nullable Object o) {
         if (this == o) {
             return true;
         }
@@ -50,7 +56,7 @@ public class ClassDeclarationNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet ClassDeclarationNode this) {
         return Objects.hash(tree);
     }
 

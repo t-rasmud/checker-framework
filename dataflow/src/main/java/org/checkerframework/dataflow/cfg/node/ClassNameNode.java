@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -64,17 +66,17 @@ public class ClassNameNode extends Node {
         this.parent = null;
     }
 
-    public Element getElement() {
+    public @PolyDet Element getElement(@PolyDet ClassNameNode this) {
         return element;
     }
 
     /** The parent node of the current node. */
-    public @Nullable Node getParent() {
+    public @PolyDet @Nullable Node getParent(@PolyDet ClassNameNode this) {
         return parent;
     }
 
     @Override
-    public @Nullable Tree getTree() {
+    public @PolyDet @Nullable Tree getTree(@PolyDet ClassNameNode this) {
         return tree;
     }
 
@@ -84,12 +86,14 @@ public class ClassNameNode extends Node {
     }
 
     @Override
-    public String toString() {
+    @SuppressWarnings("determinism") // imprecise library annotation: elements
+    public @PolyDet String toString(@PolyDet ClassNameNode this) {
         return getElement().getSimpleName().toString();
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    public @PolyDet boolean equals(@PolyDet ClassNameNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ClassNameNode)) {
             return false;
         }
@@ -99,7 +103,7 @@ public class ClassNameNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet ClassNameNode this) {
         return Objects.hash(getElement(), getParent());
     }
 

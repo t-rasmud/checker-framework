@@ -57,7 +57,7 @@ public class ReturnNode extends Node {
     }
 
     @Override
-    public ReturnTree getTree() {
+    public @PolyDet ReturnTree getTree(@PolyDet ReturnNode this) {
         return tree;
     }
 

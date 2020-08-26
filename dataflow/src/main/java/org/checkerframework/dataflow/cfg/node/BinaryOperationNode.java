@@ -37,7 +37,7 @@ public abstract class BinaryOperationNode extends Node {
     }
 
     @Override
-    public BinaryTree getTree() {
+    public @PolyDet BinaryTree getTree(@PolyDet BinaryOperationNode this) {
         return tree;
     }
 

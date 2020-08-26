@@ -5,6 +5,8 @@ import com.sun.source.tree.Tree;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -26,7 +28,7 @@ public class SuperNode extends Node {
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet SuperNode this) {
         return tree;
     }
 
@@ -35,22 +37,22 @@ public class SuperNode extends Node {
         return visitor.visitSuper(this, p);
     }
 
-    public String getName() {
+    public @PolyDet String getName(@PolyDet SuperNode this) {
         return "super";
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet SuperNode this) {
         return getName();
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(@PolyDet SuperNode this, @PolyDet @Nullable Object obj) {
         return obj instanceof SuperNode;
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet SuperNode this) {
         return Objects.hash(getName());
     }
 

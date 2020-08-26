@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -19,17 +21,17 @@ public abstract class ThisLiteralNode extends Node {
         super(type);
     }
 
-    public String getName() {
+    public @PolyDet String getName(@PolyDet ThisLiteralNode this) {
         return "this";
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(@PolyDet ThisLiteralNode this, @PolyDet @Nullable Object obj) {
         return obj instanceof ThisLiteralNode;
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet ThisLiteralNode this) {
         return Objects.hash(getName());
     }
 

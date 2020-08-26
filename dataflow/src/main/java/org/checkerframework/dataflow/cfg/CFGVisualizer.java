@@ -47,7 +47,7 @@ public interface CFGVisualizer<
      * @return visualization results, e.g. generated file names ({@link DOTCFGVisualizer}) or a
      *     String representation of the CFG ({@link StringCFGVisualizer})
      */
-    @Nullable Map<String, Object> visualize(
+    @Nullable @OrderNonDet Map<String, Object> visualize(
             ControlFlowGraph cfg, Block entry, @Nullable Analysis<V, S, T> analysis);
 
     /**

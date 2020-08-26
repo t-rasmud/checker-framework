@@ -2,6 +2,9 @@ package org.checkerframework.dataflow.constantpropagation;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.FlowExpressions;
 import org.checkerframework.dataflow.analysis.Store;
@@ -13,13 +16,13 @@ import org.checkerframework.dataflow.cfg.node.Node;
 public class ConstantPropagationStore implements Store<ConstantPropagationStore> {
 
     /** Information about variables gathered so far. */
-    Map<Node, Constant> contents;
+    @OrderNonDet Map<Node, Constant> contents;
 
     public ConstantPropagationStore() {
         contents = new HashMap<>();
     }
 
-    protected ConstantPropagationStore(Map<Node, Constant> contents) {
+    protected ConstantPropagationStore(@OrderNonDet Map<Node, Constant> contents) {
         this.contents = contents;
     }
 
@@ -54,6 +57,7 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     }
 
     @Override
+    @SuppressWarnings("determinism") // process order insensitive
     public ConstantPropagationStore leastUpperBound(ConstantPropagationStore other) {
         Map<Node, Constant> newContents = new HashMap<>();
 
@@ -88,7 +92,9 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     }
 
     @Override
-    public boolean equals(@Nullable Object o) {
+    @SuppressWarnings("determinism") // process order insensitive
+    public @PolyDet boolean equals(
+            @PolyDet ConstantPropagationStore this, @PolyDet @Nullable Object o) {
         if (o == null) {
             return false;
         }
@@ -128,7 +134,8 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     }
 
     @Override
-    public int hashCode() {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det: Integer
+    public @NonDet int hashCode() {
         int s = 0;
         for (Map.Entry<Node, Constant> e : contents.entrySet()) {
             if (!e.getValue().isBottom()) {
@@ -139,7 +146,8 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     }
 
     @Override
-    public String toString() {
+    @SuppressWarnings("determinism") // non-determinism reflected in return type
+    public @NonDet String toString(@PolyDet ConstantPropagationStore this) {
         // only output local variable information
         Map<Node, Constant> smallerContents = new HashMap<>();
         for (Map.Entry<Node, Constant> e : contents.entrySet()) {

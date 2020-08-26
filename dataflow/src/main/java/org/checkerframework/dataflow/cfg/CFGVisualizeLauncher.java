@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
+import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.AbstractValue;
 import org.checkerframework.dataflow.analysis.Analysis;
@@ -147,7 +149,8 @@ public class CFGVisualizeLauncher {
      */
     protected String generateStringOfCFGWithoutAnalysis(
             String inputFile, String method, String clas, boolean verbose) {
-        @Nullable Map<String, Object> res = generateStringOfCFG(inputFile, method, clas, verbose, null);
+        @Nullable Map<@Det String, @Det Object> res =
+                generateStringOfCFG(inputFile, method, clas, verbose, null);
         if (res != null) {
             String stringGraph = (String) res.get("stringGraph");
             if (stringGraph == null) {
@@ -188,13 +191,13 @@ public class CFGVisualizeLauncher {
             analysis.performAnalysis(cfg);
         }
 
-        Map<String, Object> args = new HashMap<>();
+        Map<@Det String, @Det Object> args = new HashMap<>();
         args.put("outdir", outputDir);
         args.put("verbose", verbose);
 
         CFGVisualizer<V, S, T> viz = new DOTCFGVisualizer<>();
         viz.init(args);
-        Map<String, Object> res = viz.visualize(cfg, cfg.getEntryBlock(), analysis);
+        Map<@Det String, @Det Object> res = viz.visualize(cfg, cfg.getEntryBlock(), analysis);
         viz.shutdown();
 
         if (pdf && res != null) {
@@ -300,12 +303,12 @@ public class CFGVisualizeLauncher {
             analysis.performAnalysis(cfg);
         }
 
-        Map<String, Object> args = new HashMap<>();
+        @OrderNonDet Map<@Det String, @Det Object> args = new HashMap<>();
         args.put("verbose", verbose);
 
         CFGVisualizer<V, S, T> viz = new StringCFGVisualizer<>();
         viz.init(args);
-        Map<String, Object> res = viz.visualize(cfg, cfg.getEntryBlock(), analysis);
+        Map<@Det String, @Det Object> res = viz.visualize(cfg, cfg.getEntryBlock(), analysis);
         viz.shutdown();
         return res;
     }

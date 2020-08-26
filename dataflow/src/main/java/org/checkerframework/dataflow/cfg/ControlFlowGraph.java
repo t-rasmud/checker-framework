@@ -19,6 +19,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.StringJoiner;
 import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.initialization.qual.UnknownInitialization;
@@ -71,13 +72,13 @@ public class ControlFlowGraph {
      * not appear in {@link #getAllNodes} because their blocks are not reachable in the control flow
      * graph. Dataflow will not compute abstract values for these nodes.
      */
-    protected final IdentityHashMap<Tree, Set<Node>> treeLookup;
+    protected final @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> treeLookup;
 
     /** Map from AST {@link Tree}s to post-conversion sets of {@link Node}s. */
-    protected final IdentityHashMap<Tree, Set<Node>> convertedTreeLookup;
+    protected final @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> convertedTreeLookup;
 
     /** Map from AST {@link UnaryTree}s to corresponding {@link AssignmentNode}s. */
-    protected final IdentityHashMap<UnaryTree, AssignmentNode> unaryAssignNodeLookup;
+    protected final @OrderNonDet IdentityHashMap<UnaryTree, AssignmentNode> unaryAssignNodeLookup;
 
     /**
      * All return nodes (if any) encountered. Only includes return statements that actually return
@@ -102,9 +103,9 @@ public class ControlFlowGraph {
             SpecialBlockImpl regularExitBlock,
             SpecialBlockImpl exceptionalExitBlock,
             UnderlyingAST underlyingAST,
-            IdentityHashMap<Tree, Set<Node>> treeLookup,
-            IdentityHashMap<Tree, Set<Node>> convertedTreeLookup,
-            IdentityHashMap<UnaryTree, AssignmentNode> unaryAssignNodeLookup,
+            @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> treeLookup,
+            @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> convertedTreeLookup,
+            @OrderNonDet IdentityHashMap<UnaryTree, AssignmentNode> unaryAssignNodeLookup,
             List<ReturnNode> returnNodes,
             List<ClassTree> declaredClasses,
             List<LambdaExpressionTree> declaredLambdas) {
@@ -129,7 +130,7 @@ public class ControlFlowGraph {
      * @return the set of {@link Node}s to which the {@link Tree} {@code t} corresponds, or null for
      *     trees that don't produce a value
      */
-    public @Nullable Set<Node> getNodesCorrespondingToTree(Tree t) {
+    public @Nullable @OrderNonDet Set<Node> getNodesCorrespondingToTree(Tree t) {
         if (convertedTreeLookup.containsKey(t)) {
             return convertedTreeLookup.get(t);
         } else {
@@ -254,7 +255,7 @@ public class ControlFlowGraph {
      *
      * @return the copied tree-lookup map
      */
-    public IdentityHashMap<Tree, Set<Node>> getTreeLookup() {
+    public @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> getTreeLookup() {
         return new IdentityHashMap<>(treeLookup);
     }
 
@@ -263,7 +264,7 @@ public class ControlFlowGraph {
      *
      * @return the copied lookup-map of the assign node for unary operation
      */
-    public IdentityHashMap<UnaryTree, AssignmentNode> getUnaryAssignNodeLookup() {
+    public @OrderNonDet IdentityHashMap<UnaryTree, AssignmentNode> getUnaryAssignNodeLookup() {
         return new IdentityHashMap<>(unaryAssignNodeLookup);
     }
 
@@ -304,13 +305,14 @@ public class ControlFlowGraph {
     }
 
     @Override
-    public @PolyDet String toString(@PolyDet ControlFlowGraph this) {
+    public @NonDet String toString(@PolyDet ControlFlowGraph this) {
         @OrderNonDet Map<String, Object> args = new HashMap<>();
         args.put("verbose", true);
 
         CFGVisualizer<?, ?, ?> viz = new StringCFGVisualizer<>();
         viz.init(args);
-        @Det Map<String, Object> res = viz.visualize(this, this.getEntryBlock(), null);
+        @SuppressWarnings("determinism") // non-determinism reflected in variable type
+        @PolyDet("upDet") Map<String, Object> res = viz.visualize(this, this.getEntryBlock(), null);
         viz.shutdown();
         if (res == null) {
             return super.toString();
@@ -324,7 +326,8 @@ public class ControlFlowGraph {
      *
      * @return a string representation of this
      */
-    public String toStringDebug() {
+    @SuppressWarnings("determinism") // non-determinism reflected in return type
+    public @NonDet String toStringDebug() {
         String className = this.getClass().getSimpleName();
         if (className.equals("ControlFlowGraph") && this.getClass() != ControlFlowGraph.class) {
             className = this.getClass().getCanonicalName();

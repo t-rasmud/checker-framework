@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.Store;
 import org.checkerframework.dataflow.cfg.node.Node;
@@ -66,7 +68,7 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
     }
 
     @Override
-    public Set<Block> getSuccessors() {
+    public @Det Set<Block> getSuccessors() {
         Set<Block> result = new LinkedHashSet<>(2);
         result.add(getThenSuccessor());
         result.add(getElseSuccessor());
@@ -109,7 +111,7 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
     }
 
     @Override
-    public String toString() {
+    public String toString(@PolyDet ConditionalBlockImpl this) {
         return "ConditionalBlock()";
     }
 }

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 import org.plumelib.util.UtilPlume;
@@ -37,11 +39,11 @@ public class ObjectCreationNode extends Node {
         this.classbody = classbody;
     }
 
-    public Node getConstructor() {
+    public @PolyDet Node getConstructor(@PolyDet ObjectCreationNode this) {
         return constructor;
     }
 
-    public List<Node> getArguments() {
+    public @PolyDet List<Node> getArguments(@PolyDet ObjectCreationNode this) {
         return arguments;
     }
 
@@ -54,7 +56,7 @@ public class ObjectCreationNode extends Node {
     }
 
     @Override
-    public NewClassTree getTree() {
+    public @PolyDet NewClassTree getTree(@PolyDet ObjectCreationNode this) {
         return tree;
     }
 
@@ -64,7 +66,8 @@ public class ObjectCreationNode extends Node {
     }
 
     @Override
-    public String toString() {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    public @PolyDet String toString(@PolyDet ObjectCreationNode this) {
         StringBuilder sb = new StringBuilder();
         sb.append("new " + constructor + "(");
         sb.append(UtilPlume.join(", ", arguments));
@@ -78,7 +81,11 @@ public class ObjectCreationNode extends Node {
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    @SuppressWarnings(
+            "determinism") // method receiver can't be @OrderNonDet so @PolyDet("up") same as
+    // @PolyDet
+    public @PolyDet boolean equals(
+            @PolyDet ObjectCreationNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ObjectCreationNode)) {
             return false;
         }
@@ -92,7 +99,7 @@ public class ObjectCreationNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet ObjectCreationNode this) {
         return Objects.hash(constructor, arguments);
     }
 

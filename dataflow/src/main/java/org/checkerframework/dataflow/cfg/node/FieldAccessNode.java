@@ -48,6 +48,7 @@ public class FieldAccessNode extends Node {
         }
     }
 
+    @SuppressWarnings("determinism") // imprecise library annotation: trees
     public FieldAccessNode(Tree tree, VariableElement element, Node receiver) {
         super(element.asType());
         this.tree = tree;
@@ -69,7 +70,7 @@ public class FieldAccessNode extends Node {
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet FieldAccessNode this) {
         return tree;
     }
 

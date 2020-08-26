@@ -4,6 +4,8 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.interning.qual.FindDistinct;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.RequiresNonNull;
@@ -29,21 +31,21 @@ import org.checkerframework.javacutil.BugInCF;
  * @param <T> the transfer function type that is used to approximate runtime behavior
  */
 public class BackwardAnalysisImpl<
-                V extends AbstractValue<V>,
-                S extends Store<S>,
-                T extends BackwardTransferFunction<V, S>>
+                V extends @Det AbstractValue<V>,
+                S extends @Det Store<S>,
+                T extends @Det BackwardTransferFunction<V, S>>
         extends AbstractAnalysis<V, S, T> implements BackwardAnalysis<V, S, T> {
 
     // TODO: Add widening support like what the forward analysis does.
 
     /** Out stores after every basic block (assumed to be 'no information' if not present). */
-    protected final IdentityHashMap<Block, S> outStores;
+    protected final @OrderNonDet IdentityHashMap<Block, S> outStores;
 
     /**
      * Exception store of an exception block, propagated by exceptional successors of its exception
      * block, and merged with the normal {@link TransferResult}.
      */
-    protected final IdentityHashMap<ExceptionBlock, S> exceptionStores;
+    protected final @OrderNonDet IdentityHashMap<ExceptionBlock, S> exceptionStores;
 
     /** The store right before the entry block. */
     protected @Nullable S storeAtEntry;
@@ -103,8 +105,8 @@ public class BackwardAnalysisImpl<
                     currentInput = inputAfter.copy();
                     Node firstNode = null;
                     boolean addToWorklistAgain = false;
-                    List<Node> nodeList = rb.getNodes();
-                    ListIterator<Node> reverseIter = nodeList.listIterator(nodeList.size());
+                    @Det List<@Det Node> nodeList = rb.getNodes();
+                    @Det ListIterator<Node> reverseIter = nodeList.listIterator(nodeList.size());
                     while (reverseIter.hasPrevious()) {
                         Node node = reverseIter.previous();
                         assert currentInput != null : "@AssumeAssertion(nullness): invariant";
@@ -318,8 +320,11 @@ public class BackwardAnalysisImpl<
             @FindDistinct Node node,
             boolean before,
             TransferInput<V, S> transferInput,
-            IdentityHashMap<Node, V> nodeValues,
-            Map<TransferInput<V, S>, IdentityHashMap<Node, TransferResult<V, S>>> analysisCaches) {
+            @OrderNonDet IdentityHashMap<Node, V> nodeValues,
+                    @OrderNonDet Map<
+                                    TransferInput<V, S>,
+                                    @OrderNonDet IdentityHashMap<Node, TransferResult<V, S>>>
+                            analysisCaches) {
         Block block = node.getBlock();
         assert block != null : "@AssumeAssertion(nullness): invariant";
         Node oldCurrentNode = currentNode;
@@ -337,7 +342,8 @@ public class BackwardAnalysisImpl<
                         // looking for.
                         TransferInput<V, S> store = transferInput;
                         List<Node> nodeList = rBlock.getNodes();
-                        ListIterator<Node> reverseIter = nodeList.listIterator(nodeList.size());
+                        ListIterator<@Det Node> reverseIter =
+                                nodeList.listIterator(nodeList.size());
                         while (reverseIter.hasPrevious()) {
                             Node n = reverseIter.previous();
                             setCurrentNode(n);

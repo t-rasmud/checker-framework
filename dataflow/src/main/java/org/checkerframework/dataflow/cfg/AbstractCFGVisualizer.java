@@ -10,6 +10,10 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.StringJoiner;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.RequiresDetToString;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.AbstractValue;
@@ -55,7 +59,7 @@ public abstract class AbstractCFGVisualizer<
     protected final String storeEntryIndent = "  ";
 
     @Override
-    public void init(Map<String, Object> args) {
+    public void init(@OrderNonDet Map<String, Object> args) {
         this.verbose = toBoolean(args.get("verbose"));
     }
 
@@ -101,9 +105,9 @@ public abstract class AbstractCFGVisualizer<
      */
     protected String visualizeGraphWithoutHeaderAndFooter(
             ControlFlowGraph cfg, Block entry, @Nullable Analysis<V, S, T> analysis) {
-        Set<Block> visited = new LinkedHashSet<>();
+        Set<@Det Block> visited = new LinkedHashSet<>();
         StringBuilder sbGraph = new StringBuilder();
-        Queue<Block> workList = new ArrayDeque<>();
+        Queue<@Det Block> workList = new ArrayDeque<>();
         Block cur = entry;
         visited.add(entry);
         while (cur != null) {
@@ -153,7 +157,8 @@ public abstract class AbstractCFGVisualizer<
         }
         if (cur.getType() == Block.BlockType.EXCEPTION_BLOCK) {
             ExceptionBlock ecur = (ExceptionBlock) cur;
-            for (Map.Entry<TypeMirror, Set<Block>> e : ecur.getExceptionalSuccessors().entrySet()) {
+            for (Map.@Det Entry<TypeMirror, Set<Block>> e :
+                    ecur.getExceptionalSuccessors().entrySet()) {
                 TypeMirror cause = e.getKey();
                 String exception = cause.toString();
                 if (exception.startsWith("java.lang.")) {
@@ -257,6 +262,7 @@ public abstract class AbstractCFGVisualizer<
      * @param obj an object
      * @return the formatted String from the given object
      */
+    @RequiresDetToString
     protected abstract String format(Object obj);
 
     @Override
@@ -404,11 +410,12 @@ public abstract class AbstractCFGVisualizer<
      * @param cfg the current control flow graph
      * @return an IdentityHashMap that maps from blocks to their orders
      */
-    protected IdentityHashMap<Block, List<Integer>> getProcessOrder(ControlFlowGraph cfg) {
-        IdentityHashMap<Block, List<Integer>> depthFirstOrder = new IdentityHashMap<>();
+    protected @OrderNonDet IdentityHashMap<Block, List<Integer>> getProcessOrder(
+            ControlFlowGraph cfg) {
+        @OrderNonDet IdentityHashMap<Block, List<Integer>> depthFirstOrder = new IdentityHashMap<>();
         int count = 1;
         for (Block b : cfg.getDepthFirstOrderedBlocks()) {
-            depthFirstOrder.computeIfAbsent(b, k -> new ArrayList<>());
+            depthFirstOrder.computeIfAbsent(b, k -> new @PolyDet ArrayList<>());
             @SuppressWarnings(
                     "nullness:assignment.type.incompatible") // computeIfAbsent's function doesn't
             // return null
@@ -467,7 +474,8 @@ public abstract class AbstractCFGVisualizer<
      * @return a String representation of the given process orders
      */
     protected String getProcessOrderSimpleString(List<Integer> order) {
-        String orderString = order.toString();
+        @SuppressWarnings("determinism") // all common implementations of List have @Det toString
+        @Det String orderString = order.toString();
         return "Process order: " + orderString.substring(1, orderString.length() - 1);
     }
 

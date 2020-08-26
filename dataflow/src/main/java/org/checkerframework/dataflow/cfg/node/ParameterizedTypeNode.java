@@ -5,6 +5,8 @@ import com.sun.source.tree.Tree;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -30,7 +32,7 @@ public class ParameterizedTypeNode extends Node {
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet ParameterizedTypeNode this) {
         return tree;
     }
 
@@ -40,12 +42,14 @@ public class ParameterizedTypeNode extends Node {
     }
 
     @Override
-    public String toString() {
+    @SuppressWarnings("determinism") // imprecise library annotation: trees
+    public @PolyDet String toString(@PolyDet ParameterizedTypeNode this) {
         return getTree().toString();
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(
+            @PolyDet ParameterizedTypeNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ParameterizedTypeNode)) {
             return false;
         }
@@ -54,7 +58,7 @@ public class ParameterizedTypeNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet ParameterizedTypeNode this) {
         return Objects.hash(getTree());
     }
 

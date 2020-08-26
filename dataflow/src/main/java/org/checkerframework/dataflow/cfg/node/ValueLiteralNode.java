@@ -41,7 +41,7 @@ public abstract class ValueLiteralNode extends Node {
     }
 
     @Override
-    public LiteralTree getTree() {
+    public @PolyDet LiteralTree getTree(@PolyDet ValueLiteralNode this) {
         return tree;
     }
 

@@ -4,6 +4,8 @@ import com.sun.source.tree.VariableTree;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -24,18 +26,19 @@ public class VariableDeclarationNode extends Node {
 
     // TODO: make modifier accessible
 
+    @SuppressWarnings("determinism") // imprecise library annotation: trees
     public VariableDeclarationNode(VariableTree t) {
         super(TreeUtils.typeOf(t));
         tree = t;
         name = tree.getName().toString();
     }
 
-    public String getName() {
+    public @PolyDet String getName(@PolyDet VariableDeclarationNode this) {
         return name;
     }
 
     @Override
-    public VariableTree getTree() {
+    public @PolyDet VariableTree getTree(@PolyDet VariableDeclarationNode this) {
         return tree;
     }
 
@@ -45,12 +48,13 @@ public class VariableDeclarationNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet VariableDeclarationNode this) {
         return name;
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(
+            @PolyDet VariableDeclarationNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof VariableDeclarationNode)) {
             return false;
         }
@@ -59,7 +63,7 @@ public class VariableDeclarationNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet VariableDeclarationNode this) {
         return Objects.hash(getName());
     }
 

@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Objects;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -42,16 +44,16 @@ public class CaseNode extends Node {
         this.caseExpr = caseExpr;
     }
 
-    public Node getSwitchOperand() {
+    public @PolyDet Node getSwitchOperand(@PolyDet CaseNode this) {
         return switchExpr;
     }
 
-    public Node getCaseOperand() {
+    public @PolyDet Node getCaseOperand(@PolyDet CaseNode this) {
         return caseExpr;
     }
 
     @Override
-    public CaseTree getTree() {
+    public @PolyDet CaseTree getTree(@PolyDet CaseNode this) {
         return tree;
     }
 
@@ -61,12 +63,12 @@ public class CaseNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet CaseNode this) {
         return "case " + getCaseOperand() + ":";
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(@PolyDet CaseNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof CaseNode)) {
             return false;
         }
@@ -76,7 +78,7 @@ public class CaseNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet CaseNode this) {
         return Objects.hash(getSwitchOperand(), getCaseOperand());
     }
 

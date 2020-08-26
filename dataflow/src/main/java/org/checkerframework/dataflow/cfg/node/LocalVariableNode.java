@@ -65,6 +65,7 @@ public class LocalVariableNode extends Node {
         return receiver;
     }
 
+    @SuppressWarnings("determinism") // imprecise library annotation: trees
     public @PolyDet String getName(@PolyDet LocalVariableNode this) {
         if (tree instanceof IdentifierTree) {
             return ((IdentifierTree) tree).getName().toString();
@@ -73,7 +74,7 @@ public class LocalVariableNode extends Node {
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet LocalVariableNode this) {
         return tree;
     }
 

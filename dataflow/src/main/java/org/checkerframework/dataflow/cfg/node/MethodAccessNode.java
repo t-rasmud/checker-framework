@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.element.ExecutableElement;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -33,16 +35,16 @@ public class MethodAccessNode extends Node {
         this.receiver = receiver;
     }
 
-    public ExecutableElement getMethod() {
+    public @PolyDet ExecutableElement getMethod(@PolyDet MethodAccessNode this) {
         return method;
     }
 
-    public Node getReceiver() {
+    public @PolyDet Node getReceiver(@PolyDet MethodAccessNode this) {
         return receiver;
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet MethodAccessNode this) {
         return tree;
     }
 
@@ -52,12 +54,13 @@ public class MethodAccessNode extends Node {
     }
 
     @Override
-    public String toString() {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    public @PolyDet String toString(@PolyDet MethodAccessNode this) {
         return getReceiver() + "." + method.getSimpleName();
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(@PolyDet MethodAccessNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof MethodAccessNode)) {
             return false;
         }
@@ -66,7 +69,7 @@ public class MethodAccessNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet MethodAccessNode this) {
         return Objects.hash(getReceiver(), getMethod());
     }
 

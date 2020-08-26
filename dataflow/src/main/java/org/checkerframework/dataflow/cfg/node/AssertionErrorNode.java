@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -31,16 +33,16 @@ public class AssertionErrorNode extends Node {
         this.detail = detail;
     }
 
-    public Node getCondition() {
+    public @PolyDet Node getCondition(@PolyDet AssertionErrorNode this) {
         return condition;
     }
 
-    public Node getDetail() {
+    public @PolyDet Node getDetail(@PolyDet AssertionErrorNode this) {
         return detail;
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet AssertionErrorNode this) {
         return tree;
     }
 
@@ -50,12 +52,13 @@ public class AssertionErrorNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet AssertionErrorNode this) {
         return "AssertionError(" + getDetail() + ")";
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(
+            @PolyDet AssertionErrorNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof AssertionErrorNode)) {
             return false;
         }
@@ -65,7 +68,7 @@ public class AssertionErrorNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet AssertionErrorNode this) {
         return Objects.hash(getCondition(), getDetail());
     }
 

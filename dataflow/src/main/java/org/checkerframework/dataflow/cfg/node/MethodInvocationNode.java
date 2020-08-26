@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.AssignmentContext.MethodParameterContext;
 import org.checkerframework.javacutil.TreeUtils;
@@ -57,11 +59,11 @@ public class MethodInvocationNode extends Node {
         this(null, target, arguments, treePath);
     }
 
-    public MethodAccessNode getTarget() {
+    public @PolyDet MethodAccessNode getTarget(@PolyDet MethodInvocationNode this) {
         return target;
     }
 
-    public List<Node> getArguments() {
+    public @PolyDet List<Node> getArguments(@PolyDet MethodInvocationNode this) {
         return arguments;
     }
 
@@ -74,7 +76,7 @@ public class MethodInvocationNode extends Node {
     }
 
     @Override
-    public @Nullable MethodInvocationTree getTree() {
+    public @Nullable @PolyDet MethodInvocationTree getTree(@PolyDet MethodInvocationNode this) {
         return tree;
     }
 
@@ -84,12 +86,17 @@ public class MethodInvocationNode extends Node {
     }
 
     @Override
-    public String toString() {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    public @PolyDet String toString(@PolyDet MethodInvocationNode this) {
         return target + "(" + UtilPlume.join(", ", arguments) + ")";
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    @SuppressWarnings(
+            "determinism") // method receiver can't be @OrderNonDet so @PolyDet("up") same as
+    // @PolyDet
+    public @PolyDet boolean equals(
+            @PolyDet MethodInvocationNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof MethodInvocationNode)) {
             return false;
         }
@@ -99,7 +106,7 @@ public class MethodInvocationNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet MethodInvocationNode this) {
         return Objects.hash(target, arguments);
     }
 

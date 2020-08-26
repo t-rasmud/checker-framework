@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
+import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.RequiresDetToString;
 import org.checkerframework.checker.nullness.qual.KeyFor;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.AbstractValue;
@@ -23,10 +26,10 @@ public class StringCFGVisualizer<
         extends AbstractCFGVisualizer<V, S, T> {
 
     @Override
-    public Map<String, Object> visualize(
+    public @OrderNonDet Map<String, Object> visualize(
             ControlFlowGraph cfg, Block entry, @Nullable Analysis<V, S, T> analysis) {
         String stringGraph = visualizeGraph(cfg, entry, analysis);
-        Map<String, Object> res = new HashMap<>();
+        Map<@Det String, @Det Object> res = new HashMap<>();
         res.put("stringGraph", stringGraph);
         return res;
     }
@@ -36,7 +39,7 @@ public class StringCFGVisualizer<
     public String visualizeNodes(
             Set<Block> blocks, ControlFlowGraph cfg, @Nullable Analysis<V, S, T> analysis) {
         StringJoiner sjStringNodes = new StringJoiner(lineSeparator, lineSeparator, "");
-        IdentityHashMap<Block, List<Integer>> processOrder = getProcessOrder(cfg);
+        IdentityHashMap<@Det Block, @Det List<Integer>> processOrder = getProcessOrder(cfg);
 
         // Generate all the Nodes.
         for (@KeyFor("processOrder") Block v : blocks) {
@@ -94,6 +97,8 @@ public class StringCFGVisualizer<
     }
 
     @Override
+    @RequiresDetToString
+    @SuppressWarnings("determinism") // toString is @Det because of @RequiresDetToString
     protected String format(Object obj) {
         return obj.toString();
     }

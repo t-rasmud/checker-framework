@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -28,12 +30,12 @@ public class TypeCastNode extends Node {
         this.types = types;
     }
 
-    public Node getOperand() {
+    public @PolyDet Node getOperand(@PolyDet TypeCastNode this) {
         return operand;
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet TypeCastNode this) {
         return tree;
     }
 
@@ -43,12 +45,13 @@ public class TypeCastNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet TypeCastNode this) {
         return "(" + getType() + ")" + getOperand();
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    public @PolyDet boolean equals(@PolyDet TypeCastNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof TypeCastNode)) {
             return false;
         }
@@ -58,7 +61,7 @@ public class TypeCastNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet TypeCastNode this) {
         return Objects.hash(getType(), getOperand());
     }
 

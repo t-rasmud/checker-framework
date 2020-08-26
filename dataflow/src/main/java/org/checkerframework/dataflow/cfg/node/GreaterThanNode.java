@@ -3,6 +3,8 @@ package org.checkerframework.dataflow.cfg.node;
 import com.sun.source.tree.BinaryTree;
 import com.sun.source.tree.Tree.Kind;
 import java.util.Objects;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -25,12 +27,12 @@ public class GreaterThanNode extends BinaryOperationNode {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet GreaterThanNode this) {
         return "(" + getLeftOperand() + " > " + getRightOperand() + ")";
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(@PolyDet GreaterThanNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof GreaterThanNode)) {
             return false;
         }
@@ -40,7 +42,7 @@ public class GreaterThanNode extends BinaryOperationNode {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet GreaterThanNode this) {
         return Objects.hash(getLeftOperand(), getRightOperand());
     }
 }

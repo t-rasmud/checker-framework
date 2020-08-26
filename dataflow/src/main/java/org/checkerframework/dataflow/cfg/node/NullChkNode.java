@@ -34,7 +34,7 @@ public class NullChkNode extends Node {
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet NullChkNode this) {
         return tree;
     }
 

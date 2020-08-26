@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import javax.lang.model.element.Element;
+import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.block.Block;
 import org.checkerframework.dataflow.cfg.block.ExceptionBlock;
@@ -23,10 +26,10 @@ import org.checkerframework.javacutil.BugInCF;
  * @param <V> type of the abstract value that is tracked
  * @param <S> the store type used in the analysis
  */
-public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> {
+public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Store<S>> {
 
     /** Abstract values of nodes. */
-    protected final IdentityHashMap<Node, V> nodeValues;
+    protected final @OrderNonDet IdentityHashMap<Node, V> nodeValues;
 
     /**
      * Map from AST {@link Tree}s to sets of {@link Node}s.
@@ -34,23 +37,24 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> {
      * <p>Some of those Nodes might not be keys in {@link #nodeValues}. One reason is that the Node
      * is unreachable in the control flow graph, so dataflow never gave it a value.
      */
-    protected final IdentityHashMap<Tree, Set<Node>> treeLookup;
+    protected final @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> treeLookup;
 
     /** Map from AST {@link UnaryTree}s to corresponding {@link AssignmentNode}s. */
-    protected final IdentityHashMap<UnaryTree, AssignmentNode> unaryAssignNodeLookup;
+    protected final @OrderNonDet IdentityHashMap<UnaryTree, AssignmentNode> unaryAssignNodeLookup;
 
     /** Map from (effectively final) local variable elements to their abstract value. */
-    protected final HashMap<Element, V> finalLocalValues;
+    protected final @OrderNonDet HashMap<Element, V> finalLocalValues;
 
     /** The stores before every method call. */
-    protected final IdentityHashMap<Block, TransferInput<V, S>> stores;
+    protected final @OrderNonDet IdentityHashMap<Block, TransferInput<V, S>> stores;
 
     /**
      * Caches of the analysis results for each input for the block of the node and each node.
      *
      * @see #runAnalysisFor(Node, boolean, TransferInput, IdentityHashMap, Map)
      */
-    protected final Map<TransferInput<V, S>, IdentityHashMap<Node, TransferResult<V, S>>>
+    protected final @OrderNonDet Map<
+                    TransferInput<V, S>, @OrderNonDet IdentityHashMap<Node, TransferResult<V, S>>>
             analysisCaches;
 
     /**
@@ -64,12 +68,15 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> {
      * @param analysisCaches {@link #analysisCaches}
      */
     protected AnalysisResult(
-            Map<Node, V> nodeValues,
-            IdentityHashMap<Block, TransferInput<V, S>> stores,
-            IdentityHashMap<Tree, Set<Node>> treeLookup,
-            IdentityHashMap<UnaryTree, AssignmentNode> unaryAssignNodeLookup,
-            HashMap<Element, V> finalLocalValues,
-            Map<TransferInput<V, S>, IdentityHashMap<Node, TransferResult<V, S>>> analysisCaches) {
+            @OrderNonDet Map<Node, V> nodeValues,
+            @OrderNonDet IdentityHashMap<Block, TransferInput<V, S>> stores,
+            @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> treeLookup,
+            @OrderNonDet IdentityHashMap<UnaryTree, AssignmentNode> unaryAssignNodeLookup,
+            @OrderNonDet HashMap<Element, V> finalLocalValues,
+                    @OrderNonDet Map<
+                                    TransferInput<V, S>,
+                                    @OrderNonDet IdentityHashMap<Node, TransferResult<V, S>>>
+                            analysisCaches) {
         this.nodeValues = new IdentityHashMap<>(nodeValues);
         this.treeLookup = new IdentityHashMap<>(treeLookup);
         this.unaryAssignNodeLookup = new IdentityHashMap<>(unaryAssignNodeLookup);
@@ -89,11 +96,11 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> {
      * @param finalLocalValues {@link #finalLocalValues}
      */
     public AnalysisResult(
-            Map<Node, V> nodeValues,
-            IdentityHashMap<Block, TransferInput<V, S>> stores,
-            IdentityHashMap<Tree, Set<Node>> treeLookup,
-            IdentityHashMap<UnaryTree, AssignmentNode> unaryAssignNodeLookup,
-            HashMap<Element, V> finalLocalValues) {
+            @OrderNonDet Map<Node, V> nodeValues,
+            @OrderNonDet IdentityHashMap<Block, TransferInput<V, S>> stores,
+            @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> treeLookup,
+            @OrderNonDet IdentityHashMap<UnaryTree, AssignmentNode> unaryAssignNodeLookup,
+            @OrderNonDet HashMap<Element, V> finalLocalValues) {
         this(
                 nodeValues,
                 stores,
@@ -109,7 +116,10 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> {
      * @param analysisCaches {@link #analysisCaches}
      */
     public AnalysisResult(
-            Map<TransferInput<V, S>, IdentityHashMap<Node, TransferResult<V, S>>> analysisCaches) {
+                    @OrderNonDet Map<
+                                    TransferInput<V, S>,
+                                    @OrderNonDet IdentityHashMap<Node, TransferResult<V, S>>>
+                            analysisCaches) {
         this(
                 new IdentityHashMap<>(),
                 new IdentityHashMap<>(),
@@ -138,9 +148,10 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> {
      * @param treeLookup a map from abstract syntax trees to sets of nodes
      * @param otherTreeLookup another treeLookup that will be merged into {@code treeLookup}
      */
+    @SuppressWarnings("determinism") // process order insensitive
     private static void mergeTreeLookup(
-            IdentityHashMap<Tree, Set<Node>> treeLookup,
-            IdentityHashMap<Tree, Set<Node>> otherTreeLookup) {
+            @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> treeLookup,
+            @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> otherTreeLookup) {
         for (Map.Entry<Tree, Set<Node>> entry : otherTreeLookup.entrySet()) {
             Set<Node> hit = treeLookup.get(entry.getKey());
             if (hit == null) {
@@ -156,7 +167,7 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> {
      *
      * @return the value of effectively final local variables
      */
-    public HashMap<Element, V> getFinalLocalValues() {
+    public @OrderNonDet HashMap<Element, V> getFinalLocalValues() {
         return finalLocalValues;
     }
 
@@ -182,8 +193,9 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> {
      * @return the abstract value for {@link Tree} {@code t}, or {@code null} if no information is
      *     available
      */
+    @SuppressWarnings("determinism") // process order insensitive
     public @Nullable V getValue(Tree t) {
-        Set<Node> nodes = treeLookup.get(t);
+        @OrderNonDet Set<Node> nodes = treeLookup.get(t);
 
         if (nodes == null) {
             return null;
@@ -220,7 +232,7 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> {
      * @param tree a tree
      * @return the set of {@link Node}s for a given {@link Tree}
      */
-    public @Nullable Set<Node> getNodesForTree(Tree tree) {
+    public @OrderNonDet @Nullable Set<Node> getNodesForTree(Tree tree) {
         return treeLookup.get(tree);
     }
 
@@ -244,13 +256,14 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> {
      * @return the store immediately before a given {@link Tree}
      */
     public @Nullable S getStoreBefore(Tree tree) {
-        Set<Node> nodes = getNodesForTree(tree);
+        @OrderNonDet Set<Node> nodes = getNodesForTree(tree);
         if (nodes == null) {
             return null;
         }
         S merged = null;
         for (Node node : nodes) {
-            S s = getStoreBefore(node);
+            @SuppressWarnings("determinism") // process order insensitive
+            @Det S s = getStoreBefore(node);
             if (merged == null) {
                 merged = s;
             } else if (s != null) {
@@ -341,13 +354,14 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> {
      * @return the store immediately after a given {@link Tree}
      */
     public @Nullable S getStoreAfter(Tree tree) {
-        Set<Node> nodes = getNodesForTree(tree);
+        @OrderNonDet Set<Node> nodes = getNodesForTree(tree);
         if (nodes == null) {
             return null;
         }
         S merged = null;
         for (Node node : nodes) {
-            S s = getStoreAfter(node);
+            @SuppressWarnings("determinism") // process order insensitive
+            @Det S s = getStoreAfter(node);
             if (merged == null) {
                 merged = s;
             } else if (s != null) {
@@ -414,12 +428,15 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> {
      * @return the store before or after {@code node} (depends on the value of {@code before}) after
      *     running the analysis
      */
-    public static <V extends AbstractValue<V>, S extends Store<S>> S runAnalysisFor(
+    public static <V extends @Det AbstractValue<V>, S extends Store<S>> S runAnalysisFor(
             Node node,
             boolean before,
             TransferInput<V, S> transferInput,
-            IdentityHashMap<Node, V> nodeValues,
-            Map<TransferInput<V, S>, IdentityHashMap<Node, TransferResult<V, S>>> analysisCaches) {
+            @OrderNonDet IdentityHashMap<Node, V> nodeValues,
+                    @OrderNonDet Map<
+                                    TransferInput<V, S>,
+                                    @OrderNonDet IdentityHashMap<Node, TransferResult<V, S>>>
+                            analysisCaches) {
         if (transferInput.analysis == null) {
             throw new BugInCF("Analysis in transferInput cannot be null.");
         }
@@ -432,7 +449,8 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> {
      *
      * @return a string representation of this
      */
-    public String toStringDebug() {
+    @SuppressWarnings("determinism") // nondeterminism reflected in return type
+    public @NonDet String toStringDebug() {
         StringJoiner result =
                 new StringJoiner(
                         String.format("%n  "),
@@ -455,7 +473,9 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> {
      * @param nodeValues a map to format
      * @return a printed representation of the given map
      */
-    public static <V> String nodeValuesToString(Map<Node, V> nodeValues) {
+    @SuppressWarnings("determinism") // nondeterminism reflected in return type
+    public static <V extends @Det Object> @NonDet String nodeValuesToString(
+            @OrderNonDet Map<@Det Node, V> nodeValues) {
         if (nodeValues.isEmpty()) {
             return "{}";
         }
@@ -476,7 +496,9 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> {
      * @param treeLookup a map to format
      * @return a printed representation of the given map
      */
-    public static String treeLookupToString(Map<Tree, Set<Node>> treeLookup) {
+    @SuppressWarnings("determinism") // nondeterminism reflected in return type
+    public static @NonDet String treeLookupToString(
+            @OrderNonDet Map<Tree, @OrderNonDet Set<Node>> treeLookup) {
         if (treeLookup.isEmpty()) {
             return "{}";
         }

@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.PolyNull;
 import org.checkerframework.javacutil.BugInCF;
@@ -13,6 +16,7 @@ import org.checkerframework.javacutil.BugInCF;
  * Base class for arbitrary-size sets that very efficient (more efficient than HashSet) for 0 and 1
  * elements.
  */
+@SuppressWarnings("determinism") // not type checking collections
 public abstract class AbstractMostlySingleton<T extends Object> implements Set<T> {
 
     /** The possible states of this set. */
@@ -30,22 +34,22 @@ public abstract class AbstractMostlySingleton<T extends Object> implements Set<T
     /** The current value, non-null when the state is SINGLETON. */
     protected @Nullable T value;
     /** The wrapped set, non-null when the state is ANY. */
-    protected @Nullable Set<T> set;
+    protected @OrderNonDet @Nullable Set<T> set;
 
     /** Create an AbstractMostlySingleton. */
-    protected AbstractMostlySingleton(State s) {
+    protected @OrderNonDet AbstractMostlySingleton(State s) {
         this.state = s;
         this.value = null;
     }
 
     /** Create an AbstractMostlySingleton. */
-    protected AbstractMostlySingleton(State s, T v) {
+    protected @OrderNonDet AbstractMostlySingleton(State s, T v) {
         this.state = s;
         this.value = v;
     }
 
     @Override
-    public int size() {
+    public @PolyDet("down") int size(@PolyDet AbstractMostlySingleton<T> this) {
         switch (state) {
             case EMPTY:
                 return 0;
@@ -60,12 +64,12 @@ public abstract class AbstractMostlySingleton<T extends Object> implements Set<T
     }
 
     @Override
-    public boolean isEmpty() {
+    public @PolyDet("down") boolean isEmpty(@PolyDet AbstractMostlySingleton<T> this) {
         return size() == 0;
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public @PolyDet Iterator<T> iterator(@PolyDet AbstractMostlySingleton<T> this) {
         switch (state) {
             case EMPTY:
                 return Collections.emptyIterator();
@@ -104,7 +108,7 @@ public abstract class AbstractMostlySingleton<T extends Object> implements Set<T
     }
 
     @Override
-    public String toString() {
+    public @NonDet String toString(@PolyDet AbstractMostlySingleton<T> this) {
         switch (state) {
             case EMPTY:
                 return "[]";
@@ -119,7 +123,8 @@ public abstract class AbstractMostlySingleton<T extends Object> implements Set<T
     }
 
     @Override
-    public boolean addAll(Collection<? extends T> c) {
+    public @PolyDet("down") boolean addAll(
+            @PolyDet AbstractMostlySingleton<T> this, @PolyDet("use") Collection<? extends T> c) {
         boolean res = false;
         for (T elem : c) {
             res |= add(elem);

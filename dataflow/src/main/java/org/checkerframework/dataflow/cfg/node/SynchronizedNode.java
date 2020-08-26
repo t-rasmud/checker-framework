@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -28,11 +30,11 @@ public class SynchronizedNode extends Node {
     }
 
     @Override
-    public @Nullable Tree getTree() {
+    public @PolyDet @Nullable Tree getTree(@PolyDet SynchronizedNode this) {
         return tree;
     }
 
-    public Node getExpression() {
+    public @PolyDet Node getExpression(@PolyDet SynchronizedNode this) {
         return expression;
     }
 
@@ -46,7 +48,8 @@ public class SynchronizedNode extends Node {
     }
 
     @Override
-    public String toString() {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    public @PolyDet String toString(@PolyDet SynchronizedNode this) {
         StringBuilder sb = new StringBuilder();
         sb.append("synchronized (");
         sb.append(expression);
@@ -55,7 +58,8 @@ public class SynchronizedNode extends Node {
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    public @PolyDet boolean equals(@PolyDet SynchronizedNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof SynchronizedNode)) {
             return false;
         }
@@ -66,7 +70,7 @@ public class SynchronizedNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet SynchronizedNode this) {
         return Objects.hash(tree, startOfBlock, getExpression());
     }
 

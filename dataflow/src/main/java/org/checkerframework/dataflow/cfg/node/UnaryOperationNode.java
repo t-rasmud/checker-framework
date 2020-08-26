@@ -33,7 +33,7 @@ public abstract class UnaryOperationNode extends Node {
     }
 
     @Override
-    public UnaryTree getTree() {
+    public @PolyDet UnaryTree getTree(@PolyDet UnaryOperationNode this) {
         return tree;
     }
 

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.interning.qual.FindDistinct;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.RequiresNonNull;
@@ -46,7 +48,7 @@ public class ForwardAnalysisImpl<
      * Number of times each block has been analyzed since the last time widening was applied. Null
      * if maxCountBeforeWidening is -1, which implies widening isn't used for this analysis.
      */
-    protected final @Nullable IdentityHashMap<Block, Integer> blockCount;
+    protected final @Nullable @OrderNonDet IdentityHashMap<Block, Integer> blockCount;
 
     /**
      * Number of times a block can be analyzed before widening. -1 implies that widening shouldn't
@@ -55,13 +57,14 @@ public class ForwardAnalysisImpl<
     protected final int maxCountBeforeWidening;
 
     /** Then stores before every basic block (assumed to be 'no information' if not present). */
-    protected final IdentityHashMap<Block, S> thenStores;
+    protected final @OrderNonDet IdentityHashMap<Block, S> thenStores;
 
     /** Else stores before every basic block (assumed to be 'no information' if not present). */
-    protected final IdentityHashMap<Block, S> elseStores;
+    protected final @OrderNonDet IdentityHashMap<Block, S> elseStores;
 
     /** The stores after every return statement. */
-    protected final IdentityHashMap<ReturnNode, TransferResult<V, S>> storesAtReturnStatements;
+    protected final @OrderNonDet IdentityHashMap<ReturnNode, TransferResult<V, S>>
+            storesAtReturnStatements;
 
     // `@code`, not `@link`, because dataflow module doesn't depend on framework module.
     /**
@@ -241,14 +244,17 @@ public class ForwardAnalysisImpl<
             @FindDistinct Node node,
             boolean before,
             TransferInput<V, S> transferInput,
-            IdentityHashMap<Node, V> nodeValues,
-            Map<TransferInput<V, S>, IdentityHashMap<Node, TransferResult<V, S>>> analysisCaches) {
+            @OrderNonDet IdentityHashMap<Node, V> nodeValues,
+                    @OrderNonDet Map<
+                                    TransferInput<V, S>,
+                                    @OrderNonDet IdentityHashMap<Node, TransferResult<V, S>>>
+                            analysisCaches) {
         Block block = node.getBlock();
         assert block != null : "@AssumeAssertion(nullness): invariant";
         Node oldCurrentNode = currentNode;
 
         // Prepare cache
-        IdentityHashMap<Node, TransferResult<V, S>> cache;
+        @OrderNonDet IdentityHashMap<Node, TransferResult<V, S>> cache;
         if (analysisCaches != null) {
             cache = analysisCaches.get(transferInput);
             if (cache == null) {
@@ -465,7 +471,7 @@ public class ForwardAnalysisImpl<
             Block b, @Nullable Node node, S s, Store.Kind kind, boolean addBlockToWorklist) {
         S thenStore = getStoreBefore(b, Store.Kind.THEN);
         S elseStore = getStoreBefore(b, Store.Kind.ELSE);
-        boolean shouldWiden = false;
+        @Det boolean shouldWiden = false;
         if (blockCount != null) {
             Integer count = blockCount.get(b);
             if (count == null) {

@@ -8,6 +8,8 @@ import java.util.Objects;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -39,17 +41,17 @@ public class InstanceOfNode extends Node {
         this.types = types;
     }
 
-    public Node getOperand() {
+    public @PolyDet Node getOperand(@PolyDet InstanceOfNode this) {
         return operand;
     }
 
     /** The reference type being tested against. */
-    public TypeMirror getRefType() {
+    public @PolyDet TypeMirror getRefType(@PolyDet InstanceOfNode this) {
         return refType;
     }
 
     @Override
-    public InstanceOfTree getTree() {
+    public @PolyDet InstanceOfTree getTree(@PolyDet InstanceOfNode this) {
         return tree;
     }
 
@@ -59,12 +61,13 @@ public class InstanceOfNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet InstanceOfNode this) {
         return "(" + getOperand() + " instanceof " + getRefType() + ")";
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    public @PolyDet boolean equals(@PolyDet InstanceOfNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof InstanceOfNode)) {
             return false;
         }
@@ -76,7 +79,7 @@ public class InstanceOfNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet InstanceOfNode this) {
         return Objects.hash(InstanceOfNode.class, getOperand());
     }
 

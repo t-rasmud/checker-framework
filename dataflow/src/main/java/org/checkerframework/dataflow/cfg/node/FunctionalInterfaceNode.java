@@ -6,6 +6,8 @@ import com.sun.source.tree.Tree;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.BugInCF;
 import org.checkerframework.javacutil.TreeUtils;
@@ -43,7 +45,7 @@ public class FunctionalInterfaceNode extends Node {
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet FunctionalInterfaceNode this) {
         return tree;
     }
 
@@ -53,7 +55,8 @@ public class FunctionalInterfaceNode extends Node {
     }
 
     @Override
-    public String toString() {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    public @PolyDet String toString(@PolyDet FunctionalInterfaceNode this) {
         if (tree instanceof LambdaExpressionTree) {
             return "FunctionalInterfaceNode:" + ((LambdaExpressionTree) tree).getBodyKind();
         } else if (tree instanceof MemberReferenceTree) {
@@ -65,7 +68,9 @@ public class FunctionalInterfaceNode extends Node {
     }
 
     @Override
-    public boolean equals(@Nullable Object o) {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    public @PolyDet boolean equals(
+            @PolyDet FunctionalInterfaceNode this, @PolyDet @Nullable Object o) {
         if (this == o) {
             return true;
         }
@@ -79,7 +84,7 @@ public class FunctionalInterfaceNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet FunctionalInterfaceNode this) {
         return Objects.hash(tree);
     }
 

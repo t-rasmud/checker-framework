@@ -68,6 +68,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.interning.qual.PolyInterned;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -193,7 +194,8 @@ public final class TreeUtils {
      * @param kinds the set of kinds of the desired tree
      * @return the enclosing tree of the given type as given by the path, {@code null} otherwise
      */
-    public static @Nullable Tree enclosingOfKind(final TreePath path, final Set<Tree.Kind> kinds) {
+    public static @Nullable Tree enclosingOfKind(
+            final TreePath path, final @OrderNonDet Set<Tree.Kind> kinds) {
         TreePath p = path;
 
         while (p != null) {

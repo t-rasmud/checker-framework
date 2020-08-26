@@ -42,7 +42,7 @@ public class ArrayAccessNode extends Node {
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet ArrayAccessNode this) {
         return tree;
     }
 

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.javacutil.BugInCF;
@@ -18,7 +20,7 @@ public class ExceptionBlockImpl extends SingleSuccessorBlockImpl implements Exce
     protected @Nullable Node node;
 
     /** Set of exceptional successors. */
-    protected final Map<TypeMirror, Set<Block>> exceptionalSuccessors;
+    protected final @Det Map<TypeMirror, @Det Set<Block>> exceptionalSuccessors;
 
     /** Create an empty exceptional block. */
     public ExceptionBlockImpl() {
@@ -62,7 +64,7 @@ public class ExceptionBlockImpl extends SingleSuccessorBlockImpl implements Exce
      * @param cause the exception type that leads to the given block
      */
     public void addExceptionalSuccessor(BlockImpl b, TypeMirror cause) {
-        Set<Block> blocks = exceptionalSuccessors.get(cause);
+        Set<@Det Block> blocks = exceptionalSuccessors.get(cause);
         if (blocks == null) {
             blocks = new LinkedHashSet<>();
             exceptionalSuccessors.put(cause, blocks);
@@ -81,15 +83,15 @@ public class ExceptionBlockImpl extends SingleSuccessorBlockImpl implements Exce
 
     @Override
     public Set<Block> getSuccessors() {
-        Set<Block> result = new LinkedHashSet<>(super.getSuccessors());
-        for (Set<? extends Block> blocks : getExceptionalSuccessors().values()) {
+        Set<@Det Block> result = new LinkedHashSet<>(super.getSuccessors());
+        for (@Det Set<? extends Block> blocks : getExceptionalSuccessors().values()) {
             result.addAll(blocks);
         }
         return result;
     }
 
     @Override
-    public String toString() {
+    public String toString(@PolyDet ExceptionBlockImpl this) {
         return "ExceptionBlock(" + node + ")";
     }
 }

@@ -3,6 +3,7 @@ package org.checkerframework.dataflow.analysis;
 import com.sun.source.tree.Tree;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.ControlFlowGraph;
 import org.checkerframework.dataflow.cfg.block.Block;
@@ -81,8 +82,11 @@ public interface Analysis<
             Node node,
             boolean before,
             TransferInput<V, S> transferInput,
-            IdentityHashMap<Node, V> nodeValues,
-            Map<TransferInput<V, S>, IdentityHashMap<Node, TransferResult<V, S>>> analysisCaches);
+            @OrderNonDet IdentityHashMap<Node, V> nodeValues,
+                    @OrderNonDet Map<
+                                    TransferInput<V, S>,
+                                    @OrderNonDet IdentityHashMap<Node, TransferResult<V, S>>>
+                            analysisCaches);
 
     /**
      * The result of running the analysis. This is only available once the analysis finished

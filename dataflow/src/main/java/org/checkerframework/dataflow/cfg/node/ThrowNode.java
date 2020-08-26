@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -27,12 +29,12 @@ public class ThrowNode extends Node {
         this.expression = expression;
     }
 
-    public Node getExpression() {
+    public @PolyDet Node getExpression(@PolyDet ThrowNode this) {
         return expression;
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet ThrowNode this) {
         return tree;
     }
 
@@ -42,12 +44,12 @@ public class ThrowNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet ThrowNode this) {
         return "throw " + expression;
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(@PolyDet ThrowNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ThrowNode)) {
             return false;
         }
@@ -56,7 +58,7 @@ public class ThrowNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet ThrowNode this) {
         return Objects.hash(ThrowNode.class, expression);
     }
 

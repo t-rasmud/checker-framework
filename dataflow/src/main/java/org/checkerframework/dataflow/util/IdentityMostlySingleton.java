@@ -2,6 +2,8 @@ package org.checkerframework.dataflow.util;
 
 import java.util.Collections;
 import java.util.IdentityHashMap;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.interning.qual.FindDistinct;
 import org.checkerframework.javacutil.BugInCF;
 
@@ -9,21 +11,23 @@ import org.checkerframework.javacutil.BugInCF;
  * An arbitrary-size set that is very efficient (more efficient than HashSet) for 0 and 1 elements.
  * Uses object identity for object comparison.
  */
+@SuppressWarnings("determinism") // not type checking collections
 public final class IdentityMostlySingleton<T extends Object> extends AbstractMostlySingleton<T> {
 
     /** Create an IdentityMostlySingleton. */
-    public IdentityMostlySingleton() {
+    public @OrderNonDet IdentityMostlySingleton() {
         super(State.EMPTY);
     }
 
     /** Create an IdentityMostlySingleton. */
-    public IdentityMostlySingleton(T value) {
+    public @OrderNonDet IdentityMostlySingleton(T value) {
         super(State.SINGLETON, value);
     }
 
     @Override
     @SuppressWarnings("fallthrough")
-    public boolean add(@FindDistinct T e) {
+    public @PolyDet("down") boolean add(
+            @PolyDet IdentityMostlySingleton<T> this, @PolyDet @FindDistinct T e) {
         switch (state) {
             case EMPTY:
                 state = State.SINGLETON;
@@ -49,7 +53,8 @@ public final class IdentityMostlySingleton<T extends Object> extends AbstractMos
 
     @SuppressWarnings("interning:not.interned") // this class uses object identity
     @Override
-    public boolean contains(Object o) {
+    public @PolyDet("down") boolean contains(
+            @PolyDet IdentityMostlySingleton<T> this, @PolyDet Object o) {
         switch (state) {
             case EMPTY:
                 return false;

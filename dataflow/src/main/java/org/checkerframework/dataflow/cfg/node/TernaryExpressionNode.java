@@ -5,6 +5,8 @@ import com.sun.source.tree.Tree.Kind;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -32,20 +34,20 @@ public class TernaryExpressionNode extends Node {
         this.elseOperand = elseOperand;
     }
 
-    public Node getConditionOperand() {
+    public @PolyDet Node getConditionOperand(@PolyDet TernaryExpressionNode this) {
         return condition;
     }
 
-    public Node getThenOperand() {
+    public @PolyDet Node getThenOperand(@PolyDet TernaryExpressionNode this) {
         return thenOperand;
     }
 
-    public Node getElseOperand() {
+    public @PolyDet Node getElseOperand(@PolyDet TernaryExpressionNode this) {
         return elseOperand;
     }
 
     @Override
-    public ConditionalExpressionTree getTree() {
+    public @PolyDet ConditionalExpressionTree getTree(@PolyDet TernaryExpressionNode this) {
         return tree;
     }
 
@@ -55,7 +57,7 @@ public class TernaryExpressionNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet TernaryExpressionNode this) {
         return "("
                 + getConditionOperand()
                 + " ? "
@@ -66,7 +68,8 @@ public class TernaryExpressionNode extends Node {
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(
+            @PolyDet TernaryExpressionNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof TernaryExpressionNode)) {
             return false;
         }
@@ -77,7 +80,7 @@ public class TernaryExpressionNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet TernaryExpressionNode this) {
         return Objects.hash(getConditionOperand(), getThenOperand(), getElseOperand());
     }
 

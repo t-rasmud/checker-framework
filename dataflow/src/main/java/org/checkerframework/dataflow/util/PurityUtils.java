@@ -4,6 +4,7 @@ import com.sun.source.tree.MethodTree;
 import java.util.EnumSet;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.dataflow.qual.Deterministic;
 import org.checkerframework.dataflow.qual.Pure;
 import org.checkerframework.dataflow.qual.Pure.Kind;
@@ -67,7 +68,7 @@ public class PurityUtils {
      * @return whether the method is deterministic
      */
     public static boolean isDeterministic(AnnotationProvider provider, Element methodElement) {
-        EnumSet<Pure.Kind> kinds = getPurityKinds(provider, methodElement);
+        EnumSet<Pure.@Det Kind> kinds = getPurityKinds(provider, methodElement);
         return kinds.contains(Kind.DETERMINISTIC);
     }
 
@@ -94,7 +95,7 @@ public class PurityUtils {
      * @return whether the method is side-effect-free
      */
     public static boolean isSideEffectFree(AnnotationProvider provider, Element methodElement) {
-        EnumSet<Pure.Kind> kinds = getPurityKinds(provider, methodElement);
+        EnumSet<Pure.@Det Kind> kinds = getPurityKinds(provider, methodElement);
         return kinds.contains(Kind.SIDE_EFFECT_FREE);
     }
 
@@ -133,7 +134,7 @@ public class PurityUtils {
         if (pureAnnotation != null) {
             return EnumSet.of(Kind.DETERMINISTIC, Kind.SIDE_EFFECT_FREE);
         }
-        EnumSet<Pure.Kind> result = EnumSet.noneOf(Pure.Kind.class);
+        EnumSet<Pure.@Det Kind> result = EnumSet.noneOf(Pure.Kind.class);
         if (sefAnnotation != null) {
             result.add(Kind.SIDE_EFFECT_FREE);
         }

@@ -26,6 +26,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.interning.qual.EqualsMethod;
@@ -175,11 +176,11 @@ public class FlowExpressions {
         } else if (receiverNode instanceof ArrayCreationNode) {
             ArrayCreationNode an = (ArrayCreationNode) receiverNode;
             List<Receiver> dimensions = new ArrayList<>();
-            for (Node dimension : an.getDimensions()) {
+            for (@Det Node dimension : an.getDimensions()) {
                 dimensions.add(internalReprOf(provider, dimension, allowNonDeterministic));
             }
             List<Receiver> initializers = new ArrayList<>();
-            for (Node initializer : an.getInitializers()) {
+            for (@Det Node initializer : an.getInitializers()) {
                 initializers.add(internalReprOf(provider, initializer, allowNonDeterministic));
             }
             receiver = new ArrayCreation(an.getType(), dimensions, initializers);
@@ -194,7 +195,7 @@ public class FlowExpressions {
 
             if (allowNonDeterministic || PurityUtils.isDeterministic(provider, invokedMethod)) {
                 List<Receiver> parameters = new ArrayList<>();
-                for (Node p : mn.getArguments()) {
+                for (@Det Node p : mn.getArguments()) {
                     parameters.add(internalReprOf(provider, p));
                 }
                 Receiver methodReceiver;
@@ -854,6 +855,7 @@ public class FlowExpressions {
         }
 
         @Override
+        @SuppressWarnings("determinism") // imprecise library annotation: elements
         public @PolyDet String toString(@PolyDet LocalVariable this) {
             return element.toString();
         }

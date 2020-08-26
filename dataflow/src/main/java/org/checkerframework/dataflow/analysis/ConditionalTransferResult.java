@@ -3,6 +3,7 @@ package org.checkerframework.dataflow.analysis;
 import java.util.Map;
 import java.util.StringJoiner;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -115,7 +116,7 @@ public class ConditionalTransferResult<V extends AbstractValue<V>, S extends Sto
 
     /** The regular result store. */
     @Override
-    public S getRegularStore() {
+    public S getRegularStore(ConditionalTransferResult<V, S> this) {
         return thenStore.leastUpperBound(elseStore);
     }
 
@@ -135,7 +136,8 @@ public class ConditionalTransferResult<V extends AbstractValue<V>, S extends Sto
     }
 
     @Override
-    public String toString() {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    public @PolyDet String toString(@PolyDet ConditionalTransferResult<V, S> this) {
         StringJoiner result = new StringJoiner(System.lineSeparator());
         result.add("RegularTransferResult(");
         result.add("  resultValue = " + resultValue);

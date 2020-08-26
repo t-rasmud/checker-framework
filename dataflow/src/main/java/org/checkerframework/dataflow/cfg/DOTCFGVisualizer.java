@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
+import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.nullness.qual.KeyFor;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.AbstractValue;
@@ -41,14 +43,14 @@ public class DOTCFGVisualizer<
     protected @Nullable String checkerName;
 
     /** Mapping from class/method representation to generated dot file. */
-    protected Map<String, String> generated;
+    protected @OrderNonDet Map<String, String> generated;
 
     /** Terminator for lines that are left-justified. */
     protected static final String leftJustifiedTerminator = "\\l";
 
     @Override
     @SuppressWarnings("nullness") // assume arguments are set correctly
-    public void init(Map<String, Object> args) {
+    public void init(@OrderNonDet Map<String, Object> args) {
         super.init(args);
         this.outDir = (String) args.get("outdir");
         if (this.outDir == null) {
@@ -60,7 +62,7 @@ public class DOTCFGVisualizer<
     }
 
     @Override
-    public @Nullable Map<String, Object> visualize(
+    public @Nullable @OrderNonDet Map<String, Object> visualize(
             ControlFlowGraph cfg, Block entry, @Nullable Analysis<V, S, T> analysis) {
 
         String dotGraph = visualizeGraph(cfg, entry, analysis);
@@ -75,7 +77,7 @@ public class DOTCFGVisualizer<
             throw new UserError("Error creating dot file (is the path valid?): " + dotFileName, e);
         }
 
-        Map<String, Object> res = new HashMap<>();
+        Map<@Det String, @Det Object> res = new HashMap<>();
         res.put("dotFileName", dotFileName);
 
         return res;
@@ -89,7 +91,7 @@ public class DOTCFGVisualizer<
         StringBuilder sbDotNodes = new StringBuilder();
         sbDotNodes.append(lineSeparator);
 
-        IdentityHashMap<Block, List<Integer>> processOrder = getProcessOrder(cfg);
+        IdentityHashMap<@Det Block, @Det List<Integer>> processOrder = getProcessOrder(cfg);
 
         // Definition of all nodes including their labels.
         for (@KeyFor("processOrder") Block v : blocks) {
@@ -176,7 +178,8 @@ public class DOTCFGVisualizer<
 
         if (ast.getKind() == UnderlyingAST.Kind.ARBITRARY_CODE) {
             CFGStatement cfgStatement = (CFGStatement) ast;
-            String clsName = cfgStatement.getClassTree().getSimpleName().toString();
+            @SuppressWarnings("determinism") // imprecise library annotation: trees
+            @Det String clsName = cfgStatement.getClassTree().getSimpleName().toString();
             outFile.append(clsName);
             outFile.append("-initializer-");
             outFile.append(ast.hashCode());
@@ -188,11 +191,15 @@ public class DOTCFGVisualizer<
             srcLoc.append(">");
         } else if (ast.getKind() == UnderlyingAST.Kind.METHOD) {
             CFGMethod cfgMethod = (CFGMethod) ast;
-            String clsName = cfgMethod.getClassTree().getSimpleName().toString();
-            String methodName = cfgMethod.getMethod().getName().toString();
+            @SuppressWarnings("determinism") // imprecise library annotation: trees
+            @Det String clsName = cfgMethod.getClassTree().getSimpleName().toString();
+            @SuppressWarnings("determinism") // imprecise library annotation: trees
+            @Det String methodName = cfgMethod.getMethod().getName().toString();
             StringJoiner params = new StringJoiner(",");
             for (VariableTree tree : cfgMethod.getMethod().getParameters()) {
-                params.add(tree.getType().toString());
+                @SuppressWarnings("determinism") // imprecise library annotation: trees
+                @Det String tmp = tree.getType().toString();
+                params.add(tmp);
             }
             outFile.append(clsName);
             outFile.append("-");
@@ -213,8 +220,10 @@ public class DOTCFGVisualizer<
             srcLoc.append(">");
         } else if (ast.getKind() == UnderlyingAST.Kind.LAMBDA) {
             CFGLambda cfgLambda = (CFGLambda) ast;
-            String clsName = cfgLambda.getClassTree().getSimpleName().toString();
-            String methodName = cfgLambda.getMethod().getName().toString();
+            @SuppressWarnings("determinism") // imprecise library annotation: trees
+            @Det String clsName = cfgLambda.getClassTree().getSimpleName().toString();
+            @SuppressWarnings("determinism") // imprecise library annotation: trees
+            @Det String methodName = cfgLambda.getMethod().getName().toString();
             int hashCode = cfgLambda.getCode().hashCode();
             outFile.append(clsName);
             outFile.append("-");

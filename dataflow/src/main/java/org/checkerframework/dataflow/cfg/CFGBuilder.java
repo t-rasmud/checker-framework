@@ -92,6 +92,10 @@ import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.UnionType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.interning.qual.FindDistinct;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.Store;
@@ -354,7 +358,7 @@ public class CFGBuilder {
          * @return the label associated with this extended node (only applicable if type is {@link
          *     ExtendedNodeType#CONDITIONAL_JUMP} or {@link ExtendedNodeType#UNCONDITIONAL_JUMP})
          */
-        public Label getLabel() {
+        public @PolyDet Label getLabel() {
             assert false;
             return null;
         }
@@ -368,7 +372,7 @@ public class CFGBuilder {
         }
 
         @Override
-        public String toString() {
+        public @PolyDet String toString(@PolyDet ExtendedNode this) {
             throw new BugInCF("DO NOT CALL ExtendedNode.toString(). Write your own.");
         }
 
@@ -377,7 +381,7 @@ public class CFGBuilder {
          *
          * @return a string representation of this
          */
-        abstract String toStringDebug();
+        abstract @NonDet String toStringDebug();
     }
 
     /** An extended node of type {@code NODE}. */
@@ -402,12 +406,12 @@ public class CFGBuilder {
         }
 
         @Override
-        public String toString() {
+        public @PolyDet String toString(@PolyDet NodeHolder this) {
             return "NodeHolder(" + node + ")";
         }
 
         @Override
-        public String toStringDebug() {
+        public @NonDet String toStringDebug() {
             return "NodeHolder(" + node.toStringDebug() + ")";
         }
     }
@@ -422,7 +426,7 @@ public class CFGBuilder {
          * Map from exception type to labels of successors that may be reached as a result of that
          * exception.
          */
-        protected final Map<TypeMirror, Set<Label>> exceptions;
+        protected final @OrderNonDet Map<@Det TypeMirror, @OrderNonDet Set<Label>> exceptions;
 
         /**
          * Construct a NodeWithExceptionsHolder for the given node and exceptions.
@@ -430,7 +434,8 @@ public class CFGBuilder {
          * @param node the node to hold
          * @param exceptions the exceptions to hold
          */
-        public NodeWithExceptionsHolder(Node node, Map<TypeMirror, Set<Label>> exceptions) {
+        public NodeWithExceptionsHolder(
+                Node node, @OrderNonDet Map<@Det TypeMirror, @OrderNonDet Set<Label>> exceptions) {
             super(ExtendedNodeType.EXCEPTION_NODE);
             this.node = node;
             this.exceptions = exceptions;
@@ -441,7 +446,7 @@ public class CFGBuilder {
          *
          * @return exceptions for the node
          */
-        public Map<TypeMirror, Set<Label>> getExceptions() {
+        public @OrderNonDet Map<@Det TypeMirror, @OrderNonDet Set<Label>> getExceptions() {
             return exceptions;
         }
 
@@ -451,12 +456,12 @@ public class CFGBuilder {
         }
 
         @Override
-        public String toString() {
+        public @PolyDet String toString(@PolyDet NodeWithExceptionsHolder this) {
             return "NodeWithExceptionsHolder(" + node + ")";
         }
 
         @Override
-        public String toStringDebug() {
+        public @NonDet String toStringDebug() {
             return "NodeWithExceptionsHolder(" + node.toStringDebug() + ")";
         }
     }
@@ -495,11 +500,11 @@ public class CFGBuilder {
             this.falseSucc = falseSucc;
         }
 
-        public Label getThenLabel() {
+        public @PolyDet Label getThenLabel(@PolyDet ConditionalJump this) {
             return trueSucc;
         }
 
-        public Label getElseLabel() {
+        public @PolyDet Label getElseLabel(@PolyDet ConditionalJump this) {
             return falseSucc;
         }
 
@@ -526,7 +531,7 @@ public class CFGBuilder {
          * @see org.checkerframework.dataflow.cfg.CFGBuilder.PhaseOneResult#nodeToString
          */
         @Override
-        public String toString() {
+        public @PolyDet String toString(@PolyDet ConditionalJump this) {
             return "TwoTargetConditionalJump(" + getThenLabel() + ", " + getElseLabel() + ")";
         }
 
@@ -554,7 +559,7 @@ public class CFGBuilder {
         }
 
         @Override
-        public Label getLabel() {
+        public @PolyDet Label getLabel(@PolyDet UnconditionalJump this) {
             return jumpTarget;
         }
 
@@ -565,7 +570,7 @@ public class CFGBuilder {
          * @see org.checkerframework.dataflow.cfg.CFGBuilder.PhaseOneResult#nodeToString
          */
         @Override
-        public String toString() {
+        public @PolyDet String toString(@PolyDet UnconditionalJump this) {
             return "JumpMarker(" + getLabel() + ")";
         }
 
@@ -581,7 +586,8 @@ public class CFGBuilder {
      * @param nodes a collection of extended nodes to format
      * @return a printed representation of the given collection
      */
-    public static String extendedNodeCollectionToStringDebug(
+    @SuppressWarnings("determinism") // non-determinism reflected in return type
+    public static @NonDet String extendedNodeCollectionToStringDebug(
             Collection<? extends ExtendedNode> nodes) {
         StringJoiner result = new StringJoiner(", ", "[", "]");
         for (ExtendedNode n : nodes) {
@@ -609,7 +615,7 @@ public class CFGBuilder {
         }
 
         @Override
-        public String toString() {
+        public @PolyDet String toString(@PolyDet Label this) {
             return name;
         }
 
@@ -633,7 +639,7 @@ public class CFGBuilder {
          * Label}s to the argument set. Return true if the exception is known to be caught by one of
          * those labels and false if it may propagate still further.
          */
-        public boolean possibleLabels(TypeMirror thrown, Set<Label> labels);
+        public boolean possibleLabels(TypeMirror thrown, @OrderNonDet Set<Label> labels);
     }
 
     /**
@@ -659,7 +665,7 @@ public class CFGBuilder {
         }
 
         @Override
-        public String toString() {
+        public @PolyDet String toString(@PolyDet TryCatchFrame this) {
             if (this.catchLabels.isEmpty()) {
                 return "TryCatchFrame: no catch labels.";
             } else {
@@ -677,7 +683,7 @@ public class CFGBuilder {
          * those labels and false if it may propagate still further.
          */
         @Override
-        public boolean possibleLabels(TypeMirror thrown, Set<Label> labels) {
+        public boolean possibleLabels(TypeMirror thrown, @OrderNonDet Set<Label> labels) {
             // A conservative approach would be to say that every catch block
             // might execute for any thrown exception, but we try to do better.
             //
@@ -760,12 +766,12 @@ public class CFGBuilder {
         }
 
         @Override
-        public String toString() {
+        public @PolyDet String toString(@PolyDet TryFinallyFrame this) {
             return "TryFinallyFrame: finallyLabel: " + finallyLabel;
         }
 
         @Override
-        public boolean possibleLabels(TypeMirror thrown, Set<Label> labels) {
+        public boolean possibleLabels(TypeMirror thrown, @OrderNonDet Set<Label> labels) {
             labels.add(finallyLabel);
             return true;
         }
@@ -810,10 +816,10 @@ public class CFGBuilder {
          * Returns the set of possible {@link Label}s where control may transfer when an exception
          * of the given type is thrown.
          */
-        public Set<Label> possibleLabels(TypeMirror thrown) {
+        public @OrderNonDet Set<Label> possibleLabels(TypeMirror thrown) {
             // Work up from the innermost frame until the exception is known to
             // be caught.
-            Set<Label> labels = new MostlySingleton<>();
+            Set<@Det Label> labels = new MostlySingleton<>();
             for (TryFrame frame : frames) {
                 if (frame.possibleLabels(thrown, labels)) {
                     return labels;
@@ -824,7 +830,9 @@ public class CFGBuilder {
         }
 
         @Override
-        public String toString() {
+        @SuppressWarnings(
+                "determinism") // calling method on external class requires @Det: StringJoiner
+        public @PolyDet String toString(@PolyDet TryStack this) {
             StringJoiner sj = new StringJoiner(System.lineSeparator());
             sj.add("TryStack: exitLabel: " + this.exitLabel);
             if (this.frames.isEmpty()) {
@@ -842,16 +850,16 @@ public class CFGBuilder {
      * the try block, the finally label is returned. This ensures that a finally block is executed
      * when control flows outside of the try block.
      */
-    @SuppressWarnings("serial")
+    @SuppressWarnings({"serial", "determinism"}) // not type checking collection
     protected static class TryFinallyScopeMap extends HashMap<Name, Label> {
-        private final Map<Name, Label> accessedNames;
+        private final @OrderNonDet Map<Name, Label> accessedNames;
 
-        protected TryFinallyScopeMap() {
+        protected @OrderNonDet TryFinallyScopeMap() {
             this.accessedNames = new HashMap<>();
         }
 
         @Override
-        public Label get(Object key) {
+        public @PolyDet("down") Label get(@PolyDet TryFinallyScopeMap this, @PolyDet Object key) {
             if (super.containsKey(key)) {
                 return super.get(key);
             } else {
@@ -867,11 +875,13 @@ public class CFGBuilder {
         @Override
         @SuppressWarnings(
                 "keyfor:contracts.conditional.postcondition.not.satisfied") // get adds everything
-        public boolean containsKey(Object key) {
+        public @PolyDet("down") boolean containsKey(
+                @PolyDet TryFinallyScopeMap this, @PolyDet Object key) {
             return true;
         }
 
-        public Map<Name, Label> getAccessedNames() {
+        public @OrderNonDet Map<@Det Name, @Det Label> getAccessedNames(
+                @PolyDet TryFinallyScopeMap this) {
             return accessedNames;
         }
     }
@@ -954,43 +964,52 @@ public class CFGBuilder {
          * @return the resulting control flow graph
          */
         public static ControlFlowGraph process(ControlFlowGraph cfg) {
-            Set<Block> worklist = cfg.getAllBlocks();
-            Set<Block> dontVisit = new HashSet<>();
+            Set<@Det Block> worklist = cfg.getAllBlocks();
+            Set<@Det Block> dontVisit = new HashSet<>();
 
             // note: this method has to be careful when relinking basic blocks
             // to not forget to adjust the predecessors, too
 
             // fix predecessor lists by removing any unreachable predecessors
             for (Block c : worklist) {
-                BlockImpl cur = (BlockImpl) c;
+                @SuppressWarnings("determinism") // process order insensitive
+                @Det BlockImpl cur = (BlockImpl) c;
                 for (Block pred : new HashSet<>(cur.getPredecessors())) {
-                    if (!worklist.contains(pred)) {
-                        cur.removePredecessor((BlockImpl) pred);
+                    @SuppressWarnings("determinism") // process order insensitive
+                    @Det Block tmp = pred;
+                    if (!worklist.contains(tmp)) {
+                        cur.removePredecessor((BlockImpl) tmp);
                     }
                 }
             }
 
             // remove empty blocks
             for (Block cur : worklist) {
-                if (dontVisit.contains(cur)) {
+                @SuppressWarnings("determinism") // process order insensitive
+                @Det Block tmp = cur;
+                if (dontVisit.contains(tmp)) {
                     continue;
                 }
 
-                if (cur.getType() == BlockType.REGULAR_BLOCK) {
-                    RegularBlockImpl b = (RegularBlockImpl) cur;
+                if (tmp.getType() == BlockType.REGULAR_BLOCK) {
+                    RegularBlockImpl b = (RegularBlockImpl) tmp;
                     if (b.isEmpty()) {
-                        Set<RegularBlockImpl> empty = new HashSet<>();
-                        Set<PredecessorHolder> predecessors = new HashSet<>();
+                        Set<@Det RegularBlockImpl> empty = new HashSet<>();
+                        Set<@Det PredecessorHolder> predecessors = new HashSet<>();
                         BlockImpl succ = computeNeighborhoodOfEmptyBlock(b, empty, predecessors);
                         for (RegularBlockImpl e : empty) {
-                            succ.removePredecessor(e);
-                            dontVisit.add(e);
+                            @SuppressWarnings("determinism") // process order insensitive
+                            @Det RegularBlockImpl tmp2 = e;
+                            succ.removePredecessor(tmp2);
+                            dontVisit.add(tmp2);
                         }
                         for (PredecessorHolder p : predecessors) {
-                            BlockImpl block = p.getBlock();
+                            @SuppressWarnings("determinism") // process order insensitive
+                            @Det PredecessorHolder tmp2 = p;
+                            BlockImpl block = tmp2.getBlock();
                             dontVisit.add(block);
                             succ.removePredecessor(block);
-                            p.setSuccessor(succ);
+                            tmp2.setSuccessor(succ);
                         }
                     }
                 }
@@ -1028,8 +1047,10 @@ public class CFGBuilder {
             // merge consecutive basic blocks if possible
             worklist = cfg.getAllBlocks();
             for (Block cur : worklist) {
-                if (cur.getType() == BlockType.REGULAR_BLOCK) {
-                    RegularBlockImpl b = (RegularBlockImpl) cur;
+                @SuppressWarnings("determinism") // process order insensitive
+                @Det Block tmp = cur;
+                if (tmp.getType() == BlockType.REGULAR_BLOCK) {
+                    RegularBlockImpl b = (RegularBlockImpl) tmp;
                     Block succ = b.getRegularSuccessor();
                     if (succ.getType() == BlockType.REGULAR_BLOCK) {
                         RegularBlockImpl rs = (RegularBlockImpl) succ;
@@ -1058,8 +1079,8 @@ public class CFGBuilder {
         @SuppressWarnings("interning:not.interned") // AST node comparisons
         protected static BlockImpl computeNeighborhoodOfEmptyBlock(
                 RegularBlockImpl start,
-                Set<RegularBlockImpl> empty,
-                Set<PredecessorHolder> predecessors) {
+                @OrderNonDet Set<RegularBlockImpl> empty,
+                @OrderNonDet Set<PredecessorHolder> predecessors) {
 
             // get empty neighborhood that come before 'start'
             computeNeighborhoodOfEmptyBlockBackwards(start, empty, predecessors);
@@ -1095,13 +1116,14 @@ public class CFGBuilder {
          */
         protected static void computeNeighborhoodOfEmptyBlockBackwards(
                 RegularBlockImpl start,
-                Set<RegularBlockImpl> empty,
-                Set<PredecessorHolder> predecessors) {
+                @OrderNonDet Set<RegularBlockImpl> empty,
+                @OrderNonDet Set<PredecessorHolder> predecessors) {
 
             RegularBlockImpl cur = start;
             empty.add(cur);
             for (final Block p : cur.getPredecessors()) {
-                BlockImpl pred = (BlockImpl) p;
+                @SuppressWarnings("determinism") // process order insensitive
+                @Det BlockImpl pred = (BlockImpl) p;
                 switch (pred.getType()) {
                     case SPECIAL_BLOCK:
                         // add pred correctly to predecessor list
@@ -1187,9 +1209,9 @@ public class CFGBuilder {
                     } else {
                         @SuppressWarnings(
                                 "keyfor:assignment.type.incompatible") // ignore keyfor type
-                        Set<Map.Entry<TypeMirror, Set<Block>>> entrySet =
+                        Set<Map.@Det Entry<TypeMirror, @Det Set<Block>>> entrySet =
                                 e.getExceptionalSuccessors().entrySet();
-                        for (final Map.Entry<TypeMirror, Set<Block>> entry : entrySet) {
+                        for (final Map.Entry<TypeMirror, @Det Set<Block>> entry : entrySet) {
                             if (entry.getValue().contains(cur)) {
                                 return new PredecessorHolder() {
                                     @Override
@@ -1260,7 +1282,7 @@ public class CFGBuilder {
         }
 
         @Override
-        public String toString() {
+        public @NonDet String toString(@PolyDet Tuple<A, B, C> this) {
             return "Tuple<" + a + ", " + b + ", " + c + ">";
         }
     }
@@ -1281,9 +1303,9 @@ public class CFGBuilder {
         @SuppressWarnings("interning:not.interned") // AST node comparisons
         public static ControlFlowGraph process(PhaseOneResult in) {
 
-            Map<Label, Integer> bindings = in.bindings;
+            Map<@Det Label, @Det Integer> bindings = in.bindings;
             ArrayList<ExtendedNode> nodeList = in.nodeList;
-            Set<Integer> leaders = in.leaders;
+            Set<@Det Integer> leaders = in.leaders;
 
             assert !in.nodeList.isEmpty();
 
@@ -1293,11 +1315,11 @@ public class CFGBuilder {
                     new SpecialBlockImpl(SpecialBlockType.EXCEPTIONAL_EXIT);
 
             // record missing edges that will be added later
-            Set<Tuple<? extends SingleSuccessorBlockImpl, Integer, ?>> missingEdges =
+            Set<@Det Tuple<? extends SingleSuccessorBlockImpl, Integer, ?>> missingEdges =
                     new MostlySingleton<>();
 
             // missing exceptional edges
-            Set<Tuple<ExceptionBlockImpl, Integer, TypeMirror>> missingExceptionalEdges =
+            Set<@Det Tuple<ExceptionBlockImpl, Integer, TypeMirror>> missingExceptionalEdges =
                     new HashSet<>();
 
             // create start block
@@ -1411,7 +1433,7 @@ public class CFGBuilder {
                         for (Map.Entry<TypeMirror, Set<Label>> entry :
                                 en.getExceptions().entrySet()) {
                             TypeMirror cause = entry.getKey();
-                            for (Label label : entry.getValue()) {
+                            for (@Det Label label : entry.getValue()) {
                                 Integer target = bindings.get(label);
                                 // TODO: This is sometimes null; is this a problem?
                                 // assert target != null;
@@ -1425,8 +1447,10 @@ public class CFGBuilder {
 
             // add missing edges
             for (Tuple<? extends SingleSuccessorBlockImpl, Integer, ?> p : missingEdges) {
-                Integer index = p.b;
-                assert index != null : "CFGBuilder: problem in CFG construction " + p.a;
+                @SuppressWarnings("determinism") // process order insensitive
+                @Det Tuple<? extends @Det SingleSuccessorBlockImpl, @Det Integer, ?> tmp = p;
+                @Det Integer index = tmp.b;
+                assert index != null : "CFGBuilder: problem in CFG construction " + tmp.a;
                 ExtendedNode extendedNode = nodeList.get(index);
                 BlockImpl target = extendedNode.getBlock();
                 SingleSuccessorBlockImpl source = p.a;
@@ -1434,7 +1458,7 @@ public class CFGBuilder {
             }
 
             // add missing exceptional edges
-            for (Tuple<ExceptionBlockImpl, Integer, ?> p : missingExceptionalEdges) {
+            for (Tuple<@Det ExceptionBlockImpl, @Det Integer, ?> p : missingExceptionalEdges) {
                 Integer index = p.b;
                 TypeMirror cause = (TypeMirror) p.c;
                 ExceptionBlockImpl source = p.a;
@@ -1473,13 +1497,15 @@ public class CFGBuilder {
      */
     protected static class PhaseOneResult {
 
-        private final IdentityHashMap<Tree, Set<Node>> treeLookupMap;
-        private final IdentityHashMap<Tree, Set<Node>> convertedTreeLookupMap;
-        private final IdentityHashMap<UnaryTree, AssignmentNode> unaryAssignNodeLookupMap;
+        private final @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> treeLookupMap;
+        private final @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>>
+                convertedTreeLookupMap;
+        private final @OrderNonDet IdentityHashMap<UnaryTree, AssignmentNode>
+                unaryAssignNodeLookupMap;
         private final UnderlyingAST underlyingAST;
-        private final Map<Label, Integer> bindings;
-        private final ArrayList<ExtendedNode> nodeList;
-        private final Set<Integer> leaders;
+        private final @OrderNonDet Map<Label, Integer> bindings;
+        private final @OrderNonDet ArrayList<ExtendedNode> nodeList;
+        private final @OrderNonDet Set<Integer> leaders;
         private final List<ReturnNode> returnNodes;
         private final Label regularExitLabel;
         private final Label exceptionalExitLabel;
@@ -1488,12 +1514,12 @@ public class CFGBuilder {
 
         public PhaseOneResult(
                 UnderlyingAST underlyingAST,
-                IdentityHashMap<Tree, Set<Node>> treeLookupMap,
-                IdentityHashMap<Tree, Set<Node>> convertedTreeLookupMap,
-                IdentityHashMap<UnaryTree, AssignmentNode> unaryAssignNodeLookupMap,
-                ArrayList<ExtendedNode> nodeList,
-                Map<Label, Integer> bindings,
-                Set<Integer> leaders,
+                @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> treeLookupMap,
+                @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> convertedTreeLookupMap,
+                @OrderNonDet IdentityHashMap<UnaryTree, AssignmentNode> unaryAssignNodeLookupMap,
+                @OrderNonDet ArrayList<ExtendedNode> nodeList,
+                @OrderNonDet Map<Label, Integer> bindings,
+                @OrderNonDet Set<Integer> leaders,
                 List<ReturnNode> returnNodes,
                 Label regularExitLabel,
                 Label exceptionalExitLabel,
@@ -1514,7 +1540,9 @@ public class CFGBuilder {
         }
 
         @Override
-        public String toString() {
+        @SuppressWarnings(
+                "determinism") // calling method on external class requires @Det: StringJoiner
+        public @PolyDet String toString(@PolyDet PhaseOneResult this) {
             StringJoiner sj = new StringJoiner(System.lineSeparator());
             for (ExtendedNode n : nodeList) {
                 sj.add(nodeToString(n));
@@ -1550,7 +1578,8 @@ public class CFGBuilder {
          *
          * @return a string representation of this
          */
-        public String toStringDebug() {
+        @SuppressWarnings("determinism") // non-determinism reflected in return type
+        public @NonDet String toStringDebug() {
             StringJoiner result =
                     new StringJoiner(
                             String.format("%n  "),
@@ -1635,7 +1664,7 @@ public class CFGBuilder {
          * Map from AST label Names to CFG {@link Label}s for breaks. Each labeled statement creates
          * two CFG {@link Label}s, one for break and one for continue.
          */
-        protected Map<Name, Label> breakLabels;
+        protected @OrderNonDet Map<Name, Label> breakLabels;
 
         /**
          * Current {@link TryFinallyScopeCell} to which a continue statement with no label should
@@ -1647,7 +1676,7 @@ public class CFGBuilder {
          * Map from AST label Names to CFG {@link Label}s for continues. Each labeled statement
          * creates two CFG {@link Label}s, one for break and one for continue.
          */
-        protected Map<Name, Label> continueLabels;
+        protected @OrderNonDet Map<Name, Label> continueLabels;
 
         /** Nested scopes of try-catch blocks in force at the current program point. */
         private final TryStack tryStack;
@@ -1659,22 +1688,25 @@ public class CFGBuilder {
          * stored in the treeLookupMap, while the Node for the post-conversion value is stored in
          * the convertedTreeLookupMap.
          */
-        protected final IdentityHashMap<Tree, Set<Node>> treeLookupMap;
+        protected final @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>> treeLookupMap;
 
         /** Map from AST {@link Tree}s to post-conversion sets of {@link Node}s. */
-        protected final IdentityHashMap<Tree, Set<Node>> convertedTreeLookupMap;
+        protected final @OrderNonDet IdentityHashMap<Tree, @OrderNonDet Set<Node>>
+                convertedTreeLookupMap;
 
         /** Map from AST {@link UnaryTree}s to compound {@link AssignmentNode}s. */
-        protected final IdentityHashMap<UnaryTree, AssignmentNode> unaryAssignNodeLookupMap;
+        protected final @OrderNonDet IdentityHashMap<UnaryTree, AssignmentNode>
+                unaryAssignNodeLookupMap;
 
         /** The list of extended nodes. */
-        protected final ArrayList<ExtendedNode> nodeList;
+        // @OrderNonDet because of visitTry
+        protected final @OrderNonDet ArrayList<ExtendedNode> nodeList;
 
         /** The bindings of labels to positions (i.e., indices) in the {@code nodeList}. */
-        protected final Map<Label, Integer> bindings;
+        protected final @OrderNonDet Map<Label, Integer> bindings;
 
         /** The set of leaders (represented as indices into {@code nodeList}). */
-        protected final Set<Integer> leaders;
+        protected final @OrderNonDet Set<Integer> leaders;
 
         /**
          * All return nodes (if any) encountered. Only includes return statements that actually
@@ -1723,7 +1755,7 @@ public class CFGBuilder {
             treeLookupMap = new IdentityHashMap<>();
             convertedTreeLookupMap = new IdentityHashMap<>();
             unaryAssignNodeLookupMap = new IdentityHashMap<>();
-            nodeList = new ArrayList<>();
+            nodeList = new @OrderNonDet ArrayList<>();
             bindings = new HashMap<>();
             leaders = new HashSet<>();
 
@@ -1816,7 +1848,7 @@ public class CFGBuilder {
             if (tree == null) {
                 return;
             }
-            Set<Node> existing = treeLookupMap.get(tree);
+            Set<@Det Node> existing = treeLookupMap.get(tree);
             if (existing == null) {
                 treeLookupMap.put(tree, new IdentityMostlySingleton<>(node));
             } else if (!existing.contains(node)) {
@@ -1827,7 +1859,7 @@ public class CFGBuilder {
 
             Tree enclosingParens = parenMapping.get(tree);
             while (enclosingParens != null) {
-                Set<Node> exp = treeLookupMap.get(enclosingParens);
+                Set<@Det Node> exp = treeLookupMap.get(enclosingParens);
                 if (exp == null) {
                     treeLookupMap.put(enclosingParens, new IdentityMostlySingleton<>(node));
                 } else if (!existing.contains(node)) {
@@ -1860,7 +1892,7 @@ public class CFGBuilder {
         protected void addToConvertedLookupMap(Tree tree, Node node) {
             assert tree != null;
             assert treeLookupMap.containsKey(tree);
-            Set<Node> existing = convertedTreeLookupMap.get(tree);
+            Set<@Det Node> existing = convertedTreeLookupMap.get(tree);
             if (existing == null) {
                 convertedTreeLookupMap.put(tree, new IdentityMostlySingleton<>(node));
             } else if (!existing.contains(node)) {
@@ -1904,7 +1936,9 @@ public class CFGBuilder {
         protected NodeWithExceptionsHolder extendWithNodeWithException(
                 Node node, TypeMirror cause) {
             addToLookupMap(node);
-            return extendWithNodeWithExceptions(node, Collections.singleton(cause));
+            @SuppressWarnings("determinism") // A one-element set can be considered @OrderNonDet
+            @OrderNonDet Set<@Det TypeMirror> tmp = Collections.singleton(cause);
+            return extendWithNodeWithExceptions(node, tmp);
         }
 
         /**
@@ -1916,11 +1950,13 @@ public class CFGBuilder {
          * @return the node holder
          */
         protected NodeWithExceptionsHolder extendWithNodeWithExceptions(
-                Node node, Set<TypeMirror> causes) {
+                Node node, @OrderNonDet Set<TypeMirror> causes) {
             addToLookupMap(node);
-            Map<TypeMirror, Set<Label>> exceptions = new HashMap<>();
+            Map<@Det TypeMirror, @OrderNonDet Set<Label>> exceptions = new HashMap<>();
             for (TypeMirror cause : causes) {
-                exceptions.put(cause, tryStack.possibleLabels(cause));
+                @SuppressWarnings("determinism") // process order insensitive
+                @Det TypeMirror tmp = cause;
+                exceptions.put(tmp, tryStack.possibleLabels(tmp));
             }
             NodeWithExceptionsHolder exNode = new NodeWithExceptionsHolder(node, exceptions);
             extendWithExtendedNode(exNode);
@@ -1954,7 +1990,7 @@ public class CFGBuilder {
         protected NodeWithExceptionsHolder insertNodeWithExceptionsAfter(
                 Node node, Set<TypeMirror> causes, Node pred) {
             addToLookupMap(node);
-            Map<TypeMirror, Set<Label>> exceptions = new HashMap<>();
+            Map<@Det TypeMirror, @OrderNonDet Set<Label>> exceptions = new HashMap<>();
             for (TypeMirror cause : causes) {
                 exceptions.put(cause, tryStack.possibleLabels(cause));
             }
@@ -1983,7 +2019,8 @@ public class CFGBuilder {
         protected void insertExtendedNodeAfter(ExtendedNode n, @FindDistinct Node pred) {
             int index = -1;
             for (int i = 0; i < nodeList.size(); i++) {
-                ExtendedNode inList = nodeList.get(i);
+                @SuppressWarnings("determinism") // process order insensitive
+                @Det ExtendedNode inList = nodeList.get(i);
                 if (inList instanceof NodeHolder || inList instanceof NodeWithExceptionsHolder) {
                     if (inList.getNode() == pred) {
                         index = i;
@@ -1995,18 +2032,22 @@ public class CFGBuilder {
                 nodeList.add(index + 1, n);
                 // update bindings
                 for (Map.Entry<Label, Integer> e : bindings.entrySet()) {
-                    if (e.getValue() >= index + 1) {
-                        bindings.put(e.getKey(), e.getValue() + 1);
+                    @SuppressWarnings("determinism") // process order insensitive
+                    Map.@Det Entry<Label, Integer> tmp = e;
+                    if (tmp.getValue() >= index + 1) {
+                        bindings.put(tmp.getKey(), tmp.getValue() + 1);
                     }
                 }
                 // update leaders
-                Set<Integer> oldLeaders = new HashSet<>(leaders);
+                Set<@Det Integer> oldLeaders = new HashSet<>(leaders);
                 leaders.clear();
                 for (Integer l : oldLeaders) {
-                    if (l >= index + 1) {
-                        leaders.add(l + 1);
+                    @SuppressWarnings("determinism") // process order insensitive
+                    @Det Integer tmp = l;
+                    if (tmp >= index + 1) {
+                        leaders.add(tmp + 1);
                     } else {
-                        leaders.add(l);
+                        leaders.add(tmp);
                     }
                 }
             } else {
@@ -2680,7 +2721,7 @@ public class CFGBuilder {
             MethodInvocationNode node =
                     new MethodInvocationNode(tree, target, arguments, getCurrentPath());
 
-            Set<TypeMirror> thrownSet = new HashSet<>();
+            Set<@Det TypeMirror> thrownSet = new HashSet<>();
             // Add exceptions explicitly mentioned in the throws clause.
             List<? extends TypeMirror> thrownTypes = element.getThrownTypes();
             thrownSet.addAll(thrownTypes);
@@ -3532,7 +3573,7 @@ public class CFGBuilder {
                                 "start of switch statement #" + switchTree.hashCode(),
                                 env.getTypeUtils()));
 
-                Integer defaultIndex = null;
+                @Det Integer defaultIndex = null;
                 for (int i = 0; i < cases; ++i) {
                     CaseTree caseTree = switchTree.getCases().get(i);
                     if (caseTree.getExpression() == null) {
@@ -4288,7 +4329,7 @@ public class CFGBuilder {
 
             Node node = new ObjectCreationNode(tree, constructorNode, arguments, classbody);
 
-            Set<TypeMirror> thrownSet = new HashSet<>();
+            Set<@Det TypeMirror> thrownSet = new HashSet<>();
             // Add exceptions explicitly mentioned in the throws clause.
             List<? extends TypeMirror> thrownTypes = constructor.getThrownTypes();
             thrownSet.addAll(thrownTypes);
@@ -4309,7 +4350,7 @@ public class CFGBuilder {
          * This map is necessary because dataflow does not create a {@code Node} for a {@code
          * ParenthesizedTree}.
          */
-        private final Map<Tree, ParenthesizedTree> parenMapping = new HashMap<>();
+        private final @OrderNonDet Map<Tree, ParenthesizedTree> parenMapping = new HashMap<>();
 
         @Override
         public Node visitParenthesized(ParenthesizedTree tree, Void p) {
@@ -4454,9 +4495,9 @@ public class CFGBuilder {
             // Store return/break/continue labels, just in case we need them for a finally block.
             TryFinallyScopeCell oldReturnTargetL = returnTargetL;
             TryFinallyScopeCell oldBreakTargetL = breakTargetL;
-            Map<Name, Label> oldBreakLabels = breakLabels;
+            Map<@Det Name, @Det Label> oldBreakLabels = breakLabels;
             TryFinallyScopeCell oldContinueTargetL = continueTargetL;
-            Map<Name, Label> oldContinueLabels = continueLabels;
+            Map<@Det Name, @Det Label> oldContinueLabels = continueLabels;
 
             Label finallyLabel = null;
             Label exceptionalFinallyLabel = null;
@@ -4608,18 +4649,20 @@ public class CFGBuilder {
                     breakTargetL = oldBreakTargetL;
                 }
 
-                Map<Name, Label> accessedBreakLabels =
+                Map<@Det Name, @Det Label> accessedBreakLabels =
                         ((TryFinallyScopeMap) breakLabels).getAccessedNames();
                 if (!accessedBreakLabels.isEmpty()) {
                     breakLabels = oldBreakLabels;
 
                     for (Map.Entry<Name, Label> access : accessedBreakLabels.entrySet()) {
-                        addLabelForNextNode(access.getValue());
+                        @SuppressWarnings("determinism") // process order insensitive
+                        Map.@Det Entry<Name, Label> tmp = access;
+                        addLabelForNextNode(tmp.getValue());
                         extendWithNode(
                                 new MarkerNode(
                                         tree,
                                         "start of finally block for break label "
-                                                + access.getKey()
+                                                + tmp.getKey()
                                                 + " #"
                                                 + tree.hashCode(),
                                         env.getTypeUtils()));
@@ -4628,12 +4671,12 @@ public class CFGBuilder {
                                 new MarkerNode(
                                         tree,
                                         "end of finally block for break label "
-                                                + access.getKey()
+                                                + tmp.getKey()
                                                 + " #"
                                                 + tree.hashCode(),
                                         env.getTypeUtils()));
                         extendWithExtendedNode(
-                                new UnconditionalJump(breakLabels.get(access.getKey())));
+                                new UnconditionalJump(breakLabels.get(tmp.getKey())));
                     }
                 } else {
                     breakLabels = oldBreakLabels;
@@ -4659,18 +4702,21 @@ public class CFGBuilder {
                     continueTargetL = oldContinueTargetL;
                 }
 
-                Map<Name, Label> accessedContinueLabels =
+                Map<@Det Name, @Det Label> accessedContinueLabels =
                         ((TryFinallyScopeMap) continueLabels).getAccessedNames();
                 if (!accessedContinueLabels.isEmpty()) {
                     continueLabels = oldContinueLabels;
 
-                    for (Map.Entry<Name, Label> access : accessedContinueLabels.entrySet()) {
-                        addLabelForNextNode(access.getValue());
+                    for (Map.Entry<@Det Name, @Det Label> access :
+                            accessedContinueLabels.entrySet()) {
+                        @SuppressWarnings("determinism") // process order insensitive
+                        Map.@Det Entry<@Det Name, @Det Label> tmp = access;
+                        addLabelForNextNode(tmp.getValue());
                         extendWithNode(
                                 new MarkerNode(
                                         tree,
                                         "start of finally block for continue label "
-                                                + access.getKey()
+                                                + tmp.getKey()
                                                 + " #"
                                                 + tree.hashCode(),
                                         env.getTypeUtils()));
@@ -4679,12 +4725,12 @@ public class CFGBuilder {
                                 new MarkerNode(
                                         tree,
                                         "end of finally block for continue label "
-                                                + access.getKey()
+                                                + tmp.getKey()
                                                 + " #"
                                                 + tree.hashCode(),
                                         env.getTypeUtils()));
                         extendWithExtendedNode(
-                                new UnconditionalJump(continueLabels.get(access.getKey())));
+                                new UnconditionalJump(continueLabels.get(tmp.getKey())));
                     }
                 } else {
                     continueLabels = oldContinueLabels;
@@ -4703,6 +4749,7 @@ public class CFGBuilder {
          * @param target label for exception
          * @return true when an exceptional node for {@code target} exists in {@link #nodeList}
          */
+        @SuppressWarnings("determinism") // process order insensitive
         private boolean hasExceptionalPath(Label target) {
             for (ExtendedNode node : nodeList) {
                 if (node instanceof NodeWithExceptionsHolder) {

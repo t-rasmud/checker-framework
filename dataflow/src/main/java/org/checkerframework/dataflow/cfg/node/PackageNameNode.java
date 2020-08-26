@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.element.Element;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -42,17 +44,17 @@ public class PackageNameNode extends Node {
         this.parent = parent;
     }
 
-    public Element getElement() {
+    public @PolyDet Element getElement(@PolyDet PackageNameNode this) {
         return element;
     }
 
     /** The package name node for the parent package, {@code null} otherwise. */
-    public @Nullable PackageNameNode getParent() {
+    public @PolyDet @Nullable PackageNameNode getParent(@PolyDet PackageNameNode this) {
         return parent;
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet PackageNameNode this) {
         return tree;
     }
 
@@ -62,12 +64,14 @@ public class PackageNameNode extends Node {
     }
 
     @Override
-    public String toString() {
+    @SuppressWarnings("determinism") // imprecise library annotation: elements
+    public @PolyDet String toString(@PolyDet PackageNameNode this) {
         return getElement().getSimpleName().toString();
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    public @PolyDet boolean equals(@PolyDet PackageNameNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof PackageNameNode)) {
             return false;
         }
@@ -77,7 +81,7 @@ public class PackageNameNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet PackageNameNode this) {
         return Objects.hash(getElement(), getParent());
     }
 

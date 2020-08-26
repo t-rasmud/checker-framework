@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TypesUtils;
 
@@ -28,12 +30,12 @@ public class NarrowingConversionNode extends Node {
         this.operand = operand;
     }
 
-    public Node getOperand() {
+    public @PolyDet Node getOperand(@PolyDet NarrowingConversionNode this) {
         return operand;
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet NarrowingConversionNode this) {
         return tree;
     }
 
@@ -43,12 +45,14 @@ public class NarrowingConversionNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet NarrowingConversionNode this) {
         return "NarrowingConversion(" + getOperand() + ", " + type + ")";
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    public @PolyDet boolean equals(
+            @PolyDet NarrowingConversionNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof NarrowingConversionNode)) {
             return false;
         }
@@ -58,7 +62,7 @@ public class NarrowingConversionNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet NarrowingConversionNode this) {
         return Objects.hash(NarrowingConversionNode.class, getOperand());
     }
 

@@ -2,27 +2,30 @@ package org.checkerframework.dataflow.util;
 
 import java.util.HashSet;
 import java.util.Objects;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.javacutil.BugInCF;
 
 /**
  * A set that is more efficient than HashSet for 0 and 1 elements. Uses {@code Objects.equals} for
  * object comparison and a {@link HashSet} for backing storage.
  */
+@SuppressWarnings("determinism") // not type checking collections
 public final class MostlySingleton<T extends Object> extends AbstractMostlySingleton<T> {
 
     /** Create a MostlySingleton. */
-    public MostlySingleton() {
+    public @OrderNonDet MostlySingleton() {
         super(State.EMPTY);
     }
 
     /** Create a MostlySingleton. */
-    public MostlySingleton(T value) {
+    public @OrderNonDet MostlySingleton(T value) {
         super(State.SINGLETON, value);
     }
 
     @Override
     @SuppressWarnings("fallthrough")
-    public boolean add(T e) {
+    public @PolyDet("down") boolean add(@PolyDet MostlySingleton<T> this, @PolyDet("use") T e) {
         switch (state) {
             case EMPTY:
                 state = State.SINGLETON;
@@ -44,7 +47,7 @@ public final class MostlySingleton<T extends Object> extends AbstractMostlySingl
     }
 
     @Override
-    public boolean contains(Object o) {
+    public @PolyDet("down") boolean contains(@PolyDet MostlySingleton<T> this, @PolyDet Object o) {
         switch (state) {
             case EMPTY:
                 return false;

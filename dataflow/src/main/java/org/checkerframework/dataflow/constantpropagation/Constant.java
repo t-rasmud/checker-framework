@@ -1,6 +1,8 @@
 package org.checkerframework.dataflow.constantpropagation;
 
 import java.util.Objects;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.AbstractValue;
@@ -45,7 +47,7 @@ public class Constant implements AbstractValue<Constant> {
      *
      * @return whether or not the constant is BOTTOM
      */
-    public boolean isBottom() {
+    public @PolyDet boolean isBottom(@PolyDet Constant this) {
         return type == Type.BOTTOM;
     }
 
@@ -55,7 +57,7 @@ public class Constant implements AbstractValue<Constant> {
      * @return whether or not the constant is CONSTANT
      */
     @EnsuresNonNullIf(result = true, expression = "value")
-    public boolean isConstant() {
+    public @PolyDet boolean isConstant(@PolyDet Constant this) {
         return type == Type.CONSTANT && value != null;
     }
 
@@ -94,7 +96,7 @@ public class Constant implements AbstractValue<Constant> {
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(@PolyDet Constant this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof Constant)) {
             return false;
         }
@@ -103,12 +105,13 @@ public class Constant implements AbstractValue<Constant> {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet Constant this) {
         return Objects.hash(type, value);
     }
 
     @Override
-    public String toString() {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det: Integer
+    public @PolyDet String toString(@PolyDet Constant this) {
         switch (type) {
             case TOP:
                 return "T";

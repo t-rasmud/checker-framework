@@ -39,7 +39,7 @@ public class StringConcatenateAssignmentNode extends Node {
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet StringConcatenateAssignmentNode this) {
         return tree;
     }
 

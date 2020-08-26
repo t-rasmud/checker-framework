@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -17,20 +19,22 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class MarkerNode extends Node {
 
     protected final @Nullable Tree tree;
-    protected final String message;
+    protected final @NonDet String message;
 
-    public MarkerNode(@Nullable Tree tree, String message, Types types) {
+    // message may be @NonDet because in CFGBuilder.java, the SwitchBuilder#build method pasess a
+    // hash code.
+    public MarkerNode(@Nullable Tree tree, @NonDet String message, Types types) {
         super(types.getNoType(TypeKind.NONE));
         this.tree = tree;
         this.message = message;
     }
 
-    public String getMessage() {
+    public @NonDet String getMessage(@PolyDet MarkerNode this) {
         return message;
     }
 
     @Override
-    public @Nullable Tree getTree() {
+    public @PolyDet @Nullable Tree getTree(@PolyDet MarkerNode this) {
         return tree;
     }
 
@@ -40,7 +44,9 @@ public class MarkerNode extends Node {
     }
 
     @Override
-    public String toString() {
+    @SuppressWarnings(
+            "determinism") // calling method on external class requires @Det: StringBuilder
+    public @PolyDet String toString(@PolyDet MarkerNode this) {
         StringBuilder sb = new StringBuilder();
         sb.append("marker (");
         sb.append(message);
@@ -49,7 +55,7 @@ public class MarkerNode extends Node {
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(@PolyDet MarkerNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof MarkerNode)) {
             return false;
         }
@@ -59,7 +65,7 @@ public class MarkerNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet MarkerNode this) {
         return Objects.hash(tree, getMessage());
     }
 

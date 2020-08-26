@@ -55,7 +55,7 @@ public class AssignmentNode extends Node {
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet AssignmentNode this) {
         return tree;
     }
 

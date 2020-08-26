@@ -32,7 +32,8 @@ public class ShortLiteralNode extends ValueLiteralNode {
     }
 
     @Override
-    public Short getValue() {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det
+    public @PolyDet Short getValue(@PolyDet ShortLiteralNode this) {
         return (Short) tree.getValue();
     }
 

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import javax.lang.model.element.Element;
+import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.dataflow.qual.Deterministic;
 import org.checkerframework.dataflow.qual.Pure;
 import org.checkerframework.dataflow.qual.Pure.Kind;
@@ -211,7 +212,7 @@ public class PurityChecker {
             if (!PurityUtils.hasPurityAnnotation(annoProvider, elt)) {
                 purityResult.addNotBothReason(node, "call.method");
             } else {
-                EnumSet<Pure.Kind> purityKinds =
+                EnumSet<Pure.@Det Kind> purityKinds =
                         (assumeDeterministic && assumeSideEffectFree)
                                 // Avoid computation if not necessary
                                 ? EnumSet.of(Kind.DETERMINISTIC, Kind.SIDE_EFFECT_FREE)

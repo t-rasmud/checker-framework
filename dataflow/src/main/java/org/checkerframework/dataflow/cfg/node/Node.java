@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.StringJoiner;
 import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.CFGBuilder;
@@ -87,7 +88,7 @@ public abstract class Node {
      * @return the corresponding {@link Tree} or {@code null}.
      */
     @Pure
-    public abstract @Nullable Tree getTree();
+    public abstract @PolyDet @Nullable Tree getTree(@PolyDet Node this);
 
     /**
      * Returns a {@link TypeMirror} representing the type of a {@link Node} A {@link Node} will
@@ -95,7 +96,7 @@ public abstract class Node {
      *
      * @return a {@link TypeMirror} representing the type of this {@link Node}
      */
-    public TypeMirror getType() {
+    public @PolyDet TypeMirror getType(@PolyDet Node this) {
         return type;
     }
 
@@ -167,7 +168,7 @@ public abstract class Node {
      *
      * @return a printed representation of this
      */
-    public String toStringDebug() {
+    public @NonDet String toStringDebug() {
         return String.format(
                 "%s [%s %s %s]",
                 this,
@@ -182,7 +183,8 @@ public abstract class Node {
      * @param nodes a collection of nodes to format
      * @return a printed representation of the given collection
      */
-    public static String nodeCollectionToString(Collection<? extends Node> nodes) {
+    @SuppressWarnings("determinism") // calling method on external class requires @Det: StringJoiner
+    public static @NonDet String nodeCollectionToString(Collection<? extends Node> nodes) {
         StringJoiner result = new StringJoiner(", ", "[", "]");
         for (Node n : nodes) {
             result.add(n.toStringDebug());

@@ -3,6 +3,7 @@ package org.checkerframework.dataflow.cfg.block;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.Node;
 
@@ -61,7 +62,7 @@ public class RegularBlockImpl extends SingleSuccessorBlockImpl implements Regula
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet RegularBlockImpl this) {
         return "RegularBlock(" + contents + ")";
     }
 

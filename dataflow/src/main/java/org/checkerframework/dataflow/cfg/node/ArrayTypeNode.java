@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.util.Types;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -28,7 +30,7 @@ public class ArrayTypeNode extends Node {
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet ArrayTypeNode this) {
         return tree;
     }
 
@@ -38,12 +40,14 @@ public class ArrayTypeNode extends Node {
     }
 
     @Override
-    public String toString() {
+    @SuppressWarnings("determinism") // imprecise library annotation: trees
+    public @PolyDet String toString(@PolyDet ArrayTypeNode this) {
         return tree.toString();
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    @SuppressWarnings("determinism") // imprecise library annotation: trees
+    public @PolyDet boolean equals(@PolyDet ArrayTypeNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ArrayTypeNode)) {
             return false;
         }
@@ -52,7 +56,7 @@ public class ArrayTypeNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet ArrayTypeNode this) {
         return Objects.hash(getType());
     }
 

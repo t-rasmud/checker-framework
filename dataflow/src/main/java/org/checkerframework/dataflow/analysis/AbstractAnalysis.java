@@ -11,6 +11,9 @@ import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Set;
 import javax.lang.model.element.Element;
+import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.interning.qual.FindDistinct;
 import org.checkerframework.checker.interning.qual.InternedDistinct;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
@@ -36,7 +39,9 @@ import org.checkerframework.javacutil.ElementUtils;
  * @param <T> the transfer function type that is used to approximated runtime behavior
  */
 public abstract class AbstractAnalysis<
-                V extends AbstractValue<V>, S extends Store<S>, T extends TransferFunction<V, S>>
+                V extends @Det AbstractValue<V>,
+                S extends @Det Store<S>,
+                T extends @Det TransferFunction<V, S>>
         implements Analysis<V, S, T> {
 
     /** The direction of this analysis. */
@@ -57,16 +62,16 @@ public abstract class AbstractAnalysis<
      * The transfer inputs of every basic block (assumed to be 'no information' if not present,
      * inputs before blocks in forward analysis, after blocks in backward analysis).
      */
-    protected final IdentityHashMap<Block, TransferInput<V, S>> inputs;
+    protected final @OrderNonDet IdentityHashMap<Block, TransferInput<V, S>> inputs;
 
     /** The worklist used for the fix-point iteration. */
     protected final Worklist worklist;
 
     /** Abstract values of nodes. */
-    protected final IdentityHashMap<Node, V> nodeValues;
+    protected final @OrderNonDet IdentityHashMap<Node, V> nodeValues;
 
     /** Map from (effectively final) local variable elements to their abstract value. */
-    protected final HashMap<Element, V> finalLocalValues;
+    protected final @OrderNonDet HashMap<Element, V> finalLocalValues;
 
     /**
      * The node that is currently handled in the analysis (if it is running). The following
@@ -182,7 +187,7 @@ public abstract class AbstractAnalysis<
     }
 
     @Override
-    public @Nullable V getValue(Node n) {
+    public @Nullable V getValue(@Det Node n) {
         if (isRunning) {
             // we don't have a org.checkerframework.dataflow fact about the current node yet
             if (currentNode == null
@@ -208,7 +213,7 @@ public abstract class AbstractAnalysis<
      *
      * @return {@link #nodeValues}
      */
-    public IdentityHashMap<Node, V> getNodeValues() {
+    public @OrderNonDet IdentityHashMap<Node, V> getNodeValues() {
         return nodeValues;
     }
 
@@ -217,7 +222,7 @@ public abstract class AbstractAnalysis<
      *
      * @param in the current node values
      */
-    /*package-private*/ void setNodeValues(IdentityHashMap<Node, V> in) {
+    /*package-private*/ void setNodeValues(@OrderNonDet IdentityHashMap<Node, V> in) {
         assert !isRunning;
         nodeValues.clear();
         nodeValues.putAll(in);
@@ -255,7 +260,7 @@ public abstract class AbstractAnalysis<
      * @param t the given tree
      * @return the set of corresponding nodes to the given tree
      */
-    public @Nullable Set<Node> getNodesForTree(Tree t) {
+    public @Nullable @OrderNonDet Set<Node> getNodesForTree(Tree t) {
         if (cfg == null) {
             return null;
         }
@@ -268,16 +273,18 @@ public abstract class AbstractAnalysis<
         if (t == currentTree) {
             return null;
         }
-        Set<Node> nodesCorrespondingToTree = getNodesForTree(t);
+        @OrderNonDet Set<Node> nodesCorrespondingToTree = getNodesForTree(t);
         if (nodesCorrespondingToTree == null) {
             return null;
         }
         V merged = null;
         for (Node aNode : nodesCorrespondingToTree) {
-            if (aNode.isLValue()) {
+            @SuppressWarnings("determinism") // process order insensitive
+            @Det Node tmp = aNode;
+            if (tmp.isLValue()) {
                 return null;
             }
-            V v = getValue(aNode);
+            V v = getValue(tmp);
             if (merged == null) {
                 merged = v;
             } else if (v != null) {
@@ -386,6 +393,7 @@ public abstract class AbstractAnalysis<
      * @param transferResult the transfer result being updated
      * @return true if the node's value changed, or a store was updated
      */
+    @SuppressWarnings("determinism") // Object.equals is imprecise
     protected boolean updateNodeValues(Node node, TransferResult<V, S> transferResult) {
         V newVal = transferResult.getResultValue();
         boolean nodeValueChanged = false;
@@ -406,7 +414,8 @@ public abstract class AbstractAnalysis<
      * @param <S> method return type should be a subtype of {@link Store}
      * @return the store for the target block
      */
-    protected static <S> @Nullable S readFromStore(Map<Block, S> stores, Block b) {
+    protected static <S extends @Det Object> @Nullable S readFromStore(
+            @OrderNonDet Map<Block, S> stores, Block b) {
         return stores.get(b);
     }
 
@@ -430,16 +439,20 @@ public abstract class AbstractAnalysis<
     protected static class Worklist {
 
         /** Map all blocks in the CFG to their depth-first order. */
-        protected final IdentityHashMap<Block, Integer> depthFirstOrder;
+        protected final @OrderNonDet IdentityHashMap<Block, Integer> depthFirstOrder;
 
         /**
          * Comparators to allow priority queue to order blocks by their depth-first order, using by
          * forward analysis.
          */
         public class ForwardDFOComparator implements Comparator<Block> {
-            @SuppressWarnings("nullness:unboxing.of.nullable")
+            @SuppressWarnings({
+                "nullness:unboxing.of.nullable",
+                "determinism"
+            }) // imprecision of map get
             @Override
-            public int compare(Block b1, Block b2) {
+            public @PolyDet int compare(
+                    @PolyDet ForwardDFOComparator this, @PolyDet Block b1, @PolyDet Block b2) {
                 return depthFirstOrder.get(b1) - depthFirstOrder.get(b2);
             }
         }
@@ -449,9 +462,13 @@ public abstract class AbstractAnalysis<
          * backward analysis.
          */
         public class BackwardDFOComparator implements Comparator<Block> {
-            @SuppressWarnings("nullness:unboxing.of.nullable")
+            @SuppressWarnings({
+                "nullness:unboxing.of.nullable",
+                "determinism"
+            }) // imprecision of map get
             @Override
-            public int compare(Block b1, Block b2) {
+            public @PolyDet int compare(
+                    BackwardDFOComparator this, @PolyDet Block b1, @PolyDet Block b2) {
                 return depthFirstOrder.get(b2) - depthFirstOrder.get(b1);
             }
         }
@@ -533,7 +550,7 @@ public abstract class AbstractAnalysis<
         }
 
         @Override
-        public String toString() {
+        public @PolyDet String toString(@PolyDet Worklist this) {
             return "Worklist(" + queue + ")";
         }
     }

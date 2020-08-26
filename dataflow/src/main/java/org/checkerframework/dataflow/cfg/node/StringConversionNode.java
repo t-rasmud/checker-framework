@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -34,12 +36,12 @@ public class StringConversionNode extends Node {
         this.operand = operand;
     }
 
-    public Node getOperand() {
+    public @PolyDet Node getOperand(@PolyDet StringConversionNode this) {
         return operand;
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet StringConversionNode this) {
         return tree;
     }
 
@@ -49,12 +51,13 @@ public class StringConversionNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet StringConversionNode this) {
         return "StringConversion(" + getOperand() + ")";
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(
+            @PolyDet StringConversionNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof StringConversionNode)) {
             return false;
         }
@@ -63,7 +66,7 @@ public class StringConversionNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet StringConversionNode this) {
         return Objects.hash(StringConversionNode.class, getOperand());
     }
 

@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.util.Types;
+import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -33,7 +35,7 @@ public class LambdaResultExpressionNode extends Node {
      * expression body (e.g. X for ({@code o -> X}) where X is an expression and not a {...} block).
      */
     @Override
-    public ExpressionTree getTree() {
+    public @PolyDet ExpressionTree getTree(@PolyDet LambdaResultExpressionNode this) {
         return tree;
     }
 
@@ -43,7 +45,7 @@ public class LambdaResultExpressionNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet LambdaResultExpressionNode this) {
         if (result != null) {
             return "-> " + result;
         }
@@ -51,7 +53,8 @@ public class LambdaResultExpressionNode extends Node {
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public @PolyDet boolean equals(
+            @PolyDet LambdaResultExpressionNode this, @PolyDet @Nullable Object obj) {
         // No need to compare tree, since in a well-formed LambdaResultExpressionNode, result will
         // be the same only when tree is the same (this is similar to ReturnNode).
         if (!(obj instanceof LambdaResultExpressionNode)) {
@@ -62,7 +65,7 @@ public class LambdaResultExpressionNode extends Node {
     }
 
     @Override
-    public int hashCode() {
+    public @NonDet int hashCode(@PolyDet LambdaResultExpressionNode this) {
         // No need to incorporate tree, since in a well-formed LambdaResultExpressionNode, result
         // will be the same only when tree is the same (this is similar to ReturnNode).
         return Objects.hash(LambdaResultExpressionNode.class, result);

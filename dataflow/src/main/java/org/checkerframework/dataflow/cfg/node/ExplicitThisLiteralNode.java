@@ -2,6 +2,7 @@ package org.checkerframework.dataflow.cfg.node;
 
 import com.sun.source.tree.IdentifierTree;
 import com.sun.source.tree.Tree;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.javacutil.TreeUtils;
 
 /**
@@ -22,7 +23,7 @@ public class ExplicitThisLiteralNode extends ThisLiteralNode {
     }
 
     @Override
-    public Tree getTree() {
+    public @PolyDet Tree getTree(@PolyDet ExplicitThisLiteralNode this) {
         return tree;
     }
 
@@ -32,7 +33,7 @@ public class ExplicitThisLiteralNode extends ThisLiteralNode {
     }
 
     @Override
-    public String toString() {
+    public @PolyDet String toString(@PolyDet ExplicitThisLiteralNode this) {
         return getName();
     }
 }
