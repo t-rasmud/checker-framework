@@ -727,7 +727,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             ExpressionTree arg = args.get(index);
             if (!argumentSatisfiesDetToString(arg)) {
                 AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
-                checker.reportError(node, "nondeterministic.tostring", argType.getUnderlyingType());
+                checker.reportError(arg, "nondeterministic.tostring", argType.getUnderlyingType());
                 break;
             }
         }
@@ -837,6 +837,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         // the type of the ternary expression is Object rather than String. See JLS 15.25.3. In
         // these cases, to get the most precision we must instead check the toString methods of each
         // branch.
+        argument = TreeUtils.withoutParens(argument);
         if (argument.getKind() == Kind.CONDITIONAL_EXPRESSION) {
             ConditionalExpressionTree conditionalTree = (ConditionalExpressionTree) argument;
             return argumentSatisfiesDetToString(conditionalTree.getTrueExpression())
