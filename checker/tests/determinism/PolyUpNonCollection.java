@@ -18,7 +18,6 @@ public class PolyUpNonCollection {
 
     void collectionMethod1(@PolyDet List<@PolyDet Integer> lst, @PolyDet PolyUpNonCollection arg) {
         int x = lst.get(0);
-        // :: error: (argument.type.incompatible)
         nonCollection1(x, arg);
     }
 
