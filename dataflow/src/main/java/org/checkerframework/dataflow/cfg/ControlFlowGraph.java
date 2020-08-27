@@ -317,7 +317,8 @@ public class ControlFlowGraph {
         @SuppressWarnings(
                 "determinism") // rules violated, but nondeterminism reflected in return type: the
         // visualize method expects a @Det CFG, but passing @PolyDet is okay
-        // because the result of this method is @NonDet anyway
+        // because the result of this method is @NonDet. Changing the visualize to accept @NonDet
+        // requires changing many more annotations in other locations due to overriding.
         Map<@Det String, @NonDet Object> res = viz.visualize(this, this.getEntryBlock(), null);
         viz.shutdown();
         if (res == null) {
