@@ -688,9 +688,9 @@ subprojects {
                     'org.checkerframework.checker.determinism.DeterminismChecker',
                     // 'org.checkerframework.common.util.count.AnnotationStatistics',
                     'Determinism',
-                    // ['-AonlyDefs=org.checkerframework.dataflow.', ])
-                    // ['-AonlyDefs=org.checkerframework.dataflow.', '-Aannotations', '-Anolocations'])
-                    createCheckTypeTask(project.name, 'org.checkerframework.checker.determinism.DeterminismChecker', 'Determinism')
+                    ['-AonlyDefs=org.checkerframework.dataflow.', ])
+                // ['-AonlyDefs=org.checkerframework.dataflow.', '-Aannotations', '-Anolocations'])
+            // createCheckTypeTask(project.name, 'org.checkerframework.checker.determinism.DeterminismChecker', 'Determinism')
         }
 
         // Add jtregTests to framework and checker modules
