@@ -84,9 +84,9 @@ public class DOTCFGVisualizer<
 
         @NonDet Map<@Det String, @NonDet Object> res = new @NonDet HashMap<>();
         @SuppressWarnings({
-            "determinism",
+            "determinism", // no aliasing, so valid to mutate @NonDet collection
             "UnusedVariable"
-        }) // no aliasing, so valid to mutate @NonDet collection
+        })
         Object ignore = res.put("dotFileName", dotFileName);
 
         return res;
