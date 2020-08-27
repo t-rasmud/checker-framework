@@ -31,9 +31,10 @@ public class StringCFGVisualizer<
         String stringGraph = visualizeGraph(cfg, entry, analysis);
         @NonDet Map<@Det String, @NonDet Object> res = new @NonDet HashMap<>();
         @SuppressWarnings({
-            "determinism",
+            "determinism", // valid rule relaxation: no aliasing, so valid to mutate @NonDet
+            // collection
             "UnusedVariable"
-        }) // no aliasing, so valid to mutate @NonDet collection
+        })
         Object ignore = res.put("stringGraph", stringGraph);
         return res;
     }

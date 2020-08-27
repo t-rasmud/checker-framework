@@ -587,10 +587,9 @@ public class CFGBuilder {
      * @param nodes a collection of extended nodes to format
      * @return a printed representation of the given collection
      */
-    @SuppressWarnings("determinism") // non-determinism reflected in return type
     public static @NonDet String extendedNodeCollectionToStringDebug(
             Collection<? extends ExtendedNode> nodes) {
-        StringJoiner result = new StringJoiner(", ", "[", "]");
+        StringJoiner result = new @NonDet StringJoiner(", ", "[", "]");
         for (ExtendedNode n : nodes) {
             result.add(n.toStringDebug());
         }
@@ -641,6 +640,9 @@ public class CFGBuilder {
          * those labels and false if it may propagate still further.
          */
         public boolean possibleLabels(TypeMirror thrown, @OrderNonDet Set<Label> labels);
+
+        @Override
+        @PolyDet String toString(@PolyDet TryFrame this);
     }
 
     /**
@@ -831,10 +833,8 @@ public class CFGBuilder {
         }
 
         @Override
-        @SuppressWarnings(
-                "determinism") // calling method on external class requires @Det: StringJoiner
         public @PolyDet String toString(@PolyDet TryStack this) {
-            StringJoiner sj = new StringJoiner(System.lineSeparator());
+            StringJoiner sj = new @PolyDet StringJoiner(System.lineSeparator());
             sj.add("TryStack: exitLabel: " + this.exitLabel);
             if (this.frames.isEmpty()) {
                 sj.add("No TryFrames.");
@@ -851,7 +851,7 @@ public class CFGBuilder {
      * the try block, the finally label is returned. This ensures that a finally block is executed
      * when control flows outside of the try block.
      */
-    @SuppressWarnings({"serial", "determinism"}) // not type checking collection
+    @SuppressWarnings("serial")
     protected static class TryFinallyScopeMap extends HashMap<Name, Label> {
         private final @OrderNonDet Map<Name, Label> accessedNames;
 
@@ -860,7 +860,10 @@ public class CFGBuilder {
         }
 
         @Override
-        public @PolyDet("down") Label get(@PolyDet TryFinallyScopeMap this, @PolyDet Object key) {
+        @SuppressWarnings(
+                "determinism") // imprecise field access rule: accessing @OrderNonDet field of
+        // @PolyDet receiver gives @NonDet, should be @PolyDet("upDet")
+        public Label get(@PolyDet TryFinallyScopeMap this, @PolyDet Object key) {
             if (super.containsKey(key)) {
                 return super.get(key);
             } else {
@@ -881,6 +884,9 @@ public class CFGBuilder {
             return true;
         }
 
+        @SuppressWarnings(
+                "determinism") // imprecise field access rule: accessing @OrderNonDet field of
+        // @PolyDet receiver gives @NonDet, should be @PolyDet("upDet")
         public @OrderNonDet Map<@Det Name, @Det Label> getAccessedNames(
                 @PolyDet TryFinallyScopeMap this) {
             return accessedNames;
@@ -973,10 +979,12 @@ public class CFGBuilder {
 
             // fix predecessor lists by removing any unreachable predecessors
             for (Block c : worklist) {
-                @SuppressWarnings("determinism") // process order insensitive
+                @SuppressWarnings(
+                        "determinism") // process is order insensitive: removing predecessors
                 @Det BlockImpl cur = (BlockImpl) c;
                 for (Block pred : new HashSet<>(cur.getPredecessors())) {
-                    @SuppressWarnings("determinism") // process order insensitive
+                    @SuppressWarnings(
+                            "determinism") // process is order insensitive: removing predecessors
                     @Det Block tmp = pred;
                     if (!worklist.contains(tmp)) {
                         cur.removePredecessor((BlockImpl) tmp);
@@ -986,7 +994,8 @@ public class CFGBuilder {
 
             // remove empty blocks
             for (Block cur : worklist) {
-                @SuppressWarnings("determinism") // process order insensitive
+                @SuppressWarnings(
+                        "determinism") // process is order insensitive: removing empty blocks
                 @Det Block tmp = cur;
                 if (dontVisit.contains(tmp)) {
                     continue;
@@ -1000,13 +1009,17 @@ public class CFGBuilder {
                         BlockImpl succ =
                                 computeNeighborhoodOfEmptyBlock(b, emptyBlocks, predecessors);
                         for (RegularBlockImpl e : emptyBlocks) {
-                            @SuppressWarnings("determinism") // process order insensitive
+                            @SuppressWarnings(
+                                    "determinism") // process is order insensitive: removing empty
+                            // blocks
                             @Det RegularBlockImpl tmp2 = e;
                             succ.removePredecessor(tmp2);
                             dontVisit.add(tmp2);
                         }
                         for (PredecessorHolder p : predecessors) {
-                            @SuppressWarnings("determinism") // process order insensitive
+                            @SuppressWarnings(
+                                    "determinism") // process is order insensitive: removing empty
+                            // blocks
                             @Det PredecessorHolder tmp2 = p;
                             BlockImpl block = tmp2.getBlock();
                             dontVisit.add(block);
@@ -1049,7 +1062,9 @@ public class CFGBuilder {
             // merge consecutive basic blocks if possible
             worklist = cfg.getAllBlocks();
             for (Block cur : worklist) {
-                @SuppressWarnings("determinism") // process order insensitive
+                @SuppressWarnings(
+                        "determinism") // process is order insensitive: merging consecutive basic
+                // blocks
                 @Det Block tmp = cur;
                 if (tmp.getType() == BlockType.REGULAR_BLOCK) {
                     RegularBlockImpl b = (RegularBlockImpl) tmp;
@@ -1124,7 +1139,8 @@ public class CFGBuilder {
             RegularBlockImpl cur = start;
             emptyBlocks.add(cur);
             for (final Block p : cur.getPredecessors()) {
-                @SuppressWarnings("determinism") // process order insensitive
+                @SuppressWarnings("determinism") // process is order insensitive: order of adding to
+                // predecessors doesn't matter, it's a HashSet anyway
                 @Det BlockImpl pred = (BlockImpl) p;
                 switch (pred.getType()) {
                     case SPECIAL_BLOCK:
@@ -1450,7 +1466,7 @@ public class CFGBuilder {
 
             // add missing edges
             for (Tuple<? extends SingleSuccessorBlockImpl, Integer, ?> p : missingEdges) {
-                @SuppressWarnings("determinism") // process order insensitive
+                @SuppressWarnings("determinism") // process is order insensitive: setting successers
                 @Det Tuple<? extends @Det SingleSuccessorBlockImpl, @Det Integer, ?> tmp = p;
                 @Det Integer index = tmp.b;
                 assert index != null : "CFGBuilder: problem in CFG construction " + tmp.a;
@@ -1463,7 +1479,8 @@ public class CFGBuilder {
             // add missing exceptional edges
             for (@Det Tuple<@Det ExceptionBlockImpl, @Det Integer, ?> p : missingExceptionalEdges) {
                 Integer index = p.b;
-                @SuppressWarnings("determinism") // Unknown type, but only @Det values stored
+                @SuppressWarnings(
+                        "determinism") // wildcard has unknown type, but only @Det values stored
                 @Det TypeMirror cause = (TypeMirror) p.c;
                 ExceptionBlockImpl source = p.a;
                 if (index == null) {
@@ -1580,10 +1597,11 @@ public class CFGBuilder {
          *
          * @return a string representation of this
          */
-        @SuppressWarnings("determinism") // non-determinism reflected in return type
+        @SuppressWarnings("determinism") // https://github.com/t-rasmud/checker-framework/issues/194
         public @NonDet String toStringDebug() {
             StringJoiner result =
-                    new StringJoiner(
+                    new
+                    @NonDet StringJoiner(
                             String.format("%n  "),
                             String.format("PhaseOneResult{%n  "),
                             String.format("%n  }"));
@@ -1937,7 +1955,9 @@ public class CFGBuilder {
         protected NodeWithExceptionsHolder extendWithNodeWithException(
                 Node node, TypeMirror cause) {
             addToLookupMap(node);
-            @SuppressWarnings("determinism") // A one-element set can be considered @OrderNonDet
+            @SuppressWarnings(
+                    "determinism") // valid rule relaxation: no aliasing, so valid to assign @Det
+            // collection to @OrderNonDet variable
             @OrderNonDet Set<@Det TypeMirror> tmp = Collections.singleton(cause);
             return extendWithNodeWithExceptions(node, tmp);
         }
@@ -1955,7 +1975,8 @@ public class CFGBuilder {
             addToLookupMap(node);
             Map<@Det TypeMirror, @OrderNonDet Set<Label>> exceptions = new HashMap<>();
             for (TypeMirror cause : causes) {
-                @SuppressWarnings("determinism") // process is order insensitive
+                @SuppressWarnings(
+                        "determinism") // process is order insensitive: adding to @OrderNonDet map
                 @Det TypeMirror tmp = cause;
                 exceptions.put(tmp, tryStack.possibleLabels(tmp));
             }
@@ -2032,7 +2053,9 @@ public class CFGBuilder {
                 nodeList.add(index + 1, n);
                 // update bindings
                 for (Map.Entry<Label, Integer> e : bindings.entrySet()) {
-                    @SuppressWarnings("determinism") // process is order insensitive
+                    @SuppressWarnings(
+                            "determinism") // process is order insensitive: adding to @OrderNonDet
+                    // map
                     Map.@Det Entry<Label, Integer> tmp = e;
                     if (tmp.getValue() >= index + 1) {
                         bindings.put(tmp.getKey(), tmp.getValue() + 1);
@@ -2042,7 +2065,9 @@ public class CFGBuilder {
                 Set<@Det Integer> oldLeaders = new HashSet<>(leaders);
                 leaders.clear();
                 for (Integer l : oldLeaders) {
-                    @SuppressWarnings("determinism") // process is order insensitive
+                    @SuppressWarnings(
+                            "determinism") // process is order insensitive: adding to @OrderNonDet
+                    // set
                     @Det Integer tmp = l;
                     if (tmp >= index + 1) {
                         leaders.add(tmp + 1);
@@ -4655,7 +4680,6 @@ public class CFGBuilder {
                     breakLabels = oldBreakLabels;
 
                     for (Map.Entry<Name, Label> access : accessedBreakLabels.entrySet()) {
-                        @SuppressWarnings("determinism") // process is order insensitive
                         Map.@Det Entry<Name, Label> tmp = access;
                         addLabelForNextNode(tmp.getValue());
                         extendWithNode(

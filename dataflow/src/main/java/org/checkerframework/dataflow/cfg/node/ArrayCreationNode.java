@@ -71,10 +71,8 @@ public class ArrayCreationNode extends Node {
     }
 
     @Override
-    @SuppressWarnings(
-            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet String toString(@PolyDet ArrayCreationNode this) {
-        StringBuilder sb = new StringBuilder();
+        @PolyDet StringBuilder sb = new @PolyDet StringBuilder();
         sb.append("new " + type);
         if (!dimensions.isEmpty()) {
             sb.append(" (");
@@ -90,9 +88,8 @@ public class ArrayCreationNode extends Node {
     }
 
     @Override
-    @SuppressWarnings(
-            "determinism") // using unannoated methods that require @Det, should be @PolyDet
-    public @PolyDet boolean equals(@PolyDet ArrayCreationNode this, @PolyDet @Nullable Object obj) {
+    public @PolyDet("up") boolean equals(
+            @PolyDet ArrayCreationNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ArrayCreationNode)) {
             return false;
         }

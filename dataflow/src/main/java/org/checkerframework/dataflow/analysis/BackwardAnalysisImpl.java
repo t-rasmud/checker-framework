@@ -119,7 +119,8 @@ public class BackwardAnalysisImpl<
                     // Propagate store to predecessors
                     for (Block pred : rb.getPredecessors()) {
                         assert currentInput != null : "@AssumeAssertion(nullness): invariant";
-                        @SuppressWarnings("determinism") // process is order insensitive
+                        @SuppressWarnings(
+                                "determinism") // process is order insensitive: propagating stores
                         @Det Block tmp = pred;
                         propagateStoresTo(
                                 tmp,
@@ -163,7 +164,8 @@ public class BackwardAnalysisImpl<
                     assert inputAfter != null : "@AssumeAssertion(nullness): invariant";
                     TransferInput<V, S> input = inputAfter.copy();
                     for (Block pred : cb.getPredecessors()) {
-                        @SuppressWarnings("determinism") // process is order insensitive
+                        @SuppressWarnings(
+                                "determinism") // process is order insensitive: propagating stores
                         @Det Block tmp = pred;
                         propagateStoresTo(tmp, null, input, FlowRule.EACH_TO_EACH, false);
                     }
@@ -188,7 +190,9 @@ public class BackwardAnalysisImpl<
                         TransferInput<V, S> input = getInput(sb);
                         assert input != null : "@AssumeAssertion(nullness): invariant";
                         for (Block pred : sb.getPredecessors()) {
-                            @SuppressWarnings("determinism") // process is order insensitive
+                            @SuppressWarnings(
+                                    "determinism") // process is order insensitive: propagating
+                            // stores
                             @Det Block tmp = pred;
                             propagateStoresTo(tmp, null, input, FlowRule.EACH_TO_EACH, false);
                         }

@@ -92,8 +92,6 @@ public class ClassNameNode extends Node {
     }
 
     @Override
-    @SuppressWarnings(
-            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet boolean equals(@PolyDet ClassNameNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ClassNameNode)) {
             return false;

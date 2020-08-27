@@ -55,8 +55,6 @@ public class FunctionalInterfaceNode extends Node {
     }
 
     @Override
-    @SuppressWarnings(
-            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet String toString(@PolyDet FunctionalInterfaceNode this) {
         if (tree instanceof LambdaExpressionTree) {
             return "FunctionalInterfaceNode:" + ((LambdaExpressionTree) tree).getBodyKind();
@@ -69,7 +67,6 @@ public class FunctionalInterfaceNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling method on external class requires @Det
     public @PolyDet boolean equals(
             @PolyDet FunctionalInterfaceNode this, @PolyDet @Nullable Object o) {
         if (this == o) {

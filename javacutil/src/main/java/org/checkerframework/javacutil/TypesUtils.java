@@ -202,7 +202,8 @@ public final class TypesUtils {
      *
      * @return whether the arguments are the same primitive types
      */
-    public static boolean areSamePrimitiveTypes(TypeMirror left, TypeMirror right) {
+    public static @PolyDet boolean areSamePrimitiveTypes(
+            @PolyDet TypeMirror left, @PolyDet TypeMirror right) {
         if (!isPrimitive(left) || !isPrimitive(right)) {
             return false;
         }

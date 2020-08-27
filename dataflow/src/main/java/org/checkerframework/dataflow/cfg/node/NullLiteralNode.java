@@ -27,8 +27,6 @@ public class NullLiteralNode extends ValueLiteralNode {
     }
 
     @Override
-    @SuppressWarnings(
-            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet Void getValue(@PolyDet NullLiteralNode this) {
         return (Void) tree.getValue();
     }

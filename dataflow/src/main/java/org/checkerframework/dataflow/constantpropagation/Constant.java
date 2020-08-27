@@ -38,7 +38,7 @@ public class Constant implements AbstractValue<Constant> {
      *
      * @return whether or not the constant is TOP
      */
-    public boolean isTop() {
+    public @PolyDet boolean isTop(@PolyDet Constant this) {
         return type == Type.TOP;
     }
 
@@ -66,12 +66,15 @@ public class Constant implements AbstractValue<Constant> {
      *
      * @return the value
      */
-    public Integer getValue() {
+    public @PolyDet Integer getValue(@PolyDet Constant this) {
         assert isConstant() : "@AssumeAssertion(nullness): inspection";
         return value;
     }
 
-    public Constant copy() {
+    @SuppressWarnings(
+            "determinism") // valid rule relaxation: copy clearly preserves determinism type, so
+    // @PolyDet valid
+    public @PolyDet Constant copy(@PolyDet Constant this) {
         if (isConstant()) {
             return new Constant(value);
         }
@@ -79,7 +82,7 @@ public class Constant implements AbstractValue<Constant> {
     }
 
     @Override
-    public Constant leastUpperBound(Constant other) {
+    public @PolyDet Constant leastUpperBound(@PolyDet Constant this, @PolyDet Constant other) {
         if (other.isBottom()) {
             return this.copy();
         }

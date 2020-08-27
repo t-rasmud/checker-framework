@@ -1,6 +1,7 @@
 package org.checkerframework.dataflow.analysis;
 
 import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.dataflow.cfg.CFGVisualizer;
 
 /**
@@ -39,7 +40,7 @@ public interface Store<S extends Store<S>> {
      *
      * @return an exact copy of this store
      */
-    S copy();
+    @PolyDet S copy(@PolyDet Store<S> this);
 
     /**
      * Compute the least upper bound of two stores.
@@ -55,7 +56,7 @@ public interface Store<S extends Store<S>> {
      *   <li>Is commutative.
      * </ul>
      */
-    S leastUpperBound(S other);
+    @PolyDet S leastUpperBound(@PolyDet Store<S> this, @PolyDet S other);
 
     /**
      * Compute an upper bound of two stores that is wider than the least upper bound of the two

@@ -50,8 +50,6 @@ public class WideningConversionNode extends Node {
     }
 
     @Override
-    @SuppressWarnings(
-            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet boolean equals(
             @PolyDet WideningConversionNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof WideningConversionNode)) {

@@ -473,7 +473,7 @@ public abstract class AbstractCFGVisualizer<
      * @return a String representation of the given process orders
      */
     protected String getProcessOrderSimpleString(List<Integer> order) {
-        @SuppressWarnings("determinism") // all common implementations of List have @Det toString
+        @SuppressWarnings("determinism") // all known implementations have @Det toString method
         @Det String orderString = order.toString();
         return "Process order: " + orderString.substring(1, orderString.length() - 1);
     }

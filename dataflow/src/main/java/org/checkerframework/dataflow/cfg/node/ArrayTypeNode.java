@@ -40,13 +40,12 @@ public class ArrayTypeNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // using unnannotated methods: trees
+    @SuppressWarnings("determinism") // all known implementations have @Det toString methods
     public @PolyDet String toString(@PolyDet ArrayTypeNode this) {
         return tree.toString();
     }
 
     @Override
-    @SuppressWarnings("determinism") // using unnannotated methods: trees
     public @PolyDet boolean equals(@PolyDet ArrayTypeNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ArrayTypeNode)) {
             return false;

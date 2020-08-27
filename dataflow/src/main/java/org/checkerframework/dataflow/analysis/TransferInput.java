@@ -162,7 +162,7 @@ public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> {
      * @return the regular result store produced if no exception is thrown by the {@link Node}
      *     corresponding to this transfer function result
      */
-    public S getRegularStore() {
+    public @PolyDet S getRegularStore(@PolyDet TransferInput<V, S> this) {
         if (store == null) {
             assert thenStore != null && elseStore != null : "@AssumeAssertion(nullness): invariant";
             return thenStore.leastUpperBound(elseStore);
@@ -178,7 +178,7 @@ public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> {
      * @return the result store produced if the {@link Node} this result belongs to evaluates to
      *     {@code true}
      */
-    public S getThenStore() {
+    public @PolyDet S getThenStore(@PolyDet TransferInput<V, S> this) {
         if (store == null) {
             assert thenStore != null : "@AssumeAssertion(nullness): invariant";
             return thenStore;
@@ -193,7 +193,7 @@ public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> {
      * @return the result store produced if the {@link Node} this result belongs to evaluates to
      *     {@code false}
      */
-    public S getElseStore() {
+    public @PolyDet S getElseStore(@PolyDet TransferInput<V, S> this) {
         if (store == null) {
             assert elseStore != null : "@AssumeAssertion(nullness): invariant";
             return elseStore;
@@ -214,7 +214,7 @@ public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> {
      * @return {@code true} if and only if this transfer input contains two stores that are
      *     potentially not equal
      */
-    public boolean containsTwoStores() {
+    public @PolyDet boolean containsTwoStores(@PolyDet TransferInput<V, S> this) {
         return store == null;
     }
 
@@ -253,8 +253,6 @@ public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> {
     }
 
     @Override
-    @SuppressWarnings(
-            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet boolean equals(@PolyDet TransferInput<V, S> this, @PolyDet @Nullable Object o) {
         if (o instanceof TransferInput) {
             @SuppressWarnings("unchecked")

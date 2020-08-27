@@ -281,7 +281,7 @@ public abstract class AbstractAnalysis<
         }
         V merged = null;
         for (Node aNode : nodesCorrespondingToTree) {
-            @SuppressWarnings("determinism") // process is order insensitive
+            @SuppressWarnings("determinism") // process is order insensitive: merging stores
             @Det Node tmp = aNode;
             if (tmp.isLValue()) {
                 return null;
@@ -452,8 +452,8 @@ public abstract class AbstractAnalysis<
         public class ForwardDFOComparator implements Comparator<Block> {
             @SuppressWarnings({
                 "nullness:unboxing.of.nullable",
-                "determinism" // @OrderNonDet Map get on @PolyDet returns @NonDet, should be
-                // @PolyDet
+                "determinism" // imprecise rule: @OrderNonDet Map get on @PolyDet key returns
+                // @NonDet, should be @PolyDet
             })
             @Override
             public @PolyDet int compare(
@@ -469,8 +469,8 @@ public abstract class AbstractAnalysis<
         public class BackwardDFOComparator implements Comparator<Block> {
             @SuppressWarnings({
                 "nullness:unboxing.of.nullable",
-                "determinism" // @OrderNonDet Map get on @PolyDet returns @NonDet, should be
-                // @PolyDet
+                "determinism" // imprecise rule: @OrderNonDet Map get on @PolyDet key returns
+                // @NonDet, should be @PolyDet
             })
             @Override
             public @PolyDet int compare(

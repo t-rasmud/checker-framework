@@ -183,7 +183,7 @@ public abstract class Node {
      * @param nodes a collection of nodes to format
      * @return a printed representation of the given collection
      */
-    public static @NonDet String nodeCollectionToString(Collection<? extends Node> nodes) {
+    public static @NonDet String nodeCollectionToString(@PolyDet Collection<? extends Node> nodes) {
         @NonDet StringJoiner result = new @NonDet StringJoiner(", ", "[", "]");
         for (Node n : nodes) {
             result.add(n.toStringDebug());

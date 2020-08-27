@@ -64,15 +64,12 @@ public class PackageNameNode extends Node {
     }
 
     @Override
-    @SuppressWarnings(
-            "determinism") // using unannoated methods that require @Det, should be @PolyDet
+    @SuppressWarnings("determinism") // using unannotated methods that require @Det: Name.toString
     public @PolyDet String toString(@PolyDet PackageNameNode this) {
         return getElement().getSimpleName().toString();
     }
 
     @Override
-    @SuppressWarnings(
-            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet boolean equals(@PolyDet PackageNameNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof PackageNameNode)) {
             return false;

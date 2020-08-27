@@ -28,9 +28,7 @@ public class FloatLiteralNode extends ValueLiteralNode {
     }
 
     @Override
-    @SuppressWarnings(
-            "determinism") // using unannoated methods that require @Det, should be @PolyDet
-    public Float getValue(@PolyDet FloatLiteralNode this) {
+    public @PolyDet Float getValue(@PolyDet FloatLiteralNode this) {
         return (Float) tree.getValue();
     }
 

@@ -26,8 +26,7 @@ public class VariableDeclarationNode extends Node {
 
     // TODO: make modifier accessible
 
-    @SuppressWarnings(
-            "determinism") // using unannoated methods that require @Det, should be @PolyDet
+    @SuppressWarnings("determinism") // using unannotated methods that require @Det: Name.toString
     public VariableDeclarationNode(VariableTree t) {
         super(TreeUtils.typeOf(t));
         tree = t;

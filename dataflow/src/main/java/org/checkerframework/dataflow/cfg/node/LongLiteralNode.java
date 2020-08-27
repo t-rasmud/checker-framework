@@ -28,8 +28,6 @@ public class LongLiteralNode extends ValueLiteralNode {
     }
 
     @Override
-    @SuppressWarnings(
-            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet Long getValue(@PolyDet LongLiteralNode this) {
         return (Long) tree.getValue();
     }

@@ -1,5 +1,7 @@
 package org.checkerframework.dataflow.analysis;
 
+import org.checkerframework.checker.determinism.qual.PolyDet;
+
 /** An abstract value used in the org.checkerframework.dataflow analysis. */
 public interface AbstractValue<V extends AbstractValue<V>> {
 
@@ -17,5 +19,5 @@ public interface AbstractValue<V extends AbstractValue<V>> {
      *   <li>Is commutative.
      * </ul>
      */
-    V leastUpperBound(V other);
+    @PolyDet V leastUpperBound(@PolyDet AbstractValue<V> this, @PolyDet V other);
 }

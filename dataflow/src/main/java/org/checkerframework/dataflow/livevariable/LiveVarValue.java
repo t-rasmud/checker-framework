@@ -18,7 +18,8 @@ public class LiveVarValue implements AbstractValue<LiveVarValue> {
     protected final Node liveVariable;
 
     @Override
-    public LiveVarValue leastUpperBound(LiveVarValue other) {
+    public @PolyDet LiveVarValue leastUpperBound(
+            @PolyDet LiveVarValue this, @PolyDet LiveVarValue other) {
         throw new BugInCF("lub of LiveVar get called!");
     }
 

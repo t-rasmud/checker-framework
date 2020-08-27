@@ -66,10 +66,8 @@ public class ObjectCreationNode extends Node {
     }
 
     @Override
-    @SuppressWarnings(
-            "determinism") // using unannoated methods that require @Det, should be @PolyDet
     public @PolyDet String toString(@PolyDet ObjectCreationNode this) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new @PolyDet StringBuilder();
         sb.append("new " + constructor + "(");
         sb.append(UtilPlume.join(", ", arguments));
         sb.append(")");
@@ -82,10 +80,7 @@ public class ObjectCreationNode extends Node {
     }
 
     @Override
-    @SuppressWarnings(
-            "determinism") // method parameters can't be @OrderNonDet so @PolyDet("up") same as
-    // PolyDet
-    public @PolyDet boolean equals(
+    public @PolyDet("up") boolean equals(
             @PolyDet ObjectCreationNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof ObjectCreationNode)) {
             return false;

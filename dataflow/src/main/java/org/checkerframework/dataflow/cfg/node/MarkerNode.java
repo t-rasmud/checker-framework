@@ -53,7 +53,9 @@ public class MarkerNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // contents of field is @NonDet, but comparison is always @Det
+    @SuppressWarnings(
+            "determinism") // valid rule relaxation: contents of message field is @NonDet, but
+    // result of comparisons between runs is always @Det
     public @PolyDet boolean equals(@PolyDet MarkerNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof MarkerNode)) {
             return false;

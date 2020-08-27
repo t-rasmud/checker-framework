@@ -821,8 +821,7 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings(
-                "determinism") // using unannoated methods that require @Det, should be @PolyDet
+        @SuppressWarnings("determinism") // using unannotated methods that require @Det: VarSymbol
         public @PolyDet boolean equals(@PolyDet LocalVariable this, @PolyDet @Nullable Object obj) {
             if (!(obj instanceof LocalVariable)) {
                 return false;
@@ -845,8 +844,7 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings(
-                "determinism") // using unannoated methods that require @Det, should be @PolyDet
+        @SuppressWarnings("determinism") // using unannotated methods that require @Det: VarSymbol
         public @NonDet int hashCode(@PolyDet LocalVariable this) {
             VarSymbol vs = (VarSymbol) element;
             return Objects.hash(
@@ -935,8 +933,6 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings(
-                "determinism") // using unannoated methods that require @Det, should be @PolyDet
         public @PolyDet boolean equals(@PolyDet ValueLiteral this, @PolyDet @Nullable Object obj) {
             if (!(obj instanceof ValueLiteral)) {
                 return false;
@@ -950,7 +946,9 @@ public class FlowExpressions {
 
         @Override
         @SuppressWarnings(
-                "determinism") // using unannoated methods that require @Det, should be @PolyDet
+                "determinism") // https://github.com/t-rasmud/checker-framework/issues/198: the
+        // value field represents the literal value, which has a @Det
+        // toString method.
         public @PolyDet String toString(@PolyDet ValueLiteral this) {
             if (TypesUtils.isString(type)) {
                 return "\"" + value + "\"";
@@ -964,8 +962,6 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings(
-                "determinism") // using unannoated methods that require @Det, should be @PolyDet
         public @NonDet int hashCode(@PolyDet ValueLiteral this) {
             return Objects.hash(value, type.toString());
         }
@@ -1116,8 +1112,7 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings(
-                "determinism") // using unannoated methods that require @Det, should be @PolyDet
+        @SuppressWarnings("determinism") // using unannoated methods that require @Det: Element
         public @PolyDet boolean equals(@PolyDet MethodCall this, @PolyDet @Nullable Object obj) {
             if (this == obj) {
                 return true;
@@ -1135,8 +1130,7 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings(
-                "determinism") // using unannoated methods that require @Det, should be @PolyDet
+        @SuppressWarnings("determinism") // using unannotated methods that require @Det: Element
         public @NonDet int hashCode(@PolyDet MethodCall this) {
             if (method.getKind() == ElementKind.CONSTRUCTOR) {
                 return super.hashCode();
@@ -1145,17 +1139,17 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings(
-                "determinism") // using unannoated methods that require @Det, should be @PolyDet
         public @PolyDet String toString(@PolyDet MethodCall this) {
-            StringBuilder result = new StringBuilder();
+            @PolyDet StringBuilder result = new @PolyDet StringBuilder();
             if (receiver instanceof ClassName) {
                 result.append(receiver.getType());
             } else {
                 result.append(receiver);
             }
             result.append(".");
-            String methodName = method.getSimpleName().toString();
+            @SuppressWarnings(
+                    "determinism") // using unannotated methods that require @Det: Name.toString
+            @PolyDet String methodName = method.getSimpleName().toString();
             result.append(methodName);
             result.append("(");
             result.append(UtilPlume.join(", ", parameters));
@@ -1301,10 +1295,9 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings("determinism") // calling method on external class requires @Det
         public @PolyDet String toString(@PolyDet BinaryOperation this) {
             final Pretty pretty = new Pretty(null, true);
-            StringBuilder result = new StringBuilder();
+            @PolyDet StringBuilder result = new @PolyDet StringBuilder();
             result.append(left.toString());
             result.append(pretty.operatorName(tag));
             result.append(right.toString());
@@ -1395,10 +1388,8 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings(
-                "determinism") // using unannoated methods that require @Det, should be @PolyDet
         public @PolyDet String toString(@PolyDet ArrayAccess this) {
-            StringBuilder result = new StringBuilder();
+            StringBuilder result = new @PolyDet StringBuilder();
             result.append(receiver.toString());
             result.append("[");
             result.append(index.toString());
@@ -1439,11 +1430,12 @@ public class FlowExpressions {
          *
          * @return a list of receivers representing the dimension of this array creation
          */
-        public List<? extends @Nullable Receiver> getDimensions() {
+        public @PolyDet List<? extends @Nullable Receiver> getDimensions(
+                @PolyDet ArrayCreation this) {
             return dimensions;
         }
 
-        public List<Receiver> getInitializers() {
+        public @PolyDet List<Receiver> getInitializers(@PolyDet ArrayCreation this) {
             return initializers;
         }
 
@@ -1473,16 +1465,13 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings(
-                "determinism") // using unannoated methods that require @Det, should be @PolyDet
         public @NonDet int hashCode(@PolyDet ArrayCreation this) {
             return Objects.hash(dimensions, initializers, getType().toString());
         }
 
         @Override
-        @SuppressWarnings(
-                "determinism") // using unannoated methods that require @Det, should be @PolyDet
-        public @PolyDet boolean equals(@PolyDet ArrayCreation this, @PolyDet @Nullable Object obj) {
+        public @PolyDet("up") boolean equals(
+                @PolyDet ArrayCreation this, @PolyDet @Nullable Object obj) {
             if (!(obj instanceof ArrayCreation)) {
                 return false;
             }
@@ -1505,10 +1494,8 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings(
-                "determinism") // using unannoated methods that require @Det, should be @PolyDet
         public @PolyDet String toString(@PolyDet ArrayCreation this) {
-            StringBuilder sb = new StringBuilder();
+            @PolyDet StringBuilder sb = new @PolyDet StringBuilder();
             sb.append("new " + type);
             if (!dimensions.isEmpty()) {
                 for (Receiver dim : dimensions) {

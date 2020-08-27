@@ -52,7 +52,9 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     }
 
     @Override
-    public ConstantPropagationStore copy() {
+    @SuppressWarnings(
+            "determinism") // valid rule relaxation: copy clearly preserves determinism type
+    public @PolyDet ConstantPropagationStore copy(@PolyDet ConstantPropagationStore this) {
         return new ConstantPropagationStore(new HashMap<>(contents));
     }
 

@@ -186,7 +186,7 @@ public class ControlFlowGraph {
                 break;
             }
 
-            @Det Collection<Block> succs = cur.getSuccessors();
+            Collection<@Det Block> succs = cur.getSuccessors();
 
             for (Block b : succs) {
                 if (!visited.contains(b)) {
@@ -206,9 +206,11 @@ public class ControlFlowGraph {
      *
      * @return all nodes in this control flow graph
      */
+    @SuppressWarnings(
+            "determinism") // process is order insensitive: order of adding to result doesn't matter
     public @OrderNonDet List<Node> getAllNodes(
             @UnknownInitialization(ControlFlowGraph.class) ControlFlowGraph this) {
-        @OrderNonDet List<Node> result = new ArrayList<>();
+        List<Node> result = new ArrayList<>();
         for (Block b : getAllBlocks()) {
             result.addAll(b.getNodes());
         }

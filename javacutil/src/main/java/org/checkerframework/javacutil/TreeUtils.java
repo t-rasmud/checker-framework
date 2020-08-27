@@ -69,6 +69,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.interning.qual.PolyInterned;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -1448,7 +1449,7 @@ public final class TreeUtils {
      * @return a one-line string representation of the tree that is no longer than {@code length}
      *     characters long
      */
-    public static String toStringTruncated(Tree tree, int length) {
+    public static @PolyDet String toStringTruncated(@PolyDet Tree tree, @PolyDet int length) {
         if (length < 6) {
             throw new IllegalArgumentException("bad length " + length);
         }

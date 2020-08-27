@@ -202,7 +202,9 @@ public class DOTCFGVisualizer<
             srcLoc.append(">");
         } else if (ast.getKind() == UnderlyingAST.Kind.METHOD) {
             CFGMethod cfgMethod = (CFGMethod) ast;
-            @SuppressWarnings("determinism") // imprecise library annotation: trees
+            @SuppressWarnings(
+                    "determinism") // using unannoated methods that require @Det, should be
+            // @PolyDet: Name.toString method
             @Det String clsName = cfgMethod.getClassTree().getSimpleName().toString();
             @SuppressWarnings("determinism") // imprecise library annotation: trees
             @Det String methodName = cfgMethod.getMethod().getName().toString();

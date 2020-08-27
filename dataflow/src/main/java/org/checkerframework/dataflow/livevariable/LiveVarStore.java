@@ -109,12 +109,18 @@ public class LiveVarStore implements Store<LiveVarStore> {
     }
 
     @Override
+    @SuppressWarnings(
+            "determinism") // valid rule relaxation: copy clearly preserved determinism type
     public LiveVarStore copy() {
         return new LiveVarStore(new HashSet<>(liveVarValueSet));
     }
 
     @Override
-    public LiveVarStore leastUpperBound(LiveVarStore other) {
+    @SuppressWarnings(
+            "determinism") // imprecise field access rule: accessing @OrderNonDet field of @PolyDet
+    // receiver gives @NonDet, should be @PolyDet("upDet")
+    public @PolyDet LiveVarStore leastUpperBound(
+            @PolyDet LiveVarStore this, @PolyDet LiveVarStore other) {
         Set<@Det LiveVarValue> liveVarValueSetLub = new HashSet<>();
         liveVarValueSetLub.addAll(this.liveVarValueSet);
         liveVarValueSetLub.addAll(other.liveVarValueSet);
