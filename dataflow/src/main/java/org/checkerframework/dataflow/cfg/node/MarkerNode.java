@@ -21,7 +21,7 @@ public class MarkerNode extends Node {
     protected final @Nullable Tree tree;
     protected final @NonDet String message;
 
-    // message may be @NonDet because in CFGBuilder.java, the SwitchBuilder#build method pasess a
+    // message may be @NonDet because in CFGBuilder.java, the SwitchBuilder#build method passes a
     // hash code.
     public MarkerNode(@Nullable Tree tree, @NonDet String message, Types types) {
         super(types.getNoType(TypeKind.NONE));

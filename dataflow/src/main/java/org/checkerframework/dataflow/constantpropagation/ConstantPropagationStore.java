@@ -59,7 +59,8 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     }
 
     @Override
-    @SuppressWarnings("determinism") // process order insensitive: calculating a least upper bound
+    @SuppressWarnings(
+            "determinism") // process is order insensitive: calculating a least upper bound
     public ConstantPropagationStore leastUpperBound(ConstantPropagationStore other) {
         Map<Node, Constant> newContents = new HashMap<>();
 
