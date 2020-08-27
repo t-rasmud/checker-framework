@@ -11,7 +11,7 @@ import org.checkerframework.javacutil.BugInCF;
  * An arbitrary-size set that is very efficient (more efficient than HashSet) for 0 and 1 elements.
  * Uses object identity for object comparison.
  */
-@SuppressWarnings("determinism") // not type checking collections
+@SuppressWarnings("determinism") // not type checking this collection
 public final class IdentityMostlySingleton<T extends Object> extends AbstractMostlySingleton<T> {
 
     /** Create an IdentityMostlySingleton. */

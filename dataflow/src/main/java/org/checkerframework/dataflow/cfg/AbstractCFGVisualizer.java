@@ -106,7 +106,7 @@ public abstract class AbstractCFGVisualizer<
     protected @NonDet String visualizeGraphWithoutHeaderAndFooter(
             ControlFlowGraph cfg, Block entry, @Nullable Analysis<V, S, T> analysis) {
         Set<@Det Block> visited = new LinkedHashSet<>();
-        @NonDet StringBuilder sbGraph = new @NonDet StringBuilder();
+        StringBuilder sbGraph = new @NonDet StringBuilder();
         Queue<@Det Block> workList = new ArrayDeque<>();
         Block cur = entry;
         visited.add(entry);
@@ -199,7 +199,7 @@ public abstract class AbstractCFGVisualizer<
      */
     protected @NonDet String visualizeBlockHelper(
             Block bb, @Nullable Analysis<V, S, T> analysis, String escapeString) {
-        @NonDet StringBuilder sbBlock = new @NonDet StringBuilder();
+        StringBuilder sbBlock = new @NonDet StringBuilder();
         sbBlock.append(loopOverBlockContents(bb, analysis, escapeString));
 
         if (sbBlock.length() == 0) {
@@ -237,7 +237,7 @@ public abstract class AbstractCFGVisualizer<
             Block bb, @Nullable Analysis<V, S, T> analysis, String separator) {
 
         List<Node> contents = addBlockContent(bb);
-        @NonDet StringJoiner sjBlockContents = new @NonDet StringJoiner(separator, "", separator);
+        StringJoiner sjBlockContents = new @NonDet StringJoiner(separator, "", separator);
         sjBlockContents.setEmptyValue("");
         for (Node t : contents) {
             sjBlockContents.add(visualizeBlockNode(t, analysis));
@@ -266,7 +266,7 @@ public abstract class AbstractCFGVisualizer<
 
     @Override
     public @NonDet String visualizeBlockNode(Node t, @Nullable Analysis<V, S, T> analysis) {
-        @NonDet StringBuilder sbBlockNode = new @NonDet StringBuilder();
+        StringBuilder sbBlockNode = new @NonDet StringBuilder();
         sbBlockNode.append(format(t)).append("   [ ").append(getNodeSimpleName(t)).append(" ]");
         if (analysis != null) {
             V value = analysis.getValue(t);
@@ -299,7 +299,7 @@ public abstract class AbstractCFGVisualizer<
         S elseStore = null;
         boolean isTwoStores = false;
 
-        @NonDet StringBuilder sbStore = new @NonDet StringBuilder();
+        StringBuilder sbStore = new @NonDet StringBuilder();
         sbStore.append("Before: ");
 
         Direction analysisDirection = analysis.getDirection();
@@ -351,7 +351,7 @@ public abstract class AbstractCFGVisualizer<
         S elseStore = null;
         boolean isTwoStores = false;
 
-        @NonDet StringBuilder sbStore = new @NonDet StringBuilder();
+        StringBuilder sbStore = new @NonDet StringBuilder();
         sbStore.append("After: ");
 
         Direction analysisDirection = analysis.getDirection();

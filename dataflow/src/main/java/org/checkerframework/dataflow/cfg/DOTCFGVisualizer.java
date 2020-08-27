@@ -73,8 +73,8 @@ public class DOTCFGVisualizer<
             FileWriter fStream = new FileWriter(dotFileName);
             BufferedWriter out = new BufferedWriter(fStream);
             @SuppressWarnings(
-                    "determinism") // non-determinism caused by hashCode, acceptable for debug
-            // output
+                    "determinism") // true positive: output contains non-detrministic hashCode, but
+            // acceptable for debugging
             @Det String tmp = dotGraph;
             out.write(tmp);
             out.close();
@@ -97,7 +97,7 @@ public class DOTCFGVisualizer<
     public @NonDet String visualizeNodes(
             Set<Block> blocks, ControlFlowGraph cfg, @Nullable Analysis<V, S, T> analysis) {
 
-        @NonDet StringBuilder sbDotNodes = new @NonDet StringBuilder();
+        StringBuilder sbDotNodes = new @NonDet StringBuilder();
         sbDotNodes.append(lineSeparator);
 
         IdentityHashMap<@Det Block, @Det List<Integer>> processOrder = getProcessOrder(cfg);
@@ -187,11 +187,14 @@ public class DOTCFGVisualizer<
 
         if (ast.getKind() == UnderlyingAST.Kind.ARBITRARY_CODE) {
             CFGStatement cfgStatement = (CFGStatement) ast;
-            @SuppressWarnings("determinism") // imprecise library annotation: trees
+            @SuppressWarnings(
+                    "determinism") // using unannotated methods that require @Det: Name.toString
             @Det String clsName = cfgStatement.getClassTree().getSimpleName().toString();
             outFile.append(clsName);
             outFile.append("-initializer-");
-            @SuppressWarnings("determinism") // using a hashCode acceptable for debug output
+            @SuppressWarnings(
+                    "determinism") // true positive: uses a hashCode for the file name, but
+            // acceptable for debugging output
             @Det int tmp = ast.hashCode();
             outFile.append(tmp);
 
@@ -203,14 +206,15 @@ public class DOTCFGVisualizer<
         } else if (ast.getKind() == UnderlyingAST.Kind.METHOD) {
             CFGMethod cfgMethod = (CFGMethod) ast;
             @SuppressWarnings(
-                    "determinism") // using unannoated methods that require @Det, should be
-            // @PolyDet: Name.toString method
+                    "determinism") // using unannotated methods that require @Det: Name.toString
             @Det String clsName = cfgMethod.getClassTree().getSimpleName().toString();
-            @SuppressWarnings("determinism") // imprecise library annotation: trees
+            @SuppressWarnings(
+                    "determinism") // using unannotated methods that require @Det: Name.toString
             @Det String methodName = cfgMethod.getMethod().getName().toString();
             StringJoiner params = new StringJoiner(",");
             for (VariableTree tree : cfgMethod.getMethod().getParameters()) {
-                @SuppressWarnings("determinism") // imprecise library annotation: trees
+                @SuppressWarnings(
+                        "determinism") // using unannotated methods that require @Det: trees
                 @Det String tmp = tree.getType().toString();
                 params.add(tmp);
             }
@@ -233,11 +237,15 @@ public class DOTCFGVisualizer<
             srcLoc.append(">");
         } else if (ast.getKind() == UnderlyingAST.Kind.LAMBDA) {
             CFGLambda cfgLambda = (CFGLambda) ast;
-            @SuppressWarnings("determinism") // imprecise library annotation: trees
+            @SuppressWarnings(
+                    "determinism") // using unannotated methods that require @Det: Name.toString
             @Det String clsName = cfgLambda.getClassTree().getSimpleName().toString();
-            @SuppressWarnings("determinism") // imprecise library annotation: trees
+            @SuppressWarnings(
+                    "determinism") // using unannotated methods that require @Det: Name.toString
             @Det String methodName = cfgLambda.getMethod().getName().toString();
-            @SuppressWarnings("determinism") // using a hashCode acceptable for debug output
+            @SuppressWarnings(
+                    "determinism") // true positive: uses a hashCode for the file name, but
+            // acceptable for debugging output
             @Det int hashCode = cfgLambda.getCode().hashCode();
             outFile.append(clsName);
             outFile.append("-");
@@ -375,8 +383,8 @@ public class DOTCFGVisualizer<
             BufferedWriter out = new BufferedWriter(fstream);
             for (Map.Entry<String, String> kv : generated.entrySet()) {
                 @SuppressWarnings(
-                        "determinism") // process order insensitive: order of writing files doesn't
-                // matter
+                        "determinism") // process is order insensitive: order of writing files
+                // doesn't matter
                 Map.@Det Entry<String, String> tmp = kv;
                 out.write(tmp.getKey());
                 out.append("\t");

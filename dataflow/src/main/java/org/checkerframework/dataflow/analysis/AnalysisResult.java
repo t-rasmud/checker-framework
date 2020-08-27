@@ -197,7 +197,7 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
      */
     @SuppressWarnings("determinism") // process is order insensitive: merging Values
     public @Nullable V getValue(Tree t) {
-        @OrderNonDet Set<Node> nodes = treeLookup.get(t);
+        Set<Node> nodes = treeLookup.get(t);
 
         if (nodes == null) {
             return null;
@@ -258,7 +258,7 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
      * @return the store immediately before a given {@link Tree}
      */
     public @Nullable S getStoreBefore(Tree tree) {
-        @OrderNonDet Set<Node> nodes = getNodesForTree(tree);
+        Set<@Det Node> nodes = getNodesForTree(tree);
         if (nodes == null) {
             return null;
         }
@@ -356,7 +356,7 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
      * @return the store immediately after a given {@link Tree}
      */
     public @Nullable S getStoreAfter(Tree tree) {
-        @OrderNonDet Set<Node> nodes = getNodesForTree(tree);
+        Set<@Det Node> nodes = getNodesForTree(tree);
         if (nodes == null) {
             return null;
         }
@@ -455,7 +455,7 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
      */
     @SuppressWarnings("determinism") // https://github.com/t-rasmud/checker-framework/issues/194
     public @NonDet String toStringDebug() {
-        @NonDet StringJoiner result =
+        StringJoiner result =
                 new
                 @NonDet StringJoiner(
                         String.format("%n  "),
@@ -483,7 +483,7 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
         if (nodeValues.isEmpty()) {
             return "{}";
         }
-        @NonDet StringJoiner result = new @NonDet StringJoiner(String.format("%n    "));
+        StringJoiner result = new @NonDet StringJoiner(String.format("%n    "));
         result.add("{");
         for (Map.Entry<Node, V> entry : nodeValues.entrySet()) {
             Node key = entry.getKey();

@@ -113,7 +113,6 @@ public class Constant implements AbstractValue<Constant> {
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling method on external class requires @Det: Integer
     public @PolyDet String toString(@PolyDet Constant this) {
         switch (type) {
             case TOP:

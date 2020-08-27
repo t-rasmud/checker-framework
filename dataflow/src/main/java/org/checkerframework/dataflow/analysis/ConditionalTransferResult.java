@@ -116,7 +116,7 @@ public class ConditionalTransferResult<V extends AbstractValue<V>, S extends Sto
 
     /** The regular result store. */
     @Override
-    public S getRegularStore(ConditionalTransferResult<V, S> this) {
+    public S getRegularStore() {
         return thenStore.leastUpperBound(elseStore);
     }
 
@@ -137,7 +137,7 @@ public class ConditionalTransferResult<V extends AbstractValue<V>, S extends Sto
 
     @Override
     public @PolyDet String toString(@PolyDet ConditionalTransferResult<V, S> this) {
-        @PolyDet StringJoiner result = new @PolyDet StringJoiner(System.lineSeparator());
+        StringJoiner result = new @PolyDet StringJoiner(System.lineSeparator());
         result.add("RegularTransferResult(");
         result.add("  resultValue = " + resultValue);
         result.add("  thenStore = " + thenStore);

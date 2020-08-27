@@ -72,7 +72,7 @@ public class ArrayCreationNode extends Node {
 
     @Override
     public @PolyDet String toString(@PolyDet ArrayCreationNode this) {
-        @PolyDet StringBuilder sb = new @PolyDet StringBuilder();
+        StringBuilder sb = new @PolyDet StringBuilder();
         sb.append("new " + type);
         if (!dimensions.isEmpty()) {
             sb.append(" (");

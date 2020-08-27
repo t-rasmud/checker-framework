@@ -43,7 +43,7 @@ public class StringCFGVisualizer<
     @Override
     public @NonDet String visualizeNodes(
             Set<Block> blocks, ControlFlowGraph cfg, @Nullable Analysis<V, S, T> analysis) {
-        @NonDet StringJoiner sjStringNodes = new @NonDet StringJoiner(lineSeparator, lineSeparator, "");
+        StringJoiner sjStringNodes = new @NonDet StringJoiner(lineSeparator, lineSeparator, "");
         IdentityHashMap<@Det Block, @Det List<Integer>> processOrder = getProcessOrder(cfg);
 
         // Generate all the Nodes.

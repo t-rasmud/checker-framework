@@ -71,6 +71,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -853,10 +854,12 @@ public class CFGBuilder {
      */
     @SuppressWarnings("serial")
     protected static class TryFinallyScopeMap extends HashMap<Name, Label> {
-        private final @OrderNonDet Map<Name, Label> accessedNames;
+        /** New labels within a try block that were added by this implementation. */
+        private final @Det Map<Name, Label> accessedNames;
 
+        /** Create a new TryFinallyScopeMap. */
         protected @OrderNonDet TryFinallyScopeMap() {
-            this.accessedNames = new HashMap<>();
+            this.accessedNames = new LinkedHashMap<>();
         }
 
         @Override
@@ -887,8 +890,7 @@ public class CFGBuilder {
         @SuppressWarnings(
                 "determinism") // imprecise field access rule: accessing @OrderNonDet field of
         // @PolyDet receiver gives @NonDet, should be @PolyDet("upDet")
-        public @OrderNonDet Map<@Det Name, @Det Label> getAccessedNames(
-                @PolyDet TryFinallyScopeMap this) {
+        public Map<Name, Label> getAccessedNames(@PolyDet TryFinallyScopeMap this) {
             return accessedNames;
         }
     }
@@ -1139,8 +1141,9 @@ public class CFGBuilder {
             RegularBlockImpl cur = start;
             emptyBlocks.add(cur);
             for (final Block p : cur.getPredecessors()) {
-                @SuppressWarnings("determinism") // process is order insensitive: order of adding to
-                // predecessors doesn't matter, it's a HashSet anyway
+                @SuppressWarnings(
+                        "determinism") // process is order insensitive: adding to an @OrdreNonDet
+                // Set
                 @Det BlockImpl pred = (BlockImpl) p;
                 switch (pred.getType()) {
                     case SPECIAL_BLOCK:
@@ -4733,8 +4736,7 @@ public class CFGBuilder {
 
                     for (Map.Entry<@Det Name, @Det Label> access :
                             accessedContinueLabels.entrySet()) {
-                        @SuppressWarnings("determinism") // process is order insensitive
-                        Map.@Det Entry<@Det Name, @Det Label> tmp = access;
+                        Map.Entry<@Det Name, @Det Label> tmp = access;
                         addLabelForNextNode(tmp.getValue());
                         extendWithNode(
                                 new MarkerNode(
@@ -4773,7 +4775,8 @@ public class CFGBuilder {
          * @param target label for exception
          * @return true when an exceptional node for {@code target} exists in {@link #nodeList}
          */
-        @SuppressWarnings("determinism") // process is order insensitive
+        @SuppressWarnings(
+                "determinism") // process is order insensitive: checking if a node exists in a list
         private boolean hasExceptionalPath(Label target) {
             for (ExtendedNode node : nodeList) {
                 if (node instanceof NodeWithExceptionsHolder) {

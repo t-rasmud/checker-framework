@@ -59,7 +59,7 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     }
 
     @Override
-    @SuppressWarnings("determinism") // process order insensitive
+    @SuppressWarnings("determinism") // process order insensitive: calculating a least upper bound
     public ConstantPropagationStore leastUpperBound(ConstantPropagationStore other) {
         Map<Node, Constant> newContents = new HashMap<>();
 
@@ -135,8 +135,7 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     }
 
     @Override
-    @SuppressWarnings("determinism") // calling method on external class requires @Det: Integer
-    public @NonDet int hashCode() {
+    public @NonDet int hashCode(@PolyDet ConstantPropagationStore this) {
         int s = 0;
         for (Map.Entry<Node, Constant> e : contents.entrySet()) {
             if (!e.getValue().isBottom()) {
@@ -147,10 +146,9 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     }
 
     @Override
-    @SuppressWarnings("determinism") // non-determinism reflected in return type
     public @NonDet String toString(@PolyDet ConstantPropagationStore this) {
         // only output local variable information
-        Map<Node, Constant> smallerContents = new HashMap<>();
+        Map<Node, Constant> smallerContents = new @NonDet HashMap<>();
         for (Map.Entry<Node, Constant> e : contents.entrySet()) {
             if (e.getKey() instanceof LocalVariableNode) {
                 smallerContents.put(e.getKey(), e.getValue());

@@ -184,7 +184,7 @@ public abstract class Node {
      * @return a printed representation of the given collection
      */
     public static @NonDet String nodeCollectionToString(@PolyDet Collection<? extends Node> nodes) {
-        @NonDet StringJoiner result = new @NonDet StringJoiner(", ", "[", "]");
+        StringJoiner result = new @NonDet StringJoiner(", ", "[", "]");
         for (Node n : nodes) {
             result.add(n.toStringDebug());
         }

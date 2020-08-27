@@ -16,7 +16,7 @@ import org.checkerframework.javacutil.BugInCF;
  * Base class for arbitrary-size sets that very efficient (more efficient than HashSet) for 0 and 1
  * elements.
  */
-@SuppressWarnings("determinism") // not type checking collections
+@SuppressWarnings("determinism") // not type checking this collection
 public abstract class AbstractMostlySingleton<T extends Object> implements Set<T> {
 
     /** The possible states of this set. */

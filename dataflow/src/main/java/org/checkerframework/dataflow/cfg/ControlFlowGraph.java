@@ -238,7 +238,9 @@ public class ControlFlowGraph {
                 visited.add(cur);
                 @Det Collection<Block> successors = cur.getSuccessors();
                 @SuppressWarnings({
-                    "determinism",
+                    "determinism", // valid rule relaxation: the rule seems to be that removeAll on
+                    // a @Det Set requires a @Det Collection, but the ordering of the
+                    // collection parameter shouldn't matter.
                     "UnusedVariable"
                 }) // removeAll is order insensitive
                 boolean ignore = successors.removeAll(visited);
@@ -312,8 +314,11 @@ public class ControlFlowGraph {
 
         CFGVisualizer<?, ?, ?> viz = new StringCFGVisualizer<>();
         viz.init(args);
-        @SuppressWarnings("determinism") // non-determinism reflected in variable type
-        @PolyDet("upDet") Map<String, Object> res = viz.visualize(this, this.getEntryBlock(), null);
+        @SuppressWarnings(
+                "determinism") // rules violated, but nondeterminism reflected in return type: the
+        // visualize method expects a @Det CFG, but passing @PolyDet is okay
+        // because the result of this method is @NonDet anyway
+        Map<@Det String, @NonDet Object> res = viz.visualize(this, this.getEntryBlock(), null);
         viz.shutdown();
         if (res == null) {
             return super.toString();
@@ -327,7 +332,7 @@ public class ControlFlowGraph {
      *
      * @return a string representation of this
      */
-    @SuppressWarnings("determinism") // non-determinism reflected in return type
+    @SuppressWarnings("determinism") // https://github.com/t-rasmud/checker-framework/issues/194
     public @NonDet String toStringDebug() {
         String className = this.getClass().getSimpleName();
         if (className.equals("ControlFlowGraph") && this.getClass() != ControlFlowGraph.class) {

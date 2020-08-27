@@ -1140,7 +1140,7 @@ public class FlowExpressions {
 
         @Override
         public @PolyDet String toString(@PolyDet MethodCall this) {
-            @PolyDet StringBuilder result = new @PolyDet StringBuilder();
+            StringBuilder result = new @PolyDet StringBuilder();
             if (receiver instanceof ClassName) {
                 result.append(receiver.getType());
             } else {
@@ -1297,7 +1297,7 @@ public class FlowExpressions {
         @Override
         public @PolyDet String toString(@PolyDet BinaryOperation this) {
             final Pretty pretty = new Pretty(null, true);
-            @PolyDet StringBuilder result = new @PolyDet StringBuilder();
+            StringBuilder result = new @PolyDet StringBuilder();
             result.append(left.toString());
             result.append(pretty.operatorName(tag));
             result.append(right.toString());
@@ -1495,7 +1495,7 @@ public class FlowExpressions {
 
         @Override
         public @PolyDet String toString(@PolyDet ArrayCreation this) {
-            @PolyDet StringBuilder sb = new @PolyDet StringBuilder();
+            StringBuilder sb = new @PolyDet StringBuilder();
             sb.append("new " + type);
             if (!dimensions.isEmpty()) {
                 for (Receiver dim : dimensions) {

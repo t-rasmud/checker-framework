@@ -135,7 +135,7 @@ public class RegularTransferResult<V extends AbstractValue<V>, S extends Store<S
 
     @Override
     public @NonDet String toString(@PolyDet RegularTransferResult<V, S> this) {
-        @NonDet StringJoiner result = new @NonDet StringJoiner(System.lineSeparator());
+        StringJoiner result = new @NonDet StringJoiner(System.lineSeparator());
         result.add("RegularTransferResult(");
         result.add("  resultValue = " + resultValue);
         // "toString().trim()" works around bug where toString ends with a newline.
