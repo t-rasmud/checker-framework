@@ -1454,12 +1454,12 @@ public class CFGBuilder {
                         // exceptional edges
                         for (Map.@NonDet Entry<TypeMirror, @OrderNonDet Set<Label>> entry :
                                 en.getExceptions().entrySet()) {
-                            @SuppressWarnings("determinism") // true positive: modifying
+                            @SuppressWarnings("determinism") // true positive (order): modifying
                             // missingExceptionalEdges which should have
                             // deterministic order
                             @Det TypeMirror cause = entry.getKey();
                             for (Label label : entry.getValue()) {
-                                @SuppressWarnings("determinism") // true positive: modifying
+                                @SuppressWarnings("determinism") // true positive (order): modifying
                                 // missingExceptionalEdges which should have
                                 // deterministic order
                                 @Det Integer target = bindings.get(label);
@@ -5174,7 +5174,7 @@ public class CFGBuilder {
      * Print a set of {@link Block}s and the edges between them. This is useful for examining the
      * results of phase two.
      */
-    @SuppressWarnings("determinism") // true positive: using a hashCode acceptable for debug output
+    @SuppressWarnings("determinism") // true positive (debug output): hashCode
     protected static void printBlocks(Set<Block> blocks) {
         for (Block b : blocks) {
             System.out.print(b.hashCode() + ": " + b);

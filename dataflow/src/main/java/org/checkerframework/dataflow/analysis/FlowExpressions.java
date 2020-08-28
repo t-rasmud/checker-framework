@@ -844,7 +844,7 @@ public class FlowExpressions {
 
         @Override
         @SuppressWarnings(
-                "determinism") // all known implementations have @Det toString methods: Name
+                "determinism") // all known implementations have @Det toString method: Name
         // interface
         public @NonDet int hashCode(@PolyDet LocalVariable this) {
             VarSymbol vs = (VarSymbol) element;
@@ -855,7 +855,7 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings("determinism") // all known implementations have @Det toString methods
+        @SuppressWarnings("determinism") // all known implementations have @Det toString method
         public @PolyDet String toString(@PolyDet LocalVariable this) {
             return element.toString();
         }
@@ -1147,7 +1147,7 @@ public class FlowExpressions {
                 result.append(receiver);
             }
             result.append(".");
-            @SuppressWarnings("determinism") // all known implementations have @Det toString methods
+            @SuppressWarnings("determinism") // all known implementations have @Det toString method
             @PolyDet String methodName = method.getSimpleName().toString();
             result.append(methodName);
             result.append("(");

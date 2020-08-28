@@ -64,7 +64,7 @@ public class PackageNameNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // all known implementations have @Det toString methods: Name
+    @SuppressWarnings("determinism") // all known implementations have @Det toString method: Name
     public @PolyDet String toString(@PolyDet PackageNameNode this) {
         return getElement().getSimpleName().toString();
     }

@@ -26,7 +26,7 @@ public class VariableDeclarationNode extends Node {
 
     // TODO: make modifier accessible
 
-    @SuppressWarnings("determinism") // all known implementations have @Det toString methods: Name
+    @SuppressWarnings("determinism") // all known implementations have @Det toString method: Name
     public VariableDeclarationNode(VariableTree t) {
         super(TreeUtils.typeOf(t));
         tree = t;

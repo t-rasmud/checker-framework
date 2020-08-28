@@ -42,7 +42,7 @@ public class ParameterizedTypeNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // all known implementations have @Det toString methods
+    @SuppressWarnings("determinism") // all known implementations have @Det toString method
     public @PolyDet String toString(@PolyDet ParameterizedTypeNode this) {
         return getTree().toString();
     }

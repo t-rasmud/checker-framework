@@ -48,7 +48,7 @@ public class FieldAccessNode extends Node {
         }
     }
 
-    @SuppressWarnings("determinism") // all known implementations have @Det toString methods
+    @SuppressWarnings("determinism") // all known implementations have @Det toString method
     public FieldAccessNode(Tree tree, VariableElement element, Node receiver) {
         super(element.asType());
         this.tree = tree;
