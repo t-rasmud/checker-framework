@@ -72,9 +72,7 @@ public class DOTCFGVisualizer<
         try {
             FileWriter fStream = new FileWriter(dotFileName);
             BufferedWriter out = new BufferedWriter(fStream);
-            @SuppressWarnings(
-                    "determinism") // true positive: output contains non-detrministic hashCode, but
-            // acceptable for debugging
+            @SuppressWarnings("determinism") // true positive (debug output): hashCode
             @Det String tmp = dotGraph;
             out.write(tmp);
             out.close();
@@ -192,9 +190,7 @@ public class DOTCFGVisualizer<
             @Det String clsName = cfgStatement.getClassTree().getSimpleName().toString();
             outFile.append(clsName);
             outFile.append("-initializer-");
-            @SuppressWarnings(
-                    "determinism") // true positive: uses a hashCode for the file name, but
-            // acceptable for debugging output
+            @SuppressWarnings("determinism") // true positive (debug output): hashCode
             @Det int tmp = ast.hashCode();
             outFile.append(tmp);
 
@@ -244,9 +240,7 @@ public class DOTCFGVisualizer<
             @SuppressWarnings(
                     "determinism") // all known implementations have @Det toString methods: Name
             @Det String methodName = cfgLambda.getMethod().getName().toString();
-            @SuppressWarnings(
-                    "determinism") // true positive: uses a hashCode for the file name, but
-            // acceptable for debugging output
+            @SuppressWarnings("determinism") // true positive (debug output): hashCode
             @Det int hashCode = cfgLambda.getCode().hashCode();
             outFile.append(clsName);
             outFile.append("-");
