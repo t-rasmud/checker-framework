@@ -1113,7 +1113,7 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings("determinism") // using unannoated methods that require @Det: Element
+        @SuppressWarnings("determinism") // using unannotated methods that require @Det: Element
         public @PolyDet boolean equals(@PolyDet MethodCall this, @PolyDet @Nullable Object obj) {
             if (this == obj) {
                 return true;
@@ -1254,7 +1254,7 @@ public class FlowExpressions {
 
         @Override
         @SuppressWarnings(
-                "determinism") // using unannoated methods that require @Det, should be @PolyDet
+                "determinism") // using unannotated methods that require @Det: should be @PolyDet
         public @PolyDet boolean equals(
                 @PolyDet BinaryOperation this, @PolyDet @Nullable Object other) {
             if (!(other instanceof BinaryOperation)) {
