@@ -242,8 +242,8 @@ may not be annotated as \code{@OrderNonDet}.
 The \code{HashSet} and \code{HashMap} classes are special. Because iteration order is
 non-deterministic, it is impossible to construct a \code{@Det HashSet}
 or \code{@Det HashMap}.
-Accordingly, the return type of the \code{HashSet} and \code{Hashmap}
-constuctors are annotated as \code{@PolyDet("upDet")}. See
+Accordingly, the return type of the \code{HashSet} and \code{HashMap}
+constructors are annotated as \code{@PolyDet("upDet")}. See
 Section~\ref{determinism-polymorphism-ordernondet}.
 
 \sectionAndLabel{Controlling polymorphism}{determinism-polymorphism}
@@ -587,4 +587,5 @@ The parameter type of the \code{main} method has an implicit annotation
 \<@Det String @Det[]>.
 
 %%  LocalWords:  DeterminismChecker HashSet InputFile NonDet Det MyClass
-%%  LocalWords:  OrderNonDet PolyDet UsePolyDet println MyType
+%%  LocalWords:  OrderNonDet PolyDet UsePolyDet println MyType keySet rhs
+% LocalWords:  CollectionType TestUserCollection
