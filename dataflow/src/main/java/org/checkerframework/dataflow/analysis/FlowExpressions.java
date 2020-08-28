@@ -821,7 +821,6 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings("determinism") // using unannotated methods that require @Det: VarSymbol
         public @PolyDet boolean equals(@PolyDet LocalVariable this, @PolyDet @Nullable Object obj) {
             if (!(obj instanceof LocalVariable)) {
                 return false;
@@ -844,7 +843,9 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings("determinism") // using unannotated methods that require @Det: VarSymbol
+        @SuppressWarnings(
+                "determinism") // all known implementations have @Det toString methods: Name
+        // interface
         public @NonDet int hashCode(@PolyDet LocalVariable this) {
             VarSymbol vs = (VarSymbol) element;
             return Objects.hash(
@@ -1130,7 +1131,6 @@ public class FlowExpressions {
         }
 
         @Override
-        @SuppressWarnings("determinism") // using unannotated methods that require @Det: Element
         public @NonDet int hashCode(@PolyDet MethodCall this) {
             if (method.getKind() == ElementKind.CONSTRUCTOR) {
                 return super.hashCode();
@@ -1147,8 +1147,7 @@ public class FlowExpressions {
                 result.append(receiver);
             }
             result.append(".");
-            @SuppressWarnings(
-                    "determinism") // using unannotated methods that require @Det: Name.toString
+            @SuppressWarnings("determinism") // all known implementations have @Det toString methods
             @PolyDet String methodName = method.getSimpleName().toString();
             result.append(methodName);
             result.append("(");

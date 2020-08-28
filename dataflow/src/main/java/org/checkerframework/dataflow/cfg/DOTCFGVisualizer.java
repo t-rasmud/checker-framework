@@ -188,7 +188,7 @@ public class DOTCFGVisualizer<
         if (ast.getKind() == UnderlyingAST.Kind.ARBITRARY_CODE) {
             CFGStatement cfgStatement = (CFGStatement) ast;
             @SuppressWarnings(
-                    "determinism") // using unannotated methods that require @Det: Name.toString
+                    "determinism") // all known implementations have @Det toString methods: Name
             @Det String clsName = cfgStatement.getClassTree().getSimpleName().toString();
             outFile.append(clsName);
             outFile.append("-initializer-");
@@ -206,15 +206,16 @@ public class DOTCFGVisualizer<
         } else if (ast.getKind() == UnderlyingAST.Kind.METHOD) {
             CFGMethod cfgMethod = (CFGMethod) ast;
             @SuppressWarnings(
-                    "determinism") // using unannotated methods that require @Det: Name.toString
+                    "determinism") // all known implementations have @Det toString methods: Name
             @Det String clsName = cfgMethod.getClassTree().getSimpleName().toString();
             @SuppressWarnings(
-                    "determinism") // using unannotated methods that require @Det: Name.toString
+                    "determinism") // all known implementations have @Det toString methods: Name
             @Det String methodName = cfgMethod.getMethod().getName().toString();
             StringJoiner params = new StringJoiner(",");
             for (VariableTree tree : cfgMethod.getMethod().getParameters()) {
                 @SuppressWarnings(
-                        "determinism") // using unannotated methods that require @Det: trees
+                        "determinism") // all known implementations have @Det toString methods:
+                // trees
                 @Det String tmp = tree.getType().toString();
                 params.add(tmp);
             }
@@ -238,10 +239,10 @@ public class DOTCFGVisualizer<
         } else if (ast.getKind() == UnderlyingAST.Kind.LAMBDA) {
             CFGLambda cfgLambda = (CFGLambda) ast;
             @SuppressWarnings(
-                    "determinism") // using unannotated methods that require @Det: Name.toString
+                    "determinism") // all known implementations have @Det toString methods: Name
             @Det String clsName = cfgLambda.getClassTree().getSimpleName().toString();
             @SuppressWarnings(
-                    "determinism") // using unannotated methods that require @Det: Name.toString
+                    "determinism") // all known implementations have @Det toString methods: Name
             @Det String methodName = cfgLambda.getMethod().getName().toString();
             @SuppressWarnings(
                     "determinism") // true positive: uses a hashCode for the file name, but
