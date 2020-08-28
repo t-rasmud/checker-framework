@@ -1,0 +1,381 @@
+Entering checker/bin-devel/build.sh in /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/checker-framework
+initial CHECKERFRAMEWORK=/Users/rashmi/determinism-checker/checker-framework
+CHECKERFRAMEWORK=/Users/rashmi/determinism-checker/checker-framework
+SHELLOPTS=braceexpand:errexit:hashall:interactive-comments
+JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home
+/bin/sh: SHELLOPTS: readonly variable
+In directory /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/checker-framework :
+/bin/sh: SHELLOPTS: readonly variable
+/bin/sh: SHELLOPTS: readonly variable
+dyld: Library not loaded: /usr/local/opt/openssl/lib/libssl.1.0.0.dylib
+  Referenced from: /usr/local/bin/wget
+  Reason: image not found
+/private/tmp/rashmi/plume-scripts/git-find-fork: line 33: 10228 Abort trap: 6           ( ${GITEXISTS} "https://github.com/${ORG}/${REPONAME}.git" > /dev/null )
+/bin/sh: SHELLOPTS: readonly variable
+git clone -b master  https://github.com/t-rasmud/jdk.git ../jdk
+Cloning into '../jdk'...
+Checking out files:   3% (2138/66468)   
+Checking out files:   4% (2659/66468)   
+Checking out files:   5% (3324/66468)   
+Checking out files:   6% (3989/66468)   
+Checking out files:   7% (4653/66468)   
+Checking out files:   8% (5318/66468)   
+Checking out files:   8% (5332/66468)   
+Checking out files:   9% (5983/66468)   
+Checking out files:  10% (6647/66468)   
+Checking out files:  11% (7312/66468)   
+Checking out files:  12% (7977/66468)   
+Checking out files:  12% (8584/66468)   
+Checking out files:  13% (8641/66468)   
+Checking out files:  14% (9306/66468)   
+Checking out files:  15% (9971/66468)   
+Checking out files:  16% (10635/66468)   
+Checking out files:  17% (11300/66468)   
+Checking out files:  17% (11425/66468)   
+Checking out files:  18% (11965/66468)   
+Checking out files:  19% (12629/66468)   
+Checking out files:  20% (13294/66468)   
+Checking out files:  20% (13641/66468)   
+Checking out files:  21% (13959/66468)   
+Checking out files:  22% (14623/66468)   
+Checking out files:  23% (15288/66468)   
+Checking out files:  24% (15953/66468)   
+Checking out files:  25% (16617/66468)   
+Checking out files:  25% (16834/66468)   
+Checking out files:  26% (17282/66468)   
+Checking out files:  27% (17947/66468)   
+Checking out files:  28% (18612/66468)   
+Checking out files:  29% (19276/66468)   
+Checking out files:  30% (19941/66468)   
+Checking out files:  30% (20272/66468)   
+Checking out files:  31% (20606/66468)   
+Checking out files:  32% (21270/66468)   
+Checking out files:  33% (21935/66468)   
+Checking out files:  34% (22600/66468)   
+Checking out files:  35% (23264/66468)   
+Checking out files:  35% (23896/66468)   
+Checking out files:  36% (23929/66468)   
+Checking out files:  37% (24594/66468)   
+Checking out files:  38% (25258/66468)   
+Checking out files:  39% (25923/66468)   
+Checking out files:  40% (26588/66468)   
+Checking out files:  40% (26958/66468)   
+Checking out files:  41% (27252/66468)   
+Checking out files:  42% (27917/66468)   
+Checking out files:  43% (28582/66468)   
+Checking out files:  44% (29246/66468)   
+Checking out files:  45% (29911/66468)   
+Checking out files:  46% (30576/66468)   
+Checking out files:  47% (31240/66468)   
+Checking out files:  47% (31447/66468)   
+Checking out files:  48% (31905/66468)   
+Checking out files:  49% (32570/66468)   
+Checking out files:  50% (33234/66468)   
+Checking out files:  51% (33899/66468)   
+Checking out files:  52% (34564/66468)   
+Checking out files:  53% (35229/66468)   
+Checking out files:  53% (35252/66468)   
+Checking out files:  54% (35893/66468)   
+Checking out files:  55% (36558/66468)   
+Checking out files:  56% (37223/66468)   
+Checking out files:  57% (37887/66468)   
+Checking out files:  58% (38552/66468)   
+Checking out files:  58% (39184/66468)   
+Checking out files:  59% (39217/66468)   
+Checking out files:  60% (39881/66468)   
+Checking out files:  61% (40546/66468)   
+Checking out files:  62% (41211/66468)   
+Checking out files:  63% (41875/66468)   
+Checking out files:  64% (42540/66468)   
+Checking out files:  65% (43205/66468)   
+Checking out files:  65% (43348/66468)   
+Checking out files:  66% (43869/66468)   
+Checking out files:  67% (44534/66468)   
+Checking out files:  68% (45199/66468)   
+Checking out files:  69% (45863/66468)   
+Checking out files:  70% (46528/66468)   
+Checking out files:  71% (47193/66468)   
+Checking out files:  71% (47312/66468)   
+Checking out files:  72% (47857/66468)   
+Checking out files:  73% (48522/66468)   
+Checking out files:  74% (49187/66468)   
+Checking out files:  75% (49851/66468)   
+Checking out files:  76% (50516/66468)   
+Checking out files:  77% (51181/66468)   
+Checking out files:  77% (51305/66468)   
+Checking out files:  78% (51846/66468)   
+Checking out files:  79% (52510/66468)   
+Checking out files:  80% (53175/66468)   
+Checking out files:  81% (53840/66468)   
+Checking out files:  82% (54504/66468)   
+Checking out files:  82% (55067/66468)   
+Checking out files:  83% (55169/66468)   
+Checking out files:  84% (55834/66468)   
+Checking out files:  85% (56498/66468)   
+Checking out files:  86% (57163/66468)   
+Checking out files:  87% (57828/66468)   
+Checking out files:  88% (58492/66468)   
+Checking out files:  89% (59157/66468)   
+Checking out files:  90% (59822/66468)   
+Checking out files:  90% (59979/66468)   
+Checking out files:  91% (60486/66468)   
+Checking out files:  92% (61151/66468)   
+Checking out files:  93% (61816/66468)   
+Checking out files:  94% (62480/66468)   
+Checking out files:  95% (63145/66468)   
+Checking out files:  96% (63810/66468)   
+Checking out files:  97% (64474/66468)   
+Checking out files:  98% (65139/66468)   
+Checking out files:  98% (65371/66468)   
+Checking out files:  99% (65804/66468)   
+Checking out files: 100% (66468/66468)   
+Checking out files: 100% (66468/66468), done.
+Done in directory ../jdk : aadd76c54729f9abdac9a2410ae503298ac08974
+/bin/sh: SHELLOPTS: readonly variable
+In directory /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/checker-framework :
+/bin/sh: SHELLOPTS: readonly variable
+/bin/sh: SHELLOPTS: readonly variable
+dyld: Library not loaded: /usr/local/opt/openssl/lib/libssl.1.0.0.dylib
+  Referenced from: /usr/local/bin/wget
+  Reason: image not found
+/private/tmp/rashmi/plume-scripts/git-find-fork: line 33: 10270 Abort trap: 6           ( ${GITEXISTS} "https://github.com/${ORG}/${REPONAME}.git" > /dev/null )
+/bin/sh: SHELLOPTS: readonly variable
+git clone -b master  https://github.com/typetools/annotation-tools.git ../annotation-tools
+Done in directory ../annotation-tools : 765cf2566be36ff53876fd3a8180ca8b05f92509
+Running:  (cd ../annotation-tools && ./.travis-build-without-test.sh)
+Entering /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools/.travis-build-without-test.sh in /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools
++ export SHELLOPTS
+++ uname
++ '[' Darwin = Darwin ']'
+JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home
++ export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home
++ JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home
++ echo JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home
+++ cd annotation-file-utilities
+++ pwd -P
++ export AFU=/Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools/annotation-file-utilities
++ AFU=/Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools/annotation-file-utilities
++ export 'PATH=/Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools/annotation-file-utilities/scripts:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/bin:/Users/rashmi/perl5/perlbrew/bin:/Users/rashmi/perl5/perlbrew/perls/perl-5.16.0/bin:/Users/rashmi/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/VMware Fusion.app/Contents/Public:/Library/TeX/texbin:/opt/X11/bin'
++ PATH='/Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools/annotation-file-utilities/scripts:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/bin:/Users/rashmi/perl5/perlbrew/bin:/Users/rashmi/perl5/perlbrew/perls/perl-5.16.0/bin:/Users/rashmi/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/VMware Fusion.app/Contents/Public:/Library/TeX/texbin:/opt/X11/bin'
++ cd /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools/annotation-file-utilities
++ TERM=dumb
++ timeout 300 ./gradlew help
++ TERM=dumb
++ ./gradlew help
++ cd /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools/annotation-file-utilities
++ ./gradlew assemble
+sh: SHELLOPTS: readonly variable
+
+> Task :compileAsmx
+/bin/sh: SHELLOPTS: readonly variable
+/bin/sh: SHELLOPTS: readonly variable
+Buildfile: /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools/asmx/build.xml
+
+properties:
+
+check:
+
+init:
+  [taskdef] Could not load definitions from resource tasks.properties. It could not be found.
+
+compile-debug:
+    [mkdir] Created dir: /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools/asmx/output/tmp
+    [javac] Compiling 120 source files to /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools/asmx/output/tmp
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+
+shrink:
+
+noshrink:
+     [copy] Copying 170 files to /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools/asmx/output/build
+
+compile:
+     [copy] Copying 170 files to /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools/asmx/bin
+
+bin:
+
+BUILD SUCCESSFUL
+Total time: 3 seconds
+
+> Task :compileJava
+> Task :processResources NO-SOURCE
+> Task :classes
+> Task :allButJavacJar
+> Task :jar
+> Task :shadowJar
+> Task :skinnyJar
+> Task :assemble
+
+BUILD SUCCESSFUL in 12s
+6 actionable tasks: 6 executed
++++ dirname ./.travis-build-without-test.sh
+++ cd .
+++ pwd -P
+++ basename ./.travis-build-without-test.sh
+++ pwd
++ echo Exiting /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools/.travis-build-without-test.sh in /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools
+Exiting /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools/.travis-build-without-test.sh in /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools
+... done: (cd ../annotation-tools && ./.travis-build-without-test.sh)
+/bin/sh: SHELLOPTS: readonly variable
+In directory /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/checker-framework :
+/bin/sh: SHELLOPTS: readonly variable
+/bin/sh: SHELLOPTS: readonly variable
+dyld: Library not loaded: /usr/local/opt/openssl/lib/libssl.1.0.0.dylib
+  Referenced from: /usr/local/bin/wget
+  Reason: image not found
+/private/tmp/rashmi/plume-scripts/git-find-fork: line 33: 10366 Abort trap: 6           ( ${GITEXISTS} "https://github.com/${ORG}/${REPONAME}.git" > /dev/null )
+/bin/sh: SHELLOPTS: readonly variable
+git clone -b master  https://github.com/typetools/stubparser.git ../stubparser
+Done in directory ../stubparser : 7dad8ae0931e56ce71e6fad07ee853d5896d0e72
+Running:  (cd ../stubparser/ && ./.travis-build-without-test.sh)
+Entering /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/stubparser/.travis-build-without-test.sh in /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/stubparser
+running "mvn package" for stubparser
+/bin/sh: SHELLOPTS: readonly variable
+Apache Maven 3.6.0 (97c98ec64a1fdfee7767ce5ffb20918da4f719f3; 2018-10-24T11:41:47-07:00)
+Maven home: /usr/local/Cellar/maven/3.6.0/libexec
+Java version: 1.8.0_144, vendor: Oracle Corporation, runtime: /Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre
+Default locale: en_US, platform encoding: UTF-8
+OS name: "mac os x", version: "10.13.6", arch: "x86_64", family: "mac"
+/bin/sh: SHELLOPTS: readonly variable
+ParserGeneratorCC Version 1.1.3 (ParserGeneratorCC)
+(type "pgcc" with no arguments for help)
+Reading from file /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/stubparser/javaparser-core/src/main/javacc/java.jj ...
+Warning: Line 23, Column 3: Bad option name "STATIC".  Option setting will be ignored.
+Warning: Choice conflict in (...)* construct at line 652, column 5.
+         Expansion nested within construct and expansion following construct
+         have common prefixes, one of which is: "import"
+         Consider using a lookahead of 2 or more for nested expansion.
+Warning: Choice conflict in [...] construct at line 663, column 5.
+         Expansion nested within construct and expansion following construct
+         have common prefixes, one of which is: "@"
+         Consider using a lookahead of 2 or more for nested expansion.
+Warning: Choice conflict involving two expansions at
+         line 2161, column 13 and line 2167, column 13 respectively.
+         A common prefix is: "yield" "++"
+         Consider using a lookahead of 3 or more for earlier expansion.
+Warning: Line 98, Column 3: Non-ASCII characters used in regular expression.
+Please make sure you use the correct Reader when you create the parser, one that can handle your character set.
+File "Provider.java" does not exist.  Will create one.
+File "StringProvider.java" does not exist.  Will create one.
+File "StreamProvider.java" does not exist.  Will create one.
+File "TokenMgrException.java" does not exist.  Will create one.
+File "ParseException.java" does not exist.  Will create one.
+File "Token.java" does not exist.  Will create one.
+File "CharStream.java" does not exist.  Will create one.
+File "AbstractCharStream.java" does not exist.  Will create one.
+File "SimpleCharStream.java" does not exist.  Will create one.
+Parser generated with 0 errors and 5 warnings.
+Exiting /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/stubparser/javaparser-core/.travis-build-without-test.sh in /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/stubparser/javaparser-core
+... done: (cd ../stubparser/ && ./.travis-build-without-test.sh)
+running "./gradlew assemble" for checker-framework
+sh: SHELLOPTS: readonly variable
+To honour the JVM settings for this build a new JVM will be forked. Please consider using the daemon: https://docs.gradle.org/6.1.1/userguide/gradle_daemon.html.
+Daemon will be stopped at the end of the build stopping after processing
+> Task :javacutil:processResources NO-SOURCE
+> Task :dataflow:processResources NO-SOURCE
+> Task :setLocalRepo
+> Task :installGitHooks
+> Task :compileJava NO-SOURCE
+> Task :framework:cloneTypetoolsJdk
+> Task :checker:processResources
+> Task :checker-qual-android:processResources NO-SOURCE
+> Task :framework-test:processResources NO-SOURCE
+> Task :checker-qual:copySources
+> Task :checker-qual-android:copySources
+
+/bin/sh: SHELLOPTS: readonly variable> Task :annotation-file-utilities:compileAsmx
+
+Buildfile: /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/annotation-tools/asmx/build.xml
+/bin/sh: SHELLOPTS: readonly variable
+
+properties:
+
+check:
+
+init:
+  [taskdef] Could not load definitions from resource tasks.properties. It could not be found.
+
+compile-debug:
+
+shrink:
+
+noshrink:
+
+> Task :checker-qual-android:replaceAnnotations
+
+> Task :annotation-file-utilities:compileAsmx
+
+compile:
+
+bin:
+
+BUILD SUCCESSFUL
+Total time: 1 second
+
+> Task :annotation-file-utilities:compileJava UP-TO-DATE
+> Task :annotation-file-utilities:processResources NO-SOURCE
+> Task :annotation-file-utilities:classes UP-TO-DATE
+> Task :annotation-file-utilities:jar UP-TO-DATE
+> Task :generateGitProperties
+> Task :processResources
+> Task :classes
+> Task :jar SKIPPED
+> Task :maybeCloneAndBuildDependencies SKIPPED
+> Task :framework:checkDependencies
+> Task :checker-qual:compileJava
+> Task :checker-qual:processResources NO-SOURCE
+> Task :checker-qual:classes
+> Task :checker-qual-android:compileJava
+> Task :checker-qual-android:classes
+> Task :checker-qual-android:jar
+> Task :checker-qual-android:assemble
+
+> Task :checker-qual:jar
+warning: Classpath is empty. Private-Package, -privatepackage, and Export-Package can only expand from the classpath when there is one
+
+> Task :checker-qual:assemble
+> Task :javacutil:compileJava
+> Task :javacutil:classes
+> Task :javacutil:jar
+> Task :javacutil:assemble
+> Task :framework-test:compileJava
+> Task :framework-test:classes
+> Task :framework-test:jar
+> Task :framework-test:assemble
+> Task :dataflow:compileJava
+> Task :dataflow:classes
+> Task :dataflow:jar
+> Task :dataflow:shadowJar
+> Task :dataflow:assemble
+> Task :framework:compileJava
+> Task :framework:copyAndMinimizeAnnotatedJdkFiles
+> Task :framework:processResources
+> Task :framework:classes
+> Task :framework:jar
+> Task :framework:assemble
+> Task :checker:compileJava
+> Task :checker:classes
+> Task :checker:shadowJar
+> Task :checker:copyJarsToDist
+> Task :assemble
+> Task :checker:jar
+> Task :checker:assemble
+
+BUILD SUCCESSFUL in 1m 59s
+29 actionable tasks: 29 executed
+Exiting checker/bin-devel/build.sh in /Users/rashmi/determinismCaseStudies/cf-dataflow-nondex/checker-framework
+> Task :setLocalRepo
+> Task :installGitHooks UP-TO-DATE
+> Task :compileJava NO-SOURCE
+> Task :generateGitProperties UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :nondexPrepare
+> Task :genOutJar
+> Task :compileTestJava NO-SOURCE
+> Task :processTestResources NO-SOURCE
+> Task :testClasses UP-TO-DATE
+> Task :nondexTest NO-SOURCE
+
+BUILD SUCCESSFUL in 3m 52s
+6 actionable tasks: 3 executed, 3 up-to-date
