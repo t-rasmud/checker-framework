@@ -112,8 +112,7 @@ public class CFGVisualizeLauncher {
             cfgVisualizeLauncher.generateDOTofCFGWithoutAnalysis(
                     input, output, method, clas, pdf, verbose);
         } else {
-            @SuppressWarnings(
-                    "determinism") // non-determinism caused by hashCode, acceptable for debug
+            @SuppressWarnings("determinism") // true positive (debug output): hashCode
             // output
             @Det String stringGraph =
                     cfgVisualizeLauncher.generateStringOfCFGWithoutAnalysis(
@@ -206,8 +205,7 @@ public class CFGVisualizeLauncher {
 
         if (pdf && res != null) {
             assert res.get("dotFileName") != null : "@AssumeAssertion(nullness): specification";
-            @SuppressWarnings(
-                    "determinism") // non-determinism caused by hashCode, acceptable for debug
+            @SuppressWarnings("determinism") // true positive (debug output): hashCode
             // output
             @Det String tmp = (String) res.get("dotFileName");
             producePDF(tmp);

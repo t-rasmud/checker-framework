@@ -40,7 +40,7 @@ public class PrimitiveTypeNode extends Node {
     }
 
     @Override
-    @SuppressWarnings("determinism") // all known implementations have @Det toString methods
+    @SuppressWarnings("determinism") // all known implementations have @Det toString method
     public @PolyDet String toString(@PolyDet PrimitiveTypeNode this) {
         return tree.toString();
     }

@@ -65,7 +65,7 @@ public class LocalVariableNode extends Node {
         return receiver;
     }
 
-    @SuppressWarnings("determinism") // all known implementations have @Det toString methods: Name
+    @SuppressWarnings("determinism") // all known implementations have @Det toString method: Name
     public @PolyDet String getName(@PolyDet LocalVariableNode this) {
         if (tree instanceof IdentifierTree) {
             return ((IdentifierTree) tree).getName().toString();
