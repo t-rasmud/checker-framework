@@ -181,7 +181,6 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
      * @return the abstract value for {@link Node} {@code n}, or {@code null} if no information is
      *     available
      */
-    @SuppressWarnings("determinism") // https://github.com/t-rasmud/checker-framework/issues/193
     public @Nullable V getValue(@Det Node n) {
         return nodeValues.get(n);
     }
