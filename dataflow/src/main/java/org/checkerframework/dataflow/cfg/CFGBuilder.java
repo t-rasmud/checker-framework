@@ -1452,11 +1452,17 @@ public class CFGBuilder {
                         }
 
                         // exceptional edges
-                        for (Map.@Det Entry<TypeMirror, @OrderNonDet Set<Label>> entry :
+                        for (Map.@NonDet Entry<TypeMirror, @OrderNonDet Set<Label>> entry :
                                 en.getExceptions().entrySet()) {
-                            TypeMirror cause = entry.getKey();
-                            for (@Det Label label : entry.getValue()) {
-                                Integer target = bindings.get(label);
+                            @SuppressWarnings("determinism") // true positive: modifying
+                            // missingExceptionalEdges which should have
+                            // deterministic order
+                            @Det TypeMirror cause = entry.getKey();
+                            for (Label label : entry.getValue()) {
+                                @SuppressWarnings("determinism") // true positive: modifying
+                                // missingExceptionalEdges which should have
+                                // deterministic order
+                                @Det Integer target = bindings.get(label);
                                 // TODO: This is sometimes null; is this a problem?
                                 // assert target != null;
                                 missingExceptionalEdges.add(new Tuple<>(e, target, cause));
@@ -1976,7 +1982,8 @@ public class CFGBuilder {
         protected NodeWithExceptionsHolder extendWithNodeWithExceptions(
                 Node node, @OrderNonDet Set<TypeMirror> causes) {
             addToLookupMap(node);
-            Map<@Det TypeMirror, @OrderNonDet Set<Label>> exceptions = new HashMap<>();
+            Map<@Det TypeMirror, @OrderNonDet Set<Label>> exceptions =
+                    new @OrderNonDet LinkedHashMap<>();
             for (TypeMirror cause : causes) {
                 @SuppressWarnings(
                         "determinism") // process is order insensitive: adding to @OrderNonDet map
@@ -2015,7 +2022,8 @@ public class CFGBuilder {
         protected NodeWithExceptionsHolder insertNodeWithExceptionsAfter(
                 Node node, Set<TypeMirror> causes, Node pred) {
             addToLookupMap(node);
-            Map<@Det TypeMirror, @OrderNonDet Set<Label>> exceptions = new HashMap<>();
+            Map<@Det TypeMirror, @OrderNonDet Set<Label>> exceptions =
+                    new @OrderNonDet LinkedHashMap<>();
             for (TypeMirror cause : causes) {
                 exceptions.put(cause, tryStack.possibleLabels(cause));
             }
