@@ -6,9 +6,9 @@ the nondet-checker-experimental-flag branch
 
 Run these commands:
 
-git clone https://github.com/jwaataja/plume-util.git
+git clone https://github.com/t-rasmud/plume-util.git
 cd plume-util
-git checkout run-det-checker-join-method
+git checkout run-det-checker
 ./gradlew jar -PcfLocal
 # Assumes Checker Framework located in the $CHECKERFRAMEWORK directory
 cp build/libs/plume-util-1.1.5.jar $CHECKERFRAMEWORK/libs/plume-util-1.1.5.jar
