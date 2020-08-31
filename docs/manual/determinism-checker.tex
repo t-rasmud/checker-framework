@@ -60,7 +60,7 @@ The Determinism type system uses the following type qualifiers (see Figure~\ref{
   a collection, iterator, or array will have the same elements in every execution, but in a
   possibly different order.  \<@OrderNonDet> may only be written on
   collection types.
-  An \<@OrderNonDet> Map indicates that the its keySet is \<@OrderNonDet>.
+  An \<@OrderNonDet> Map indicates that its keySet is \<@OrderNonDet>.
 \item[\refqualclass{checker/determinism/qual}{Det}] indicates that
   the expression evaluates to the same value (with respect to \<.equals()>) in all
   executions on the same machine; for a collection, iteration also yields the values in the same
@@ -242,8 +242,8 @@ may not be annotated as \code{@OrderNonDet}.
 The \code{HashSet} and \code{HashMap} classes are special. Because iteration order is
 non-deterministic, it is impossible to construct a \code{@Det HashSet}
 or \code{@Det HashMap}.
-Accordingly, the return type of the \code{HashSet} and \code{Hashmap}
-constuctors are annotated as \code{@PolyDet("upDet")}. See
+Accordingly, the return type of the \code{HashSet} and \code{HashMap}
+constructors are annotated as \code{@PolyDet("upDet")}. See
 Section~\ref{determinism-polymorphism-ordernondet}.
 
 \sectionAndLabel{Controlling polymorphism}{determinism-polymorphism}
@@ -582,4 +582,5 @@ The parameter type of the \code{main} method has an implicit annotation
 \<@Det String @Det[]>.
 
 %%  LocalWords:  DeterminismChecker HashSet InputFile NonDet Det MyClass
-%%  LocalWords:  OrderNonDet PolyDet UsePolyDet println MyType
+%%  LocalWords:  OrderNonDet PolyDet UsePolyDet println MyType keySet rhs
+% LocalWords:  CollectionType TestUserCollection
