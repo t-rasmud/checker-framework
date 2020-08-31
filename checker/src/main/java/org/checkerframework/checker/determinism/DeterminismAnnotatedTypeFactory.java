@@ -20,6 +20,7 @@ import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedArrayType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedDeclaredType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedExecutableType;
+import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedTypeVariable;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedWildcardType;
 import org.checkerframework.framework.type.QualifierHierarchy;
 import org.checkerframework.framework.type.poly.QualifierPolymorphism;
@@ -431,12 +432,16 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 AnnotatedTypeMirror receiverType) {
             if ((isMapGet(node) || isMapGetOrDefault(node))
                     && receiverType.hasAnnotation(ORDERNONDET)
-                    && ((AnnotatedDeclaredType) receiverType)
-                            .getTypeArguments()
-                            .get(1)
-                            .hasAnnotation(DET)
                     && getAnnotatedType(node.getArguments().get(0)).hasAnnotation(DET)) {
-                methodInvocationType.replaceAnnotation(DET);
+                AnnotatedTypeMirror valueType =
+                        ((AnnotatedDeclaredType) receiverType).getTypeArguments().get(1);
+                if (valueType.hasAnnotation(DET)
+                        || (valueType.getKind() == TypeKind.TYPEVAR
+                                && ((AnnotatedTypeVariable) valueType)
+                                        .getUpperBound()
+                                        .hasAnnotation(DET))) {
+                    methodInvocationType.replaceAnnotation(DET);
+                }
             }
         }
 
