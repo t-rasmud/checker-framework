@@ -15,13 +15,13 @@ public class TestContainsListDet {
         @Det boolean ret;
         // :: error: (assignment.type.incompatible) :: error: (method.invocation.invalid)
         ret = myDetList.contains(rand);
-        // :: error: (method.invocation.invalid)
+        // :: error: (assignment.type.incompatible) :: error: (method.invocation.invalid)
         ret = myDetList.contains(randInt);
     }
 
     void TestList2(@Det ArrayList<@Det Integer> myDetList, @NonDet int rand) {
         @Det boolean ret;
-        // :: error: (method.invocation.invalid)
+        // :: error: (assignment.type.incompatible) :: error: (method.invocation.invalid)
         ret = myDetList.contains(rand);
     }
 
