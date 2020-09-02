@@ -1,4 +1,6 @@
 import java.util.function.Function;
+import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 
 class Issue3598 {
 
@@ -10,12 +12,12 @@ class Issue3598 {
     static class XClass<P> implements Function<P, P> {
 
         @Override
-        public P apply(P protoT) {
+        public @PolyDet P apply(@PolyDet P protoT) {
             return protoT;
         }
 
         // DClass extends a raw class.
-        static Function<DClass, DClass> f(DClass k) {
+        static Function<DClass, DClass> f(@Det DClass k) {
             // Crash on this line.
             return new XClass<>(k);
         }
