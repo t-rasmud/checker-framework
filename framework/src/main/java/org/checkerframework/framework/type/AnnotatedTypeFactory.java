@@ -1817,8 +1817,8 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
 
     /**
      * Determine whether the tree dereferences the most enclosing "this" object. That is, we have an
-     * expression like "f.g" and want to know whether it is an access "this.f.g" or whether e.g. f
-     * is a field of an outer class or e.g. f is a local variable.
+     * expression like "f.g" and want to know whether it is an access "this.f.g". Returns false if f
+     * is a field of an outer class or f is a local variable.
      *
      * @param tree the tree to check
      * @return true, iff the tree is an explicit or implicit reference to the most enclosing "this"
@@ -2046,6 +2046,11 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     public ParameterizedExecutableType methodFromUse(MethodInvocationTree tree) {
         ExecutableElement methodElt = TreeUtils.elementFromUse(tree);
         AnnotatedTypeMirror receiverType = getReceiverType(tree);
+        if (receiverType == null && TreeUtils.isSuperConstructorCall(tree)) {
+            // super() calls don't have a receiver, but they should be view-point adapted as if
+            // "this" is the receiver.
+            receiverType = getSelfType(tree);
+        }
 
         ParameterizedExecutableType mType = methodFromUse(tree, methodElt, receiverType);
         if (checker.shouldResolveReflection()
@@ -3343,8 +3348,8 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
     }
 
     /**
-     * Adds into {@code results} the declaration annotations found in all elements of the super
-     * types of {@code typeMirror}. (Both superclasses and superinterfaces.)
+     * Adds into {@code results} the inherited declaration annotations found in all elements of the
+     * super types of {@code typeMirror}. (Both superclasses and superinterfaces.)
      *
      * @param typeMirror type
      * @param results set of AnnotationMirrors to which this method adds declarations annotations
@@ -3364,8 +3369,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
                     annotationsOnAnnotation =
                             annotation.getAnnotationType().asElement().getAnnotationMirrors();
                 } catch (com.sun.tools.javac.code.Symbol.CompletionFailure cf) {
-                    // Fix for Issue 348: If a CompletionFailure occurs,
-                    // issue a warning.
+                    // Fix for Issue 348: If a CompletionFailure occurs, issue a warning.
                     checker.reportWarning(
                             annotation.getAnnotationType().asElement(),
                             "annotation.not.completed",
@@ -3373,7 +3377,7 @@ public class AnnotatedTypeFactory implements AnnotationProvider {
                             annotation);
                     continue;
                 }
-                if (AnnotationUtils.containsSameByClass(annotationsOnAnnotation, Inherited.class)
+                if (containsSameByClass(annotationsOnAnnotation, Inherited.class)
                         || AnnotationUtils.containsSameByName(inheritedAnnotations, annotation)) {
                     addOrMerge(results, annotation);
                 }

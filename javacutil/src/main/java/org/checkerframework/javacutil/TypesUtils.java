@@ -188,7 +188,6 @@ public final class TypesUtils {
      * @param t2 the second type to test
      * @return whether the arguments are the same declared types
      */
-    @SuppressWarnings("interning:not.interned") // equality test optimization
     public static boolean areSameDeclaredTypes(Type.ClassType t1, Type.ClassType t2) {
         // Do a cheaper test first
         if (t1.tsym.name != t2.tsym.name) {
@@ -727,5 +726,16 @@ public final class TypesUtils {
                             type.getKind(), type);
                 }
         }
+    }
+
+    /**
+     * Returns true if {@code type} has an enclosing type.
+     *
+     * @param type type to checker
+     * @return true if {@code type} has an enclosing type
+     */
+    public static boolean hasEnclosingType(TypeMirror type) {
+        Type e = ((Type) type).getEnclosingType();
+        return e.getKind() != TypeKind.NONE;
     }
 }
