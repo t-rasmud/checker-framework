@@ -537,29 +537,24 @@ deterministic.  If it is be too restrictive for your program:
 
 \sectionAndLabel{Default annotations}{determinism-defaults}
 
-The default annotation for most unannotated types is \<@PolyDet>.
-
-\subsectionAndLabel{Method and constructor signatures}{determinism-method-defaults}
+The default annotation for unchecked types is \<@PolyDet>.
+For checked types, if the determinism checker is invoked with the command line option
+-AusePolyDefault, then the following types default to \<@PolyDet>:
 \begin{itemize}
-\item
-  Formal parameter and return types default to \<@PolyDet>.
-\item
-  Constructor results default to \<@PolyDet>.
-\item
-  If a formal parameter/return type is an array, its component type defaults to
-  \<@PolyDet>.
-\item
-  As an exception, the return type of a method with no unannotated or
-  \<@PolyDet> formal parameters (including the receiver) defaults to
-  \<@Det>.
-\item
-  The default type qualifier for instance fields in classes annotated with
-  \<@HasQualifierParameter> is \<@PolyDet>. The default for other fields,
-  including all static fields, is \<@Det>.
+    \item Formal parameter and return types. As an exception, the return type of a method with no unannotated or
+    \<@PolyDet> formal parameters (including the receiver) default to
+    \<@Det>.
+    \item Constructor results
+    \item Component types of array parameter/return types
 \end{itemize}
+If the command line option -AuseDefault is not supplied, the above types default to \<@Det>.
 
-These choices permit all possible arguments to an unannotated method or
-constructor.
+The default type qualifier for instance fields in classes annotated with
+\<@HasQualifierParameter> is \<@PolyDet>. The default for other fields,
+including all static fields, is \<@Det>.
+
+%These choices permit all possible arguments to an unannotated method or
+%constructor.
 
 \subsectionAndLabel{Local array and generic types}{determinism-array-defaults}
 According to the CLIMB to top rule (see Section~\ref{climb-to-top}), the default
@@ -588,6 +583,6 @@ The parameter type of the \code{main} method has an implicit annotation
 
 %%  LocalWords:  DeterminismChecker HashSet InputFile NonDet Det MyClass
 %%  LocalWords:  OrderNonDet PolyDet UsePolyDet println MyType keySet rhs
-% LocalWords:  CollectionType TestUserCollection upDet ordernondet addAll
+%%  LocalWords:  CollectionType TestUserCollection upDet ordernondet addAll
 %%  LocalWords:  noOrderNonDet myMethodNoOrderNonDet ondList implicits
 %%  LocalWords:  useNoOrderNonDet HasQualifierParameter boolean

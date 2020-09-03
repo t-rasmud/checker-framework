@@ -15,6 +15,8 @@ import org.checkerframework.framework.flow.CFAnalysis;
 import org.checkerframework.framework.flow.CFStore;
 import org.checkerframework.framework.flow.CFTransfer;
 import org.checkerframework.framework.flow.CFValue;
+import org.checkerframework.framework.qual.DefaultQualifierInHierarchy;
+import org.checkerframework.framework.qual.TypeUseLocation;
 import org.checkerframework.framework.type.AnnotatedTypeFactory;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedArrayType;
@@ -31,6 +33,7 @@ import org.checkerframework.framework.type.typeannotator.TypeAnnotator;
 import org.checkerframework.framework.type.visitor.SimpleAnnotatedTypeScanner;
 import org.checkerframework.framework.util.GraphQualifierHierarchy;
 import org.checkerframework.framework.util.MultiGraphQualifierHierarchy;
+import org.checkerframework.framework.util.defaults.QualifierDefaults;
 import org.checkerframework.javacutil.*;
 
 /** The annotated type factory for the determinism type-system. */
@@ -97,6 +100,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** The Object.equals method. */
     private final ExecutableElement equals;
 
+    /** The Objects.equals method. */
+    private final ExecutableElement objectsEquals;
+
     /**
      * Creates {@code @PolyDet} annotation mirror constants.
      *
@@ -118,6 +124,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         mapGet = TreeUtils.getMethod("java.util.Map", "get", 1, processingEnv);
         mapGetOrDefault = TreeUtils.getMethod("java.util.Map", "getOrDefault", 2, processingEnv);
         equals = TreeUtils.getMethod("java.lang.Object", "equals", 1, processingEnv);
+        objectsEquals = TreeUtils.getMethod("java.util.Objects", "equals", 2, processingEnv);
 
         postInit();
     }
@@ -137,6 +144,48 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
 
         return result;
+    }
+
+    /**
+     * Adds {@code @PolyDet} as the default for parameters, return, receiver, and constructor_result
+     * if the user invokes the checker with the command line option -AusePolyDefault, Otherwise,
+     * adds {@code @Det} as the default for these locations. For all other locations, adds
+     * {@code @Det} as the default.
+     *
+     * @param defs QualifierDefaults
+     */
+    @Override
+    protected void addCheckedCodeDefaults(QualifierDefaults defs) {
+        // Add defaults from @DefaultFor and @DefaultQualifierInHierarchy
+        for (Class<? extends Annotation> qual : getSupportedTypeQualifiers()) {
+            final TypeUseLocation[] locations = {
+                TypeUseLocation.PARAMETER,
+                TypeUseLocation.RETURN,
+                TypeUseLocation.RECEIVER,
+                TypeUseLocation.CONSTRUCTOR_RESULT
+            };
+            if (checker.hasOption("usePolyDefault")) {
+                defs.addCheckedCodeDefaults(POLYDET, locations);
+            } else {
+                defs.addCheckedCodeDefaults(DET, locations);
+            }
+            final TypeUseLocation[] detLocations = {
+                TypeUseLocation.EXCEPTION_PARAMETER, TypeUseLocation.LOWER_BOUND
+            };
+            defs.addCheckedCodeDefaults(DET, detLocations);
+
+            if (qual.getAnnotation(DefaultQualifierInHierarchy.class) != null) {
+                defs.addCheckedCodeDefault(
+                        AnnotationBuilder.fromClass(elements, qual), TypeUseLocation.OTHERWISE);
+            }
+        }
+    }
+
+    @Override
+    protected void addUncheckedCodeDefaults(QualifierDefaults defs) {
+        final TypeUseLocation[] locations = {TypeUseLocation.PARAMETER, TypeUseLocation.RETURN};
+        defs.addUncheckedCodeDefaults(POLYDET, locations);
+        super.addUncheckedCodeDefaults(defs);
     }
 
     /**
@@ -238,6 +287,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     && !isCollectionType(methodInvocationType)) {
                 methodInvocationType.replaceAnnotation(NONDET);
             }
+
             refinePolyUp(node, methodInvocationType, receiverType, m);
 
             // ReceiverType is null for abstract classes
@@ -259,6 +309,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 return super.visitMethodInvocation(node, methodInvocationType);
             }
             refineResultOfEquals(node, methodInvocationType, receiverType);
+            refineResultOfObjectsEquals(node, methodInvocationType, receiverType);
             refineSystemGet(node, methodInvocationType);
             refineMapGet(node, methodInvocationType, receiverType);
 
@@ -411,6 +462,87 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                         && getQualifierHierarchy()
                                 .isSubtype(argument.getAnnotationInHierarchy(NONDET), ORDERNONDET)
                         && !hasOrderNonDetListAsTypeArgument(argument)) {
+                    methodInvocationType.replaceAnnotation(DET);
+                }
+            }
+        }
+
+        /**
+         * Return type of Objects.equals() gets the annotation {@code @Det}, when both the receiver
+         * and the argument satisfy these conditions (@see <a
+         * href="https://checkerframework.org/manual/#determinism-improved-precision-set-equals">Improves
+         * precision for Set.equals()</a>):
+         *
+         * <ol>
+         *   <li>the type is {@code @OrderNonDet Set}, and
+         *   <li>its type argument is not {@code @OrderNonDet List} or a subtype
+         * </ol>
+         *
+         * OR
+         *
+         * <p>The receiver and the argument do not have the same declared type.
+         *
+         * @param node method invocation tree
+         * @param methodInvocationType AnnotatedTypeMirror for a method invocation
+         * @param receiverType receiver type of the invoked method
+         */
+        protected void refineResultOfObjectsEquals(
+                MethodInvocationTree node,
+                AnnotatedTypeMirror methodInvocationType,
+                AnnotatedTypeMirror receiverType) {
+
+            // Annotates the return type of "equals()" method called on a Set or Map receiver
+            // as described in the specification of this method.
+
+            // Example1: @OrderNonDet Set<@OrderNonDet List<@Det Integer>> s1;
+            //           @OrderNonDet Set<@OrderNonDet List<@Det Integer>> s2;
+            // s1.equals(s2) is @NonDet
+
+            // Example 2: @OrderNonDet Set<@Det List<@Det Integer>> s1;
+            //            @OrderNonDet Set<@Det List<@Det Integer>> s2;
+            // s1.equals(s2) is @Det
+
+            if (isObjectsEqualsMethod(node)) {
+                AnnotatedTypeMirror argument1 = getAnnotatedType(node.getArguments().get(0));
+                AnnotatedTypeMirror argument2 = getAnnotatedType(node.getArguments().get(1));
+
+                boolean arg1IsList = isSubClassOf(argument1, listInterfaceTypeMirror);
+                boolean arg1IsSet = isSubClassOf(argument1, setInterfaceTypeMirror);
+                boolean arg1IsMap = isSubClassOf(argument1, mapInterfaceTypeMirror);
+
+                // Don't refine for equals() called on non-collections.
+                if (!arg1IsList && !arg1IsSet && !arg1IsMap) {
+                    return;
+                }
+
+                if (AnnotationUtils.areSameByName(
+                        methodInvocationType.getAnnotationInHierarchy(NONDET), DET)) {
+                    return;
+                }
+
+                boolean bothLists = arg1IsList && isSubClassOf(argument2, listInterfaceTypeMirror);
+                boolean bothSets = arg1IsSet && isSubClassOf(argument2, setInterfaceTypeMirror);
+                boolean bothMaps = arg1IsMap && isSubClassOf(argument2, mapInterfaceTypeMirror);
+
+                // If the receiver is a List and the argument isn't, then the return type is @Det
+                // (always false).
+                // Similarly for a Set and a Map.
+                if (!(bothLists || bothSets || bothMaps)) {
+                    methodInvocationType.replaceAnnotation(DET);
+                    return;
+                }
+                if (!haveSameTypeArguments(argument1, argument2)) {
+                    methodInvocationType.replaceAnnotation(DET);
+                    return;
+                }
+
+                if ((bothSets || bothMaps)
+                        && getQualifierHierarchy()
+                                .isSubtype(argument1.getAnnotationInHierarchy(NONDET), ORDERNONDET)
+                        && !hasOrderNonDetListAsTypeArgument(argument1)
+                        && getQualifierHierarchy()
+                                .isSubtype(argument2.getAnnotationInHierarchy(NONDET), ORDERNONDET)
+                        && !hasOrderNonDetListAsTypeArgument(argument2)) {
                     methodInvocationType.replaceAnnotation(DET);
                 }
             }
@@ -742,7 +874,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          *
          * <ol>
          *   <li>Defaults the component types of array parameters and return types as {@code
-         *       ...[@PolyDet]} in the body of the method represented by {@code executableType}.
+         *       ...[@PolyDet]} in the body of the method represented by {@code executableType} if
+         *       the checker is invoked with the command line option -AusePolyDefault.
          *   <li>Defaults the return type for methods with no @PolyDet formal parameters (including
          *       the receiver) as {@code @Det} in the method represented by {@code executableType}.
          * </ol>
@@ -754,8 +887,10 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         @Override
         public Void visitExecutable(final AnnotatedExecutableType executableType, final Void p) {
             if (!isMainMethod(executableType.getElement())) {
-                for (AnnotatedTypeMirror paramType : executableType.getParameterTypes()) {
-                    defaultArrayComponentType(paramType, POLYDET);
+                if (checker.hasOption("usePolyDefault")) {
+                    for (AnnotatedTypeMirror paramType : executableType.getParameterTypes()) {
+                        defaultArrayComponentType(paramType, POLYDET);
+                    }
                 }
 
                 if (executableType.getReturnType().getAnnotations().isEmpty()) {
@@ -784,7 +919,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                             executableType.getReturnType().replaceAnnotation(DET);
                         }
                     }
-                    defaultArrayComponentType(executableType.getReturnType(), POLYDET);
+                    if (checker.hasOption("usePolyDefault")) {
+                        defaultArrayComponentType(executableType.getReturnType(), POLYDET);
+                    }
                 }
             }
             return super.visitExecutable(executableType, p);
@@ -894,6 +1031,14 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
+     * @param tree Tree
+     * @return true if the node is an invocation of Objects.equals
+     */
+    boolean isObjectsEqualsMethod(Tree tree) {
+        return TreeUtils.isMethodInvocation(tree, objectsEquals, getProcessingEnv());
+    }
+
+    /**
      * Returns true if {@code method} is a main method.
      *
      * @param method ExecutableElement
@@ -913,8 +1058,9 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
-     * Adds implicit annotation for main method formal parameter ({@code @Det}) and default
-     * annotations for the component types of other array formal parameters ({@code ...[@PolyDet]}).
+     * Adds implicit annotation for main method formal parameter ({@code @Det}). Adds default
+     * annotations for the component types of other array formal parameters ({@code ...[@PolyDet]})
+     * if the checker is invoked with the command line option -AusePolyDefault.
      *
      * <p>Note: The annotation on an array type defaults to {@code @PolyDet[]} and this defaulting
      * is handled by declarative mechanism.
@@ -955,7 +1101,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                             type.getAnnotationInHierarchy(NONDET));
                 }
                 type.addMissingAnnotations(Collections.singleton(DET));
-            } else {
+            } else if (checker.hasOption("usePolyDefault")) {
                 defaultArrayComponentType(type, POLYDET);
             }
         }
