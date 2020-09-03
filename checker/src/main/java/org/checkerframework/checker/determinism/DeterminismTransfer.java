@@ -21,24 +21,7 @@ import org.checkerframework.framework.flow.CFValue;
 import org.checkerframework.javacutil.ElementUtils;
 import org.checkerframework.javacutil.TreeUtils;
 
-/**
- * Transfer function for the determinism type-system.
- *
- * <p>Performs type refinement from {@code @OrderNonDet} to {@code @Det} for:
- *
- * <ul>
- *   <li>The receiver of List.sort.
- *   <li>The first argument of Arrays.sort.
- *   <li>The first argument of Arrays.parallelSort.
- *   <li>The first argument of Collections.sort.
- * </ul>
- *
- * <p>Performs type refinement from {@code @Det} to {@code @OrderNonDet} for
- *
- * <ul>
- *   <li>The first argument of Collections.shuffle.
- * </ul>
- */
+/** Transfer function for the determinism type-system. */
 public class DeterminismTransfer extends CFTransfer {
     /**
      * Calls the superclass constructor.
