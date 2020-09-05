@@ -5,8 +5,7 @@ import org.checkerframework.checker.determinism.qual.*;
 
 class TestUpDet {
     static @PolyDet("upDet") List<@Det String> retDetUp(@PolyDet List<@Det String> list) {
-        // :: error: (return.type.incompatible)
-        return new ArrayList<>();
+        return new @PolyDet("upDet") ArrayList<>();
     }
 
     public @Det List<@Det String> testReturnTypeResolve1(@Det List<@Det String> list) {

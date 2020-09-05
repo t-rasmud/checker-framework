@@ -548,6 +548,7 @@ public abstract class GenericAnnotatedTypeFactory<
         QualifierDefaults defs = createQualifierDefaults();
         addCheckedCodeDefaults(defs);
         addCheckedStandardDefaults(defs);
+        addUncheckedCodeDefaults(defs);
         addUncheckedStandardDefaults(defs);
         checkForDefaultQualifierInHierarchy(defs);
 
@@ -636,6 +637,13 @@ public abstract class GenericAnnotatedTypeFactory<
     protected void addUncheckedStandardDefaults(QualifierDefaults defs) {
         defs.addUncheckedStandardDefaults();
     }
+
+    /**
+     * Adds unchecked code defaults.
+     *
+     * @param defs QualifierDefaults
+     */
+    protected void addUncheckedCodeDefaults(QualifierDefaults defs) {}
 
     /**
      * Check that a default qualifier (in at least one hierarchy) has been set and issue an error if

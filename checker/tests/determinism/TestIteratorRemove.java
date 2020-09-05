@@ -6,8 +6,7 @@ import org.checkerframework.checker.determinism.qual.*;
 
 class TestIteratorRemove {
     static void testRemoveDet(@Det List<@Det String> list) {
-        // :: error: (assignment.type.incompatible)
-        @OrderNonDet Iterator<@Det String> iter = list.iterator();
+        @Det Iterator<@Det String> iter = list.iterator();
         iter.next();
         // :: error: (method.invocation.invalid)
         iter.remove();

@@ -23,7 +23,6 @@ public class TestListtoArray {
     void ListToObjectArray4(@OrderNonDet List<@Det String> ondetList) {
         @Det String @OrderNonDet [] arg = new @Det String @OrderNonDet [10];
         @NonDet String @NonDet [] objArr = ondetList.toArray(arg);
-        // :: error: (type.argument.type.incompatible) :: error: (argument.type.incompatible)
-        @NonDet String @NonDet [] objArr1 = ondetList.toArray(new @NonDet String @NonDet [10]);
+        @NonDet String @NonDet [] objArr1 = ondetList.toArray(new @Det String @OrderNonDet [10]);
     }
 }

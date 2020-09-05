@@ -4,7 +4,7 @@ class MyGen<K0> {}
 
 abstract class Ordering<T> implements Comparator<T> {
     // Natural order
-
+    @SuppressWarnings("determinism:override.param.invalid")
     public static <C extends Comparable> Ordering<C> natural() {
         return new Ordering<C>() {
             @Override

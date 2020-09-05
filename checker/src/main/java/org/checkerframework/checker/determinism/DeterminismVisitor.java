@@ -4,6 +4,7 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 
 import com.sun.source.tree.*;
 import com.sun.source.tree.Tree.Kind;
+import com.sun.tools.javac.tree.JCTree;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -66,7 +67,6 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     /** Error message key for assignment to a deterministic array at a non-deterministic index. */
     public static final @CompilerMessageKey String INVALID_ARRAY_ASSIGNMENT =
             "invalid.array.assignment";
-
     /**
      * Error message key for assignment to a deterministic field via a non-deterministic expression.
      */
@@ -387,9 +387,46 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             } else if (varTree.getKind() == Kind.ARRAY_ACCESS) {
                 checker.reportError(varTree, INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno);
             } else {
-                checker.reportError(varTree, INVALID_FIELD_ASSIGNMENT, varAnno, exprAnno);
+                Element varElem = TreeUtils.elementFromTree(varTree);
+                MethodTree enclosingMethod =
+                        TreeUtils.enclosingMethod(atypeFactory.getPath(varTree));
+                Element enclosingElem = TreeUtils.elementFromTree(enclosingMethod);
+                if (ElementUtils.isFinal(varElem)
+                        && enclosingElem.getKind() == ElementKind.CONSTRUCTOR) {
+                    super.commonAssignmentCheck(varTree, valueExp, errorKey);
+                } else {
+                    checker.reportError(varTree, INVALID_FIELD_ASSIGNMENT, varAnno, exprAnno);
+                }
             }
         } else {
+            // Reduces FPs: For a non-collection, it's ok to assign @PolyDet("up") to @PolyDet.
+            // Example: @PolyDet("up") int y; @PolyDet int x = y;
+            AnnotatedTypeMirror lVal = atypeFactory.getAnnotatedType(varTree);
+            if (!atypeFactory.isCollectionType(lVal)) {
+                AnnotatedTypeMirror rVal = atypeFactory.getAnnotatedType(valueExp);
+                if (!atypeFactory.isCollectionType(lVal)) {
+                    if (lVal.hasAnnotation(atypeFactory.POLYDET)
+                            && rVal.hasAnnotation(atypeFactory.POLYDET_UP)) {
+                        return;
+                    }
+                }
+            }
+
+            // Reduces FPs: Ignores the type qualifier on type parameter
+            // of a class while checking assignability of its class literal.
+            if (TreeUtils.isClassLiteral(valueExp)) {
+                AnnotationMirror lhsAnno =
+                        atypeFactory
+                                .getAnnotatedType(varTree)
+                                .getAnnotationInHierarchy(atypeFactory.NONDET);
+                AnnotationMirror rhsAnno =
+                        atypeFactory
+                                .getAnnotatedType(valueExp)
+                                .getAnnotationInHierarchy(atypeFactory.NONDET);
+                if (AnnotationUtils.areSame(lhsAnno, rhsAnno)) {
+                    return;
+                }
+            }
             super.commonAssignmentCheck(varTree, valueExp, errorKey);
         }
     }
@@ -690,11 +727,94 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             ExpressionTree arg = args.get(index);
             if (!argumentSatisfiesDetToString(arg)) {
                 AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
-                checker.reportError(node, "nondeterministic.tostring", argType.getUnderlyingType());
+                checker.reportError(arg, "nondeterministic.tostring", argType.getUnderlyingType());
                 break;
             }
         }
         return super.visitMethodInvocation(node, p);
+    }
+
+    /**
+     * If none of the arguments is a collection type, treat {@code @PolyDet("up")} the same as
+     * {@code @PolyDet}.
+     *
+     * @param requiredArgs List of AnnotatedTypeMirror
+     * @param passedArgs List of AnnotatedTypeMirror
+     */
+    @Override
+    protected void checkArguments(
+            List<? extends AnnotatedTypeMirror> requiredArgs,
+            List<? extends ExpressionTree> passedArgs,
+            Name executableName,
+            List<?> paramNames) {
+        for (ExpressionTree arg : passedArgs) {
+            AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+            if (atypeFactory.isCollectionType(argType)) {
+                super.checkArguments(requiredArgs, passedArgs, executableName, paramNames);
+            }
+        }
+        boolean hasPolyUp = false;
+        for (ExpressionTree arg : passedArgs) {
+            AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+            if (argType.hasAnnotation(atypeFactory.POLYDET_UP)) {
+                hasPolyUp = true;
+                break;
+            }
+        }
+        if (hasPolyUp) {
+            return;
+        }
+        super.checkArguments(requiredArgs, passedArgs, executableName, paramNames);
+    }
+
+    /**
+     * If none of the arguments is a collection type, treat {@code @PolyDet("up")} the same as
+     * {@code @PolyDet} on a receiver.
+     *
+     * @param node MethodInvocationTree
+     * @param methodDefinitionReceiver AnnotatedTypeMirror
+     * @param methodCallReceiver AnnotatedTypeMirror
+     * @return boolean
+     */
+    @Override
+    protected boolean skipReceiverSubtypeCheck(
+            MethodInvocationTree node,
+            AnnotatedTypeMirror methodDefinitionReceiver,
+            AnnotatedTypeMirror methodCallReceiver) {
+        AnnotatedTypeMirror receiverType = atypeFactory.getReceiverType(node);
+        if (receiverType == null) {
+            return super.skipReceiverSubtypeCheck(
+                    node, methodDefinitionReceiver, methodCallReceiver);
+        }
+        if (atypeFactory.isCollectionType(receiverType)) {
+            return super.skipReceiverSubtypeCheck(
+                    node, methodDefinitionReceiver, methodCallReceiver);
+        }
+        List<? extends ExpressionTree> arguments = node.getArguments();
+        for (ExpressionTree arg : arguments) {
+            AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+            if (atypeFactory.isCollectionType(argType)) {
+                return super.skipReceiverSubtypeCheck(
+                        node, methodDefinitionReceiver, methodCallReceiver);
+            }
+        }
+        boolean hasPolyUp = false;
+        if (receiverType.hasAnnotation(atypeFactory.POLYDET_UP)) {
+            hasPolyUp = true;
+        }
+        if (!hasPolyUp) {
+            for (ExpressionTree arg : arguments) {
+                AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
+                if (argType.hasAnnotation(atypeFactory.POLYDET_UP)) {
+                    hasPolyUp = true;
+                    break;
+                }
+            }
+        }
+        if (hasPolyUp) {
+            return true;
+        }
+        return super.skipReceiverSubtypeCheck(node, methodDefinitionReceiver, methodCallReceiver);
     }
 
     /**
@@ -717,6 +837,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         // the type of the ternary expression is Object rather than String. See JLS 15.25.3. In
         // these cases, to get the most precision we must instead check the toString methods of each
         // branch.
+        argument = TreeUtils.withoutParens(argument);
         if (argument.getKind() == Kind.CONDITIONAL_EXPRESSION) {
             ConditionalExpressionTree conditionalTree = (ConditionalExpressionTree) argument;
             return argumentSatisfiesDetToString(conditionalTree.getTrueExpression())
@@ -726,6 +847,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         Pair<AnnotatedDeclaredType, ExecutableElement> overriddenMethod =
                 AnnotatedTypes.getOverriddenMethod(
                         argType, stringToString, atypeFactory.getProcessingEnv());
+        if (overriddenMethod == null) {
+            return true;
+        }
         return atypeFactory
                         .getAnnotatedType(overriddenMethod.second)
                         .getReturnType()
@@ -767,9 +891,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      * @param collectionAnno the annotation of an array or collection
      * @param tree the tree to report errors on
      * @param errorMessage the error message to report
-     * @return true if {@code elementAnno} is a subtype of {@code collectionAnno} and it's not the
-     *     case that {@code collectionAnno} is {@code @NonDet} and {@code elementAnno} is
-     *     {@code @Det}, {@code @OrderNonDet}, or {@code @PolyDet}, false otherwise
+     * @return true if {@code elementAnno} is a subtype of {@code collectionAnno}
      */
     private boolean isValidElementType(
             AnnotationMirror elementAnno,
@@ -777,13 +899,6 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             Tree tree,
             @CompilerMessageKey String errorMessage) {
         if (!atypeFactory.getQualifierHierarchy().isSubtype(elementAnno, collectionAnno)) {
-            checker.reportError(tree, errorMessage, elementAnno, collectionAnno);
-            return false;
-        }
-        if (AnnotationUtils.areSame(collectionAnno, atypeFactory.NONDET)
-                && (AnnotationUtils.areSame(elementAnno, atypeFactory.DET)
-                        || AnnotationUtils.areSame(elementAnno, atypeFactory.ORDERNONDET)
-                        || AnnotationUtils.areSameByName(elementAnno, atypeFactory.POLYDET))) {
             checker.reportError(tree, errorMessage, elementAnno, collectionAnno);
             return false;
         }
@@ -796,8 +911,19 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             @Override
             protected boolean shouldCheckTopLevelDeclaredOrPrimitiveType(
                     AnnotatedTypeMirror type, Tree tree) {
-                // Always check.
+                // Reduces FPs: Do not report the error "invalid.upper.bound.on type.argument" on
+                // class declarations.
+                Element elem = TreeUtils.elementFromTree(tree);
+                if (elem == null) {
+                    return true;
+                }
+                if (ElementUtils.isTypeDeclaration(elem)
+                        || elem.getKind() == ElementKind.CONSTRUCTOR) {
+                    return false;
+                }
                 return true;
+                // Always check.
+                // return true;
             }
 
             @Override
@@ -848,4 +974,144 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     protected void checkConstructorResult(
             AnnotatedTypeMirror.AnnotatedExecutableType constructorType,
             ExecutableElement constructorElement) {}
+
+    /** Creates OverrideChecker for DeterminismChecker */
+    protected class DeterminismOverrideChecker extends OverrideChecker {
+
+        /**
+         * Constructor for DeterminismOverrideChecker
+         *
+         * @param overriderTree Tree
+         * @param overrider AnnotatedExecutableType
+         * @param overridingType AnnotatedTypeMirror
+         * @param overridingReturnType AnnotatedTypeMirror
+         * @param overridden AnnotatedExecutableType
+         * @param overriddenType AnnotatedDeclaredType
+         * @param overriddenReturnType AnnotatedTypeMirror
+         */
+        public DeterminismOverrideChecker(
+                Tree overriderTree,
+                AnnotatedTypeMirror.AnnotatedExecutableType overrider,
+                AnnotatedTypeMirror overridingType,
+                AnnotatedTypeMirror overridingReturnType,
+                AnnotatedTypeMirror.AnnotatedExecutableType overridden,
+                AnnotatedDeclaredType overriddenType,
+                AnnotatedTypeMirror overriddenReturnType) {
+            super(
+                    overriderTree,
+                    overrider,
+                    overridingType,
+                    overridingReturnType,
+                    overridden,
+                    overriddenType,
+                    overriddenReturnType);
+        }
+
+        /**
+         * Consider a method {@code m(@PolyDet ..., @PolyDet("use") ...)} that is overridden as
+         * {@code m(@PolyDet("use") ..., @PolyDet ...)}. Since {@code @PolyDet} is considered to be
+         * the same as {@code @polyDet("use)} in the determinism type hierarchy, this overriding
+         * relationship is valid. But this is incorrect as it allows the following instantiations:
+         * Overridden method could be {@code m(@NonDet ..., @Det ...)} and the overrider method
+         * could be {@code m(@Det ..., @NonDet ...)}. To avoid this unsoundness, the following
+         * method displays an error message when a parameter with type qualifier {@code @PolyDet} is
+         * overridden by a parameter qualified with {@code @PolyDet("use)}.
+         *
+         * @checker_framework.manual #﻿determinism-poly-overriding Special overriding rule
+         */
+        @Override
+        public boolean checkOverride() {
+            List<AnnotatedTypeMirror> overriderParams = overrider.getParameterTypes();
+            List<AnnotatedTypeMirror> overriddenParams = overridden.getParameterTypes();
+
+            // Fix up method reference parameters.
+            // See https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.13.1
+            if (methodReference) {
+                // The functional interface of an unbound member reference has an extra parameter
+                // (the receiver).
+                if (((JCTree.JCMemberReference) overriderTree)
+                        .hasKind(JCTree.JCMemberReference.ReferenceKind.UNBOUND)) {
+                    overriddenParams = new ArrayList<>(overriddenParams);
+                    overriddenParams.remove(0);
+                }
+                // Deal with varargs
+                if (overrider.isVarArgs() && !overridden.isVarArgs()) {
+                    overriderParams =
+                            AnnotatedTypes.expandVarArgsFromTypes(overrider, overriddenParams);
+                }
+            }
+
+            for (int index = 0; index < overriderParams.size(); index++) {
+                AnnotatedTypeMirror overriderParam = overriderParams.get(index);
+                AnnotatedTypeMirror overriddenParam = overriddenParams.get(index);
+                if (AnnotationUtils.areSame(
+                        overriddenParam.getEffectiveAnnotationInHierarchy(atypeFactory.NONDET),
+                        atypeFactory.POLYDET)) {
+                    if (AnnotationUtils.areSame(
+                            overriderParam.getEffectiveAnnotationInHierarchy(atypeFactory.NONDET),
+                            atypeFactory.POLYDET_USE)) {
+                        Tree posTree =
+                                overriderTree instanceof MethodTree
+                                        ? ((MethodTree) overriderTree).getParameters().get(index)
+                                        : overriderTree;
+                        checker.reportError(
+                                posTree,
+                                "override.param.invalid",
+                                overrider.getElement().getParameters().get(index).toString(),
+                                overriderMeth,
+                                overriderTyp,
+                                overriddenMeth,
+                                overriddenTyp,
+                                overriderParam,
+                                overriddenParam);
+                        return false;
+                    }
+                }
+
+                if (AnnotationUtils.areSame(
+                        overriddenParam.getEffectiveAnnotationInHierarchy(atypeFactory.NONDET),
+                        atypeFactory.POLYDET_NOORDERNONDET)) {
+                    if (AnnotationUtils.areSame(
+                            overriderParam.getEffectiveAnnotationInHierarchy(atypeFactory.NONDET),
+                            atypeFactory.POLYDET_USENOORDERNONDET)) {
+                        Tree posTree =
+                                overriderTree instanceof MethodTree
+                                        ? ((MethodTree) overriderTree).getParameters().get(index)
+                                        : overriderTree;
+                        checker.reportError(
+                                posTree,
+                                "override.param.invalid",
+                                overrider.getElement().getParameters().get(index).toString(),
+                                overriderMeth,
+                                overriderTyp,
+                                overriddenMeth,
+                                overriddenTyp,
+                                overriderParam,
+                                overriddenParam);
+                        return false;
+                    }
+                }
+            }
+            return super.checkOverride();
+        }
+    }
+
+    @Override
+    protected OverrideChecker createOverrideChecker(
+            Tree overriderTree,
+            AnnotatedTypeMirror.AnnotatedExecutableType overrider,
+            AnnotatedTypeMirror overridingType,
+            AnnotatedTypeMirror overridingReturnType,
+            AnnotatedTypeMirror.AnnotatedExecutableType overridden,
+            AnnotatedTypeMirror.AnnotatedDeclaredType overriddenType,
+            AnnotatedTypeMirror overriddenReturnType) {
+        return new DeterminismOverrideChecker(
+                overriderTree,
+                overrider,
+                overridingType,
+                overridingReturnType,
+                overridden,
+                overriddenType,
+                overriddenReturnType);
+    }
 }

@@ -8,8 +8,7 @@ public class TogglzTest1<F> {
         @OrderNonDet Set<@Det Set<@Det F>> copy = new HashSet<@Det Set<@Det F>>();
         // :: error: (enhancedfor.type.incompatible)
         for (@Det Set<@Det F> variant : src) {
-            // :: error: (argument.type.incompatible) :: error:
-            // (invalid.upper.bound.on.type.argument)
+            // :: error: (argument.type.incompatible)
             copy.add(new HashSet<F>(variant));
         }
         return copy;

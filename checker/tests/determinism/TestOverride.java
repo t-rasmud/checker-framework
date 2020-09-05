@@ -33,9 +33,8 @@ class Child extends TestOverride {
 
     @Override
     // :: error: (override.return.invalid)
-    protected @Det ArrayList<@Det Integer> newList(@NonDet int a) {
-        // :: warning: (cast.unsafe.constructor.invocation)
-        return new @Det ArrayList<Integer>(a);
+    protected @NonDet ArrayList<@Det Integer> newList(@NonDet int a) {
+        return new @NonDet ArrayList<Integer>(a);
     }
 
     @Override

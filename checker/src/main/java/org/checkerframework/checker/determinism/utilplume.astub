@@ -1,0 +1,7 @@
+package org.plumelib.util;
+
+import org.checkerframework.checker.determinism.qual.PolyDet;
+
+class UtilPlume {
+  static String join(Iterable<? extends @PolyDet Object> v, String delim);
+}

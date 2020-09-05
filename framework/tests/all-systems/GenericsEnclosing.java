@@ -6,6 +6,7 @@ import java.util.TreeMap;
  *
  * <p>Also see regex/GenericsEnclosing for a test case for the Regex Checker.
  */
+@SuppressWarnings("missing.has.qual.param")
 class GenericsEnclosing extends TreeMap<String, String> {
     class Inner {
         void foo() {
