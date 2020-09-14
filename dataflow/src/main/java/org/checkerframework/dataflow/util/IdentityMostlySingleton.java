@@ -27,7 +27,7 @@ public final class IdentityMostlySingleton<T extends Object> extends AbstractMos
     @Override
     @SuppressWarnings("fallthrough")
     public @PolyDet("down") boolean add(
-            @PolyDet IdentityMostlySingleton<T> this, @PolyDet @FindDistinct T e) {
+            @PolyDet IdentityMostlySingleton<T> this, @FindDistinct @PolyDet T e) {
         switch (state) {
             case EMPTY:
                 state = State.SINGLETON;
