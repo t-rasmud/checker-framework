@@ -690,7 +690,7 @@ subprojects {
                     'Determinism',
                     // ['-AonlyDefs=org.checkerframework.dataflow.', ]
                     ['-AonlyDefs=org.checkerframework.dataflow.', '-Aannotations', '-Anolocations', '-Aannotationsummaryonly']
-		    )
+                    )
             // createCheckTypeTask(project.name, 'org.checkerframework.checker.determinism.DeterminismChecker', 'Determinism')
         }
 
