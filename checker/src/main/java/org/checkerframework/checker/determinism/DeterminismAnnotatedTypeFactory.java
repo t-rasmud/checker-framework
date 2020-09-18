@@ -845,7 +845,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         @Override
         protected Void defaultAction(AnnotatedTypeMirror type, AnnotationMirror annotationMirror) {
             type.replaceAnnotation(annotationMirror);
-            return super.defaultAction(type, annotationMirror);
+            return null;
         }
     }
 
