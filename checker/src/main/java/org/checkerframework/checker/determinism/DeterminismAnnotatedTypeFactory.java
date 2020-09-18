@@ -31,8 +31,6 @@ import org.checkerframework.framework.type.treeannotator.TreeAnnotator;
 import org.checkerframework.framework.type.typeannotator.ListTypeAnnotator;
 import org.checkerframework.framework.type.typeannotator.TypeAnnotator;
 import org.checkerframework.framework.type.visitor.SimpleAnnotatedTypeScanner;
-import org.checkerframework.framework.util.GraphQualifierHierarchy;
-import org.checkerframework.framework.util.MultiGraphQualifierHierarchy;
 import org.checkerframework.framework.util.defaults.QualifierDefaults;
 import org.checkerframework.javacutil.*;
 
@@ -1251,8 +1249,17 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     @Override
-    public QualifierHierarchy createQualifierHierarchy(
-            MultiGraphQualifierHierarchy.MultiGraphFactory factory) {
+    @SuppressWarnings("deprecation")
+    public QualifierHierarchy createQualifierHierarchy() {
+        return org.checkerframework.framework.util.MultiGraphQualifierHierarchy
+                .createMultiGraphQualifierHierarchy(this);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public QualifierHierarchy createQualifierHierarchyWithMultiGraphFactory(
+            org.checkerframework.framework.util.MultiGraphQualifierHierarchy.MultiGraphFactory
+                    factory) {
         return new DeterminismQualifierHierarchy(factory, DET);
     }
 
@@ -1270,14 +1277,19 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /** Defines LUB and subtyping relationships. */
-    class DeterminismQualifierHierarchy extends GraphQualifierHierarchy {
+    @SuppressWarnings("deprecation")
+    class DeterminismQualifierHierarchy
+            extends org.checkerframework.framework.util.GraphQualifierHierarchy {
+
         /**
          * DeterminismQualifierHierarchy constructor.
          *
          * @param f MultiGraphFactory
-         * @param bottom AnnotationMirror
          */
-        public DeterminismQualifierHierarchy(MultiGraphFactory f, AnnotationMirror bottom) {
+        public DeterminismQualifierHierarchy(
+                org.checkerframework.framework.util.MultiGraphQualifierHierarchy.MultiGraphFactory
+                        f,
+                AnnotationMirror bottom) {
             super(f, bottom);
         }
 
