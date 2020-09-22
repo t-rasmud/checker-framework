@@ -1285,6 +1285,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          * DeterminismQualifierHierarchy constructor.
          *
          * @param f MultiGraphFactory
+         * @param bottom AnnotationMirror
          */
         public DeterminismQualifierHierarchy(
                 org.checkerframework.framework.util.MultiGraphQualifierHierarchy.MultiGraphFactory
