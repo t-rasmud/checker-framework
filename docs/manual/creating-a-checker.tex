@@ -224,7 +224,8 @@ subclass to the \<-processor> command-line option:
   javac -processor \textit{mypackage.MyPropChecker} SourceFile.java
 \end{alltt}
 Note that your custom checker's
-\<.class> files must be on the Java classpath.
+\<.class> files must be on the same path (the classpath or processorpath)
+as the Checker Framework.
 Invoking a custom checker that builds on
 the Subtyping Checker is slightly different (Section~\ref{subtyping-using}).
 
@@ -571,20 +572,16 @@ hierarchy.
   \end{Verbatim}
 
   For a description of polymorphic qualifiers, see
-  Section~\ref{method-qualifier-polymorphism}.  A polymorphic qualifier needs
-  no \refqualclass{framework/qual}{SubtypeOf} meta-annotation and need not be
+  Section~\ref{method-qualifier-polymorphism}.  A polymorphic qualifier must not have
+  a \refqualclass{framework/qual}{SubtypeOf} meta-annotation nor be
   mentioned in any other \refqualclass{framework/qual}{SubtypeOf}
   meta-annotation.
 
 \end{itemize}
 
 The declarative and procedural mechanisms for specifying the hierarchy can
-be used together.  In particular, when using the \refqualclass{framework/qual}{SubtypeOf}
-meta-annotation, further customizations may be
-performed procedurally (Section~\ref{creating-procedural-hierarchy})
-by overriding the \refmethodterse{framework/util}{GraphQualifierHierarchy}{isSubtype}{-java.util.Collection-java.util.Collection-} method in the checker class
-(Section~\ref{creating-compiler-interface}).
-However, the declarative mechanism is sufficient for most type systems.
+be used together. If any of the annotations representing type qualifiers have elements, then
+the relationships between those qualifiers must be defined procedurally.
 
 
 \subsectionAndLabel{Procedurally defining the qualifier hierarchy}{creating-procedural-hierarchy}
@@ -711,7 +708,8 @@ qualifier.
 \<null>, uses of the type \<Void> are also bottom.
 (The only exception
 is if the type system has special treatment for \<null> values, as the
-Nullness Checker does. In that case, add the meta-annotation \<@QualifierForLiterals(LiteralKind.NULL)>
+Nullness Checker does. In that case, add the meta-annotation
+\refqualclasswithparams{framework/qual}{QualifierForLiterals}{LiteralKind.NULL}
 to the correct qualifier.)
 This legal code
 will not type-check unless \<null> has the bottom type:
@@ -1572,7 +1570,7 @@ the result of \code{RegexUtils.asRegex} invocations:
       // Is this a call to static method isRegex(s, groups) in a class named RegexUtil?
       if (receiverName.equals("RegexUtil")
           && ElementUtils.matchesElement(method,
-                 null, "isRegex", String.class, int.class)) {
+                 "isRegex", String.class, int.class)) {
             ...
 \end{Verbatim}
 %BEGIN LATEX
@@ -1889,6 +1887,11 @@ represents the CFG, and the last command draws the CFG in a PDF file.
 The \<dot> program is part of \ahref{http://www.graphviz.org}{Graphviz}.
 
 
+\subsubsectionAndLabel{Creating a CFG while running a type-checker}{creating-debugging-dataflow-graph-with-typechecker}
+
+To create a CFG while running a type-checker, use the following
+command-line options.
+
 \begin{itemize}
 
 \item \code{-Aflowdotdir=\emph{somedir}}:
@@ -1923,7 +1926,9 @@ The \<dot> program is part of \ahref{http://www.graphviz.org}{Graphviz}.
 
 \end{itemize}
 
-\noindent
+
+\subsubsectionAndLabel{Creating a CFG by running CFGVisualizeLauncher}{creating-debugging-dataflow-graph-with-cfgvisualizelauncher}
+
 You can also use \refclass{dataflow/cfg}{CFGVisualizeLauncher} to generate a DOT
 or String representation of the control flow graph of a given method in a given class.
 The CFG is generated and output, but no dataflow analysis is performed.
@@ -1969,8 +1974,9 @@ java -Xbootclasspath/p:$CHECKERFRAMEWORK/checker/dist/javac.jar \
 \end{Verbatim}
 \end{smaller}
 
-For more information, run \refclass{dataflow/cfg}{CFGVisualizeLauncher} with
-no arguments to see the usage.
+For more details about invoking
+\refclass{dataflow/cfg}{CFGVisualizeLauncher}, run it with
+no arguments.
 
 
 \subsectionAndLabel{Miscellaneous debugging options}{creating-debugging-options-misc}
@@ -2371,7 +2377,7 @@ without warnings or errors.
 % LocalWords:  QualifierHierarchy QualifierRoot createQualifierHierarchy util
 % LocalWords:  createTypeHierarchy ImplicitFor treeClasses TypeMirror Anno
 % LocalWords:  LiteralTree ExpressionTree typeClasses addComputedTypeAnnotations nullable
-% LocalWords:  createSupportedTypeQualifiers FooChecker nullness
+% LocalWords:  createSupportedTypeQualifiers FooChecker nullness KeyFor
 % LocalWords:  FooVisitor FooAnnotatedTypeFactory basicstyle InterningVisitor
 % LocalWords:  InterningAnnotatedTypeFactory QualifierDefaults TypeKind getKind
 % LocalWords:  setAbsoluteDefaults PolymorphicQualifier TreeVisitor subnodes
@@ -2407,7 +2413,7 @@ without warnings or errors.
 %%  LocalWords:  CheckerFrameworkTest GenericAnnotatedTypeFactory MyClass
 %%  LocalWords:  addCheckedCodeDefaults RelevantJavaTypes TargetLocations
 %%  LocalWords:  TypeUseLocation createExpressionAnnoHelper internalReprOf
-%%  LocalWords:  ExpressionAnnotationHelper FlowExpressions CFTransfer
+%%  LocalWords:  ExpressionAnnotationHelper FlowExpressions CFTransfer LSP
 %%  LocalWords:  AnnotationProvider FooTransfer createFlowTransferFunction
 %%  LocalWords:  SupportedLintOptions myoption StubFiles scriptfile outdir
 %%  LocalWords:  somedir Acfgviz Averbosecfg cfgviz MyVisualizer init apis
@@ -2421,3 +2427,5 @@ without warnings or errors.
 %%  LocalWords:  TypeAnnotationUtils reimplementing typesystem TreeType
 %%  LocalWords:  getTypeFactoryOfSubchecker someDirectory checkername
 %%  LocalWords:  AnnotationMirror AnnotationMirrorMap AnnotationMirrorSet
+%%  LocalWords:  processorpath CheckerName EnsuresNonNullIf reportError
+%%  LocalWords:  reportWarning AnnotatedFor AdumpOnErrors AparseAllJdk
