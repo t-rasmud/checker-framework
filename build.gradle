@@ -701,7 +701,7 @@ subprojects {
                     // ['-AonlyDefs=org.checkerframework.dataflow.', ]
                     ['-AonlyDefs=org.checkerframework.dataflow.', '-Aannotations', '-Anolocations', '-Aannotationsummaryonly']
                     )
-            // createCheckTypeTask(project.name, 'org.checkerframework.checker.determinism.DeterminismChecker', 'Determinism')
+            // createCheckTypeTask(project.name, 'Determinism', 'org.checkerframework.checker.determinism.DeterminismChecker')
         }
 
         // Add jtregTests to framework and checker modules
