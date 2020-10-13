@@ -37,7 +37,6 @@ import org.checkerframework.common.value.qual.MinLenFieldInvariant;
 import org.checkerframework.common.value.qual.PolyValue;
 import org.checkerframework.common.value.qual.StringVal;
 import org.checkerframework.common.value.qual.UnknownVal;
-import org.checkerframework.common.value.util.NumberUtils;
 import org.checkerframework.common.value.util.Range;
 import org.checkerframework.dataflow.analysis.FlowExpressions;
 import org.checkerframework.framework.flow.CFAbstractAnalysis;
@@ -57,12 +56,12 @@ import org.checkerframework.framework.type.typeannotator.ListTypeAnnotator;
 import org.checkerframework.framework.type.typeannotator.TypeAnnotator;
 import org.checkerframework.framework.util.FieldInvariants;
 import org.checkerframework.framework.util.FlowExpressionParseUtil.FlowExpressionParseException;
-import org.checkerframework.framework.util.MultiGraphQualifierHierarchy.MultiGraphFactory;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
 import org.checkerframework.javacutil.BugInCF;
 import org.checkerframework.javacutil.ElementUtils;
 import org.checkerframework.javacutil.TreeUtils;
+import org.checkerframework.javacutil.TypeKindUtils;
 import org.checkerframework.javacutil.TypesUtils;
 
 /** AnnotatedTypeFactory for the Value type system. */
@@ -223,8 +222,8 @@ public class ValueAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     @Override
-    public QualifierHierarchy createQualifierHierarchy(MultiGraphFactory factory) {
-        return new ValueQualifierHierarchy(factory, this);
+    protected QualifierHierarchy createQualifierHierarchy() {
+        return new ValueQualifierHierarchy(this, this.getSupportedTypeQualifiers());
     }
 
     @Override
@@ -363,8 +362,8 @@ public class ValueAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
      * @return one of INT, SHORT, BYTE, CHAR, or LONG
      */
     private static TypeKind toPrimitiveIntegralTypeKind(TypeMirror type) {
-        TypeKind typeKind = NumberUtils.unboxPrimitive(type);
-        if (NumberUtils.isPrimitiveIntegral(typeKind)) {
+        TypeKind typeKind = TypeKindUtils.primitiveOrBoxedToTypeKind(type);
+        if (typeKind != null && TypeKindUtils.isIntegral(typeKind)) {
             return typeKind;
         }
         throw new BugInCF(type.toString() + " expected to be an integral type.");
@@ -1233,7 +1232,7 @@ public class ValueAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             List<? extends AnnotationMirror> annoList =
                     expressionObj.getType().getAnnotationMirrors();
             for (AnnotationMirror anno : annoList) {
-                String ANNO_NAME = anno.getAnnotationType().toString();
+                String ANNO_NAME = AnnotationUtils.annotationName(anno);
                 if (ANNO_NAME.equals(MINLEN_NAME)) {
                     return getMinLenValue(canonicalAnnotation(anno));
                 } else if (ANNO_NAME.equals(ARRAYLEN_NAME)

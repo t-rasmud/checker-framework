@@ -5,6 +5,8 @@ import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.Node;
+import org.plumelib.util.UniqueId;
+import org.plumelib.util.UtilPlume;
 
 /**
  * {@code TransferInput} is used as the input type of the individual transfer functions of a {@link
@@ -17,7 +19,7 @@ import org.checkerframework.dataflow.cfg.node.Node;
  * @param <V> type of the abstract value that is tracked
  * @param <S> the store type used in the analysis
  */
-public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> {
+public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> implements UniqueId {
 
     /** The corresponding node. */
     // TODO: explain when the node is changed.
@@ -47,6 +49,14 @@ public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> {
 
     /** The corresponding analysis class to get intermediate flow results. */
     protected final Analysis<V, S, ?> analysis;
+
+    /** The unique ID of this object. */
+    final transient long uid = UniqueId.nextUid.getAndIncrement();
+
+    @Override
+    public long getUid() {
+        return uid;
+    }
 
     /**
      * Create a {@link TransferInput}, given a {@link TransferResult} and a node-value mapping.
@@ -279,7 +289,13 @@ public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> {
     @Override
     public @PolyDet String toString(@PolyDet TransferInput<V, S> this) {
         if (store == null) {
-            return "[then=" + thenStore + ", else=" + elseStore + "]";
+            return "[then="
+                    + UtilPlume.indentLinesExceptFirst(2, thenStore)
+                    + ","
+                    + System.lineSeparator()
+                    + "  else="
+                    + UtilPlume.indentLinesExceptFirst(2, elseStore)
+                    + "]";
         } else {
             return "[" + store + "]";
         }

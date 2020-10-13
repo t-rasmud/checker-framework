@@ -29,6 +29,7 @@ import org.checkerframework.dataflow.cfg.block.SingleSuccessorBlock;
 import org.checkerframework.dataflow.cfg.block.SpecialBlock;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.javacutil.BugInCF;
+import org.plumelib.util.UtilPlume;
 
 /**
  * This abstract class makes implementing a {@link CFGVisualizer} easier. Some of the methods in
@@ -114,6 +115,7 @@ public abstract class AbstractCFGVisualizer<
             handleSuccessorsHelper(cur, visited, workList, sbGraph);
             cur = workList.poll();
         }
+        sbGraph.append(lineSeparator);
         sbGraph.append(visualizeNodes(visited, cfg, analysis));
         return sbGraph.toString();
     }
@@ -135,23 +137,27 @@ public abstract class AbstractCFGVisualizer<
             ConditionalBlock ccur = ((ConditionalBlock) cur);
             Block thenSuccessor = ccur.getThenSuccessor();
             sbGraph.append(
-                    addEdge(
+                    visualizeEdge(
                             ccur.getId(),
                             thenSuccessor.getId(),
                             ccur.getThenFlowRule().toString()));
+            sbGraph.append(lineSeparator);
             addBlock(thenSuccessor, visited, workList);
             Block elseSuccessor = ccur.getElseSuccessor();
             sbGraph.append(
-                    addEdge(
+                    visualizeEdge(
                             ccur.getId(),
                             elseSuccessor.getId(),
                             ccur.getElseFlowRule().toString()));
+            sbGraph.append(lineSeparator);
             addBlock(elseSuccessor, visited, workList);
         } else {
             SingleSuccessorBlock sscur = (SingleSuccessorBlock) cur;
             Block succ = sscur.getSuccessor();
             if (succ != null) {
-                sbGraph.append(addEdge(cur.getId(), succ.getId(), sscur.getFlowRule().name()));
+                sbGraph.append(
+                        visualizeEdge(cur.getId(), succ.getId(), sscur.getFlowRule().name()));
+                sbGraph.append(lineSeparator);
                 addBlock(succ, visited, workList);
             }
         }
@@ -165,7 +171,8 @@ public abstract class AbstractCFGVisualizer<
                     exception = exception.replace("java.lang.", "");
                 }
                 for (Block b : e.getValue()) {
-                    sbGraph.append(addEdge(cur.getId(), b.getId(), exception));
+                    sbGraph.append(visualizeEdge(cur.getId(), b.getId(), exception));
+                    sbGraph.append(lineSeparator);
                     addBlock(b, visited, workList);
                 }
             }
@@ -190,19 +197,25 @@ public abstract class AbstractCFGVisualizer<
     /**
      * Helper method to visualize a block.
      *
+     * <p>NOTE: The output ends with a separator, only if an "after" store is visualized. The client
+     * {@link #visualizeBlock} should correct this if needed.
+     *
      * @param bb the block
      * @param analysis the current analysis
-     * @param escapeString the escape String for the special need of visualization, e.g., "\\l" for
-     *     {@link DOTCFGVisualizer} to keep line left-justification, "\n" for {@link
-     *     StringCFGVisualizer} to simply add a new line
+     * @param separator the line separator. Examples: "\\l" for left justification in {@link
+     *     DOTCFGVisualizer} (this is really a terminator, not a separator), "\n" to add a new line
+     *     in {@link StringCFGVisualizer}
      * @return the String representation of the block
      */
-    protected @NonDet String visualizeBlockHelper(
-            Block bb, @Nullable Analysis<V, S, T> analysis, String escapeString) {
-        StringBuilder sbBlock = new @NonDet StringBuilder();
-        sbBlock.append(loopOverBlockContents(bb, analysis, escapeString));
-
+    protected String visualizeBlockHelper(
+            Block bb, @Nullable Analysis<V, S, T> analysis, String separator) {
+        StringBuilder sbBlock = new StringBuilder();
+        String contents = loopOverBlockContents(bb, analysis, separator);
+        if (!contents.isEmpty()) {
+            sbBlock.append(contents);
+        }
         if (sbBlock.length() == 0) {
+            // Nothing got appended; use default text for empty block
             if (bb.getType() == Block.BlockType.SPECIAL_BLOCK) {
                 sbBlock.append(visualizeSpecialBlock((SpecialBlock) bb));
             } else if (bb.getType() == Block.BlockType.CONDITIONAL_BLOCK) {
@@ -214,11 +227,14 @@ public abstract class AbstractCFGVisualizer<
 
         // Visualize transfer input if necessary.
         if (analysis != null) {
-            sbBlock.insert(0, visualizeBlockTransferInputBefore(bb, analysis));
+            sbBlock.insert(0, visualizeBlockTransferInputBefore(bb, analysis) + separator);
             if (verbose) {
                 Node lastNode = bb.getLastNode();
                 if (lastNode != null) {
-                    sbBlock.append(visualizeBlockTransferInputAfter(bb, analysis));
+                    if (!sbBlock.toString().endsWith(separator)) {
+                        sbBlock.append(separator);
+                    }
+                    sbBlock.append(visualizeBlockTransferInputAfter(bb, analysis) + separator);
                 }
             }
         }
@@ -237,8 +253,7 @@ public abstract class AbstractCFGVisualizer<
             Block bb, @Nullable Analysis<V, S, T> analysis, String separator) {
 
         List<Node> contents = addBlockContent(bb);
-        StringJoiner sjBlockContents = new @NonDet StringJoiner(separator, "", separator);
-        sjBlockContents.setEmptyValue("");
+        StringJoiner sjBlockContents = new StringJoiner(separator);
         for (Node t : contents) {
             sjBlockContents.add(visualizeBlockNode(t, analysis));
         }
@@ -277,87 +292,43 @@ public abstract class AbstractCFGVisualizer<
         return sbBlockNode.toString();
     }
 
+    /** Whether to visualize before or after a block. */
+    protected enum VisualizeWhere {
+        /** Visualize before the block. */
+        BEFORE,
+        /** Visualize after the block. */
+        AFTER
+    }
+
     /**
-     * Visualize the transfer input before the given block.
+     * Visualize the transfer input before or after the given block.
      *
-     * @param bb the block
+     * @param where either BEFORE or AFTER
+     * @param bb a block
      * @param analysis the current analysis
-     * @param escapeString the escape String for the special need of visualization, e.g., "\\l" for
-     *     {@link DOTCFGVisualizer} to keep line left-justification, "\n" for {@link
-     *     StringCFGVisualizer} to simply add a new line
-     * @return the visualization of the transfer input before the given block
+     * @param separator the line separator. Examples: "\\l" for left justification in {@link
+     *     DOTCFGVisualizer} (which is actually a line TERMINATOR, not a separator!), "\n" to add a
+     *     new line in {@link StringCFGVisualizer}
+     * @return the visualization of the transfer input before or after the given block
      */
-    protected @NonDet String visualizeBlockTransferInputBeforeHelper(
-            Block bb, Analysis<V, S, T> analysis, String escapeString) {
+    protected String visualizeBlockTransferInputHelper(
+            VisualizeWhere where, Block bb, Analysis<V, S, T> analysis, String separator) {
         if (analysis == null) {
             throw new BugInCF(
                     "analysis must be non-null when visualizing the transfer input of a block.");
         }
 
-        S regularStore;
-        S thenStore = null;
-        S elseStore = null;
-        boolean isTwoStores = false;
-
-        StringBuilder sbStore = new @NonDet StringBuilder();
-        sbStore.append("Before: ");
-
         Direction analysisDirection = analysis.getDirection();
-
-        if (analysisDirection == Direction.FORWARD) {
-            TransferInput<V, S> input = analysis.getInput(bb);
-            assert input != null : "@AssumeAssertion(nullness): invariant";
-            isTwoStores = input.containsTwoStores();
-            regularStore = input.getRegularStore();
-            thenStore = input.getThenStore();
-            elseStore = input.getElseStore();
-        } else {
-            regularStore = analysis.getResult().getStoreBefore(bb);
-        }
-
-        if (!isTwoStores) {
-            sbStore.append(visualizeStore(regularStore));
-        } else {
-            assert thenStore != null : "@AssumeAssertion(nullness): invariant";
-            assert elseStore != null : "@AssumeAssertion(nullness): invariant";
-            sbStore.append("then=");
-            sbStore.append(visualizeStore(thenStore));
-            sbStore.append(", else=");
-            sbStore.append(visualizeStore(elseStore));
-        }
-        sbStore.append("~~~~~~~~~").append(escapeString);
-        return sbStore.toString();
-    }
-
-    /**
-     * Visualize the transfer input after the given block.
-     *
-     * @param bb the given block
-     * @param analysis the current analysis
-     * @param escapeString the escape String for the special need of visualization, e.g., "\\l" for
-     *     {@link DOTCFGVisualizer} to keep line left-justification, "\n" for {@link
-     *     StringCFGVisualizer} to simply add a new line
-     * @return the visualization of the transfer input after the given block
-     */
-    protected @NonDet String visualizeBlockTransferInputAfterHelper(
-            Block bb, Analysis<V, S, T> analysis, String escapeString) {
-        if (analysis == null) {
-            throw new BugInCF(
-                    "analysis should be non-null when visualizing the transfer input of a block.");
-        }
 
         S regularStore;
         S thenStore = null;
         S elseStore = null;
         boolean isTwoStores = false;
 
-        StringBuilder sbStore = new @NonDet StringBuilder();
-        sbStore.append("After: ");
-
-        Direction analysisDirection = analysis.getDirection();
-
-        if (analysisDirection == Direction.FORWARD) {
+        if (analysisDirection == Direction.FORWARD && where == VisualizeWhere.AFTER) {
             regularStore = analysis.getResult().getStoreAfter(bb);
+        } else if (analysisDirection == Direction.BACKWARD && where == VisualizeWhere.BEFORE) {
+            regularStore = analysis.getResult().getStoreBefore(bb);
         } else {
             TransferInput<V, S> input = analysis.getInput(bb);
             assert input != null : "@AssumeAssertion(nullness): invariant";
@@ -367,6 +338,9 @@ public abstract class AbstractCFGVisualizer<
             elseStore = input.getElseStore();
         }
 
+        StringBuilder sbStore = new StringBuilder();
+        sbStore.append(where == VisualizeWhere.BEFORE ? "Before: " : "After: ");
+
         if (!isTwoStores) {
             sbStore.append(visualizeStore(regularStore));
         } else {
@@ -374,10 +348,16 @@ public abstract class AbstractCFGVisualizer<
             assert elseStore != null : "@AssumeAssertion(nullness): invariant";
             sbStore.append("then=");
             sbStore.append(visualizeStore(thenStore));
-            sbStore.append(", else=");
+            sbStore.append(",");
+            sbStore.append(separator);
+            sbStore.append("else=");
             sbStore.append(visualizeStore(elseStore));
         }
-        sbStore.insert(0, "~~~~~~~~~" + escapeString);
+        if (where == VisualizeWhere.BEFORE) {
+            sbStore.append(separator + "~~~~~~~~~");
+        } else {
+            sbStore.insert(0, "~~~~~~~~~" + separator);
+        }
         return sbStore.toString();
     }
 
@@ -385,17 +365,16 @@ public abstract class AbstractCFGVisualizer<
      * Visualize a special block.
      *
      * @param sbb the special block
-     * @param separator the separator String to put at the end of the result
-     * @return the String representation of the special block, followed by the separator
+     * @return the String representation of the special block
      */
-    protected String visualizeSpecialBlockHelper(SpecialBlock sbb, String separator) {
+    protected String visualizeSpecialBlockHelper(SpecialBlock sbb) {
         switch (sbb.getSpecialType()) {
             case ENTRY:
-                return "<entry>" + separator;
+                return "<entry>";
             case EXIT:
-                return "<exit>" + separator;
+                return "<exit>";
             case EXCEPTIONAL_EXIT:
-                return "<exceptional-exit>" + separator;
+                return "<exceptional-exit>";
             default:
                 throw new BugInCF("Unrecognized special block type: " + sbb.getType());
         }
@@ -448,7 +427,7 @@ public abstract class AbstractCFGVisualizer<
      * @param flowRule the content of the edge
      * @return the String representation of the edge
      */
-    protected abstract String addEdge(Object sId, Object eId, String flowRule);
+    protected abstract String visualizeEdge(Object sId, Object eId, String flowRule);
 
     /**
      * Return the header of the generated graph.
@@ -474,8 +453,8 @@ public abstract class AbstractCFGVisualizer<
      */
     protected String getProcessOrderSimpleString(List<Integer> order) {
         @SuppressWarnings("determinism") // all known implementations have @Det toString method
-        @Det String orderString = order.toString();
-        return "Process order: " + orderString.substring(1, orderString.length() - 1);
+        @Det String orderString = UtilPlume.join(",", order);
+        return "Process order: " + orderString;
     }
 
     /**

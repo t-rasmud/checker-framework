@@ -64,15 +64,15 @@ public interface Analysis<
      * {@link Node} {@code node} is returned. Otherwise, the store immediately after {@code node} is
      * returned. If {@code analysisCaches} is not null, this method uses a cache. {@code
      * analysisCaches} is a map of a block of node to the cached analysis result. If the cache for
-     * {@code transferInput} is not in {@code analysisCaches}, this method creates new cache and
-     * stores it in {@code analysisCaches}. The cache is a map of nodes to the analysis results of
-     * the nodes.
+     * {@code blockTransferInput} is not in {@code analysisCaches}, this method creates new cache
+     * and stores it in {@code analysisCaches}. The cache is a map of nodes to the analysis results
+     * of the nodes.
      *
      * @param node the node to analyze
      * @param before the boolean value to indicate which store to return (if it is true, return the
      *     store immediately before {@code node}; otherwise, the store after {@code node} is
      *     returned)
-     * @param transferInput the transfer input of the block of this node
+     * @param blockTransferInput the transfer input of the block of this node
      * @param nodeValues abstract values of nodes
      * @param analysisCaches caches of analysis results
      * @return the store before or after {@code node} (depends on the value of {@code before}) after
@@ -81,7 +81,7 @@ public interface Analysis<
     S runAnalysisFor(
             Node node,
             boolean before,
-            TransferInput<V, S> transferInput,
+            TransferInput<V, S> blockTransferInput,
             @OrderNonDet IdentityHashMap<Node, V> nodeValues,
                     @OrderNonDet Map<
                                     TransferInput<V, S>,

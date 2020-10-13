@@ -91,7 +91,7 @@ public abstract class Node {
     public abstract @PolyDet @Nullable Tree getTree(@PolyDet Node this);
 
     /**
-     * Returns a {@link TypeMirror} representing the type of a {@link Node} A {@link Node} will
+     * Returns a {@link TypeMirror} representing the type of a {@link Node}. A {@link Node} will
      * always have a type even when it has no {@link Tree}.
      *
      * @return a {@link TypeMirror} representing the type of this {@link Node}

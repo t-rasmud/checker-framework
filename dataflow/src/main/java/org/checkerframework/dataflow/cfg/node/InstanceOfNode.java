@@ -11,6 +11,7 @@ import javax.lang.model.util.Types;
 import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.javacutil.TypesUtils;
 
 /**
  * A node for the instanceof operator:
@@ -62,7 +63,7 @@ public class InstanceOfNode extends Node {
 
     @Override
     public @PolyDet String toString(@PolyDet InstanceOfNode this) {
-        return "(" + getOperand() + " instanceof " + getRefType() + ")";
+        return "(" + getOperand() + " instanceof " + TypesUtils.simpleTypeName(getRefType()) + ")";
     }
 
     @Override

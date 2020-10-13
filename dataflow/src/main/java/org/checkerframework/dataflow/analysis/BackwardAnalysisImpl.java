@@ -331,7 +331,7 @@ public class BackwardAnalysisImpl<
     public S runAnalysisFor(
             @FindDistinct Node node,
             boolean before,
-            TransferInput<V, S> transferInput,
+            TransferInput<V, S> blockTransferInput,
             @OrderNonDet IdentityHashMap<Node, V> nodeValues,
                     @OrderNonDet Map<
                                     TransferInput<V, S>,
@@ -352,7 +352,7 @@ public class BackwardAnalysisImpl<
                         RegularBlock rBlock = (RegularBlock) block;
                         // Apply transfer function to contents until we found the node we are
                         // looking for.
-                        TransferInput<V, S> store = transferInput;
+                        TransferInput<V, S> store = blockTransferInput;
                         List<Node> nodeList = rBlock.getNodes();
                         ListIterator<@Det Node> reverseIter =
                                 nodeList.listIterator(nodeList.size());
@@ -371,9 +371,7 @@ public class BackwardAnalysisImpl<
                             }
                             store = new TransferInput<>(n, this, transferResult);
                         }
-                        // This point should never be reached. If the block of 'node' is
-                        // 'block', then 'node' must be part of the contents of 'block'.
-                        throw new BugInCF("This point should never be reached.");
+                        throw new BugInCF("node %s is not in node.getBlock()=%s", node, block);
                     }
                 case EXCEPTION_BLOCK:
                     {
@@ -386,13 +384,13 @@ public class BackwardAnalysisImpl<
                                             + eb.getNode());
                         }
                         if (!before) {
-                            return transferInput.getRegularStore();
+                            return blockTransferInput.getRegularStore();
                         }
                         setCurrentNode(node);
                         // Copy the store to avoid changing other blocks' transfer inputs in {@link
                         // #inputs}
                         TransferResult<V, S> transferResult =
-                                callTransferFunction(node, transferInput.copy());
+                                callTransferFunction(node, blockTransferInput.copy());
                         // Merge transfer result with the exception store of this exceptional block
                         S exceptionStore = exceptionStores.get(eb);
                         return exceptionStore == null

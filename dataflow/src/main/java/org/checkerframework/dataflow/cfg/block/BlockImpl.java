@@ -1,7 +1,6 @@
 package org.checkerframework.dataflow.cfg.block;
 
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 
@@ -29,9 +28,14 @@ public abstract class BlockImpl implements Block {
         return lastId++;
     }
 
+    /**
+     * Create a new BlockImpl.
+     *
+     * @param type the type of this basic block
+     */
     protected BlockImpl(BlockType type) {
         this.type = type;
-        this.predecessors = new HashSet<>();
+        this.predecessors = new LinkedHashSet<>();
     }
 
     @Override
@@ -45,8 +49,10 @@ public abstract class BlockImpl implements Block {
     }
 
     @Override
-    public @OrderNonDet Set<Block> getPredecessors() {
-        return Collections.unmodifiableSet(predecessors);
+    public Set<Block> getPredecessors() {
+        // Not "Collections.unmodifiableSet(predecessors)" which has nondeterministic iteration
+        // order.
+        return new LinkedHashSet<>(predecessors);
     }
 
     public void addPredecessor(BlockImpl pred) {

@@ -122,8 +122,8 @@ public class Constant implements AbstractValue<Constant> {
             case CONSTANT:
                 assert isConstant() : "@AssumeAssertion(nullness)";
                 return value.toString();
+            default:
+                throw new Error("Unexpected type");
         }
-        assert false;
-        return "???";
     }
 }

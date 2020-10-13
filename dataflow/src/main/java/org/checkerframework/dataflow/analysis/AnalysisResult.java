@@ -18,6 +18,7 @@ import org.checkerframework.dataflow.cfg.node.AssignmentNode;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.javacutil.BugInCF;
 import org.checkerframework.javacutil.TreeUtils;
+import org.plumelib.util.UniqueId;
 
 /**
  * An {@link AnalysisResult} represents the result of a org.checkerframework.dataflow analysis by
@@ -27,7 +28,8 @@ import org.checkerframework.javacutil.TreeUtils;
  * @param <V> type of the abstract value that is tracked
  * @param <S> the store type used in the analysis
  */
-public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Store<S>> {
+public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Store<S>>
+        implements UniqueId {
 
     /** Abstract values of nodes. */
     protected final @OrderNonDet IdentityHashMap<Node, V> nodeValues;
@@ -57,6 +59,14 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
     protected final @OrderNonDet Map<
                     TransferInput<V, S>, @OrderNonDet IdentityHashMap<Node, TransferResult<V, S>>>
             analysisCaches;
+
+    /** The unique ID of this object. */
+    final transient long uid = UniqueId.nextUid.getAndIncrement();
+
+    @Override
+    public long getUid() {
+        return uid;
+    }
 
     /**
      * Initialize with given mappings.

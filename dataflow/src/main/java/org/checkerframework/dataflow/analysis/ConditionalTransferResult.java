@@ -5,6 +5,7 @@ import java.util.StringJoiner;
 import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.plumelib.util.UtilPlume;
 
 /**
  * Implementation of a {@link TransferResult} with two non-exceptional store; one for the 'then'
@@ -139,9 +140,9 @@ public class ConditionalTransferResult<V extends AbstractValue<V>, S extends Sto
     public @PolyDet String toString(@PolyDet ConditionalTransferResult<V, S> this) {
         StringJoiner result = new @PolyDet StringJoiner(System.lineSeparator());
         result.add("RegularTransferResult(");
-        result.add("  resultValue = " + resultValue);
-        result.add("  thenStore = " + thenStore);
-        result.add("  elseStore = " + elseStore);
+        result.add("  resultValue = " + UtilPlume.indentLinesExceptFirst(2, resultValue));
+        result.add("  thenStore = " + UtilPlume.indentLinesExceptFirst(2, thenStore));
+        result.add("  elseStore = " + UtilPlume.indentLinesExceptFirst(2, elseStore));
         result.add(")");
         return result.toString();
     }

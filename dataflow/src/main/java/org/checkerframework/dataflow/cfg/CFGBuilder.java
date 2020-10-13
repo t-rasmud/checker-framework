@@ -99,6 +99,7 @@ import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.interning.qual.FindDistinct;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.Store;
 import org.checkerframework.dataflow.cfg.CFGBuilder.ExtendedNode.ExtendedNodeType;
@@ -192,6 +193,7 @@ import org.checkerframework.javacutil.BugInCF;
 import org.checkerframework.javacutil.ElementUtils;
 import org.checkerframework.javacutil.Pair;
 import org.checkerframework.javacutil.TreeUtils;
+import org.checkerframework.javacutil.TypeKindUtils;
 import org.checkerframework.javacutil.TypesUtils;
 import org.checkerframework.javacutil.trees.TreeBuilder;
 
@@ -349,8 +351,7 @@ public class CFGBuilder {
          *     NODE} or {@code EXCEPTION_NODE})
          */
         public Node getNode() {
-            assert false;
-            return null;
+            throw new Error("Do not call");
         }
 
         /**
@@ -361,8 +362,7 @@ public class CFGBuilder {
          *     ExtendedNodeType#CONDITIONAL_JUMP} or {@link ExtendedNodeType#UNCONDITIONAL_JUMP})
          */
         public @PolyDet Label getLabel() {
-            assert false;
-            return null;
+            throw new Error("Do not call");
         }
 
         public BlockImpl getBlock() {
@@ -383,7 +383,7 @@ public class CFGBuilder {
          *
          * @return a string representation of this
          */
-        abstract @NonDet String toStringDebug();
+        public abstract String toStringDebug();
     }
 
     /** An extended node of type {@code NODE}. */
@@ -549,20 +549,43 @@ public class CFGBuilder {
         /** The jump target label. */
         protected final Label jumpTarget;
 
+        /** The flow rule for this edge. */
+        protected final Store.FlowRule flowRule;
+
         /**
          * Construct an UnconditionalJump.
          *
          * @param jumpTarget the jump target label
          */
         public UnconditionalJump(Label jumpTarget) {
+            this(jumpTarget, Store.FlowRule.EACH_TO_EACH);
+        }
+
+        /**
+         * Construct an UnconditionalJump, specifying its flow rule.
+         *
+         * @param jumpTarget the jump target label
+         * @param flowRule the flow rule for this edge
+         */
+        public UnconditionalJump(Label jumpTarget, Store.FlowRule flowRule) {
             super(ExtendedNodeType.UNCONDITIONAL_JUMP);
             assert jumpTarget != null;
             this.jumpTarget = jumpTarget;
+            this.flowRule = flowRule;
         }
 
         @Override
         public @PolyDet Label getLabel(@PolyDet UnconditionalJump this) {
             return jumpTarget;
+        }
+
+        /**
+         * Returns the flow rule for this edge.
+         *
+         * @return the flow rule for this edge
+         */
+        public Store.FlowRule getFlowRule() {
+            return flowRule;
         }
 
         /**
@@ -1007,7 +1030,7 @@ public class CFGBuilder {
                     RegularBlockImpl b = (RegularBlockImpl) tmp;
                     if (b.isEmpty()) {
                         Set<@Det RegularBlockImpl> emptyBlocks = new HashSet<>();
-                        Set<@Det PredecessorHolder> predecessors = new HashSet<>();
+                        Set<@Det PredecessorHolder> predecessors = new LinkedHashSet<>();
                         BlockImpl succ =
                                 computeNeighborhoodOfEmptyBlock(b, emptyBlocks, predecessors);
                         for (RegularBlockImpl e : emptyBlocks) {
@@ -1250,8 +1273,7 @@ public class CFGBuilder {
                             }
                         }
                     }
-                    assert false;
-                    break;
+                    throw new Error("Unreachable");
                 case REGULAR_BLOCK:
                     RegularBlockImpl r = (RegularBlockImpl) pred;
                     return singleSuccessorHolder(r, cur);
@@ -1287,25 +1309,76 @@ public class CFGBuilder {
     /* Phase Two */
     /* --------------------------------------------------------- */
 
-    /** Tuple class with up to three members. */
-    protected static class Tuple<A, B, C> {
-        public final A a;
-        public final B b;
-        public final C c;
+    /** Represents a missing edge that will be added later. */
+    protected static class MissingEdge {
+        /** The source of the edge. */
+        final SingleSuccessorBlockImpl source;
+        /** The index (target?) of the edge. Null means go to exceptional exit. */
+        final @Nullable Integer index;
+        /** The cause exception type, for an exceptional edge; otherwise null. */
+        final @Nullable TypeMirror cause;
 
-        public Tuple(A a, B b) {
-            this(a, b, null);
+        /** The flow rule for this edge. */
+        final Store.@Nullable FlowRule flowRule;
+
+        /**
+         * Create a new MissingEdge.
+         *
+         * @param source the source of the edge
+         * @param index the index (target?) of the edge
+         */
+        public MissingEdge(SingleSuccessorBlockImpl source, int index) {
+            this(source, index, null, Store.FlowRule.EACH_TO_EACH);
         }
 
-        public Tuple(A a, B b, C c) {
-            this.a = a;
-            this.b = b;
-            this.c = c;
+        /**
+         * Create a new MissingEdge.
+         *
+         * @param source the source of the edge
+         * @param index the index (target?) of the edge
+         * @param flowRule the flow rule for this edge
+         */
+        public MissingEdge(SingleSuccessorBlockImpl source, int index, Store.FlowRule flowRule) {
+            this(source, index, null, flowRule);
+        }
+
+        /**
+         * Create a new MissingEdge.
+         *
+         * @param source the source of the edge
+         * @param index the index (target?) of the edge; null means go to exceptional exit
+         * @param cause the cause exception type, for an exceptional edge; otherwise null
+         */
+        public MissingEdge(
+                SingleSuccessorBlockImpl source,
+                @Nullable Integer index,
+                @Nullable TypeMirror cause) {
+            this(source, index, cause, Store.FlowRule.EACH_TO_EACH);
+        }
+
+        /**
+         * Create a new MissingEdge.
+         *
+         * @param source the source of the edge
+         * @param index the index (target?) of the edge; null means go to exceptional exit
+         * @param cause the cause exception type, for an exceptional edge; otherwise null
+         * @param flowRule the flow rule for this edge
+         */
+        public MissingEdge(
+                SingleSuccessorBlockImpl source,
+                @Nullable Integer index,
+                @Nullable TypeMirror cause,
+                Store.FlowRule flowRule) {
+            assert (index != null) || (cause != null);
+            this.source = source;
+            this.index = index;
+            this.cause = cause;
+            this.flowRule = flowRule;
         }
 
         @Override
-        public @NonDet String toString(@PolyDet Tuple<A, B, C> this) {
-            return "Tuple<" + a + ", " + b + ", " + c + ">";
+        public String toString() {
+            return "MissingEdge(" + source + ", " + index + ", " + cause + ")";
         }
     }
 
@@ -1327,6 +1400,7 @@ public class CFGBuilder {
 
             Map<@Det Label, @Det Integer> bindings = in.bindings;
             ArrayList<ExtendedNode> nodeList = in.nodeList;
+            // A leader is an extended node which will give rise to a basic block in phase two.
             Set<@Det Integer> leaders = in.leaders;
 
             assert !in.nodeList.isEmpty();
@@ -1337,20 +1411,17 @@ public class CFGBuilder {
                     new SpecialBlockImpl(SpecialBlockType.EXCEPTIONAL_EXIT);
 
             // record missing edges that will be added later
-            Set<@Det Tuple<? extends SingleSuccessorBlockImpl, Integer, ?>> missingEdges =
-                    new MostlySingleton<>();
+            Set<@Det MissingEdge> missingEdges = new MostlySingleton<>();
 
             // missing exceptional edges
-            Set<@Det Tuple<ExceptionBlockImpl, Integer, TypeMirror>> missingExceptionalEdges =
-                    new LinkedHashSet<>();
+            Set<@Det MissingEdge> missingExceptionalEdges = new LinkedHashSet<>();
 
             // create start block
             SpecialBlockImpl startBlock = new SpecialBlockImpl(SpecialBlockType.ENTRY);
-            missingEdges.add(new Tuple<>(startBlock, 0));
+            missingEdges.add(new MissingEdge(startBlock, 0));
 
-            // loop through all 'leaders' (while dynamically detecting the
-            // leaders)
-            RegularBlockImpl block = new RegularBlockImpl();
+            // Loop through all 'leaders' (while dynamically detecting the leaders).
+            @NonNull RegularBlockImpl block = new RegularBlockImpl(); // block being processed/built
             int i = 0;
             for (ExtendedNode node : nodeList) {
                 switch (node.getType()) {
@@ -1395,7 +1466,7 @@ public class CFGBuilder {
                             Integer target = bindings.get(thenLabel);
                             assert target != null;
                             missingEdges.add(
-                                    new Tuple<>(
+                                    new MissingEdge(
                                             new RegularBlockImpl() {
                                                 @Override
                                                 public void setSuccessor(BlockImpl successor) {
@@ -1406,7 +1477,7 @@ public class CFGBuilder {
                             target = bindings.get(elseLabel);
                             assert target != null;
                             missingEdges.add(
-                                    new Tuple<>(
+                                    new MissingEdge(
                                             new RegularBlockImpl() {
                                                 @Override
                                                 public void setSuccessor(BlockImpl successor) {
@@ -1417,6 +1488,7 @@ public class CFGBuilder {
                             break;
                         }
                     case UNCONDITIONAL_JUMP:
+                        UnconditionalJump uj = (UnconditionalJump) node;
                         if (leaders.contains(i)) {
                             RegularBlockImpl b = new RegularBlockImpl();
                             block.setSuccessor(b);
@@ -1425,12 +1497,13 @@ public class CFGBuilder {
                         node.setBlock(block);
                         if (node.getLabel() == in.regularExitLabel) {
                             block.setSuccessor(regularExitBlock);
+                            block.setFlowRule(uj.getFlowRule());
                         } else if (node.getLabel() == in.exceptionalExitLabel) {
                             block.setSuccessor(exceptionalExitBlock);
+                            block.setFlowRule(uj.getFlowRule());
                         } else {
-                            Integer target = bindings.get(node.getLabel());
-                            assert target != null;
-                            missingEdges.add(new Tuple<>(block, target));
+                            int target = bindings.get(node.getLabel());
+                            missingEdges.add(new MissingEdge(block, target, uj.getFlowRule()));
                         }
                         block = new RegularBlockImpl();
                         break;
@@ -1448,7 +1521,7 @@ public class CFGBuilder {
                         // Note: do not link to the next block for throw statements
                         // (these throw exceptions for sure)
                         if (!node.getTerminatesExecution()) {
-                            missingEdges.add(new Tuple<>(e, i + 1));
+                            missingEdges.add(new MissingEdge(e, i + 1));
                         }
 
                         // exceptional edges
@@ -1465,7 +1538,7 @@ public class CFGBuilder {
                                 @Det Integer target = bindings.get(label);
                                 // TODO: This is sometimes null; is this a problem?
                                 // assert target != null;
-                                missingExceptionalEdges.add(new Tuple<>(e, target, cause));
+                                missingExceptionalEdges.add(new MissingEdge(e, target, cause));
                             }
                         }
                         break;
@@ -1474,24 +1547,27 @@ public class CFGBuilder {
             }
 
             // add missing edges
-            for (Tuple<? extends SingleSuccessorBlockImpl, Integer, ?> p : missingEdges) {
+            for (MissingEdge ptmp : missingEdges) {
                 @SuppressWarnings("determinism") // process is order insensitive: setting successers
-                @Det Tuple<? extends @Det SingleSuccessorBlockImpl, @Det Integer, ?> tmp = p;
-                @Det Integer index = tmp.b;
-                assert index != null : "CFGBuilder: problem in CFG construction " + tmp.a;
+                @Det Tuple<? extends @Det SingleSuccessorBlockImpl, @Det Integer, ?> p = ptmp;
+                @Det Integer index = p.index;
+                assert index != null : "CFGBuilder: problem in CFG construction " + p.source;
                 ExtendedNode extendedNode = nodeList.get(index);
                 BlockImpl target = extendedNode.getBlock();
-                SingleSuccessorBlockImpl source = tmp.a;
+                SingleSuccessorBlockImpl source = p.source;
                 source.setSuccessor(target);
+                if (p.flowRule != null) {
+                    source.setFlowRule(p.flowRule);
+                }
             }
 
             // add missing exceptional edges
-            for (@Det Tuple<@Det ExceptionBlockImpl, @Det Integer, ?> p : missingExceptionalEdges) {
-                Integer index = p.b;
+            for (@Det MissingEdge p : missingExceptionalEdges) {
+                Integer index = p.index;
                 @SuppressWarnings(
                         "determinism") // wildcard has unknown type, but only @Det values stored
-                @Det TypeMirror cause = (TypeMirror) p.c;
-                ExceptionBlockImpl source = p.a;
+                @Det TypeMirror cause = p.cause;
+                ExceptionBlockImpl source = (ExceptionBlockImpl) p.source;
                 if (index == null) {
                     // edge to exceptional exit
                     source.addExceptionalSuccessor(exceptionalExitBlock, cause);
@@ -2149,7 +2225,7 @@ public class CFGBuilder {
                                 getCurrentPath());
                 boxed.setInSource(false);
                 // Add Throwable to account for unchecked exceptions
-                TypeElement throwableElement = elements.getTypeElement("java.lang.Throwable");
+                TypeElement throwableElement = getTypeElement(Throwable.class);
                 addToConvertedLookupMap(node.getTree(), boxed);
                 insertNodeWithExceptionsAfter(
                         boxed, Collections.singleton(throwableElement.asType()), valueOfAccess);
@@ -2175,7 +2251,7 @@ public class CFGBuilder {
                 MethodAccessNode primValueAccess = new MethodAccessNode(primValueSelect, node);
                 primValueAccess.setInSource(false);
                 // Method access may throw NullPointerException
-                TypeElement npeElement = elements.getTypeElement("java.lang.NullPointerException");
+                TypeElement npeElement = getTypeElement(NullPointerException.class);
                 insertNodeWithExceptionsAfter(
                         primValueAccess, Collections.singleton(npeElement.asType()), node);
 
@@ -2191,7 +2267,7 @@ public class CFGBuilder {
                 unboxed.setInSource(false);
 
                 // Add Throwable to account for unchecked exceptions
-                TypeElement throwableElement = elements.getTypeElement("java.lang.Throwable");
+                TypeElement throwableElement = getTypeElement(Throwable.class);
                 addToConvertedLookupMap(node.getTree(), unboxed);
                 insertNodeWithExceptionsAfter(
                         unboxed, Collections.singleton(throwableElement.asType()), primValueAccess);
@@ -2249,7 +2325,7 @@ public class CFGBuilder {
          */
         protected Node stringConversion(Node node) {
             // For string conversion, see JLS 5.1.11
-            TypeElement stringElement = elements.getTypeElement("java.lang.String");
+            TypeElement stringElement = getTypeElement(String.class);
             if (!TypesUtils.isString(node.getType())) {
                 Node converted =
                         new StringConversionNode(node.getTree(), node, stringElement.asType());
@@ -2265,8 +2341,8 @@ public class CFGBuilder {
          * Perform unary numeric promotion on the input node.
          *
          * @param node a node producing a value of numeric primitive or boxed type
-         * @return a Node with the value promoted to the int, long float or double, which may be the
-         *     input node
+         * @return a Node with the value promoted to the int, long, float, or double; may return be
+         *     the input node
          */
         protected Node unaryNumericPromotion(Node node) {
             // For unary numeric promotion, see JLS 5.6.1
@@ -2318,7 +2394,7 @@ public class CFGBuilder {
             if (TypesUtils.isBoxedPrimitive(right)) {
                 right = types.unboxedType(right);
             }
-            TypeKind promotedTypeKind = TypesUtils.widenedNumericType(left, right);
+            TypeKind promotedTypeKind = TypeKindUtils.widenedNumericType(left, right);
             return types.getPrimitiveType(promotedTypeKind);
         }
 
@@ -2692,8 +2768,7 @@ public class CFGBuilder {
 
         @Override
         public Node visitAnnotation(AnnotationTree tree, Void p) {
-            assert false : "AnnotationTree is unexpected in AST to CFG translation";
-            return null;
+            throw new Error("AnnotationTree is unexpected in AST to CFG translation");
         }
 
         @Override
@@ -2735,7 +2810,7 @@ public class CFGBuilder {
                 // No NullPointerException can be thrown, use normal node
                 extendWithNode(target);
             } else {
-                TypeElement npeElement = elements.getTypeElement("java.lang.NullPointerException");
+                TypeElement npeElement = getTypeElement(NullPointerException.class);
                 extendWithNodeWithException(target, npeElement.asType());
             }
 
@@ -2762,7 +2837,7 @@ public class CFGBuilder {
             List<? extends TypeMirror> thrownTypes = element.getThrownTypes();
             thrownSet.addAll(thrownTypes);
             // Add Throwable to account for unchecked exceptions
-            TypeElement throwableElement = elements.getTypeElement("java.lang.Throwable");
+            TypeElement throwableElement = getTypeElement(Throwable.class);
             thrownSet.add(throwableElement.asType());
 
             ExtendedNode extendedNode = extendWithNodeWithExceptions(node, thrownSet);
@@ -2882,7 +2957,7 @@ public class CFGBuilder {
             if (tree.getDetail() != null) {
                 detail = scan(tree.getDetail(), null);
             }
-            TypeElement assertException = elements.getTypeElement("java.lang.AssertionError");
+            TypeElement assertException = getTypeElement(AssertionError.class);
             AssertionErrorNode assertNode =
                     new AssertionErrorNode(tree, condition, detail, assertException.asType());
             extendWithNode(assertNode);
@@ -2923,8 +2998,7 @@ public class CFGBuilder {
                     // No NullPointerException can be thrown, use normal node
                     extendWithNode(target);
                 } else {
-                    TypeElement npeElement =
-                            elements.getTypeElement("java.lang.NullPointerException");
+                    TypeElement npeElement = getTypeElement(NullPointerException.class);
                     extendWithNodeWithException(target, npeElement.asType());
                 }
 
@@ -3059,22 +3133,22 @@ public class CFGBuilder {
                         if (kind == Tree.Kind.MULTIPLY_ASSIGNMENT) {
                             operNode = new NumericalMultiplicationNode(operTree, targetRHS, value);
                         } else if (kind == Tree.Kind.DIVIDE_ASSIGNMENT) {
-                            if (TypesUtils.isIntegral(exprType)) {
+                            if (TypesUtils.isIntegralPrimitive(exprType)) {
                                 operNode = new IntegerDivisionNode(operTree, targetRHS, value);
 
                                 TypeElement throwableElement =
-                                        elements.getTypeElement("java.lang.ArithmeticException");
+                                        getTypeElement(ArithmeticException.class);
                                 extendWithNodeWithException(operNode, throwableElement.asType());
                             } else {
                                 operNode = new FloatingDivisionNode(operTree, targetRHS, value);
                             }
                         } else {
                             assert kind == Kind.REMAINDER_ASSIGNMENT;
-                            if (TypesUtils.isIntegral(exprType)) {
+                            if (TypesUtils.isIntegralPrimitive(exprType)) {
                                 operNode = new IntegerRemainderNode(operTree, targetRHS, value);
 
                                 TypeElement throwableElement =
-                                        elements.getTypeElement("java.lang.ArithmeticException");
+                                        getTypeElement(ArithmeticException.class);
                                 extendWithNodeWithException(operNode, throwableElement.asType());
                             } else {
                                 operNode = new FloatingRemainderNode(operTree, targetRHS, value);
@@ -3212,8 +3286,8 @@ public class CFGBuilder {
                         targetRHS = unbox(targetLHS);
                         value = unbox(value);
                     } else {
-                        assert false
-                                : "Both argument to logical operation must be numeric or boolean";
+                        throw new Error(
+                                "Both argument to logical operation must be numeric or boolean");
                     }
 
                     BinaryTree operTree =
@@ -3244,11 +3318,8 @@ public class CFGBuilder {
                     extendWithNode(assignNode);
                     return assignNode;
                 default:
-                    assert false : "unexpected compound assignment type";
-                    break;
+                    throw new Error("unexpected compound assignment type");
             }
-            assert false : "unexpected compound assignment type";
-            return null;
         }
 
         @Override
@@ -3280,22 +3351,22 @@ public class CFGBuilder {
                         if (kind == Tree.Kind.MULTIPLY) {
                             r = new NumericalMultiplicationNode(tree, left, right);
                         } else if (kind == Tree.Kind.DIVIDE) {
-                            if (TypesUtils.isIntegral(exprType)) {
+                            if (TypesUtils.isIntegralPrimitive(exprType)) {
                                 r = new IntegerDivisionNode(tree, left, right);
 
                                 TypeElement throwableElement =
-                                        elements.getTypeElement("java.lang.ArithmeticException");
+                                        getTypeElement(ArithmeticException.class);
                                 extendWithNodeWithException(r, throwableElement.asType());
                             } else {
                                 r = new FloatingDivisionNode(tree, left, right);
                             }
                         } else {
                             assert kind == Kind.REMAINDER;
-                            if (TypesUtils.isIntegral(exprType)) {
+                            if (TypesUtils.isIntegralPrimitive(exprType)) {
                                 r = new IntegerRemainderNode(tree, left, right);
 
                                 TypeElement throwableElement =
-                                        elements.getTypeElement("java.lang.ArithmeticException");
+                                        getTypeElement(ArithmeticException.class);
                                 extendWithNodeWithException(r, throwableElement.asType());
                             } else {
                                 r = new FloatingRemainderNode(tree, left, right);
@@ -3509,8 +3580,7 @@ public class CFGBuilder {
                         return node;
                     }
                 default:
-                    assert false : "unexpected binary tree: " + kind;
-                    break;
+                    throw new Error("unexpected binary tree: " + kind);
             }
             assert r != null : "unexpected binary tree";
             return extendWithNode(r);
@@ -3693,11 +3763,12 @@ public class CFGBuilder {
             addLabelForNextNode(trueStart);
             Node trueExpr = scan(tree.getTrueExpression(), p);
             trueExpr = conditionalExprPromotion(trueExpr, exprType);
-            extendWithExtendedNode(new UnconditionalJump(merge));
+            extendWithExtendedNode(new UnconditionalJump(merge, Store.FlowRule.BOTH_TO_THEN));
 
             addLabelForNextNode(falseStart);
             Node falseExpr = scan(tree.getFalseExpression(), p);
             falseExpr = conditionalExprPromotion(falseExpr, exprType);
+            extendWithExtendedNode(new UnconditionalJump(merge, Store.FlowRule.BOTH_TO_ELSE));
 
             addLabelForNextNode(merge);
             Node node = new TernaryExpressionNode(tree, condition, trueExpr, falseExpr);
@@ -3768,8 +3839,7 @@ public class CFGBuilder {
 
         @Override
         public Node visitErroneous(ErroneousTree tree, Void p) {
-            assert false : "ErroneousTree is unexpected in AST to CFG translation";
-            return null;
+            throw new Error("ErroneousTree is unexpected in AST to CFG translation");
         }
 
         @Override
@@ -3804,7 +3874,7 @@ public class CFGBuilder {
 
             // Distinguish loops over Iterables from loops over arrays.
 
-            TypeElement iterableElement = elements.getTypeElement("java.lang.Iterable");
+            TypeElement iterableElement = getTypeElement(Iterable.class);
             TypeMirror iterableType = types.erasure(iterableElement.asType());
 
             VariableTree variable = tree.getVariable();
@@ -4017,7 +4087,7 @@ public class CFGBuilder {
                 arrayAccessNode.setInSource(false);
                 extendWithNode(arrayAccessNode);
                 translateAssignment(variable, new LocalVariableNode(variable), arrayAccessNode);
-                Element npeElement = elements.getTypeElement("java.lang.NullPointerException");
+                Element npeElement = getTypeElement(NullPointerException.class);
                 extendWithNodeWithException(arrayAccessNode, npeElement.asType());
 
                 assert statement != null;
@@ -4222,8 +4292,7 @@ public class CFGBuilder {
 
         @Override
         public Node visitImport(ImportTree tree, Void p) {
-            assert false : "ImportTree is unexpected in AST to CFG translation";
-            return null;
+            throw new Error("ImportTree is unexpected in AST to CFG translation");
         }
 
         @Override
@@ -4231,10 +4300,9 @@ public class CFGBuilder {
             Node array = scan(tree.getExpression(), p);
             Node index = unaryNumericPromotion(scan(tree.getIndex(), p));
             Node arrayAccess = extendWithNode(new ArrayAccessNode(tree, array, index));
-            Element aioobeElement =
-                    elements.getTypeElement("java.lang.ArrayIndexOutOfBoundsException");
+            Element aioobeElement = getTypeElement(ArrayIndexOutOfBoundsException.class);
             extendWithNodeWithException(arrayAccess, aioobeElement.asType());
-            Element npeElement = elements.getTypeElement("java.lang.NullPointerException");
+            Element npeElement = getTypeElement(NullPointerException.class);
             extendWithNodeWithException(arrayAccess, npeElement.asType());
             return arrayAccess;
         }
@@ -4292,8 +4360,7 @@ public class CFGBuilder {
                     r = new StringLiteralNode(tree);
                     break;
                 default:
-                    assert false : "unexpected literal tree";
-                    break;
+                    throw new Error("unexpected literal tree");
             }
             assert r != null : "unexpected literal tree";
             Node result = extendWithNode(r);
@@ -4302,14 +4369,12 @@ public class CFGBuilder {
 
         @Override
         public Node visitMethod(MethodTree tree, Void p) {
-            assert false : "MethodTree is unexpected in AST to CFG translation";
-            return null;
+            throw new Error("MethodTree is unexpected in AST to CFG translation");
         }
 
         @Override
         public Node visitModifiers(ModifiersTree tree, Void p) {
-            assert false : "ModifiersTree is unexpected in AST to CFG translation";
-            return null;
+            throw new Error("ModifiersTree is unexpected in AST to CFG translation");
         }
 
         @Override
@@ -4370,7 +4435,7 @@ public class CFGBuilder {
             List<? extends TypeMirror> thrownTypes = constructor.getThrownTypes();
             thrownSet.addAll(thrownTypes);
             // Add Throwable to account for unchecked exceptions
-            TypeElement throwableElement = elements.getTypeElement("java.lang.Throwable");
+            TypeElement throwableElement = getTypeElement(Throwable.class);
             thrownSet.add(throwableElement.asType());
 
             extendWithNodeWithExceptions(node, thrownSet);
@@ -4445,8 +4510,7 @@ public class CFGBuilder {
                 } else if (element.getKind() == ElementKind.PACKAGE) {
                     return extendWithNode(new PackageNameNode(tree, (PackageNameNode) expr));
                 } else {
-                    assert false : "Unexpected element kind: " + element.getKind();
-                    return null;
+                    throw new Error("Unexpected element kind: " + element.getKind());
                 }
             }
 
@@ -4459,7 +4523,7 @@ public class CFGBuilder {
                 // No NullPointerException can be thrown, use normal node
                 extendWithNode(node);
             } else {
-                TypeElement npeElement = elements.getTypeElement("java.lang.NullPointerException");
+                TypeElement npeElement = getTypeElement(NullPointerException.class);
                 extendWithNodeWithException(node, npeElement.asType());
             }
 
@@ -4499,8 +4563,7 @@ public class CFGBuilder {
 
         @Override
         public Node visitCompilationUnit(CompilationUnitTree tree, Void p) {
-            assert false : "CompilationUnitTree is unexpected in AST to CFG translation";
-            return null;
+            throw new Error("CompilationUnitTree is unexpected in AST to CFG translation");
         }
 
         @Override
@@ -4631,8 +4694,7 @@ public class CFGBuilder {
 
                     scan(finallyBlock, p);
 
-                    TypeMirror throwableType =
-                            elements.getTypeElement("java.lang.Throwable").asType();
+                    TypeMirror throwableType = getTypeElement(Throwable.class).asType();
                     NodeWithExceptionsHolder throwing =
                             extendWithNodeWithException(
                                     new MarkerNode(
@@ -4806,8 +4868,7 @@ public class CFGBuilder {
 
         @Override
         public Node visitUnionType(UnionTypeTree tree, Void p) {
-            assert false : "UnionTypeTree is unexpected in AST to CFG translation";
-            return null;
+            throw new Error("UnionTypeTree is unexpected in AST to CFG translation");
         }
 
         @Override
@@ -4820,7 +4881,7 @@ public class CFGBuilder {
             final Node operand = scan(tree.getExpression(), p);
             final TypeMirror type = TreeUtils.typeOf(tree.getType());
             final Node node = new TypeCastNode(tree, operand, type, types);
-            final TypeElement cceElement = elements.getTypeElement("java.lang.ClassCastException");
+            final TypeElement cceElement = getTypeElement(ClassCastException.class);
 
             extendWithNodeWithException(node, cceElement.asType());
             return node;
@@ -4833,8 +4894,7 @@ public class CFGBuilder {
 
         @Override
         public Node visitTypeParameter(TypeParameterTree tree, Void p) {
-            assert false : "TypeParameterTree is unexpected in AST to CFG translation";
-            return null;
+            throw new Error("TypeParameterTree is unexpected in AST to CFG translation");
         }
 
         @Override
@@ -4872,8 +4932,7 @@ public class CFGBuilder {
                                 result = extendWithNode(new NumericalPlusNode(tree, expr));
                                 break;
                             default:
-                                assert false;
-                                break;
+                                throw new Error("Unexpected kind");
                         }
                         break;
                     }
@@ -4950,7 +5009,7 @@ public class CFGBuilder {
                         break;
                     }
 
-                    assert false : "Unknown kind (" + kind + ") of unary expression: " + tree;
+                    throw new Error("Unknown kind (" + kind + ") of unary expression: " + tree);
             }
 
             return result;
@@ -5142,6 +5201,16 @@ public class CFGBuilder {
         @Override
         public Node visitOther(Tree tree, Void p) {
             throw new BugInCF("Unknown AST element encountered in AST to CFG translation.");
+        }
+
+        /**
+         * Returns the TypeElement for the given class.
+         *
+         * @param clazz a class
+         * @return the TypeElement for the class
+         */
+        private TypeElement getTypeElement(Class<?> clazz) {
+            return elements.getTypeElement(clazz.getCanonicalName());
         }
     }
 
