@@ -1205,7 +1205,6 @@ public final class TreeUtils {
      * @return whether the tree is an ExpressionTree
      */
     public static boolean isExpressionTree(Tree tree) {
-        // TODO: is there a nicer way than an instanceof?
         return tree instanceof ExpressionTree;
     }
 
@@ -1490,5 +1489,98 @@ public final class TreeUtils {
             result = "\"" + result.substring(0, length - 5) + "...\"";
         }
         return result;
+    }
+
+    /**
+     * Returns true if the binary operator may do a widening primitive conversion. See <a
+     * href="https://docs.oracle.com/javase/specs/jls/se11/html/jls-5.html">JLS chapter 5</a>.
+     *
+     * @param node a binary tree
+     * @return true if the tree's operator does numeric promotion on its arguments
+     */
+    public static boolean isWideningBinary(BinaryTree node) {
+        switch (node.getKind()) {
+            case LEFT_SHIFT:
+            case LEFT_SHIFT_ASSIGNMENT:
+            case RIGHT_SHIFT:
+            case RIGHT_SHIFT_ASSIGNMENT:
+            case UNSIGNED_RIGHT_SHIFT:
+            case UNSIGNED_RIGHT_SHIFT_ASSIGNMENT:
+                // Strictly speaking,  these operators do unary promotion on each argument
+                // separately.
+                return true;
+
+            case MULTIPLY:
+            case MULTIPLY_ASSIGNMENT:
+            case DIVIDE:
+            case DIVIDE_ASSIGNMENT:
+            case REMAINDER:
+            case REMAINDER_ASSIGNMENT:
+            case PLUS:
+            case PLUS_ASSIGNMENT:
+            case MINUS:
+            case MINUS_ASSIGNMENT:
+
+            case LESS_THAN:
+            case LESS_THAN_EQUAL:
+            case GREATER_THAN:
+            case GREATER_THAN_EQUAL:
+            case EQUAL_TO:
+            case NOT_EQUAL_TO:
+
+            case AND:
+            case XOR:
+            case OR:
+                // These operators do binary promotion on the two arguments together.
+                return true;
+
+                // TODO: CONDITIONAL_EXPRESSION (?:) sometimes does numeric promotion.
+
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Returns the annotations explicitly written on the given type.
+     *
+     * @param annoTrees annotations written before a variable/method declaration; null if this type
+     *     is not from such a location
+     * @param typeTree the type whose annotations to return
+     * @return the annotations explicitly written on the given type.
+     */
+    public static List<? extends AnnotationTree> getExplicitAnnotationTrees(
+            List<? extends AnnotationTree> annoTrees, Tree typeTree) {
+        while (true) {
+            switch (typeTree.getKind()) {
+                case IDENTIFIER:
+                case PRIMITIVE_TYPE:
+                    if (annoTrees == null) {
+                        return Collections.emptyList();
+                    }
+                    return annoTrees;
+                case ANNOTATED_TYPE:
+                    return ((AnnotatedTypeTree) typeTree).getAnnotations();
+                case ARRAY_TYPE:
+                case TYPE_PARAMETER:
+                case UNBOUNDED_WILDCARD:
+                case EXTENDS_WILDCARD:
+                case SUPER_WILDCARD:
+                    return Collections.emptyList();
+                case MEMBER_SELECT:
+                    if (annoTrees == null) {
+                        return Collections.emptyList();
+                    }
+                    typeTree = ((MemberSelectTree) typeTree).getExpression();
+                    break;
+                case PARAMETERIZED_TYPE:
+                    typeTree = ((ParameterizedTypeTree) typeTree).getType();
+                    break;
+                default:
+                    throw new BugInCF(
+                            "what typeTree? %s %s %s",
+                            typeTree.getKind(), typeTree.getClass(), typeTree);
+            }
+        }
     }
 }
