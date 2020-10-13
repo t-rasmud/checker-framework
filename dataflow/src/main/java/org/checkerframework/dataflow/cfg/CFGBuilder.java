@@ -1033,23 +1033,23 @@ public class CFGBuilder {
                         Set<@Det PredecessorHolder> predecessors = new LinkedHashSet<>();
                         BlockImpl succ =
                                 computeNeighborhoodOfEmptyBlock(b, emptyBlocks, predecessors);
-                        for (RegularBlockImpl e : emptyBlocks) {
+                        for (RegularBlockImpl tmpe : emptyBlocks) {
                             @SuppressWarnings(
                                     "determinism") // process is order insensitive: removing empty
                             // blocks
-                            @Det RegularBlockImpl tmp2 = e;
-                            succ.removePredecessor(tmp2);
-                            dontVisit.add(tmp2);
+                            @Det RegularBlockImpl e = tmpe;
+                            succ.removePredecessor(e);
+                            dontVisit.add(e);
                         }
-                        for (PredecessorHolder p : predecessors) {
+                        for (PredecessorHolder pTmp : predecessors) {
                             @SuppressWarnings(
                                     "determinism") // process is order insensitive: removing empty
                             // blocks
-                            @Det PredecessorHolder tmp2 = p;
-                            BlockImpl block = tmp2.getBlock();
+                            @Det PredecessorHolder p = pTmp;
+                            BlockImpl block = p.getBlock();
                             dontVisit.add(block);
                             succ.removePredecessor(block);
-                            tmp2.setSuccessor(succ);
+                            p.setSuccessor(succ);
                         }
                     }
                 }
@@ -1549,7 +1549,7 @@ public class CFGBuilder {
             // add missing edges
             for (MissingEdge ptmp : missingEdges) {
                 @SuppressWarnings("determinism") // process is order insensitive: setting successers
-                @Det Tuple<? extends @Det SingleSuccessorBlockImpl, @Det Integer, ?> p = ptmp;
+                @Det MissingEdge p = ptmp;
                 @Det Integer index = p.index;
                 assert index != null : "CFGBuilder: problem in CFG construction " + p.source;
                 ExtendedNode extendedNode = nodeList.get(index);
