@@ -3,6 +3,7 @@ package org.checkerframework.dataflow.analysis;
 import java.util.Objects;
 import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.plumelib.util.UniqueId;
@@ -54,8 +55,35 @@ public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> imple
     final transient long uid = UniqueId.nextUid.getAndIncrement();
 
     @Override
-    public long getUid() {
+    public @PolyDet long getUid(@PolyDet @UnknownInitialization TransferInput<V, S> this) {
         return uid;
+    }
+
+    /**
+     * Private helper constructor; all TransferInput construction bottoms out here.
+     *
+     * @param node the corresponding node
+     * @param store the regular result store, or {@code null} if none is present
+     * @param thenStore the 'then' result store, or {@code null} if none is present
+     * @param elseStore the 'else' result store, or {@code null} if none is present
+     * @param analysis analysis the corresponding analysis class to get intermediate flow results
+     */
+    private TransferInput(
+            @Nullable Node node,
+            @Nullable S store,
+            @Nullable S thenStore,
+            @Nullable S elseStore,
+            Analysis<V, S, ?> analysis) {
+        if (store == null) {
+            assert thenStore != null && elseStore != null;
+        } else {
+            assert thenStore == null && elseStore == null;
+        }
+        this.node = node;
+        this.store = store;
+        this.thenStore = thenStore;
+        this.elseStore = elseStore;
+        this.analysis = analysis;
     }
 
     /**
@@ -73,16 +101,12 @@ public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> imple
      * @param to a transfer result
      */
     public TransferInput(Node n, Analysis<V, S, ?> analysis, TransferResult<V, S> to) {
-        node = n;
-        this.analysis = analysis;
-        if (to.containsTwoStores()) {
-            thenStore = to.getThenStore();
-            elseStore = to.getElseStore();
-            store = null;
-        } else {
-            store = to.getRegularStore();
-            thenStore = elseStore = null;
-        }
+        this(
+                n,
+                to.containsTwoStores() ? null : to.getRegularStore(),
+                to.containsTwoStores() ? to.getThenStore() : null,
+                to.containsTwoStores() ? to.getElseStore() : null,
+                analysis);
     }
 
     /**
@@ -99,10 +123,7 @@ public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> imple
      * @param s {@link #store}
      */
     public TransferInput(@Nullable Node n, Analysis<V, S, ?> analysis, S s) {
-        node = n;
-        this.analysis = analysis;
-        store = s;
-        thenStore = elseStore = null;
+        this(n, s, null, null, analysis);
     }
 
     /**
@@ -117,11 +138,7 @@ public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> imple
      * @param s2 {@link #elseStore}
      */
     public TransferInput(@Nullable Node n, Analysis<V, S, ?> analysis, S s1, S s2) {
-        node = n;
-        this.analysis = analysis;
-        thenStore = s1;
-        elseStore = s2;
-        store = null;
+        this(n, null, s1, s2, analysis);
     }
 
     /**
@@ -129,19 +146,14 @@ public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> imple
      *
      * @param from a {@link TransferInput} to copy
      */
+    @SuppressWarnings("nullness:dereference.of.nullable") // object invariant: store vs thenStore
     protected TransferInput(TransferInput<V, S> from) {
-        this.node = from.node;
-        this.analysis = from.analysis;
-        if (from.store == null) {
-            assert from.thenStore != null && from.elseStore != null
-                    : "@AssumeAssertion(nullness): invariant";
-            thenStore = from.thenStore.copy();
-            elseStore = from.elseStore.copy();
-            store = null;
-        } else {
-            store = from.store.copy();
-            thenStore = elseStore = null;
-        }
+        this(
+                from.node,
+                from.store == null ? null : from.store.copy(),
+                from.store == null ? from.thenStore.copy() : null,
+                from.store == null ? from.elseStore.copy() : null,
+                from.analysis);
     }
 
     /**

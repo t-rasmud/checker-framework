@@ -302,26 +302,16 @@ public abstract class BaseTypeChecker extends SourceChecker implements BaseTypeC
             if (t instanceof InvocationTargetException) {
                 Throwable err = t.getCause();
                 if (err instanceof UserError || err instanceof TypeSystemError) {
-                    // Don't add another stack frame, just show the message.
+                    // Don't add more information about the constructor invocation.
                     throw (RuntimeException) err;
                 }
-                throw new BugInCF(
-                        String.format(
-                                "InvocationTargetException when invoking constructor for class %s on args %s; Underlying cause: %s",
-                                name, Arrays.toString(args), err),
-                        t);
-            } else {
-                throw new BugInCF(
-                        "Unexpected "
-                                + t.getClass().getSimpleName()
-                                + " for "
-                                + "class "
-                                + name
-                                + " when invoking the constructor; parameter types: "
-                                + Arrays.toString(paramTypes),
-                        // + " and args: " + Arrays.toString(args),
-                        t);
             }
+            Throwable cause = (t instanceof InvocationTargetException) ? t.getCause() : t;
+            throw new BugInCF(
+                    String.format(
+                            "Error when invoking constructor for class %s on args %s; parameter types: %s; cause: %s",
+                            name, Arrays.toString(args), Arrays.toString(paramTypes), cause),
+                    cause);
         }
     }
 

@@ -308,7 +308,7 @@ public class ControlFlowGraph {
     }
 
     @Override
-    public @NonDet String toString(@PolyDet ControlFlowGraph this) {
+    public @PolyDet String toString(@PolyDet ControlFlowGraph this) {
         @OrderNonDet Map<String, Object> args = new HashMap<>();
         args.put("verbose", true);
 
@@ -334,7 +334,7 @@ public class ControlFlowGraph {
      * @return a string representation of this
      */
     @SuppressWarnings("determinism") // https://github.com/t-rasmud/checker-framework/issues/194
-    public @NonDet String toStringDebug() {
+    public @PolyDet String toStringDebug() {
         String className = this.getClass().getSimpleName();
         if (className.equals("ControlFlowGraph") && this.getClass() != ControlFlowGraph.class) {
             className = this.getClass().getCanonicalName();

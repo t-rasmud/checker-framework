@@ -1,0 +1,14 @@
+The plume-util jar file in libs/plume-util-1.1.7.jar
+differs in that it contains Determinism Checker type annotations.
+To create it, do the following:
+
+Build this version of the Checker Framework (the one with this file).
+
+Run these commands:
+
+git clone https://github.com/t-rasmud/plume-util.git
+cd plume-util
+git checkout run-det-checker
+# Next two commands assume Checker Framework is located in the $CHECKERFRAMEWORK directory.
+./gradlew jar -PcfLocal
+cp build/libs/plume-util-1.1.7.jar $CHECKERFRAMEWORK/libs/plume-util-1.1.7.jar

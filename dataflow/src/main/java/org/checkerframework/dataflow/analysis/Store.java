@@ -3,6 +3,7 @@ package org.checkerframework.dataflow.analysis;
 import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.dataflow.cfg.CFGVisualizer;
+import org.checkerframework.dataflow.expression.Receiver;
 
 /**
  * A store is used to keep track of the information that the org.checkerframework.dataflow analysis
@@ -96,7 +97,7 @@ public interface Store<S extends Store<S>> {
      * Can the objects {@code a} and {@code b} be aliases? Returns a conservative answer (i.e.,
      * returns {@code true} if not enough information is available to determine aliasing).
      */
-    boolean canAlias(FlowExpressions.Receiver a, FlowExpressions.Receiver b);
+    boolean canAlias(Receiver a, Receiver b);
 
     /**
      * Delegate visualization responsibility to a visualizer.

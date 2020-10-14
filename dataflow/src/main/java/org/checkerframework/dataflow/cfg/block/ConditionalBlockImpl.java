@@ -111,7 +111,7 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
     }
 
     @Override
-    public String toString(@PolyDet ConditionalBlockImpl this) {
+    public @PolyDet String toString(@PolyDet ConditionalBlockImpl this) {
         return "ConditionalBlock()";
     }
 }

@@ -2,7 +2,6 @@ package org.checkerframework.dataflow.cfg.block;
 
 import java.util.List;
 import java.util.Set;
-import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.dataflow.qual.Pure;
@@ -45,7 +44,7 @@ public interface Block {
      *
      * @return the predecessors of this basic block
      */
-    @OrderNonDet Set<Block> getPredecessors();
+    Set<Block> getPredecessors();
 
     /**
      * Returns the successors of this basic block.

@@ -135,7 +135,7 @@ public class RegularTransferResult<V extends AbstractValue<V>, S extends Store<S
     }
 
     @Override
-    public @NonDet String toString(@PolyDet RegularTransferResult<V, S> this) {
+    public @PolyDet String toString(@PolyDet RegularTransferResult<V, S> this) {
         StringJoiner result = new @NonDet StringJoiner(System.lineSeparator());
         result.add("RegularTransferResult(");
         result.add("  resultValue = " + UtilPlume.indentLinesExceptFirst(2, resultValue));

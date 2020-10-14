@@ -8,7 +8,6 @@ import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.dataflow.analysis.FlowExpressions.Receiver;
 import org.checkerframework.dataflow.analysis.Store;
 import org.checkerframework.dataflow.cfg.CFGVisualizer;
 import org.checkerframework.dataflow.cfg.node.BinaryOperationNode;
@@ -19,6 +18,7 @@ import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.dataflow.cfg.node.TernaryExpressionNode;
 import org.checkerframework.dataflow.cfg.node.TypeCastNode;
 import org.checkerframework.dataflow.cfg.node.UnaryOperationNode;
+import org.checkerframework.dataflow.expression.Receiver;
 import org.checkerframework.javacutil.BugInCF;
 
 /** A live variable store contains a set of live variables represented by nodes. */
@@ -152,7 +152,7 @@ public class LiveVarStore implements Store<LiveVarStore> {
     }
 
     @Override
-    public @NonDet String toString(@PolyDet LiveVarStore this) {
+    public @PolyDet String toString(@PolyDet LiveVarStore this) {
         return liveVarValueSet.toString();
     }
 }

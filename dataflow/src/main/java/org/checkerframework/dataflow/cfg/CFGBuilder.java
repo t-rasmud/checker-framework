@@ -383,7 +383,7 @@ public class CFGBuilder {
          *
          * @return a string representation of this
          */
-        public abstract String toStringDebug();
+        public abstract @PolyDet String toStringDebug();
     }
 
     /** An extended node of type {@code NODE}. */
@@ -413,7 +413,7 @@ public class CFGBuilder {
         }
 
         @Override
-        public @NonDet String toStringDebug() {
+        public @PolyDet String toStringDebug() {
             return "NodeHolder(" + node.toStringDebug() + ")";
         }
     }
@@ -463,7 +463,7 @@ public class CFGBuilder {
         }
 
         @Override
-        public @NonDet String toStringDebug() {
+        public @PolyDet String toStringDebug() {
             return "NodeWithExceptionsHolder(" + node.toStringDebug() + ")";
         }
     }
@@ -538,7 +538,7 @@ public class CFGBuilder {
         }
 
         @Override
-        public String toStringDebug() {
+        public @PolyDet String toStringDebug() {
             return toString();
         }
     }
@@ -600,7 +600,7 @@ public class CFGBuilder {
         }
 
         @Override
-        public String toStringDebug() {
+        public @PolyDet String toStringDebug() {
             return toString();
         }
     }
@@ -1377,7 +1377,7 @@ public class CFGBuilder {
         }
 
         @Override
-        public String toString() {
+        public @PolyDet String toString() {
             return "MissingEdge(" + source + ", " + index + ", " + cause + ")";
         }
     }
@@ -1683,7 +1683,7 @@ public class CFGBuilder {
          * @return a string representation of this
          */
         @SuppressWarnings("determinism") // https://github.com/t-rasmud/checker-framework/issues/194
-        public @NonDet String toStringDebug() {
+        public @PolyDet String toStringDebug() {
             StringJoiner result =
                     new
                     @NonDet StringJoiner(

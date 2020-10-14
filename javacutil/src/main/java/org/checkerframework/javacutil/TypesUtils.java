@@ -8,6 +8,9 @@ import com.sun.tools.javac.code.TypeTag;
 import com.sun.tools.javac.model.JavacTypes;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.util.Context;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Name;
@@ -26,6 +29,7 @@ import javax.lang.model.util.Types;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.signature.qual.CanonicalNameOrEmpty;
+import org.checkerframework.checker.signature.qual.FullyQualifiedName;
 import org.plumelib.util.ImmutableTypes;
 
 /** A utility class that helps with {@link TypeMirror}s. */
@@ -352,6 +356,29 @@ public final class TypesUtils {
      */
     public static boolean isNumeric(TypeMirror type) {
         return TypeKindUtils.isNumeric(type.getKind());
+    }
+
+    /** The fully-qualified names of the numeric boxed types. */
+    static final Set<@FullyQualifiedName String> numericBoxedTypes =
+            new HashSet<>(
+                    Arrays.asList(
+                            "java.lang.Byte",
+                            "java.lang.Character",
+                            "java.lang.Short",
+                            "java.lang.Integer",
+                            "java.lang.Long",
+                            "java.lang.Double",
+                            "java.lang.Float"));
+
+    /**
+     * Returns true iff the argument is a boxed numeric type.
+     *
+     * @param type a type
+     * @return true if the argument is a boxed numeric type
+     */
+    public static boolean isNumericBoxed(TypeMirror type) {
+        return type.getKind() == TypeKind.DECLARED
+                && numericBoxedTypes.contains(getQualifiedName((DeclaredType) type).toString());
     }
 
     /**
@@ -802,14 +829,14 @@ public final class TypesUtils {
     }
 
     /**
-     * Returns true if both types are integral and the first type is strictly narrower (represented
-     * by fewer bits) than the second type.
+     * Returns the type of primitive conversion from {@code from} to {@code to}.
      *
-     * @param a a primitive type
-     * @param b a primitive type
-     * @return true if {@code a} is represented by fewer bits than {@code b}
+     * @param from a primitive type
+     * @param to a primitive type
+     * @return the type of primitive conversion from {@code from} to {@code to}
      */
-    public static boolean isNarrowerIntegral(PrimitiveType a, PrimitiveType b) {
-        return TypeKindUtils.isNarrowerIntegral(a.getKind(), b.getKind());
+    public static TypeKindUtils.PrimitiveConversionKind getPrimitiveConversionKind(
+            PrimitiveType from, PrimitiveType to) {
+        return TypeKindUtils.getPrimitiveConversionKind(from.getKind(), to.getKind());
     }
 }

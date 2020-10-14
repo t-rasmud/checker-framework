@@ -27,6 +27,7 @@ import org.checkerframework.common.value.qual.ArrayLenRange;
 import org.checkerframework.common.value.qual.BoolVal;
 import org.checkerframework.common.value.qual.BottomVal;
 import org.checkerframework.common.value.qual.DoubleVal;
+import org.checkerframework.common.value.qual.EnumVal;
 import org.checkerframework.common.value.qual.IntRange;
 import org.checkerframework.common.value.qual.IntRangeFromGTENegativeOne;
 import org.checkerframework.common.value.qual.IntRangeFromNonNegative;
@@ -38,7 +39,10 @@ import org.checkerframework.common.value.qual.PolyValue;
 import org.checkerframework.common.value.qual.StringVal;
 import org.checkerframework.common.value.qual.UnknownVal;
 import org.checkerframework.common.value.util.Range;
-import org.checkerframework.dataflow.analysis.FlowExpressions;
+import org.checkerframework.dataflow.expression.ArrayAccess;
+import org.checkerframework.dataflow.expression.ArrayCreation;
+import org.checkerframework.dataflow.expression.Receiver;
+import org.checkerframework.dataflow.expression.ValueLiteral;
 import org.checkerframework.framework.flow.CFAbstractAnalysis;
 import org.checkerframework.framework.flow.CFStore;
 import org.checkerframework.framework.flow.CFTransfer;
@@ -114,6 +118,14 @@ public class ValueAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** The canonical @{@link PolyValue} annotation. */
     public final AnnotationMirror POLY = AnnotationBuilder.fromClass(elements, PolyValue.class);
 
+    /** The canonical @{@link BoolVal}(true) annotation. */
+    public final AnnotationMirror BOOLEAN_TRUE =
+            createBooleanAnnotation(Collections.singletonList(true));
+
+    /** The canonical @{@link BoolVal}(false) annotation. */
+    public final AnnotationMirror BOOLEAN_FALSE =
+            createBooleanAnnotation(Collections.singletonList(false));
+
     /** Should this type factory report warnings? */
     private final boolean reportEvalWarnings;
 
@@ -171,6 +183,9 @@ public class ValueAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
         // PolyLength is syntactic sugar for both @PolySameLen and @PolyValue
         addAliasedAnnotation("org.checkerframework.checker.index.qual.PolyLength", POLY);
+
+        // EnumVal is treated as StringVal internally by the checker.
+        addAliasedAnnotation(EnumVal.class, StringVal.class, true);
 
         methods = new ValueMethodIdentifier(processingEnv);
 
@@ -242,15 +257,13 @@ public class ValueAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     protected boolean arePrimeAnnosEqual(
                             AnnotatedTypeMirror type1, AnnotatedTypeMirror type2) {
                         type1.replaceAnnotation(
-                                convertSpecialIntRangeToStandardIntRange(
-                                        type1.getAnnotationInHierarchy(UNKNOWNVAL)));
+                                convertToUnknown(
+                                        convertSpecialIntRangeToStandardIntRange(
+                                                type1.getAnnotationInHierarchy(UNKNOWNVAL))));
                         type2.replaceAnnotation(
-                                convertSpecialIntRangeToStandardIntRange(
-                                        type2.getAnnotationInHierarchy(UNKNOWNVAL)));
-                        type1.replaceAnnotation(
-                                convertToUnknown(type1.getAnnotationInHierarchy(UNKNOWNVAL)));
-                        type2.replaceAnnotation(
-                                convertToUnknown(type2.getAnnotationInHierarchy(UNKNOWNVAL)));
+                                convertToUnknown(
+                                        convertSpecialIntRangeToStandardIntRange(
+                                                type2.getAnnotationInHierarchy(UNKNOWNVAL))));
 
                         return super.arePrimeAnnosEqual(type1, type2);
                     }
@@ -743,6 +756,10 @@ public class ValueAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         if (values.size() > MAX_VALUES) {
             return UNKNOWNVAL;
         } else {
+            // TODO: This seems wasteful.  Why not create the 3 interesting AnnotationMirrors (with
+            // arguments {true}, {false}, and {true, false}, respectively) in advance and return one
+            // of them?  (Maybe an advantage of this implementation is that it is identical to
+            // some other implementations and therefore might be less error-prone.)
             AnnotationBuilder builder = new AnnotationBuilder(processingEnv, BoolVal.class);
             builder.setValue("value", values);
             return builder.build();
@@ -1045,12 +1062,34 @@ public class ValueAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     /**
-     * Returns the set of possible values as a sorted list with no duplicate values. Returns the
-     * empty list if no values are possible (for dead code). Returns null if any value is possible
-     * -- that is, if no estimate can be made -- and this includes when there is no constant-value
-     * annotation so the argument is null.
+     * Returns the single possible boolean value, or null if there is not exactly one possible
+     * value.
+     *
+     * @see #getBooleanValues
+     * @param boolAnno a {@code @BoolVal} annotation, or null
+     * @return the single possible boolean value, on null if that is not the case
+     */
+    public static Boolean getBooleanValue(AnnotationMirror boolAnno) {
+        if (boolAnno == null) {
+            return null;
+        }
+        List<Boolean> boolValues =
+                AnnotationUtils.getElementValueArray(boolAnno, "value", Boolean.class, true);
+        Set<Boolean> boolSet = new TreeSet<>(boolValues);
+        if (boolSet.size() == 1) {
+            return boolSet.iterator().next();
+        }
+        return null;
+    }
+
+    /**
+     * Returns the set of possible boolean values as a sorted list with no duplicate values. Returns
+     * the empty list if no values are possible (for dead code). Returns null if any value is
+     * possible -- that is, if no estimate can be made -- and this includes when there is no
+     * constant-value annotation so the argument is null.
      *
      * @param boolAnno a {@code @BoolVal} annotation, or null
+     * @return a list of possible boolean values
      */
     public static List<Boolean> getBooleanValues(AnnotationMirror boolAnno) {
         if (boolAnno == null) {
@@ -1208,7 +1247,7 @@ public class ValueAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
      */
     public int getMinLenFromString(String sequenceExpression, Tree tree, TreePath currentPath) {
         AnnotationMirror lengthAnno;
-        FlowExpressions.Receiver expressionObj;
+        Receiver expressionObj;
         try {
             expressionObj = getReceiverFromJavaExpressionString(sequenceExpression, currentPath);
         } catch (FlowExpressionParseException e) {
@@ -1216,19 +1255,17 @@ public class ValueAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             return 0;
         }
 
-        if (expressionObj instanceof FlowExpressions.ValueLiteral) {
-            FlowExpressions.ValueLiteral sequenceLiteral =
-                    (FlowExpressions.ValueLiteral) expressionObj;
+        if (expressionObj instanceof ValueLiteral) {
+            ValueLiteral sequenceLiteral = (ValueLiteral) expressionObj;
             Object sequenceLiteralValue = sequenceLiteral.getValue();
             if (sequenceLiteralValue instanceof String) {
                 return ((String) sequenceLiteralValue).length();
             }
-        } else if (expressionObj instanceof FlowExpressions.ArrayCreation) {
-            FlowExpressions.ArrayCreation arrayCreation =
-                    (FlowExpressions.ArrayCreation) expressionObj;
+        } else if (expressionObj instanceof ArrayCreation) {
+            ArrayCreation arrayCreation = (ArrayCreation) expressionObj;
             // This is only expected to support array creations in varargs methods
             return arrayCreation.getInitializers().size();
-        } else if (expressionObj instanceof FlowExpressions.ArrayAccess) {
+        } else if (expressionObj instanceof ArrayAccess) {
             List<? extends AnnotationMirror> annoList =
                     expressionObj.getType().getAnnotationMirrors();
             for (AnnotationMirror anno : annoList) {

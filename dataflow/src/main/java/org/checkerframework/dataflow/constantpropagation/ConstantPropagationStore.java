@@ -6,12 +6,12 @@ import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.dataflow.analysis.FlowExpressions;
 import org.checkerframework.dataflow.analysis.Store;
 import org.checkerframework.dataflow.cfg.CFGVisualizer;
 import org.checkerframework.dataflow.cfg.node.IntegerLiteralNode;
 import org.checkerframework.dataflow.cfg.node.LocalVariableNode;
 import org.checkerframework.dataflow.cfg.node.Node;
+import org.checkerframework.dataflow.expression.Receiver;
 
 public class ConstantPropagationStore implements Store<ConstantPropagationStore> {
 
@@ -147,7 +147,7 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     }
 
     @Override
-    public @NonDet String toString(@PolyDet ConstantPropagationStore this) {
+    public @PolyDet String toString(@PolyDet ConstantPropagationStore this) {
         // only output local variable information
         Map<Node, Constant> smallerContents = new @NonDet HashMap<>();
         for (Map.Entry<Node, Constant> e : contents.entrySet()) {
@@ -159,7 +159,7 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     }
 
     @Override
-    public boolean canAlias(FlowExpressions.Receiver a, FlowExpressions.Receiver b) {
+    public boolean canAlias(Receiver a, Receiver b) {
         return true;
     }
 

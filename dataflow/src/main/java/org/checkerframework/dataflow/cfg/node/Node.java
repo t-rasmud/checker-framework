@@ -168,7 +168,7 @@ public abstract class Node {
      *
      * @return a printed representation of this
      */
-    public @NonDet String toStringDebug(@NonDet Node this) {
+    public @PolyDet String toStringDebug(@PolyDet Node this) {
         return String.format(
                 "%s [%s %s %s]",
                 this,
@@ -192,5 +192,5 @@ public abstract class Node {
     }
 
     @Override
-    public abstract @NonDet String toString(@PolyDet Node this);
+    public abstract @PolyDet String toString(@PolyDet Node this);
 }

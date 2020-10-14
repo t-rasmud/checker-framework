@@ -52,7 +52,7 @@ public class ArrayAccessNode extends Node {
     }
 
     @Override
-    public @NonDet String toString(@PolyDet ArrayAccessNode this) {
+    public @PolyDet String toString(@PolyDet ArrayAccessNode this) {
         String base = getArray().toString() + "[" + getIndex() + "]";
         return base;
     }

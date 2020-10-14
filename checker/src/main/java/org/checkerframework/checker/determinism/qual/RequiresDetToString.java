@@ -3,6 +3,10 @@ package org.checkerframework.checker.determinism.qual;
 import java.lang.annotation.*;
 import org.checkerframework.framework.qual.InheritedAnnotation;
 
+// TODO: The use of 0-based indexing is very confusing because the Checker Framework uses 1-based
+// indexing for formal parameters:
+// https://checkerframework.org/manual/#java-expressions-as-arguments .
+// It ought to be changed to 1-based indexing.
 /**
  * A method with this annotation, for each specified parameter, may only be passed arguments where
  * the class's {@code toString} method returns a {@code Det} or {@code PolyDet} result. When written
@@ -10,8 +14,8 @@ import org.checkerframework.framework.qual.InheritedAnnotation;
  * specified, only the parameters at those indices are checked.
  *
  * <p>For example, {@code @RequiresDetToString} on its own indicates that every argument must have a
- * determnistic {@code toString} method. Writing {@code @RequiresDetToString({0, 2})} indicates that
- * only the first and third arguments must have deterministic {@code toString} methods.
+ * deterministic {@code toString} method. Writing {@code @RequiresDetToString({0, 2})} indicates
+ * that only the first and third arguments must have deterministic {@code toString} methods.
  *
  * <p>When used on an override method, the overridden method must also have
  * {@code @RequireDetToString} on the same parameters. Specifically, if the override method's

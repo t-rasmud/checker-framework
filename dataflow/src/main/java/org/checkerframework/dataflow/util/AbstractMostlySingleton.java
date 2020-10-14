@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -108,7 +107,7 @@ public abstract class AbstractMostlySingleton<T extends Object> implements Set<T
     }
 
     @Override
-    public @NonDet String toString(@PolyDet AbstractMostlySingleton<T> this) {
+    public @PolyDet String toString(@PolyDet AbstractMostlySingleton<T> this) {
         switch (state) {
             case EMPTY:
                 return "[]";
