@@ -104,13 +104,17 @@ public abstract class Receiver {
         return this.equals(other) || store.canAlias(this, other);
     }
 
+    // This forces all subclasses to override toString.
+    @Override
+    public abstract @PolyDet String toString(@PolyDet Receiver this);
+
     /**
      * Print this verbosely, for debugging.
      *
      * @return a verbose string representation of this
      */
     @RequiresDetToString
-    public @PolyDet String toStringDebug() {
+    public @PolyDet String toStringDebug(@PolyDet Receiver this) {
         return String.format(
                 "Receiver (%s) %s type=%s", getClass().getSimpleName(), toString(), type);
     }

@@ -173,6 +173,7 @@ public abstract class Node {
                 "%s [%s %s %s]",
                 this,
                 this.getClass().getSimpleName(),
+                // TODO: these are NONDETERMINISTIC!
                 this.hashCode(),
                 System.identityHashCode(this));
     }
