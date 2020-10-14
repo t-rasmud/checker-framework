@@ -149,7 +149,7 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     @Override
     public @PolyDet String toString(@PolyDet ConstantPropagationStore this) {
         // only output local variable information
-        Map<Node, Constant> smallerContents = new @NonDet HashMap<>();
+        Map<Node, Constant> smallerContents = new @PolyDet HashMap<>();
         for (Map.Entry<Node, Constant> e : contents.entrySet()) {
             if (e.getKey() instanceof LocalVariableNode) {
                 smallerContents.put(e.getKey(), e.getValue());

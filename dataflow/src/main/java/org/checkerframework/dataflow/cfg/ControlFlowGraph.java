@@ -322,10 +322,14 @@ public class ControlFlowGraph {
         Map<@Det String, @NonDet Object> res = viz.visualize(this, this.getEntryBlock(), null);
         viz.shutdown();
         if (res == null) {
-            return super.toString();
+            // BUG FIX
+            return "unvisualizable " + getClass().getCanonicalName();
         }
-        String stringGraph = (String) res.get("stringGraph");
-        return stringGraph == null ? super.toString() : stringGraph;
+        @PolyDet String stringGraph = (String) res.get("stringGraph");
+        // BUG FIX
+        return stringGraph == null
+                ? "unvisualizable " + getClass().getCanonicalName()
+                : stringGraph;
     }
 
     /**

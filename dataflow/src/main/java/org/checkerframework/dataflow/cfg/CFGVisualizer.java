@@ -139,7 +139,7 @@ public interface CFGVisualizer<
      * @param value the value of the specific information to be visualized
      * @return the String representation of the specific information
      */
-    String visualizeStoreKeyVal(String keyName, @NonDet Object value);
+    String visualizeStoreKeyVal(String keyName, Object value);
 
     /**
      * Visualize a block based on the analysis.

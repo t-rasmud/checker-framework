@@ -45,7 +45,7 @@ public class MarkerNode extends Node {
 
     @Override
     public @PolyDet String toString(@PolyDet MarkerNode this) {
-        StringBuilder sb = new @NonDet StringBuilder();
+        StringBuilder sb = new @PolyDet StringBuilder();
         sb.append("marker (");
         sb.append(message);
         sb.append(")");

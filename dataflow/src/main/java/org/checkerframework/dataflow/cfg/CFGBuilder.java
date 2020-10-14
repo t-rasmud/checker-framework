@@ -1042,10 +1042,8 @@ public class CFGBuilder {
                             dontVisit.add(e);
                         }
                         for (PredecessorHolder pTmp : predecessors) {
-                            @SuppressWarnings(
-                                    "determinism") // process is order insensitive: removing empty
                             // blocks
-                            @Det PredecessorHolder p = pTmp;
+                            PredecessorHolder p = pTmp;
                             BlockImpl block = p.getBlock();
                             dontVisit.add(block);
                             succ.removePredecessor(block);
@@ -1164,10 +1162,8 @@ public class CFGBuilder {
             RegularBlockImpl cur = start;
             emptyBlocks.add(cur);
             for (final Block p : cur.getPredecessors()) {
-                @SuppressWarnings(
-                        "determinism") // process is order insensitive: adding to an @OrdreNonDet
                 // Set
-                @Det BlockImpl pred = (BlockImpl) p;
+                BlockImpl pred = (BlockImpl) p;
                 switch (pred.getType()) {
                     case SPECIAL_BLOCK:
                         // add pred correctly to predecessor list
@@ -1377,7 +1373,7 @@ public class CFGBuilder {
         }
 
         @Override
-        public @PolyDet String toString() {
+        public @PolyDet String toString(@PolyDet MissingEdge this) {
             return "MissingEdge(" + source + ", " + index + ", " + cause + ")";
         }
     }
@@ -1564,9 +1560,7 @@ public class CFGBuilder {
             // add missing exceptional edges
             for (@Det MissingEdge p : missingExceptionalEdges) {
                 Integer index = p.index;
-                @SuppressWarnings(
-                        "determinism") // wildcard has unknown type, but only @Det values stored
-                @Det TypeMirror cause = p.cause;
+                TypeMirror cause = p.cause;
                 ExceptionBlockImpl source = (ExceptionBlockImpl) p.source;
                 if (index == null) {
                     // edge to exceptional exit

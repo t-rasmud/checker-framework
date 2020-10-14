@@ -316,7 +316,7 @@ public class DOTCFGVisualizer<
     }
 
     @Override
-    public String visualizeStoreKeyVal(String keyName, @NonDet Object value) {
+    public String visualizeStoreKeyVal(String keyName, Object value) {
         return storeEntryIndent + keyName + " = " + value;
     }
 
