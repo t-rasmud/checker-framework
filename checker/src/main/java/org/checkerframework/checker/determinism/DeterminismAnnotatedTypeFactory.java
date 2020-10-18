@@ -358,8 +358,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
         /**
          * Usually, the return type of {@code System.getProperty} is annotated as {@code NonDet}. We
-         * make an exception when the argument is either {@code line.separator}, {@code
-         * file.separator}, or {@code path.separator} because they will always produce the same
+         * make an exception when the argument is {@code "line.separator"}, {@code
+         * "file.separator"}, or {@code "path.separator"}, because they will always produce the same
          * result on the same machine.
          *
          * @param node method invocation tree
