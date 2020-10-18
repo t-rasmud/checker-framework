@@ -1,5 +1,7 @@
 package org.checkerframework.dataflow.cfg.builder;
 
+import org.checkerframework.checker.determinism.qual.PolyDet;
+
 /**
  * A label is used to refer to other extended nodes using a mapping from labels to extended nodes.
  * Labels get their names either from labeled statements in the source code or from internally

@@ -1,5 +1,6 @@
 package org.checkerframework.dataflow.cfg.builder;
 
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.dataflow.cfg.builder.ExtendedNode.ExtendedNodeType;
 import org.checkerframework.dataflow.cfg.node.Node;
 

@@ -2,6 +2,8 @@ package org.checkerframework.dataflow.cfg.builder;
 
 import java.util.Set;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 
 /**
  * A TryFrame takes a thrown exception type and maps it to a set of possible control-flow

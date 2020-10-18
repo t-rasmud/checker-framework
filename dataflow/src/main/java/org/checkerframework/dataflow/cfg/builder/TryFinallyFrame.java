@@ -2,6 +2,8 @@ package org.checkerframework.dataflow.cfg.builder;
 
 import java.util.Set;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 
 /** A TryFinallyFrame applies to exceptions of any type. */
 class TryFinallyFrame implements TryFrame {
