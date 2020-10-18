@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.determinism.qual.NonDet;
-import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -28,7 +28,7 @@ public class MarkerNode extends Node {
         this.message = message;
     }
 
-    public @NonDet String getMessage(@PolyDet MarkerNode this) {
+    public @PolyDet String getMessage(@PolyDet MarkerNode this) {
         return message;
     }
 
@@ -52,9 +52,6 @@ public class MarkerNode extends Node {
     }
 
     @Override
-    @SuppressWarnings(
-            "determinism") // valid rule relaxation: contents of message field is @NonDet, but
-    // result of comparisons between runs is always @Det
     public @PolyDet boolean equals(@PolyDet MarkerNode this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof MarkerNode)) {
             return false;
@@ -65,7 +62,7 @@ public class MarkerNode extends Node {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet MarkerNode this) {
+    public @NonDet int hashCode(@PolyDet MarkerNode this) {
         return Objects.hash(tree, getMessage());
     }
 

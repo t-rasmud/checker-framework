@@ -2,6 +2,7 @@ package org.checkerframework.dataflow.expression;
 
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.Store;
@@ -84,7 +85,7 @@ public class ArrayAccess extends Receiver {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet ArrayAccess this) {
+    public @NonDet int hashCode(@PolyDet ArrayAccess this) {
         return Objects.hash(receiver, index);
     }
 

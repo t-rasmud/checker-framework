@@ -5,7 +5,7 @@ import com.sun.source.tree.Tree.Kind;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -79,7 +79,7 @@ public class TernaryExpressionNode extends Node {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet TernaryExpressionNode this) {
+    public @NonDet int hashCode(@PolyDet TernaryExpressionNode this) {
         return Objects.hash(getConditionOperand(), getThenOperand(), getElseOperand());
     }
 

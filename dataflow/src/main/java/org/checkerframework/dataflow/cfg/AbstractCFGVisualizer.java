@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.StringJoiner;
 import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.determinism.qual.Det;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -55,7 +54,7 @@ public abstract class AbstractCFGVisualizer<
     protected boolean verbose;
 
     /** The line separator. */
-    protected final String lineSeparator = System.lineSeparator();
+    protected final @Det String lineSeparator = System.lineSeparator();
 
     /** The indentation for elements of the store. */
     protected final String storeEntryIndent = "  ";
@@ -90,8 +89,11 @@ public abstract class AbstractCFGVisualizer<
      * @param analysis the current analysis
      * @return the representation of the control flow graph
      */
-    protected @NonDet String visualizeGraph(
-            ControlFlowGraph cfg, Block entry, @Nullable Analysis<V, S, T> analysis) {
+    protected @PolyDet String visualizeGraph(
+            @PolyDet AbstractCFGVisualizer<V, S, T> this,
+            @PolyDet ControlFlowGraph cfg,
+            @PolyDet Block entry,
+            @PolyDet @Nullable Analysis<V, S, T> analysis) {
         return visualizeGraphHeader()
                 + visualizeGraphWithoutHeaderAndFooter(cfg, entry, analysis)
                 + visualizeGraphFooter();
@@ -105,10 +107,13 @@ public abstract class AbstractCFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the control flow graph
      */
-    protected @NonDet String visualizeGraphWithoutHeaderAndFooter(
-            ControlFlowGraph cfg, Block entry, @Nullable Analysis<V, S, T> analysis) {
-        Set<@Det Block> visited = new LinkedHashSet<>();
-        StringBuilder sbGraph = new @NonDet StringBuilder();
+    protected @PolyDet String visualizeGraphWithoutHeaderAndFooter(
+            @PolyDet AbstractCFGVisualizer<V, S, T> this,
+            @PolyDet ControlFlowGraph cfg,
+            @PolyDet Block entry,
+            @PolyDet @Nullable Analysis<V, S, T> analysis) {
+        @PolyDet Set<@PolyDet Block> visited = new @PolyDet LinkedHashSet<>();
+        StringBuilder sbGraph = new @PolyDet StringBuilder();
         Queue<@Det Block> workList = new ArrayDeque<>();
         Block cur = entry;
         visited.add(entry);
@@ -133,7 +138,11 @@ public abstract class AbstractCFGVisualizer<
      * @param sbGraph the {@link StringBuilder} to store the graph; side effected by this method
      */
     protected void handleSuccessorsHelper(
-            Block cur, Set<Block> visited, Queue<Block> workList, @NonDet StringBuilder sbGraph) {
+            @PolyDet AbstractCFGVisualizer<V, S, T> this,
+            @PolyDet Block cur,
+            @PolyDet Set<@PolyDet Block> visited,
+            @PolyDet Queue<@PolyDet Block> workList,
+            @PolyDet StringBuilder sbGraph) {
         if (cur.getType() == Block.BlockType.CONDITIONAL_BLOCK) {
             ConditionalBlock ccur = ((ConditionalBlock) cur);
             Block thenSuccessor = ccur.getThenSuccessor();
@@ -209,7 +218,10 @@ public abstract class AbstractCFGVisualizer<
      * @return the String representation of the block
      */
     protected String visualizeBlockHelper(
-            Block bb, @Nullable Analysis<V, S, T> analysis, String separator) {
+            @PolyDet AbstractCFGVisualizer<V, S, T> this,
+            @PolyDet Block bb,
+            @PolyDet @Nullable Analysis<V, S, T> analysis,
+            @PolyDet String separator) {
         StringBuilder sbBlock = new StringBuilder();
         String contents = loopOverBlockContents(bb, analysis, separator);
         if (!contents.isEmpty()) {
@@ -281,11 +293,15 @@ public abstract class AbstractCFGVisualizer<
      * @param obj an object
      * @return the formatted String from the given object
      */
-    protected abstract @NonDet String format(Object obj);
+    protected abstract @PolyDet String format(
+            @PolyDet AbstractCFGVisualizer<V, S, T> this, @PolyDet Object obj);
 
     @Override
-    public @NonDet String visualizeBlockNode(Node t, @Nullable Analysis<V, S, T> analysis) {
-        StringBuilder sbBlockNode = new @NonDet StringBuilder();
+    public @PolyDet String visualizeBlockNode(
+            @PolyDet AbstractCFGVisualizer<V, S, T> this,
+            @PolyDet Node t,
+            @PolyDet @Nullable Analysis<V, S, T> analysis) {
+        StringBuilder sbBlockNode = new @PolyDet StringBuilder();
         sbBlockNode.append(format(t)).append("   [ ").append(getNodeSimpleName(t)).append(" ]");
         if (analysis != null) {
             V value = analysis.getValue(t);
@@ -316,7 +332,11 @@ public abstract class AbstractCFGVisualizer<
      * @return the visualization of the transfer input before or after the given block
      */
     protected String visualizeBlockTransferInputHelper(
-            VisualizeWhere where, Block bb, Analysis<V, S, T> analysis, String separator) {
+            @PolyDet AbstractCFGVisualizer<V, S, T> this,
+            @PolyDet VisualizeWhere where,
+            @PolyDet Block bb,
+            @PolyDet Analysis<V, S, T> analysis,
+            @PolyDet String separator) {
         if (analysis == null) {
             throw new BugInCF(
                     "analysis must be non-null when visualizing the transfer input of a block.");
@@ -379,7 +399,8 @@ public abstract class AbstractCFGVisualizer<
      * @param sbb the special block
      * @return the String representation of the special block
      */
-    protected String visualizeSpecialBlockHelper(SpecialBlock sbb) {
+    protected String visualizeSpecialBlockHelper(
+            @PolyDet AbstractCFGVisualizer<V, S, T> this, @PolyDet SpecialBlock sbb) {
         switch (sbb.getSpecialType()) {
             case ENTRY:
                 return "<entry>";
@@ -416,7 +437,8 @@ public abstract class AbstractCFGVisualizer<
     }
 
     @Override
-    public @NonDet String visualizeStore(S store) {
+    public @PolyDet String visualizeStore(
+            @PolyDet AbstractCFGVisualizer<V, S, T> this, @PolyDet S store) {
         return store.visualize(this);
     }
 
@@ -428,8 +450,11 @@ public abstract class AbstractCFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the nodes
      */
-    protected abstract @NonDet String visualizeNodes(
-            Set<Block> blocks, ControlFlowGraph cfg, @Nullable Analysis<V, S, T> analysis);
+    protected abstract @PolyDet String visualizeNodes(
+            @PolyDet AbstractCFGVisualizer<V, S, T> this,
+            @PolyDet Set<@PolyDet Block> blocks,
+            @PolyDet ControlFlowGraph cfg,
+            @PolyDet @Nullable Analysis<V, S, T> analysis);
 
     /**
      * Generate the String representation of an edge.
@@ -439,21 +464,26 @@ public abstract class AbstractCFGVisualizer<
      * @param flowRule the content of the edge
      * @return the String representation of the edge
      */
-    protected abstract String visualizeEdge(Object sId, Object eId, String flowRule);
+    protected abstract @PolyDet String visualizeEdge(
+            @PolyDet AbstractCFGVisualizer<V, S, T> this,
+            @PolyDet Object sId,
+            @PolyDet Object eId,
+            @PolyDet String flowRule);
 
     /**
      * Return the header of the generated graph.
      *
      * @return the String representation of the header of the control flow graph
      */
-    protected abstract String visualizeGraphHeader();
+    protected abstract String visualizeGraphHeader(@PolyDet AbstractCFGVisualizer<V, S, T> this);
 
     /**
      * Return the footer of the generated graph.
      *
      * @return the String representation of the footer of the control flow graph
      */
-    protected abstract String visualizeGraphFooter();
+    protected abstract @PolyDet String visualizeGraphFooter(
+            @PolyDet AbstractCFGVisualizer<V, S, T> this);
 
     /**
      * Given a list of process orders (integers), returns a string representation.

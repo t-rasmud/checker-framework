@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -67,7 +67,7 @@ public class AssertionErrorNode extends Node {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet AssertionErrorNode this) {
+    public @NonDet int hashCode(@PolyDet AssertionErrorNode this) {
         return Objects.hash(getCondition(), getDetail());
     }
 

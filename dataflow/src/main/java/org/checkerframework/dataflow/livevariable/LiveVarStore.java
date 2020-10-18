@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.StringJoiner;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.determinism.qual.Det;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.Store;
@@ -101,7 +101,7 @@ public class LiveVarStore implements Store<LiveVarStore> {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet LiveVarStore this) {
+    public @NonDet int hashCode(@PolyDet LiveVarStore this) {
         return this.liveVarValueSet.hashCode();
     }
 
@@ -141,7 +141,7 @@ public class LiveVarStore implements Store<LiveVarStore> {
         if (liveVarValueSet.isEmpty()) {
             return viz.visualizeStoreKeyVal(key, "none");
         }
-        @NonDet StringJoiner sjStoreVal = new @NonDet StringJoiner(", ");
+        @PolyDet StringJoiner sjStoreVal = new @PolyDet StringJoiner(", ");
         for (LiveVarValue liveVarValue : liveVarValueSet) {
             sjStoreVal.add(liveVarValue.toString());
         }

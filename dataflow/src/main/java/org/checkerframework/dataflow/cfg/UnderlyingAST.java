@@ -32,7 +32,7 @@ public abstract class UnderlyingAST implements UniqueId {
     final transient long uid = UniqueId.nextUid.getAndIncrement();
 
     @Override
-    public long getUid(@UnknownInitialization UnderlyingAST this) {
+    public @PolyDet long getUid(@PolyDet @UnknownInitialization UnderlyingAST this) {
         return uid;
     }
 
@@ -89,6 +89,8 @@ public abstract class UnderlyingAST implements UniqueId {
          *
          * @return the simple name of the enclosing class
          */
+        @SuppressWarnings(
+                "determinism") // all known implementations of Name have deterministic toString
         public @PolyDet String getSimpleClassName(@PolyDet CFGMethod this) {
             return classTree.getSimpleName().toString();
         }
@@ -153,6 +155,8 @@ public abstract class UnderlyingAST implements UniqueId {
          *
          * @return the simple name of the enclosing class
          */
+        @SuppressWarnings(
+                "determinism") // all known implementations of Name have deterministic toString
         public @PolyDet String getSimpleClassName(@PolyDet CFGLambda this) {
             return classTree.getSimpleName().toString();
         }
@@ -200,6 +204,8 @@ public abstract class UnderlyingAST implements UniqueId {
          *
          * @return the simple name of the enclosing class
          */
+        @SuppressWarnings(
+                "determinism") // all known implementations of Name have deterministic toString
         public @PolyDet String getSimpleClassName(@PolyDet CFGStatement this) {
             return classTree.getSimpleName().toString();
         }

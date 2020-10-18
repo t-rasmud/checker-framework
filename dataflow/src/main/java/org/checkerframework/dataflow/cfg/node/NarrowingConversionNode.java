@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TypesUtils;
 
@@ -60,7 +60,7 @@ public class NarrowingConversionNode extends Node {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet NarrowingConversionNode this) {
+    public @NonDet int hashCode(@PolyDet NarrowingConversionNode this) {
         return Objects.hash(NarrowingConversionNode.class, getOperand());
     }
 

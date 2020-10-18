@@ -3,6 +3,7 @@ package org.checkerframework.dataflow.expression;
 import java.util.Objects;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.Store;
@@ -82,7 +83,7 @@ public class ValueLiteral extends Receiver {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet ValueLiteral this) {
+    public @NonDet int hashCode(@PolyDet ValueLiteral this) {
         return Objects.hash(value, type.toString());
     }
 

@@ -3,8 +3,7 @@ package org.checkerframework.dataflow.cfg.block;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-import org.checkerframework.checker.determinism.qual.Det;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 
 /** Base class of the {@link Block} implementation hierarchy. */
 public abstract class BlockImpl implements Block {
@@ -25,7 +24,7 @@ public abstract class BlockImpl implements Block {
      * @return the unique ID of this object.
      */
     @Override
-    public @PolyDet long getUid(@PolyDet BlockImpl this) {
+    public @Det long getUid(@Det BlockImpl this) {
         return uid;
     }
 
@@ -40,22 +39,22 @@ public abstract class BlockImpl implements Block {
     }
 
     @Override
-    public BlockType getType() {
+    public @Det BlockType getType(@Det BlockImpl this) {
         return type;
     }
 
     @Override
-    public Set<Block> getPredecessors() {
+    public @Det Set<@Det Block> getPredecessors(@Det BlockImpl this) {
         // Not "Collections.unmodifiableSet(predecessors)" which has nondeterministic iteration
         // order.
         return new LinkedHashSet<>(predecessors);
     }
 
-    public void addPredecessor(BlockImpl pred) {
+    public void addPredecessor(@Det BlockImpl this, @Det BlockImpl pred) {
         predecessors.add(pred);
     }
 
-    public void removePredecessor(BlockImpl pred) {
+    public void removePredecessor(@Det BlockImpl this, @Det BlockImpl pred) {
         predecessors.remove(pred);
     }
 }

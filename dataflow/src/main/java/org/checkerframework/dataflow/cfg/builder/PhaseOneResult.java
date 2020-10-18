@@ -78,7 +78,7 @@ public class PhaseOneResult {
         return sj.toString();
     }
 
-    protected String nodeToString(ExtendedNode n) {
+    protected @PolyDet String nodeToString(@PolyDet PhaseOneResult this, @PolyDet ExtendedNode n) {
         if (n.getType() == ExtendedNodeType.CONDITIONAL_JUMP) {
             ConditionalJump t = (ConditionalJump) n;
             return "TwoTargetConditionalJump("

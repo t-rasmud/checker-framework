@@ -1,6 +1,7 @@
 package org.checkerframework.dataflow.expression;
 
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.interning.qual.UsesObjectEquals;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -23,8 +24,9 @@ public class Unknown extends Receiver {
         return obj == this;
     }
 
+    // Overridden to avoid an error "overrides equals, but does not override hashCode"
     @Override
-    public @PolyDet int hashCode(@PolyDet Unknown this) {
+    public @NonDet int hashCode(@PolyDet Unknown this) {
         return System.identityHashCode(this);
     }
 

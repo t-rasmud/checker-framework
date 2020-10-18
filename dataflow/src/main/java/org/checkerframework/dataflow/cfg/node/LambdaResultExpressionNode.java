@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.util.Types;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -64,7 +64,7 @@ public class LambdaResultExpressionNode extends Node {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet LambdaResultExpressionNode this) {
+    public @NonDet int hashCode(@PolyDet LambdaResultExpressionNode this) {
         // No need to incorporate tree, since in a well-formed LambdaResultExpressionNode, result
         // will be the same only when tree is the same (this is similar to ReturnNode).
         return Objects.hash(LambdaResultExpressionNode.class, result);

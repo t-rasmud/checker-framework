@@ -2,7 +2,7 @@ package org.checkerframework.dataflow.cfg.block;
 
 import java.util.Collections;
 import java.util.List;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.Node;
 
@@ -18,7 +18,7 @@ public class SpecialBlockImpl extends SingleSuccessorBlockImpl implements Specia
     }
 
     @Override
-    public SpecialBlockType getSpecialType() {
+    public @Det SpecialBlockType getSpecialType(@Det SpecialBlockImpl this) {
         return specialType;
     }
 
@@ -28,17 +28,19 @@ public class SpecialBlockImpl extends SingleSuccessorBlockImpl implements Specia
      * <p>This implementation returns an empty list.
      */
     @Override
-    public List<Node> getNodes() {
-        return Collections.emptyList();
+    public @Det List<@Det Node> getNodes(@Det SpecialBlockImpl this) {
+        @SuppressWarnings("determinism") // inference problem: Collections.emptyList()
+        @Det List<@Det Node> result = Collections.emptyList();
+        return result;
     }
 
     @Override
-    public @Nullable Node getLastNode() {
+    public @Nullable @Det Node getLastNode(@Det SpecialBlockImpl this) {
         return null;
     }
 
     @Override
-    public @PolyDet String toString(@PolyDet SpecialBlockImpl this) {
+    public @Det String toString(@Det SpecialBlockImpl this) {
         return "SpecialBlock(" + specialType + ")";
     }
 }

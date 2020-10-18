@@ -3,7 +3,7 @@ package org.checkerframework.dataflow.cfg.node;
 import com.sun.source.tree.BinaryTree;
 import com.sun.source.tree.Tree.Kind;
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -41,7 +41,7 @@ public class BitwiseOrNode extends BinaryOperationNode {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet BitwiseOrNode this) {
+    public @NonDet int hashCode(@PolyDet BitwiseOrNode this) {
         return Objects.hash(getLeftOperand(), getRightOperand());
     }
 }

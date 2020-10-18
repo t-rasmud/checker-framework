@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.plumelib.util.UtilPlume;
 
@@ -43,7 +43,7 @@ public class ArrayCreationNode extends Node {
         this.initializers = initializers;
     }
 
-    public @PolyDet List<Node> getDimensions(@PolyDet ArrayCreationNode this) {
+    public @PolyDet List<@PolyDet Node> getDimensions(@PolyDet ArrayCreationNode this) {
         return dimensions;
     }
 
@@ -51,7 +51,7 @@ public class ArrayCreationNode extends Node {
         return dimensions.get(i);
     }
 
-    public @PolyDet List<Node> getInitializers(@PolyDet ArrayCreationNode this) {
+    public @PolyDet List<@PolyDet Node> getInitializers(@PolyDet ArrayCreationNode this) {
         return initializers;
     }
 
@@ -99,7 +99,7 @@ public class ArrayCreationNode extends Node {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet ArrayCreationNode this) {
+    public @NonDet int hashCode(@PolyDet ArrayCreationNode this) {
         return Objects.hash(dimensions, initializers);
     }
 

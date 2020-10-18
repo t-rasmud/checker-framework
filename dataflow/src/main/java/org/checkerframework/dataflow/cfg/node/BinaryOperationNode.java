@@ -3,7 +3,7 @@ package org.checkerframework.dataflow.cfg.node;
 import com.sun.source.tree.BinaryTree;
 import java.util.ArrayList;
 import java.util.Collection;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.javacutil.TreeUtils;
 
 /**

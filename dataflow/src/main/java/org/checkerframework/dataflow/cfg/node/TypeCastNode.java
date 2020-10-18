@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -59,7 +59,7 @@ public class TypeCastNode extends Node {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet TypeCastNode this) {
+    public @NonDet int hashCode(@PolyDet TypeCastNode this) {
         return Objects.hash(getType(), getOperand());
     }
 

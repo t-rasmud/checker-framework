@@ -2,9 +2,9 @@ package org.checkerframework.dataflow.cfg.block;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import org.checkerframework.checker.determinism.qual.Det;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.dataflow.analysis.Store;
+import org.checkerframework.dataflow.analysis.Store.FlowRule;
 
 /**
  * A basic block that has at most one successor. SpecialBlockImpl extends this, but exit blocks have
@@ -19,20 +19,20 @@ public abstract class SingleSuccessorBlockImpl extends BlockImpl implements Sing
      * The initial value for the rule below says that EACH store at the end of a single successor
      * block flows to the corresponding store of the successor.
      */
-    protected Store.FlowRule flowRule = Store.FlowRule.EACH_TO_EACH;
+    protected FlowRule flowRule = FlowRule.EACH_TO_EACH;
 
     protected SingleSuccessorBlockImpl(BlockType type) {
         super(type);
     }
 
     @Override
-    public @Nullable Block getSuccessor() {
+    public @Det @Nullable Block getSuccessor(@Det SingleSuccessorBlockImpl this) {
         return successor;
     }
 
     @Override
-    public Set<Block> getSuccessors() {
-        @Det Set<Block> result = new LinkedHashSet<>();
+    public @Det Set<@Det Block> getSuccessors(@Det SingleSuccessorBlockImpl this) {
+        @Det Set<@Det Block> result = new @Det LinkedHashSet<>();
         if (successor != null) {
             result.add(successor);
         }
@@ -44,18 +44,18 @@ public abstract class SingleSuccessorBlockImpl extends BlockImpl implements Sing
      *
      * @param successor the block that will be the successor of this
      */
-    public void setSuccessor(BlockImpl successor) {
+    public void setSuccessor(@Det SingleSuccessorBlockImpl this, @Det BlockImpl successor) {
         this.successor = successor;
         successor.addPredecessor(this);
     }
 
     @Override
-    public Store.FlowRule getFlowRule() {
+    public @Det FlowRule getFlowRule(@Det SingleSuccessorBlockImpl this) {
         return flowRule;
     }
 
     @Override
-    public void setFlowRule(Store.FlowRule rule) {
+    public void setFlowRule(@Det SingleSuccessorBlockImpl this, @Det FlowRule rule) {
         flowRule = rule;
     }
 }

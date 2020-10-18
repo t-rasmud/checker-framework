@@ -1,6 +1,7 @@
 package org.checkerframework.dataflow.expression;
 
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.Store;
@@ -17,7 +18,7 @@ public class ThisReference extends Receiver {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet ThisReference this) {
+    public @NonDet int hashCode(@PolyDet ThisReference this) {
         return 0;
     }
 

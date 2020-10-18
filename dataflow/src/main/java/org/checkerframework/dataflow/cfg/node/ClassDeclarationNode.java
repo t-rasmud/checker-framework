@@ -4,7 +4,7 @@ import com.sun.source.tree.ClassTree;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -53,7 +53,7 @@ public class ClassDeclarationNode extends Node {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet ClassDeclarationNode this) {
+    public @NonDet int hashCode(@PolyDet ClassDeclarationNode this) {
         return Objects.hash(tree);
     }
 

@@ -3,7 +3,7 @@ package org.checkerframework.dataflow.cfg.node;
 import com.sun.source.tree.Tree.Kind;
 import com.sun.source.tree.UnaryTree;
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -40,7 +40,7 @@ public class NumericalPlusNode extends UnaryOperationNode {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet NumericalPlusNode this) {
+    public @NonDet int hashCode(@PolyDet NumericalPlusNode this) {
         return Objects.hash(NumericalPlusNode.class, getOperand());
     }
 }

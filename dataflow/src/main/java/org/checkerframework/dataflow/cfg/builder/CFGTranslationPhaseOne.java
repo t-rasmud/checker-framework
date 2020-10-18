@@ -3076,14 +3076,12 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
 
         extendWithNode(
                 new MarkerNode(
-                        // BUG FIX
                         tree,
                         "start of try block #" + CFGBuilder.treeUids.get(tree),
                         env.getTypeUtils()));
         scan(tree.getBlock(), p);
         extendWithNode(
                 new MarkerNode(
-                        // BUG FIX
                         tree,
                         "end of try block #" + CFGBuilder.treeUids.get(tree),
                         env.getTypeUtils()));
@@ -3102,7 +3100,6 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                             "start of catch block for "
                                     + c.getParameter().getType()
                                     + " #"
-                                    // BUG FIX
                                     + CFGBuilder.treeUids.get(tree),
                             env.getTypeUtils()));
             scan(c, p);
@@ -3112,7 +3109,6 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                             "end of catch block for "
                                     + c.getParameter().getType()
                                     + " #"
-                                    // BUG FIX
                                     + CFGBuilder.treeUids.get(tree),
                             env.getTypeUtils()));
 

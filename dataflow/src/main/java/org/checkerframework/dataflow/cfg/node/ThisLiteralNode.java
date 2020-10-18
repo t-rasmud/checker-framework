@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -30,7 +30,7 @@ public abstract class ThisLiteralNode extends Node {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet ThisLiteralNode this) {
+    public @NonDet int hashCode(@PolyDet ThisLiteralNode this) {
         return Objects.hash(getName());
     }
 

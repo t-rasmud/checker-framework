@@ -465,10 +465,9 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
      * @return a string representation of this
      */
     @SuppressWarnings("determinism") // https://github.com/t-rasmud/checker-framework/issues/194
-    public @PolyDet String toStringDebug() {
+    public String toStringDebug() {
         StringJoiner result =
-                new
-                @NonDet StringJoiner(
+                new StringJoiner(
                         String.format("%n  "),
                         String.format("AnalysisResult{%n  "),
                         String.format("%n}"));

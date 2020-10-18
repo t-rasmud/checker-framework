@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.AssignmentContext.MethodParameterContext;
 import org.checkerframework.javacutil.TreeUtils;
@@ -65,7 +65,7 @@ public class MethodInvocationNode extends Node {
         return target;
     }
 
-    public @PolyDet List<Node> getArguments(@PolyDet MethodInvocationNode this) {
+    public @PolyDet List<@PolyDet Node> getArguments(@PolyDet MethodInvocationNode this) {
         return arguments;
     }
 
@@ -105,7 +105,7 @@ public class MethodInvocationNode extends Node {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet MethodInvocationNode this) {
+    public @NonDet int hashCode(@PolyDet MethodInvocationNode this) {
         return Objects.hash(target, arguments);
     }
 

@@ -2,6 +2,7 @@ package org.checkerframework.dataflow.cfg.block;
 
 import java.util.List;
 import java.util.Set;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.dataflow.qual.Pure;
@@ -31,21 +32,28 @@ public interface Block extends UniqueId {
      *
      * @return the type of this basic block
      */
-    BlockType getType();
+    @Det BlockType getType(@Det Block this);
+
+    /**
+     * Returns the unique identifier of this block.
+     *
+     * @return the unique identifier of this block
+     */
+    long getId();
 
     /**
      * Returns the predecessors of this basic block.
      *
      * @return the predecessors of this basic block
      */
-    Set<Block> getPredecessors();
+    @Det Set<@Det Block> getPredecessors(@Det Block this);
 
     /**
      * Returns the successors of this basic block.
      *
      * @return the successors of this basic block
      */
-    Set<Block> getSuccessors();
+    @Det Set<@Det Block> getSuccessors(@Det Block this);
 
     /**
      * Returns the nodes contained within this basic block. The list may be empty.
@@ -59,12 +67,12 @@ public interface Block extends UniqueId {
      * @return the nodes contained within this basic block
      */
     @Pure
-    List<Node> getNodes();
+    @Det List<@Det Node> getNodes(@Det Block this);
 
     /**
      * Returns the last node of this block, or null if none.
      *
      * @return the last node of this block or {@code null}
      */
-    @Nullable Node getLastNode();
+    @Det @Nullable Node getLastNode(@Det Block this);
 }

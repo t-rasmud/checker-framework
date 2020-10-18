@@ -8,7 +8,7 @@ import java.util.Objects;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TypesUtils;
 
@@ -78,7 +78,7 @@ public class InstanceOfNode extends Node {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet InstanceOfNode this) {
+    public @NonDet int hashCode(@PolyDet InstanceOfNode this) {
         return Objects.hash(InstanceOfNode.class, getOperand());
     }
 

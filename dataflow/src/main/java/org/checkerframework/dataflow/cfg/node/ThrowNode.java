@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -57,7 +57,7 @@ public class ThrowNode extends Node {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet ThrowNode this) {
+    public @NonDet int hashCode(@PolyDet ThrowNode this) {
         return Objects.hash(ThrowNode.class, expression);
     }
 

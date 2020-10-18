@@ -2,7 +2,7 @@ package org.checkerframework.dataflow.cfg.node;
 
 import com.sun.source.tree.IdentifierTree;
 import com.sun.source.tree.Tree;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.javacutil.TreeUtils;
 
 /**

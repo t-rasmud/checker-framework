@@ -33,15 +33,18 @@ public class StringCFGVisualizer<
         extends AbstractCFGVisualizer<V, S, T> {
 
     @Override
-    public String getSeparator() {
+    public @PolyDet String getSeparator(@PolyDet StringCFGVisualizer<V, S, T> this) {
         return "\n";
     }
 
     @Override
-    public @OrderNonDet Map<String, @NonDet Object> visualize(
-            ControlFlowGraph cfg, Block entry, @Nullable Analysis<V, S, T> analysis) {
+    public @OrderNonDet Map<String, Object> visualize(
+            @PolyDet StringCFGVisualizer<V, S, T> this,
+            @PolyDet ControlFlowGraph cfg,
+            @PolyDet Block entry,
+            @PolyDet @Nullable Analysis<V, S, T> analysis) {
         String stringGraph = visualizeGraph(cfg, entry, analysis);
-        @NonDet Map<@Det String, @NonDet Object> res = new @NonDet HashMap<>();
+        Map<@Det String, @NonDet Object> res = new HashMap<>();
         @SuppressWarnings({
             "determinism", // valid rule relaxation: no aliasing, so valid to mutate @NonDet
             // collection
@@ -53,9 +56,12 @@ public class StringCFGVisualizer<
 
     @SuppressWarnings("keyfor:enhancedfor.type.incompatible")
     @Override
-    public @NonDet String visualizeNodes(
-            Set<Block> blocks, ControlFlowGraph cfg, @Nullable Analysis<V, S, T> analysis) {
-        StringJoiner sjStringNodes = new @NonDet StringJoiner(lineSeparator);
+    public @PolyDet String visualizeNodes(
+            @PolyDet StringCFGVisualizer<V, S, T> this,
+            @PolyDet Set<@PolyDet Block> blocks,
+            @PolyDet ControlFlowGraph cfg,
+            @PolyDet @Nullable Analysis<V, S, T> analysis) {
+        StringJoiner sjStringNodes = new @PolyDet StringJoiner(lineSeparator);
         IdentityHashMap<@Det Block, @Det List<Integer>> processOrder = getProcessOrder(cfg);
 
         // Generate all the Nodes.
@@ -72,7 +78,11 @@ public class StringCFGVisualizer<
     }
 
     @Override
-    protected String visualizeEdge(Object sId, Object eId, String flowRule) {
+    protected @PolyDet String visualizeEdge(
+            @PolyDet StringCFGVisualizer<V, S, T> this,
+            @PolyDet Object sId,
+            @PolyDet Object eId,
+            @PolyDet String flowRule) {
         if (this.verbose) {
             return sId + " -> " + eId + " " + flowRule;
         }
@@ -80,17 +90,22 @@ public class StringCFGVisualizer<
     }
 
     @Override
-    public String visualizeBlock(Block bb, @Nullable Analysis<V, S, T> analysis) {
+    public @PolyDet String visualizeBlock(
+            @PolyDet StringCFGVisualizer<V, S, T> this,
+            @PolyDet Block bb,
+            @PolyDet @Nullable Analysis<V, S, T> analysis) {
         return super.visualizeBlockHelper(bb, analysis, lineSeparator).trim();
     }
 
     @Override
-    public String visualizeSpecialBlock(SpecialBlock sbb) {
+    public @PolyDet String visualizeSpecialBlock(
+            @PolyDet StringCFGVisualizer<V, S, T> this, @PolyDet SpecialBlock sbb) {
         return super.visualizeSpecialBlockHelper(sbb);
     }
 
     @Override
-    public String visualizeConditionalBlock(ConditionalBlock cbb) {
+    public @PolyDet String visualizeConditionalBlock(
+            @PolyDet StringCFGVisualizer<V, S, T> this, @PolyDet ConditionalBlock cbb) {
         return "ConditionalBlock: then: "
                 + cbb.getThenSuccessor().getUid()
                 + ", else: "
@@ -98,13 +113,19 @@ public class StringCFGVisualizer<
     }
 
     @Override
-    public String visualizeBlockTransferInputBefore(Block bb, Analysis<V, S, T> analysis) {
+    public @PolyDet String visualizeBlockTransferInputBefore(
+            @PolyDet StringCFGVisualizer<V, S, T> this,
+            @PolyDet Block bb,
+            @PolyDet Analysis<V, S, T> analysis) {
         return super.visualizeBlockTransferInputHelper(
                 VisualizeWhere.BEFORE, bb, analysis, lineSeparator);
     }
 
     @Override
-    public String visualizeBlockTransferInputAfter(Block bb, Analysis<V, S, T> analysis) {
+    public @PolyDet String visualizeBlockTransferInputAfter(
+            @PolyDet StringCFGVisualizer<V, S, T> this,
+            @PolyDet Block bb,
+            @PolyDet Analysis<V, S, T> analysis) {
         return super.visualizeBlockTransferInputHelper(
                 VisualizeWhere.AFTER, bb, analysis, lineSeparator);
     }
@@ -112,42 +133,62 @@ public class StringCFGVisualizer<
     @Override
     @RequiresDetToString
     @SuppressWarnings("determinism") // toString is @Det because of @RequiresDetToString
-    protected String format(Object obj) {
+    protected @PolyDet String format(
+            @PolyDet StringCFGVisualizer<V, S, T> this, @PolyDet Object obj) {
         return obj.toString();
     }
 
     @Override
-    public String visualizeStoreThisVal(V value) {
+    public @PolyDet String visualizeStoreThisVal(
+            @PolyDet StringCFGVisualizer<V, S, T> this, @PolyDet V value) {
         return storeEntryIndent + "this > " + value;
     }
 
     @Override
-    public String visualizeStoreLocalVar(LocalVariable localVar, V value) {
+    public @PolyDet String visualizeStoreLocalVar(
+            @PolyDet StringCFGVisualizer<V, S, T> this,
+            @PolyDet LocalVariable localVar,
+            @PolyDet V value) {
         return storeEntryIndent + localVar + " > " + value;
     }
 
     @Override
-    public String visualizeStoreFieldVal(FieldAccess fieldAccess, V value) {
+    public @PolyDet String visualizeStoreFieldVal(
+            @PolyDet StringCFGVisualizer<V, S, T> this,
+            @PolyDet FieldAccess fieldAccess,
+            @PolyDet V value) {
         return storeEntryIndent + fieldAccess + " > " + value;
     }
 
     @Override
-    public String visualizeStoreArrayVal(ArrayAccess arrayValue, V value) {
+    public @PolyDet String visualizeStoreArrayVal(
+            @PolyDet StringCFGVisualizer<V, S, T> this,
+            @PolyDet ArrayAccess arrayValue,
+            @PolyDet V value) {
         return storeEntryIndent + arrayValue + " > " + value;
     }
 
     @Override
-    public String visualizeStoreMethodVals(MethodCall methodCall, V value) {
+    public @PolyDet String visualizeStoreMethodVals(
+            @PolyDet StringCFGVisualizer<V, S, T> this,
+            @PolyDet MethodCall methodCall,
+            @PolyDet V value) {
         return storeEntryIndent + methodCall + " > " + value;
     }
 
     @Override
-    public String visualizeStoreClassVals(ClassName className, V value) {
+    public @PolyDet String visualizeStoreClassVals(
+            @PolyDet StringCFGVisualizer<V, S, T> this,
+            @PolyDet ClassName className,
+            @PolyDet V value) {
         return storeEntryIndent + className + " > " + value;
     }
 
     @Override
-    public @PolyDet String visualizeStoreKeyVal(@PolyDet String keyName, @PolyDet Object value) {
+    public @PolyDet String visualizeStoreKeyVal(
+            @PolyDet StringCFGVisualizer<V, S, T> this,
+            @PolyDet String keyName,
+            @PolyDet Object value) {
         return storeEntryIndent + keyName + " = " + value;
     }
 
@@ -165,7 +206,7 @@ public class StringCFGVisualizer<
      * <p>StringCFGVisualizer does not need a specific header, so just return an empty string.
      */
     @Override
-    protected String visualizeGraphHeader() {
+    protected String visualizeGraphHeader(@PolyDet StringCFGVisualizer<V, S, T> this) {
         return "";
     }
 
@@ -175,7 +216,7 @@ public class StringCFGVisualizer<
      * <p>StringCFGVisualizer does not need a specific footer, so just return an empty string.
      */
     @Override
-    protected String visualizeGraphFooter() {
+    protected String visualizeGraphFooter(@PolyDet StringCFGVisualizer<V, S, T> this) {
         return "";
     }
 }

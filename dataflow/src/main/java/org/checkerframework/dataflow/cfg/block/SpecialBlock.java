@@ -1,5 +1,7 @@
 package org.checkerframework.dataflow.cfg.block;
 
+import org.checkerframework.checker.determinism.qual.*;
+
 /**
  * Represents a special basic block; i.e., one of the following:
  *
@@ -29,5 +31,5 @@ public interface SpecialBlock extends SingleSuccessorBlock {
      *
      * @return the type of this special basic block
      */
-    SpecialBlockType getSpecialType();
+    @Det SpecialBlockType getSpecialType(@Det SpecialBlock this);
 }

@@ -3,6 +3,7 @@ package org.checkerframework.dataflow.cfg.block;
 import java.util.Map;
 import java.util.Set;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.dataflow.qual.Pure;
 
@@ -24,7 +25,7 @@ public interface ExceptionBlock extends SingleSuccessorBlock {
      * @return the node of this block
      */
     @Pure
-    Node getNode();
+    @Det Node getNode(@Det ExceptionBlock this);
 
     /**
      * Returns the list of exceptional successor blocks as an unmodifiable map.
@@ -32,5 +33,5 @@ public interface ExceptionBlock extends SingleSuccessorBlock {
      * @return the list of exceptional successor blocks as an unmodifiable map
      */
     @Pure
-    Map<TypeMirror, Set<Block>> getExceptionalSuccessors();
+    @Det Map<@Det TypeMirror, @Det Set<@Det Block>> getExceptionalSuccessors(@Det ExceptionBlock this);
 }

@@ -4,7 +4,7 @@ import com.sun.source.tree.LiteralTree;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -62,7 +62,7 @@ public abstract class ValueLiteralNode extends Node {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet ValueLiteralNode this) {
+    public @NonDet int hashCode(@PolyDet ValueLiteralNode this) {
         // value might be null
         return Objects.hash(this.getClass(), getValue());
     }

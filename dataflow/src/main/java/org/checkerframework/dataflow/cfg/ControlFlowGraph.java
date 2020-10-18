@@ -62,7 +62,7 @@ public class ControlFlowGraph implements UniqueId {
     final transient long uid = UniqueId.nextUid.getAndIncrement();
 
     @Override
-    public long getUid(@UnknownInitialization ControlFlowGraph this) {
+    public @PolyDet long getUid(@PolyDet @UnknownInitialization ControlFlowGraph this) {
         return uid;
     }
 
@@ -322,11 +322,6 @@ public class ControlFlowGraph implements UniqueId {
 
         CFGVisualizer<?, ?, ?> viz = new StringCFGVisualizer<>();
         viz.init(args);
-        @SuppressWarnings(
-                "determinism") // rules violated, but nondeterminism reflected in return type: the
-        // visualize method expects a @Det CFG, but passing @PolyDet is okay
-        // because the result of this method is @NonDet. Changing the visualize to accept @NonDet
-        // requires changing many more annotations in other locations due to overriding.
         Map<@Det String, @Det Object> res = viz.visualize(this, this.getEntryBlock(), null);
         viz.shutdown();
         if (res == null) {

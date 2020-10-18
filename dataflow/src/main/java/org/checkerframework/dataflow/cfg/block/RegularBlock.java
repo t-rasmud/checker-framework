@@ -1,6 +1,7 @@
 package org.checkerframework.dataflow.cfg.block;
 
 import java.util.List;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.dataflow.qual.Pure;
@@ -16,7 +17,7 @@ public interface RegularBlock extends SingleSuccessorBlock {
      */
     @Deprecated // use getNodes instead
     @Pure
-    List<Node> getContents();
+    @Det List<@Det Node> getContents(@Det RegularBlock this);
 
     /**
      * Returns the regular successor block.
@@ -24,9 +25,9 @@ public interface RegularBlock extends SingleSuccessorBlock {
      * @return the regular successor block
      */
     @Pure
-    @Nullable Block getRegularSuccessor();
+    @Det @Nullable Block getRegularSuccessor(@Det RegularBlock this);
 
     /** Is this block empty (i.e., does it not contain any contents). */
     @Pure
-    boolean isEmpty();
+    @Det boolean isEmpty(@Det RegularBlock this);
 }

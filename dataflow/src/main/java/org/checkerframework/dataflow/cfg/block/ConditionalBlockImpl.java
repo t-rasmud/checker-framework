@@ -4,10 +4,10 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import org.checkerframework.checker.determinism.qual.Det;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.Store;
+import org.checkerframework.dataflow.analysis.Store.FlowRule;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.javacutil.BugInCF;
 
@@ -38,19 +38,19 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
     }
 
     /** Set the then branch successor. */
-    public void setThenSuccessor(BlockImpl b) {
+    public void setThenSuccessor(@Det ConditionalBlockImpl this, @Det BlockImpl b) {
         thenSuccessor = b;
         b.addPredecessor(this);
     }
 
     /** Set the else branch successor. */
-    public void setElseSuccessor(BlockImpl b) {
+    public void setElseSuccessor(@Det ConditionalBlockImpl this, @Det BlockImpl b) {
         elseSuccessor = b;
         b.addPredecessor(this);
     }
 
     @Override
-    public Block getThenSuccessor() {
+    public @Det Block getThenSuccessor(@Det ConditionalBlockImpl this) {
         if (thenSuccessor == null) {
             throw new BugInCF(
                     "Requested thenSuccessor for conditional block before initialization");
@@ -59,7 +59,7 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
     }
 
     @Override
-    public Block getElseSuccessor() {
+    public @Det Block getElseSuccessor(@Det ConditionalBlockImpl this) {
         if (elseSuccessor == null) {
             throw new BugInCF(
                     "Requested elseSuccessor for conditional block before initialization");
@@ -68,7 +68,7 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
     }
 
     @Override
-    public @Det Set<Block> getSuccessors() {
+    public @Det Set<Block> getSuccessors(@Det ConditionalBlockImpl this) {
         Set<@Det Block> result = new LinkedHashSet<>(2);
         result.add(getThenSuccessor());
         result.add(getElseSuccessor());
@@ -76,22 +76,22 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
     }
 
     @Override
-    public Store.FlowRule getThenFlowRule() {
+    public @Det FlowRule getThenFlowRule(@Det ConditionalBlockImpl this) {
         return thenFlowRule;
     }
 
     @Override
-    public Store.FlowRule getElseFlowRule() {
+    public @Det FlowRule getElseFlowRule(@Det ConditionalBlockImpl this) {
         return elseFlowRule;
     }
 
     @Override
-    public void setThenFlowRule(Store.FlowRule rule) {
+    public void setThenFlowRule(@Det ConditionalBlockImpl this, @Det FlowRule rule) {
         thenFlowRule = rule;
     }
 
     @Override
-    public void setElseFlowRule(Store.FlowRule rule) {
+    public void setElseFlowRule(@Det ConditionalBlockImpl this, @Det FlowRule rule) {
         elseFlowRule = rule;
     }
 
@@ -101,17 +101,19 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
      * <p>This implementation returns an empty list.
      */
     @Override
-    public List<Node> getNodes() {
-        return Collections.emptyList();
+    public @Det List<@Det Node> getNodes(@Det ConditionalBlockImpl this) {
+        @SuppressWarnings("determinism") // inference problem: Collections.emptyList()
+        @Det List<@Det Node> result = Collections.emptyList();
+        return result;
     }
 
     @Override
-    public @Nullable Node getLastNode() {
+    public @Det @Nullable Node getLastNode(@Det ConditionalBlockImpl this) {
         return null;
     }
 
     @Override
-    public @PolyDet String toString(@PolyDet ConditionalBlockImpl this) {
+    public @Det String toString(@Det ConditionalBlockImpl this) {
         return "ConditionalBlock()";
     }
 }

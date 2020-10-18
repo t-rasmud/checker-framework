@@ -5,7 +5,7 @@ import com.sun.source.tree.Tree;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -57,7 +57,7 @@ public class ParameterizedTypeNode extends Node {
     }
 
     @Override
-    public @PolyDet int hashCode(@PolyDet ParameterizedTypeNode this) {
+    public @NonDet int hashCode(@PolyDet ParameterizedTypeNode this) {
         return Objects.hash(getTree());
     }
 

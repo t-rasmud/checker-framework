@@ -3,7 +3,7 @@ package org.checkerframework.dataflow.cfg.block;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.Node;
 
@@ -23,13 +23,13 @@ public class RegularBlockImpl extends SingleSuccessorBlockImpl implements Regula
     }
 
     /** Add a node to the contents of this basic block. */
-    public void addNode(Node t) {
+    public void addNode(@Det RegularBlockImpl this, @Det Node t) {
         contents.add(t);
         t.setBlock(this);
     }
 
     /** Add multiple nodes to the contents of this basic block. */
-    public void addNodes(List<? extends Node> ts) {
+    public void addNodes(@Det RegularBlockImpl this, @Det List<? extends Node> ts) {
         for (Node t : ts) {
             addNode(t);
         }
@@ -37,7 +37,7 @@ public class RegularBlockImpl extends SingleSuccessorBlockImpl implements Regula
 
     @SuppressWarnings("deprecation") // implementation of deprecated method in interface
     @Override
-    public List<Node> getContents() {
+    public @Det List<@Det Node> getContents(@Det RegularBlockImpl this) {
         return getNodes();
     }
 
@@ -47,27 +47,27 @@ public class RegularBlockImpl extends SingleSuccessorBlockImpl implements Regula
      * <p>This implementation returns an non-empty list.
      */
     @Override
-    public List<Node> getNodes() {
+    public @Det List<@Det Node> getNodes(@Det RegularBlockImpl this) {
         return Collections.unmodifiableList(contents);
     }
 
     @Override
-    public @Nullable Node getLastNode() {
+    public @Nullable @Det Node getLastNode(@Det RegularBlockImpl this) {
         return contents.get(contents.size() - 1);
     }
 
     @Override
-    public @Nullable BlockImpl getRegularSuccessor() {
+    public @Nullable @Det BlockImpl getRegularSuccessor(@Det RegularBlockImpl this) {
         return successor;
     }
 
     @Override
-    public @PolyDet String toString(@PolyDet RegularBlockImpl this) {
+    public @Det String toString(@Det RegularBlockImpl this) {
         return "RegularBlock(" + contents + ")";
     }
 
     @Override
-    public boolean isEmpty() {
+    public @Det boolean isEmpty(@Det RegularBlockImpl this) {
         return contents.isEmpty();
     }
 }

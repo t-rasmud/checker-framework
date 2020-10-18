@@ -7,8 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.lang.model.type.TypeMirror;
-import org.checkerframework.checker.determinism.qual.Det;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.javacutil.BugInCF;
@@ -35,7 +34,7 @@ public class ExceptionBlockImpl extends SingleSuccessorBlockImpl implements Exce
     }
 
     @Override
-    public Node getNode() {
+    public @Det Node getNode(@Det ExceptionBlockImpl this) {
         if (node == null) {
             throw new BugInCF("Requested node for exception block before initialization");
         }
@@ -48,12 +47,12 @@ public class ExceptionBlockImpl extends SingleSuccessorBlockImpl implements Exce
      * <p>This implementation returns a singleton list.
      */
     @Override
-    public List<Node> getNodes() {
+    public @Det List<@Det Node> getNodes(@Det ExceptionBlockImpl this) {
         return Collections.singletonList(getNode());
     }
 
     @Override
-    public @Nullable Node getLastNode() {
+    public @Nullable Node getLastNode(@Det ExceptionBlockImpl this) {
         return null;
     }
 
@@ -74,15 +73,17 @@ public class ExceptionBlockImpl extends SingleSuccessorBlockImpl implements Exce
     }
 
     @Override
-    public Map<TypeMirror, Set<Block>> getExceptionalSuccessors() {
+    public @Det Map<@Det TypeMirror, @Det Set<@Det Block>> getExceptionalSuccessors(
+            @Det ExceptionBlockImpl this) {
         if (exceptionalSuccessors == null) {
-            return Collections.emptyMap();
+            @Det Map<@Det TypeMirror, @Det Set<@Det Block>> result = Collections.emptyMap();
+            return result;
         }
         return Collections.unmodifiableMap(exceptionalSuccessors);
     }
 
     @Override
-    public Set<Block> getSuccessors() {
+    public @Det Set<@Det Block> getSuccessors(@Det ExceptionBlockImpl this) {
         Set<@Det Block> result = new LinkedHashSet<>(super.getSuccessors());
         for (@Det Set<? extends Block> blocks : getExceptionalSuccessors().values()) {
             result.addAll(blocks);
@@ -91,7 +92,7 @@ public class ExceptionBlockImpl extends SingleSuccessorBlockImpl implements Exce
     }
 
     @Override
-    public @PolyDet String toString(@PolyDet ExceptionBlockImpl this) {
+    public @Det String toString(@Det ExceptionBlockImpl this) {
         return "ExceptionBlock(" + node + ")";
     }
 }

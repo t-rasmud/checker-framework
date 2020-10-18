@@ -1,7 +1,6 @@
 package org.checkerframework.dataflow.cfg;
 
 import java.util.Map;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -42,7 +41,7 @@ public interface CFGVisualizer<
      *
      * @return the separator for lines within a node's representation
      */
-    public abstract String getSeparator();
+    public abstract @PolyDet String getSeparator(@PolyDet CFGVisualizer<V, S, T> this);
 
     /**
      * Output a visualization representing the control flow graph starting at {@code entry}. The
@@ -61,7 +60,10 @@ public interface CFGVisualizer<
      *     String representation of the CFG ({@link StringCFGVisualizer})
      */
     @Nullable @OrderNonDet Map<String, Object> visualize(
-            ControlFlowGraph cfg, Block entry, @Nullable Analysis<V, S, T> analysis);
+            @PolyDet CFGVisualizer<V, S, T> this,
+            ControlFlowGraph cfg,
+            Block entry,
+            @Nullable Analysis<V, S, T> analysis);
 
     /**
      * Delegate the visualization responsibility to the passed {@link Store} instance, which will
@@ -70,7 +72,7 @@ public interface CFGVisualizer<
      * @param store the store to visualize
      * @return the String representation of the given store
      */
-    @NonDet String visualizeStore(S store);
+    @PolyDet String visualizeStore(@PolyDet CFGVisualizer<V, S, T> this, @PolyDet S store);
 
     /**
      * Called by {@code CFAbstractStore#internalVisualize()} to visualize a local variable.
@@ -79,7 +81,10 @@ public interface CFGVisualizer<
      * @param value the value of the local variable
      * @return the String representation of the local variable
      */
-    String visualizeStoreLocalVar(LocalVariable localVar, V value);
+    @PolyDet String visualizeStoreLocalVar(
+            @PolyDet CFGVisualizer<V, S, T> this,
+            @PolyDet LocalVariable localVar,
+            @PolyDet V value);
 
     /**
      * Called by {@code CFAbstractStore#internalVisualize()} to visualize the value of the current
@@ -88,7 +93,7 @@ public interface CFGVisualizer<
      * @param value the value of the current object {@code this}
      * @return the String representation of {@code this}
      */
-    String visualizeStoreThisVal(V value);
+    @PolyDet String visualizeStoreThisVal(@PolyDet CFGVisualizer<V, S, T> this, @PolyDet V value);
 
     /**
      * Called by {@code CFAbstractStore#internalVisualize()} to visualize the value of one field
@@ -98,7 +103,10 @@ public interface CFGVisualizer<
      * @param value the value of the field
      * @return the String representation of the field
      */
-    String visualizeStoreFieldVal(FieldAccess fieldAccess, V value);
+    @PolyDet String visualizeStoreFieldVal(
+            @PolyDet CFGVisualizer<V, S, T> this,
+            @PolyDet FieldAccess fieldAccess,
+            @PolyDet V value);
 
     /**
      * Called by {@code CFAbstractStore#internalVisualize()} to visualize the value of one array
@@ -108,7 +116,8 @@ public interface CFGVisualizer<
      * @param value the value of the array
      * @return the String representation of the array
      */
-    String visualizeStoreArrayVal(ArrayAccess arrayValue, V value);
+    @PolyDet String visualizeStoreArrayVal(
+            @PolyDet CFGVisualizer<V, S, T> this, @PolyDet ArrayAccess arrayValue, V value);
 
     /**
      * Called by {@code CFAbstractStore#internalVisualize()} to visualize the value of pure method
@@ -118,7 +127,8 @@ public interface CFGVisualizer<
      * @param value the value of the pure method call
      * @return the String representation of the pure method call
      */
-    String visualizeStoreMethodVals(MethodCall methodCall, V value);
+    @PolyDet String visualizeStoreMethodVals(
+            @PolyDet CFGVisualizer<V, S, T> this, MethodCall methodCall, @PolyDet V value);
 
     /**
      * Called by {@code CFAbstractStore#internalVisualize()} to visualize the value of class names
@@ -128,7 +138,8 @@ public interface CFGVisualizer<
      * @param value the value of the class name
      * @return the String representation of the class name
      */
-    String visualizeStoreClassVals(ClassName className, V value);
+    @PolyDet String visualizeStoreClassVals(
+            @PolyDet CFGVisualizer<V, S, T> this, @PolyDet ClassName className, @PolyDet V value);
 
     /**
      * Called by {@code CFAbstractStore#internalVisualize()} to visualize the specific information
@@ -140,7 +151,8 @@ public interface CFGVisualizer<
      * @param value the value of the specific information to be visualized
      * @return the String representation of the specific information
      */
-    @PolyDet String visualizeStoreKeyVal(@PolyDet String keyName, @PolyDet Object value);
+    @PolyDet String visualizeStoreKeyVal(
+            @PolyDet CFGVisualizer<V, S, T> this, @PolyDet String keyName, @PolyDet Object value);
 
     /**
      * Visualize a block based on the analysis.
@@ -149,7 +161,10 @@ public interface CFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the given block
      */
-    @NonDet String visualizeBlock(Block bb, @Nullable Analysis<V, S, T> analysis);
+    @PolyDet String visualizeBlock(
+            @PolyDet CFGVisualizer<V, S, T> this,
+            @PolyDet Block bb,
+            @PolyDet @Nullable Analysis<V, S, T> analysis);
 
     /**
      * Visualize a SpecialBlock.
@@ -158,7 +173,7 @@ public interface CFGVisualizer<
      * @return the String representation of the type of the special block {@code sbb}: entry, exit,
      *     or exceptional-exit
      */
-    String visualizeSpecialBlock(SpecialBlock sbb);
+    @PolyDet String visualizeSpecialBlock(@PolyDet CFGVisualizer<V, S, T> this, @PolyDet SpecialBlock sbb);
 
     /**
      * Visualize a ConditionalBlock.
@@ -166,7 +181,8 @@ public interface CFGVisualizer<
      * @param cbb the conditional block
      * @return the String representation of the conditional block
      */
-    String visualizeConditionalBlock(ConditionalBlock cbb);
+    @PolyDet String visualizeConditionalBlock(
+            @PolyDet CFGVisualizer<V, S, T> this, @PolyDet ConditionalBlock cbb);
 
     /**
      * Visualize the transferInput before a Block based on the analysis.
@@ -175,7 +191,10 @@ public interface CFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the transferInput before the given block
      */
-    @NonDet String visualizeBlockTransferInputBefore(Block bb, Analysis<V, S, T> analysis);
+    @PolyDet String visualizeBlockTransferInputBefore(
+            @PolyDet CFGVisualizer<V, S, T> this,
+            @PolyDet Block bb,
+            @PolyDet Analysis<V, S, T> analysis);
 
     /**
      * Visualize the transferInput after a Block based on the analysis.
@@ -196,7 +215,10 @@ public interface CFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the given node
      */
-    @NonDet String visualizeBlockNode(Node t, @Nullable Analysis<V, S, T> analysis);
+    @PolyDet String visualizeBlockNode(
+            @PolyDet CFGVisualizer<V, S, T> this,
+            @PolyDet Node t,
+            @PolyDet @Nullable Analysis<V, S, T> analysis);
 
     /** Shutdown method called once from the shutdown hook of the {@code BaseTypeChecker}. */
     void shutdown();
