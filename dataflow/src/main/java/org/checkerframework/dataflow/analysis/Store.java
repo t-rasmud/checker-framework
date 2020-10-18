@@ -1,7 +1,6 @@
 package org.checkerframework.dataflow.analysis;
 
 import org.checkerframework.checker.determinism.qual.PolyDet;
-import org.checkerframework.dataflow.cfg.CFGVisualizer;
 import org.checkerframework.dataflow.cfg.visualize.CFGVisualizer;
 import org.checkerframework.dataflow.expression.Receiver;
 
