@@ -2129,7 +2129,7 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                     new MarkerNode(
                             switchTree,
                             // BUG FIX
-                            "start of switch statement #" + treeUids.get(switchTree),
+                            "start of switch statement #" + CFGBuilder.treeUids.get(switchTree),
                             env.getTypeUtils()));
 
             @Det Integer defaultIndex = null;
@@ -2155,7 +2155,7 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                     new MarkerNode(
                             switchTree,
                             // BUG FIX
-                            "end of switch statement #" + treeUids.get(switchTree),
+                            "end of switch statement #" + CFGBuilder.treeUids.get(switchTree),
                             env.getTypeUtils()));
         }
 
@@ -3028,7 +3028,7 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                 new MarkerNode(
                         tree,
                         // BUG FIX
-                        "start of try statement #" + treeUids.get(tree),
+                        "start of try statement #" + CFGBuilder.treeUids.get(tree),
                         env.getTypeUtils()));
 
         // TODO: Should we handle try-with-resources blocks by also generating code
@@ -3077,12 +3077,16 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
         extendWithNode(
                 new MarkerNode(
                         // BUG FIX
-                        tree, "start of try block #" + treeUids.get(tree), env.getTypeUtils()));
+                        tree,
+                        "start of try block #" + CFGBuilder.treeUids.get(tree),
+                        env.getTypeUtils()));
         scan(tree.getBlock(), p);
         extendWithNode(
                 new MarkerNode(
                         // BUG FIX
-                        tree, "end of try block #" + treeUids.get(tree), env.getTypeUtils()));
+                        tree,
+                        "end of try block #" + CFGBuilder.treeUids.get(tree),
+                        env.getTypeUtils()));
 
         extendWithExtendedNode(
                 new UnconditionalJump(CFGBuilder.firstNonNull(finallyLabel, doneLabel)));
@@ -3099,7 +3103,7 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                                     + c.getParameter().getType()
                                     + " #"
                                     // BUG FIX
-                                    + treeUids.get(tree),
+                                    + CFGBuilder.treeUids.get(tree),
                             env.getTypeUtils()));
             scan(c, p);
             extendWithNode(
@@ -3109,7 +3113,7 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                                     + c.getParameter().getType()
                                     + " #"
                                     // BUG FIX
-                                    + treeUids.get(tree),
+                                    + CFGBuilder.treeUids.get(tree),
                             env.getTypeUtils()));
 
             catchIndex++;
@@ -3127,13 +3131,13 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                 extendWithNode(
                         new MarkerNode(
                                 tree,
-                                "start of finally block #" + treeUids.get(tree),
+                                "start of finally block #" + CFGBuilder.treeUids.get(tree),
                                 env.getTypeUtils()));
                 scan(finallyBlock, p);
                 extendWithNode(
                         new MarkerNode(
                                 tree,
-                                "end of finally block #" + treeUids.get(tree),
+                                "end of finally block #" + CFGBuilder.treeUids.get(tree),
                                 env.getTypeUtils()));
                 extendWithExtendedNode(new UnconditionalJump(doneLabel));
             }
@@ -3148,7 +3152,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                 extendWithNode(
                         new MarkerNode(
                                 tree,
-                                "start of finally block for Throwable #" + treeUids.get(tree),
+                                "start of finally block for Throwable #"
+                                        + CFGBuilder.treeUids.get(tree),
                                 env.getTypeUtils()));
 
                 scan(finallyBlock, p);
@@ -3158,7 +3163,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                         extendWithNodeWithException(
                                 new MarkerNode(
                                         tree,
-                                        "end of finally block for Throwable #" + treeUids.get(tree),
+                                        "end of finally block for Throwable #"
+                                                + CFGBuilder.treeUids.get(tree),
                                         env.getTypeUtils()),
                                 throwableType);
 
@@ -3172,13 +3178,14 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                 extendWithNode(
                         new MarkerNode(
                                 tree,
-                                "start of finally block for return #" + treeUids.get(tree),
+                                "start of finally block for return #"
+                                        + CFGBuilder.treeUids.get(tree),
                                 env.getTypeUtils()));
                 scan(finallyBlock, p);
                 extendWithNode(
                         new MarkerNode(
                                 tree,
-                                "end of finally block for return #" + treeUids.get(tree),
+                                "end of finally block for return #" + CFGBuilder.treeUids.get(tree),
                                 env.getTypeUtils()));
                 extendWithExtendedNode(new UnconditionalJump(returnTargetL.accessLabel()));
             } else {
@@ -3192,13 +3199,14 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                 extendWithNode(
                         new MarkerNode(
                                 tree,
-                                "start of finally block for break #" + treeUids.get(tree),
+                                "start of finally block for break #"
+                                        + CFGBuilder.treeUids.get(tree),
                                 env.getTypeUtils()));
                 scan(finallyBlock, p);
                 extendWithNode(
                         new MarkerNode(
                                 tree,
-                                "end of finally block for break #" + treeUids.get(tree),
+                                "end of finally block for break #" + CFGBuilder.treeUids.get(tree),
                                 env.getTypeUtils()));
                 extendWithExtendedNode(new UnconditionalJump(breakTargetL.accessLabel()));
             } else {
@@ -3219,7 +3227,7 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                                     "start of finally block for break label "
                                             + access.getKey()
                                             + " #"
-                                            + treeUids.get(tree),
+                                            + CFGBuilder.treeUids.get(tree),
                                     env.getTypeUtils()));
                     scan(finallyBlock, p);
                     extendWithNode(
@@ -3228,7 +3236,7 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                                     "end of finally block for break label "
                                             + access.getKey()
                                             + " #"
-                                            + treeUids.get(tree),
+                                            + CFGBuilder.treeUids.get(tree),
                                     env.getTypeUtils()));
                     extendWithExtendedNode(new UnconditionalJump(breakLabels.get(access.getKey())));
                 }
@@ -3243,13 +3251,15 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                 extendWithNode(
                         new MarkerNode(
                                 tree,
-                                "start of finally block for continue #" + treeUids.get(tree),
+                                "start of finally block for continue #"
+                                        + CFGBuilder.treeUids.get(tree),
                                 env.getTypeUtils()));
                 scan(finallyBlock, p);
                 extendWithNode(
                         new MarkerNode(
                                 tree,
-                                "end of finally block for continue #" + treeUids.get(tree),
+                                "end of finally block for continue #"
+                                        + CFGBuilder.treeUids.get(tree),
                                 env.getTypeUtils()));
                 extendWithExtendedNode(new UnconditionalJump(continueTargetL.accessLabel()));
             } else {
@@ -3271,7 +3281,7 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                                     "start of finally block for continue label "
                                             + access.getKey()
                                             + " #"
-                                            + treeUids.get(tree),
+                                            + CFGBuilder.treeUids.get(tree),
                                     env.getTypeUtils()));
                     scan(finallyBlock, p);
                     extendWithNode(
@@ -3280,7 +3290,7 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                                     "end of finally block for continue label "
                                             + access.getKey()
                                             + " #"
-                                            + treeUids.get(tree),
+                                            + CFGBuilder.treeUids.get(tree),
                                     env.getTypeUtils()));
                     extendWithExtendedNode(
                             new UnconditionalJump(continueLabels.get(access.getKey())));
