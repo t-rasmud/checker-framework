@@ -251,7 +251,7 @@ public class DOTCFGVisualizer<
         } else if (ast.getKind() == UnderlyingAST.Kind.LAMBDA) {
             CFGLambda cfgLambda = (CFGLambda) ast;
             String clsName = cfgLambda.getSimpleClassName();
-            String methodName = cfgLambda.getMethodname();
+            String methodName = cfgLambda.getMethodName();
             @SuppressWarnings("determinism") // true positive (debug output): hashCode
             @Det int hashCode = cfgLambda.getCode().hashCode();
             outFile.append(clsName);
