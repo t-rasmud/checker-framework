@@ -27,7 +27,7 @@ class TryFinallyScopeMap extends HashMap<Name, Label> {
     @Override
     @SuppressWarnings("determinism") // imprecise field access rule: accessing @OrderNonDet field of
     // @PolyDet receiver gives @NonDet, should be @PolyDet("upDet")
-    public Label get(@PolyDet TryFinallyScopeMap this, @PolyDet Object key) {
+    public Label get(@PolyDet TryFinallyScopeMap this, @PolyDet @Nullable Object key) {
         if (key == null) {
             throw new IllegalArgumentException();
         }
@@ -47,7 +47,7 @@ class TryFinallyScopeMap extends HashMap<Name, Label> {
     @SuppressWarnings(
             "keyfor:contracts.conditional.postcondition.not.satisfied") // get adds everything
     public @PolyDet("down") boolean containsKey(
-            @Nullable @PolyDet TryFinallyScopeMap this, @PolyDet Object key) {
+            @Nullable @PolyDet TryFinallyScopeMap this, @PolyDet @Nullable Object key) {
         return true;
     }
 

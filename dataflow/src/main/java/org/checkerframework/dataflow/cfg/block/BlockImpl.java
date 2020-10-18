@@ -4,6 +4,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 
 /** Base class of the {@link Block} implementation hierarchy. */
 public abstract class BlockImpl implements Block {
@@ -24,7 +25,7 @@ public abstract class BlockImpl implements Block {
      * @return the unique ID of this object.
      */
     @Override
-    public @Det long getUid(@Det BlockImpl this) {
+    public @Det long getUid(@UnknownInitialization @PolyDet BlockImpl this) {
         return uid;
     }
 

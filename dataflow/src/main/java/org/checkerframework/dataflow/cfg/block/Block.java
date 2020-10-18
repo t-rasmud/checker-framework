@@ -35,13 +35,6 @@ public interface Block extends UniqueId {
     @Det BlockType getType(@Det Block this);
 
     /**
-     * Returns the unique identifier of this block.
-     *
-     * @return the unique identifier of this block
-     */
-    long getId();
-
-    /**
      * Returns the predecessors of this basic block.
      *
      * @return the predecessors of this basic block

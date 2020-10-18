@@ -457,8 +457,6 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
                 node, before, transferInput, nodeValues, analysisCaches);
     }
 
-    @OrderNonDet HashMap<@Det String, @Det String> map;
-
     /**
      * Returns a verbose string representation of this, useful for debugging.
      *
