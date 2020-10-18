@@ -17,7 +17,7 @@ public class ThisReference extends Receiver {
     }
 
     @Override
-    public int hashCode(@PolyDet ThisReference this) {
+    public @PolyDet int hashCode(@PolyDet ThisReference this) {
         return 0;
     }
 

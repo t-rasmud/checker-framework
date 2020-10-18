@@ -193,14 +193,10 @@ public class DOTCFGVisualizer<
 
         if (ast.getKind() == UnderlyingAST.Kind.ARBITRARY_CODE) {
             CFGStatement cfgStatement = (CFGStatement) ast;
-            @SuppressWarnings(
-                    "determinism") // all known implementations have @Det toString method: Name
-            @Det String clsName = cfgStatement.getClassTree().getSimpleName().toString();
+            String clsName = cfgStatement.getSimpleClassName();
             outFile.append(clsName);
             outFile.append("-initializer-");
-            @SuppressWarnings("determinism") // true positive (debug output): hashCode
-            @Det int tmp = ast.hashCode();
-            outFile.append(tmp);
+            outFile.append(ast.getUid());
 
             srcLoc.append("<");
             srcLoc.append(clsName);
@@ -209,9 +205,7 @@ public class DOTCFGVisualizer<
             srcLoc.append(">");
         } else if (ast.getKind() == UnderlyingAST.Kind.METHOD) {
             CFGMethod cfgMethod = (CFGMethod) ast;
-            @SuppressWarnings(
-                    "determinism") // all known implementations have @Det toString method: Name
-            @Det String clsName = cfgMethod.getClassTree().getSimpleName().toString();
+            String clsName = cfgMethod.getSimpleClassName();
             @SuppressWarnings(
                     "determinism") // all known implementations have @Det toString method: Name
             @Det String methodName = cfgMethod.getMethod().getName().toString();
@@ -242,9 +236,7 @@ public class DOTCFGVisualizer<
             srcLoc.append(">");
         } else if (ast.getKind() == UnderlyingAST.Kind.LAMBDA) {
             CFGLambda cfgLambda = (CFGLambda) ast;
-            @SuppressWarnings(
-                    "determinism") // all known implementations have @Det toString method: Name
-            @Det String clsName = cfgLambda.getClassTree().getSimpleName().toString();
+            String clsName = cfgLambda.getSimpleClassName();
             @SuppressWarnings(
                     "determinism") // all known implementations have @Det toString method: Name
             @Det String methodName = cfgLambda.getMethod().getName().toString();

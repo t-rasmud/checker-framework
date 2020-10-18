@@ -1,0 +1,22 @@
+package org.checkerframework.dataflow.cfg.builder;
+
+import java.util.Set;
+import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
+
+/**
+ * A TryFrame takes a thrown exception type and maps it to a set of possible control-flow
+ * successors.
+ */
+interface TryFrame {
+    /**
+     * Given a type of thrown exception, add the set of possible control flow successor {@link
+     * Label}s to the argument set. Return true if the exception is known to be caught by one of
+     * those labels and false if it may propagate still further.
+     */
+    public boolean possibleLabels(TypeMirror thrown, @OrderNonDet Set<Label> labels);
+
+    @Override
+    @PolyDet String toString(@PolyDet TryFrame this);
+}
