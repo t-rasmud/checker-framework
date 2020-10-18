@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -68,7 +67,7 @@ public class SynchronizedNode extends Node {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet SynchronizedNode this) {
+    public @PolyDet int hashCode(@PolyDet SynchronizedNode this) {
         return Objects.hash(tree, startOfBlock, getExpression());
     }
 

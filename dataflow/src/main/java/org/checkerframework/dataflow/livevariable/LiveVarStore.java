@@ -1,11 +1,11 @@
 package org.checkerframework.dataflow.livevariable;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.StringJoiner;
 import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.determinism.qual.NonDet;
-import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.Store;
@@ -25,11 +25,11 @@ import org.checkerframework.javacutil.BugInCF;
 public class LiveVarStore implements Store<LiveVarStore> {
 
     /** A set of live variable abstract values. */
-    private final @OrderNonDet Set<LiveVarValue> liveVarValueSet;
+    private final @Det Set<LiveVarValue> liveVarValueSet;
 
     /** Create a new LiveVarStore. */
     public LiveVarStore() {
-        liveVarValueSet = new HashSet<>();
+        liveVarValueSet = new LinkedHashSet<>();
     }
 
     /**
@@ -37,7 +37,7 @@ public class LiveVarStore implements Store<LiveVarStore> {
      *
      * @param liveVarValueSet a set of live variable abstract values
      */
-    public LiveVarStore(@OrderNonDet Set<LiveVarValue> liveVarValueSet) {
+    public LiveVarStore(@Det Set<LiveVarValue> liveVarValueSet) {
         this.liveVarValueSet = liveVarValueSet;
     }
 
@@ -91,20 +91,17 @@ public class LiveVarStore implements Store<LiveVarStore> {
     }
 
     @Override
+    @SuppressWarnings("determinism:return.type.incompatible") // false positive, I think
     public @PolyDet boolean equals(@PolyDet LiveVarStore this, @PolyDet @Nullable Object obj) {
         if (!(obj instanceof LiveVarStore)) {
             return false;
         }
         LiveVarStore other = (LiveVarStore) obj;
-        @SuppressWarnings(
-                "determinism") // imprecise field access rule: accessing @OrderNonDet field of
-        // @PolyDet receiver gives @NonDet, should be @PolyDet("upDet")
-        @PolyDet boolean tmp = other.liveVarValueSet.equals(this.liveVarValueSet);
-        return tmp;
+        return other.liveVarValueSet.equals(this.liveVarValueSet);
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet LiveVarStore this) {
+    public @PolyDet int hashCode(@PolyDet LiveVarStore this) {
         return this.liveVarValueSet.hashCode();
     }
 
@@ -139,7 +136,7 @@ public class LiveVarStore implements Store<LiveVarStore> {
     }
 
     @Override
-    public @NonDet String visualize(CFGVisualizer<?, LiveVarStore, ?> viz) {
+    public @PolyDet String visualize(@PolyDet CFGVisualizer<?, LiveVarStore, ?> viz) {
         String key = "live variables";
         if (liveVarValueSet.isEmpty()) {
             return viz.visualizeStoreKeyVal(key, "none");

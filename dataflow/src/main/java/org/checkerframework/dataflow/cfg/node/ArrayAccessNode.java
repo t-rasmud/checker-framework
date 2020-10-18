@@ -5,7 +5,6 @@ import com.sun.source.tree.Tree;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
@@ -67,7 +66,7 @@ public class ArrayAccessNode extends Node {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet ArrayAccessNode this) {
+    public @PolyDet int hashCode(@PolyDet ArrayAccessNode this) {
         return Objects.hash(getArray(), getIndex());
     }
 

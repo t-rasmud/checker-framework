@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
+import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -19,11 +20,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class MarkerNode extends Node {
 
     protected final @Nullable Tree tree;
-    protected final @NonDet String message;
+    protected final @Det String message;
 
-    // message may be @NonDet because in CFGBuilder.java, the SwitchBuilder#build method passes a
-    // hash code.
-    public MarkerNode(@Nullable Tree tree, @NonDet String message, Types types) {
+    public MarkerNode(@Nullable Tree tree, String message, Types types) {
         super(types.getNoType(TypeKind.NONE));
         this.tree = tree;
         this.message = message;
@@ -66,7 +65,7 @@ public class MarkerNode extends Node {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet MarkerNode this) {
+    public @PolyDet int hashCode(@PolyDet MarkerNode this) {
         return Objects.hash(tree, getMessage());
     }
 

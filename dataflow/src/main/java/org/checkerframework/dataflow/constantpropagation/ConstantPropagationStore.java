@@ -2,7 +2,6 @@ package org.checkerframework.dataflow.constantpropagation;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -136,7 +135,7 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet ConstantPropagationStore this) {
+    public @PolyDet int hashCode(@PolyDet ConstantPropagationStore this) {
         int s = 0;
         for (Map.Entry<Node, Constant> e : contents.entrySet()) {
             if (!e.getValue().isBottom()) {
@@ -171,7 +170,9 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
      */
     @Override
     @SuppressWarnings("nullness")
-    public @NonDet String visualize(CFGVisualizer<?, ConstantPropagationStore, ?> viz) {
+    public @PolyDet String visualize(
+            @PolyDet ConstantPropagationStore this,
+            @PolyDet CFGVisualizer<?, ConstantPropagationStore, ?> viz) {
         return viz.visualizeStoreKeyVal("constant propagation", null);
     }
 }

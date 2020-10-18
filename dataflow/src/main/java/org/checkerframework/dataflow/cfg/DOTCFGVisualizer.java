@@ -14,6 +14,7 @@ import java.util.StringJoiner;
 import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.KeyFor;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.AbstractValue;
@@ -73,7 +74,7 @@ public class DOTCFGVisualizer<
     }
 
     @Override
-    public @Nullable @NonDet Map<String, @NonDet Object> visualize(
+    public @Nullable @OrderNonDet Map<String, @NonDet Object> visualize(
             ControlFlowGraph cfg, Block entry, @Nullable Analysis<V, S, T> analysis) {
 
         String dotGraph = visualizeGraph(cfg, entry, analysis);
@@ -111,7 +112,7 @@ public class DOTCFGVisualizer<
 
         // Definition of all nodes including their labels.
         for (@KeyFor("processOrder") Block v : blocks) {
-            sbDotNodes.append("    ").append(v.getId()).append(" [");
+            sbDotNodes.append("    ").append(v.getUid()).append(" [");
             if (v.getType() == BlockType.CONDITIONAL_BLOCK) {
                 sbDotNodes.append("shape=polygon sides=8 ");
             } else if (v.getType() == BlockType.SPECIAL_BLOCK) {
@@ -170,7 +171,10 @@ public class DOTCFGVisualizer<
     }
 
     @Override
-    public String visualizeBlockTransferInputAfter(Block bb, Analysis<V, S, T> analysis) {
+    public @PolyDet String visualizeBlockTransferInputAfter(
+            @PolyDet DOTCFGVisualizer<V, S, T> this,
+            @PolyDet Block bb,
+            @PolyDet Analysis<V, S, T> analysis) {
         return super.visualizeBlockTransferInputHelper(
                 VisualizeWhere.AFTER, bb, analysis, getSeparator());
     }
@@ -316,7 +320,7 @@ public class DOTCFGVisualizer<
     }
 
     @Override
-    public String visualizeStoreKeyVal(String keyName, Object value) {
+    public @PolyDet String visualizeStoreKeyVal(@PolyDet String keyName, @PolyDet Object value) {
         return storeEntryIndent + keyName + " = " + value;
     }
 

@@ -1,7 +1,6 @@
 package org.checkerframework.dataflow.constantpropagation;
 
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -108,7 +107,7 @@ public class Constant implements AbstractValue<Constant> {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet Constant this) {
+    public @PolyDet int hashCode(@PolyDet Constant this) {
         return Objects.hash(type, value);
     }
 

@@ -3,6 +3,7 @@ package org.checkerframework.dataflow.cfg;
 import java.util.Map;
 import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.AbstractValue;
 import org.checkerframework.dataflow.analysis.Analysis;
@@ -59,7 +60,7 @@ public interface CFGVisualizer<
      * @return visualization results, e.g. generated file names ({@link DOTCFGVisualizer}) or a
      *     String representation of the CFG ({@link StringCFGVisualizer})
      */
-    @Nullable @NonDet Map<String, @NonDet Object> visualize(
+    @Nullable @OrderNonDet Map<String, Object> visualize(
             ControlFlowGraph cfg, Block entry, @Nullable Analysis<V, S, T> analysis);
 
     /**
@@ -139,7 +140,7 @@ public interface CFGVisualizer<
      * @param value the value of the specific information to be visualized
      * @return the String representation of the specific information
      */
-    String visualizeStoreKeyVal(String keyName, Object value);
+    @PolyDet String visualizeStoreKeyVal(@PolyDet String keyName, @PolyDet Object value);
 
     /**
      * Visualize a block based on the analysis.
@@ -183,7 +184,10 @@ public interface CFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the transferInput after the given block
      */
-    @NonDet String visualizeBlockTransferInputAfter(Block bb, Analysis<V, S, T> analysis);
+    @PolyDet String visualizeBlockTransferInputAfter(
+            @PolyDet CFGVisualizer<V, S, T> this,
+            @PolyDet Block bb,
+            @PolyDet Analysis<V, S, T> analysis);
 
     /**
      * Visualize a Node based on the analysis.

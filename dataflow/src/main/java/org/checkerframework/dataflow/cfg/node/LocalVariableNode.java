@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.element.Element;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
@@ -98,7 +97,7 @@ public class LocalVariableNode extends Node {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet LocalVariableNode this) {
+    public @PolyDet int hashCode(@PolyDet LocalVariableNode this) {
         return Objects.hash(getName());
     }
 

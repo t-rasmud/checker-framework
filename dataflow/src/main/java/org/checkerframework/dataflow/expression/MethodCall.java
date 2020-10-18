@@ -6,7 +6,6 @@ import java.util.Objects;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.Store;
@@ -156,7 +155,7 @@ public class MethodCall extends Receiver {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet MethodCall this) {
+    public @PolyDet int hashCode(@PolyDet MethodCall this) {
         if (method.getKind() == ElementKind.CONSTRUCTOR) {
             return super.hashCode();
         }

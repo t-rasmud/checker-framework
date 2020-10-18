@@ -134,11 +134,15 @@ public class RegularTransferResult<V extends AbstractValue<V>, S extends Store<S
     }
 
     @Override
+    @SuppressWarnings("UnusedVariable") // TEMPORARY
     public @PolyDet String toString(@PolyDet RegularTransferResult<V, S> this) {
         StringJoiner result = new @PolyDet StringJoiner(System.lineSeparator());
         result.add("RegularTransferResult(");
         result.add("  resultValue = " + UtilPlume.indentLinesExceptFirst(2, resultValue));
         // "toString().trim()" works around bug where toString ends with a newline.
+        @PolyDet String s1 = store.toString();
+        @PolyDet String s2 = store.toString().trim();
+        @PolyDet String s3 = UtilPlume.indentLinesExceptFirst(2, store.toString().trim());
         result.add(
                 "  store = " + UtilPlume.indentLinesExceptFirst(2, store.toString().trim()) + ")");
         return result.toString();

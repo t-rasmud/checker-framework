@@ -3,7 +3,6 @@ package org.checkerframework.dataflow.cfg.node;
 import com.sun.source.tree.Tree.Kind;
 import com.sun.source.tree.UnaryTree;
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -48,7 +47,7 @@ public class ConditionalNotNode extends UnaryOperationNode {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet ConditionalNotNode this) {
+    public @PolyDet int hashCode(@PolyDet ConditionalNotNode this) {
         return Objects.hash(ConditionalNotNode.class, getOperand());
     }
 }

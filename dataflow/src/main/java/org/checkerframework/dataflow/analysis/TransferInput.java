@@ -1,7 +1,6 @@
 package org.checkerframework.dataflow.analysis;
 
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -294,7 +293,7 @@ public class TransferInput<V extends AbstractValue<V>, S extends Store<S>> imple
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet TransferInput<V, S> this) {
+    public @PolyDet int hashCode(@PolyDet TransferInput<V, S> this) {
         return Objects.hash(this.analysis, this.node, this.store, this.thenStore, this.elseStore);
     }
 

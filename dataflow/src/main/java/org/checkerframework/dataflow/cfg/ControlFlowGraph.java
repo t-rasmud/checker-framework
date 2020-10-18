@@ -19,7 +19,6 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.StringJoiner;
 import org.checkerframework.checker.determinism.qual.Det;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.initialization.qual.UnknownInitialization;
@@ -319,7 +318,7 @@ public class ControlFlowGraph {
         // visualize method expects a @Det CFG, but passing @PolyDet is okay
         // because the result of this method is @NonDet. Changing the visualize to accept @NonDet
         // requires changing many more annotations in other locations due to overriding.
-        Map<@Det String, @NonDet Object> res = viz.visualize(this, this.getEntryBlock(), null);
+        Map<@Det String, @Det Object> res = viz.visualize(this, this.getEntryBlock(), null);
         viz.shutdown();
         if (res == null) {
             // BUG FIX

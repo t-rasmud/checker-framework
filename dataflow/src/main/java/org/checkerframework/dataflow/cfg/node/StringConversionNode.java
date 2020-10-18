@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -66,7 +65,7 @@ public class StringConversionNode extends Node {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet StringConversionNode this) {
+    public @PolyDet int hashCode(@PolyDet StringConversionNode this) {
         return Objects.hash(StringConversionNode.class, getOperand());
     }
 

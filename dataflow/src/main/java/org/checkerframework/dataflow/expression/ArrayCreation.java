@@ -3,7 +3,6 @@ package org.checkerframework.dataflow.expression;
 import java.util.List;
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.plumelib.util.UtilPlume;
@@ -72,7 +71,7 @@ public class ArrayCreation extends Receiver {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet ArrayCreation this) {
+    public @PolyDet int hashCode(@PolyDet ArrayCreation this) {
         return Objects.hash(dimensions, initializers, getType().toString());
     }
 

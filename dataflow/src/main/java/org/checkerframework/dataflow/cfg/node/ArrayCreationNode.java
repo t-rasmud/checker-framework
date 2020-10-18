@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.plumelib.util.UtilPlume;
@@ -100,7 +99,7 @@ public class ArrayCreationNode extends Node {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet ArrayCreationNode this) {
+    public @PolyDet int hashCode(@PolyDet ArrayCreationNode this) {
         return Objects.hash(dimensions, initializers);
     }
 

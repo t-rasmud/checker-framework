@@ -8,10 +8,12 @@ import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.CFGBuilder;
 import org.checkerframework.dataflow.cfg.block.Block;
 import org.checkerframework.dataflow.qual.Pure;
+import org.plumelib.util.UniqueId;
 
 /**
  * A node in the abstract representation used for Java code inside a basic block.
@@ -34,7 +36,7 @@ import org.checkerframework.dataflow.qual.Pure;
  *
  * @see org.checkerframework.dataflow.util.IdentityMostlySingleton
  */
-public abstract class Node {
+public abstract class Node implements UniqueId {
 
     /**
      * The basic block this node belongs to. If null, this object represents a method formal
@@ -59,6 +61,14 @@ public abstract class Node {
      * {@link Tree}. Otherwise, it is the type is set by the {@link CFGBuilder}.
      */
     protected final TypeMirror type;
+
+    /** The unique ID of this object. */
+    final transient long uid = UniqueId.nextUid.getAndIncrement();
+
+    @Override
+    public @PolyDet long getUid(@PolyDet @UnknownInitialization Node this) {
+        return uid;
+    }
 
     protected Node(TypeMirror type) {
         assert type != null;
@@ -169,13 +179,8 @@ public abstract class Node {
      * @return a printed representation of this
      */
     public @PolyDet String toStringDebug(@PolyDet Node this) {
-        return String.format(
-                "%s [%s %s %s]",
-                this,
-                this.getClass().getSimpleName(),
-                // TODO: these are NONDETERMINISTIC!
-                this.hashCode(),
-                System.identityHashCode(this));
+        // DETERMINISM BUG FIX
+        return String.format("%s [%s]", this, getClassAndUid());
     }
 
     /**

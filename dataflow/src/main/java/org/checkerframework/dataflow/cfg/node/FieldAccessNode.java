@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.element.VariableElement;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.ElementUtils;
@@ -100,7 +99,7 @@ public class FieldAccessNode extends Node {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet FieldAccessNode this) {
+    public @PolyDet int hashCode(@PolyDet FieldAccessNode this) {
         return Objects.hash(getReceiver(), getFieldName());
     }
 

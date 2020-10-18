@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.util.Types;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
@@ -55,7 +54,7 @@ public class PrimitiveTypeNode extends Node {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet PrimitiveTypeNode this) {
+    public @PolyDet int hashCode(@PolyDet PrimitiveTypeNode this) {
         return Objects.hash(getType());
     }
 

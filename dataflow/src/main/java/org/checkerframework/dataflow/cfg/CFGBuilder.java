@@ -196,6 +196,7 @@ import org.checkerframework.javacutil.TreeUtils;
 import org.checkerframework.javacutil.TypeKindUtils;
 import org.checkerframework.javacutil.TypesUtils;
 import org.checkerframework.javacutil.trees.TreeBuilder;
+import org.plumelib.util.UniqueIdMap;
 
 /**
  * Builds the control flow graph of some Java code (either a method, or an arbitrary statement).
@@ -220,10 +221,13 @@ import org.checkerframework.javacutil.trees.TreeBuilder;
  * </ol>
  */
 @SuppressWarnings("nullness") // TODO
-public class CFGBuilder {
+public abstract class CFGBuilder {
 
     /** This class should never be instantiated. Protected to still allow subclasses. */
     protected CFGBuilder() {}
+
+    /** Unique ids for trees. */
+    static UniqueIdMap<Tree> treeUids = new UniqueIdMap<>();
 
     /** Build the control flow graph of some code. */
     public static ControlFlowGraph build(
@@ -3670,7 +3674,8 @@ public class CFGBuilder {
                 extendWithNode(
                         new MarkerNode(
                                 switchTree,
-                                "start of switch statement #" + switchTree.hashCode(),
+                                // BUG FIX
+                                "start of switch statement #" + treeUids.get(switchTree),
                                 env.getTypeUtils()));
 
                 @Det Integer defaultIndex = null;
@@ -3695,7 +3700,8 @@ public class CFGBuilder {
                 extendWithNode(
                         new MarkerNode(
                                 switchTree,
-                                "end of switch statement #" + switchTree.hashCode(),
+                                // BUG FIX
+                                "end of switch statement #" + treeUids.get(switchTree),
                                 env.getTypeUtils()));
             }
 
@@ -4568,7 +4574,8 @@ public class CFGBuilder {
             extendWithNode(
                     new MarkerNode(
                             tree,
-                            "start of try statement #" + tree.hashCode(),
+                            // BUG FIX
+                            "start of try statement #" + treeUids.get(tree),
                             env.getTypeUtils()));
 
             // TODO: Should we handle try-with-resources blocks by also generating code
@@ -4616,11 +4623,13 @@ public class CFGBuilder {
 
             extendWithNode(
                     new MarkerNode(
-                            tree, "start of try block #" + tree.hashCode(), env.getTypeUtils()));
+                            // BUG FIX
+                            tree, "start of try block #" + treeUids.get(tree), env.getTypeUtils()));
             scan(tree.getBlock(), p);
             extendWithNode(
                     new MarkerNode(
-                            tree, "end of try block #" + tree.hashCode(), env.getTypeUtils()));
+                            // BUG FIX
+                            tree, "end of try block #" + treeUids.get(tree), env.getTypeUtils()));
 
             extendWithExtendedNode(new UnconditionalJump(firstNonNull(finallyLabel, doneLabel)));
 
@@ -4635,7 +4644,8 @@ public class CFGBuilder {
                                 "start of catch block for "
                                         + c.getParameter().getType()
                                         + " #"
-                                        + tree.hashCode(),
+                                        // BUG FIX
+                                        + treeUids.get(tree),
                                 env.getTypeUtils()));
                 scan(c, p);
                 extendWithNode(
@@ -4644,7 +4654,8 @@ public class CFGBuilder {
                                 "end of catch block for "
                                         + c.getParameter().getType()
                                         + " #"
-                                        + tree.hashCode(),
+                                        // BUG FIX
+                                        + treeUids.get(tree),
                                 env.getTypeUtils()));
 
                 catchIndex++;
@@ -4662,13 +4673,13 @@ public class CFGBuilder {
                     extendWithNode(
                             new MarkerNode(
                                     tree,
-                                    "start of finally block #" + tree.hashCode(),
+                                    "start of finally block #" + treeUids.get(tree),
                                     env.getTypeUtils()));
                     scan(finallyBlock, p);
                     extendWithNode(
                             new MarkerNode(
                                     tree,
-                                    "end of finally block #" + tree.hashCode(),
+                                    "end of finally block #" + treeUids.get(tree),
                                     env.getTypeUtils()));
                     extendWithExtendedNode(new UnconditionalJump(doneLabel));
                 }
@@ -4683,7 +4694,7 @@ public class CFGBuilder {
                     extendWithNode(
                             new MarkerNode(
                                     tree,
-                                    "start of finally block for Throwable #" + tree.hashCode(),
+                                    "start of finally block for Throwable #" + treeUids.get(tree),
                                     env.getTypeUtils()));
 
                     scan(finallyBlock, p);
@@ -4694,7 +4705,7 @@ public class CFGBuilder {
                                     new MarkerNode(
                                             tree,
                                             "end of finally block for Throwable #"
-                                                    + tree.hashCode(),
+                                                    + treeUids.get(tree),
                                             env.getTypeUtils()),
                                     throwableType);
 
@@ -4708,13 +4719,13 @@ public class CFGBuilder {
                     extendWithNode(
                             new MarkerNode(
                                     tree,
-                                    "start of finally block for return #" + tree.hashCode(),
+                                    "start of finally block for return #" + treeUids.get(tree),
                                     env.getTypeUtils()));
                     scan(finallyBlock, p);
                     extendWithNode(
                             new MarkerNode(
                                     tree,
-                                    "end of finally block for return #" + tree.hashCode(),
+                                    "end of finally block for return #" + treeUids.get(tree),
                                     env.getTypeUtils()));
                     extendWithExtendedNode(new UnconditionalJump(returnTargetL.accessLabel()));
                 } else {
@@ -4728,13 +4739,13 @@ public class CFGBuilder {
                     extendWithNode(
                             new MarkerNode(
                                     tree,
-                                    "start of finally block for break #" + tree.hashCode(),
+                                    "start of finally block for break #" + treeUids.get(tree),
                                     env.getTypeUtils()));
                     scan(finallyBlock, p);
                     extendWithNode(
                             new MarkerNode(
                                     tree,
-                                    "end of finally block for break #" + tree.hashCode(),
+                                    "end of finally block for break #" + treeUids.get(tree),
                                     env.getTypeUtils()));
                     extendWithExtendedNode(new UnconditionalJump(breakTargetL.accessLabel()));
                 } else {
@@ -4755,7 +4766,7 @@ public class CFGBuilder {
                                         "start of finally block for break label "
                                                 + tmp.getKey()
                                                 + " #"
-                                                + tree.hashCode(),
+                                                + treeUids.get(tree),
                                         env.getTypeUtils()));
                         scan(finallyBlock, p);
                         extendWithNode(
@@ -4764,7 +4775,7 @@ public class CFGBuilder {
                                         "end of finally block for break label "
                                                 + tmp.getKey()
                                                 + " #"
-                                                + tree.hashCode(),
+                                                + treeUids.get(tree),
                                         env.getTypeUtils()));
                         extendWithExtendedNode(
                                 new UnconditionalJump(breakLabels.get(tmp.getKey())));
@@ -4780,13 +4791,13 @@ public class CFGBuilder {
                     extendWithNode(
                             new MarkerNode(
                                     tree,
-                                    "start of finally block for continue #" + tree.hashCode(),
+                                    "start of finally block for continue #" + treeUids.get(tree),
                                     env.getTypeUtils()));
                     scan(finallyBlock, p);
                     extendWithNode(
                             new MarkerNode(
                                     tree,
-                                    "end of finally block for continue #" + tree.hashCode(),
+                                    "end of finally block for continue #" + treeUids.get(tree),
                                     env.getTypeUtils()));
                     extendWithExtendedNode(new UnconditionalJump(continueTargetL.accessLabel()));
                 } else {
@@ -4808,7 +4819,7 @@ public class CFGBuilder {
                                         "start of finally block for continue label "
                                                 + tmp.getKey()
                                                 + " #"
-                                                + tree.hashCode(),
+                                                + treeUids.get(tree),
                                         env.getTypeUtils()));
                         scan(finallyBlock, p);
                         extendWithNode(
@@ -4817,7 +4828,7 @@ public class CFGBuilder {
                                         "end of finally block for continue label "
                                                 + tmp.getKey()
                                                 + " #"
-                                                + tree.hashCode(),
+                                                + treeUids.get(tree),
                                         env.getTypeUtils()));
                         extendWithExtendedNode(
                                 new UnconditionalJump(continueLabels.get(tmp.getKey())));
@@ -5237,22 +5248,21 @@ public class CFGBuilder {
      * Print a set of {@link Block}s and the edges between them. This is useful for examining the
      * results of phase two.
      */
-    @SuppressWarnings("determinism") // true positive (debug output): hashCode
     protected static void printBlocks(Set<Block> blocks) {
         for (Block b : blocks) {
-            System.out.print(b.hashCode() + ": " + b);
+            System.out.print(b.getUid() + ": " + b);
             switch (b.getType()) {
                 case REGULAR_BLOCK:
                 case SPECIAL_BLOCK:
                     {
                         Block succ = ((SingleSuccessorBlockImpl) b).getSuccessor();
-                        System.out.println(" -> " + (succ != null ? succ.hashCode() : "||"));
+                        System.out.println(" -> " + (succ != null ? succ.getUid() : "||"));
                         break;
                     }
                 case EXCEPTION_BLOCK:
                     {
                         Block succ = ((SingleSuccessorBlockImpl) b).getSuccessor();
-                        System.out.print(" -> " + (succ != null ? succ.hashCode() : "||") + " {");
+                        System.out.print(" -> " + (succ != null ? succ.getUid() : "||") + " {");
                         for (Map.Entry<TypeMirror, Set<Block>> entry :
                                 ((ExceptionBlockImpl) b).getExceptionalSuccessors().entrySet()) {
                             System.out.print(entry.getKey() + " : " + entry.getValue() + ", ");
@@ -5266,9 +5276,9 @@ public class CFGBuilder {
                         Block eSucc = ((ConditionalBlockImpl) b).getElseSuccessor();
                         System.out.println(
                                 " -> T "
-                                        + (tSucc != null ? tSucc.hashCode() : "||")
+                                        + (tSucc != null ? tSucc.getUid() : "||")
                                         + " F "
-                                        + (eSucc != null ? eSucc.hashCode() : "||"));
+                                        + (eSucc != null ? eSucc.getUid() : "||"));
                         break;
                     }
             }

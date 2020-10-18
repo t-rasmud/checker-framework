@@ -10,11 +10,12 @@ import java.lang.annotation.Target;
 
 /**
  * Applied to a declaration of a package, type, method, variable, etc., specifies that the given
- * annotation should be the default. The default is applied to type uses within the declaration for
- * which no other annotation is explicitly written. (The default is not applied to the "parametric
- * locations": class declarations, type parameter declarations, and type parameter uses.) If
- * multiple {@code DefaultQualifier} annotations are in scope, the innermost one takes precedence.
- * DefaultQualifier takes precedence over {@link DefaultQualifierInHierarchy}.
+ * annotation should be the default within the scope of the annotated declaration. The default is
+ * applied to type uses within the declaration for which no other annotation is explicitly written.
+ * (The default is not applied to the "parametric locations": class declarations, type parameter
+ * declarations, and type parameter uses.) If multiple {@code DefaultQualifier} annotations are in
+ * scope, the innermost one takes precedence. DefaultQualifier takes precedence over {@link
+ * DefaultQualifierInHierarchy}.
  *
  * <p>You may write multiple {@code @DefaultQualifier} annotations (for unrelated type systems, or
  * with different {@code locations} fields) at the same location. For example:

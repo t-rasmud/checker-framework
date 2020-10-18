@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.StringJoiner;
 import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.determinism.qual.NonDet;
+import org.checkerframework.checker.determinism.qual.OrderNonDet;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.determinism.qual.RequiresDetToString;
 import org.checkerframework.checker.nullness.qual.KeyFor;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -36,7 +38,7 @@ public class StringCFGVisualizer<
     }
 
     @Override
-    public @NonDet Map<String, @NonDet Object> visualize(
+    public @OrderNonDet Map<String, @NonDet Object> visualize(
             ControlFlowGraph cfg, Block entry, @Nullable Analysis<V, S, T> analysis) {
         String stringGraph = visualizeGraph(cfg, entry, analysis);
         @NonDet Map<@Det String, @NonDet Object> res = new @NonDet HashMap<>();
@@ -58,7 +60,7 @@ public class StringCFGVisualizer<
 
         // Generate all the Nodes.
         for (@KeyFor("processOrder") Block v : blocks) {
-            sjStringNodes.add(v.getId() + ":");
+            sjStringNodes.add(v.getUid() + ":");
             if (verbose) {
                 sjStringNodes.add(getProcessOrderSimpleString(processOrder.get(v)));
             }
@@ -90,9 +92,9 @@ public class StringCFGVisualizer<
     @Override
     public String visualizeConditionalBlock(ConditionalBlock cbb) {
         return "ConditionalBlock: then: "
-                + cbb.getThenSuccessor().getId()
+                + cbb.getThenSuccessor().getUid()
                 + ", else: "
-                + cbb.getElseSuccessor().getId();
+                + cbb.getElseSuccessor().getUid();
     }
 
     @Override
@@ -145,7 +147,7 @@ public class StringCFGVisualizer<
     }
 
     @Override
-    public String visualizeStoreKeyVal(String keyName, Object value) {
+    public @PolyDet String visualizeStoreKeyVal(@PolyDet String keyName, @PolyDet Object value) {
         return storeEntryIndent + keyName + " = " + value;
     }
 

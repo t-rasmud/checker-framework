@@ -4,7 +4,6 @@ import com.sun.source.tree.VariableTree;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
@@ -63,7 +62,7 @@ public class VariableDeclarationNode extends Node {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet VariableDeclarationNode this) {
+    public @PolyDet int hashCode(@PolyDet VariableDeclarationNode this) {
         return Objects.hash(getName());
     }
 

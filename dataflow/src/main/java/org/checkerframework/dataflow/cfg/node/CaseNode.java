@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Objects;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -78,7 +77,7 @@ public class CaseNode extends Node {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet CaseNode this) {
+    public @PolyDet int hashCode(@PolyDet CaseNode this) {
         return Objects.hash(getSwitchOperand(), getCaseOperand());
     }
 

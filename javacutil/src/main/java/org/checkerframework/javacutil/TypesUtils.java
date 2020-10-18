@@ -103,7 +103,7 @@ public final class TypesUtils {
      * @param type a type
      * @return the simple type name, without annotations
      */
-    public static String simpleTypeName(TypeMirror type) {
+    public static @PolyDet String simpleTypeName(@PolyDet TypeMirror type) {
         switch (type.getKind()) {
             case ARRAY:
                 return simpleTypeName(((ArrayType) type).getComponentType()) + "[]";

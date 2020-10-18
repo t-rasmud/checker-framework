@@ -1,6 +1,5 @@
 package org.checkerframework.dataflow.livevariable;
 
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.AbstractValue;
@@ -33,7 +32,7 @@ public class LiveVarValue implements AbstractValue<LiveVarValue> {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet LiveVarValue this) {
+    public @PolyDet int hashCode(@PolyDet LiveVarValue this) {
         return this.liveVariable.hashCode();
     }
 

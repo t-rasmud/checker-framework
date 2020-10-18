@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
@@ -102,7 +101,7 @@ public class ClassNameNode extends Node {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet ClassNameNode this) {
+    public @PolyDet int hashCode(@PolyDet ClassNameNode this) {
         return Objects.hash(getElement(), getParent());
     }
 

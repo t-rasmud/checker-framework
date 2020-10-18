@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import javax.lang.model.element.ExecutableElement;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
@@ -68,7 +67,7 @@ public class MethodAccessNode extends Node {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet MethodAccessNode this) {
+    public @PolyDet int hashCode(@PolyDet MethodAccessNode this) {
         return Objects.hash(getReceiver(), getMethod());
     }
 

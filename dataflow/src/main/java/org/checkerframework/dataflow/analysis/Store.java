@@ -1,6 +1,5 @@
 package org.checkerframework.dataflow.analysis;
 
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.dataflow.cfg.CFGVisualizer;
 import org.checkerframework.dataflow.expression.Receiver;
@@ -105,5 +104,8 @@ public interface Store<S extends Store<S>> {
      * @param viz the visualizer to visualize this store
      * @return the String representation of this store
      */
-    @NonDet String visualize(CFGVisualizer<?, S, ?> viz);
+    @PolyDet String visualize(@PolyDet CFGVisualizer<?, S, ?> viz);
+
+    @Override
+    @PolyDet String toString(@PolyDet Store<S> this);
 }

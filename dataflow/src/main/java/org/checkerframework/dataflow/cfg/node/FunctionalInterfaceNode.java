@@ -6,7 +6,6 @@ import com.sun.source.tree.Tree;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.BugInCF;
@@ -82,7 +81,7 @@ public class FunctionalInterfaceNode extends Node {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet FunctionalInterfaceNode this) {
+    public @PolyDet int hashCode(@PolyDet FunctionalInterfaceNode this) {
         return Objects.hash(tree);
     }
 

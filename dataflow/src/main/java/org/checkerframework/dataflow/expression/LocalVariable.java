@@ -3,7 +3,6 @@ package org.checkerframework.dataflow.expression;
 import com.sun.tools.javac.code.Symbol.VarSymbol;
 import java.util.Objects;
 import javax.lang.model.element.Element;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.LocalVariableNode;
@@ -49,7 +48,7 @@ public class LocalVariable extends Receiver {
     @Override
     @SuppressWarnings("determinism") // all known implementations have @Det toString method: Name
     // interface
-    public @NonDet int hashCode(@PolyDet LocalVariable this) {
+    public @PolyDet int hashCode(@PolyDet LocalVariable this) {
         VarSymbol vs = (VarSymbol) element;
         return Objects.hash(
                 vs.name.toString(),

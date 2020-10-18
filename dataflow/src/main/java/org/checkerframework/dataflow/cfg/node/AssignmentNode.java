@@ -8,7 +8,6 @@ import com.sun.source.tree.VariableTree;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.AssignmentContext.AssignmentLhsContext;
@@ -80,7 +79,7 @@ public class AssignmentNode extends Node {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet AssignmentNode this) {
+    public @PolyDet int hashCode(@PolyDet AssignmentNode this) {
         return Objects.hash(getTarget(), getExpression());
     }
 

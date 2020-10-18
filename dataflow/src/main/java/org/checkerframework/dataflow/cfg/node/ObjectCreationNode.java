@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
@@ -95,7 +94,7 @@ public class ObjectCreationNode extends Node {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet ObjectCreationNode this) {
+    public @PolyDet int hashCode(@PolyDet ObjectCreationNode this) {
         return Objects.hash(constructor, arguments);
     }
 

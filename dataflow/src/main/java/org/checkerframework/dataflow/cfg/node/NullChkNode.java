@@ -5,7 +5,6 @@ import com.sun.source.tree.Tree.Kind;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.javacutil.TreeUtils;
@@ -58,7 +57,7 @@ public class NullChkNode extends Node {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet NullChkNode this) {
+    public @PolyDet int hashCode(@PolyDet NullChkNode this) {
         return Objects.hash(NullChkNode.class, getOperand());
     }
 

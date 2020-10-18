@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.cfg.node.AssignmentContext.MethodParameterContext;
@@ -89,7 +88,8 @@ public class MethodInvocationNode extends Node {
     }
 
     @Override
-    public @PolyDet("up") String toString(@PolyDet MethodInvocationNode this) {
+    @SuppressWarnings("determinism") // false positive
+    public @PolyDet String toString(@PolyDet MethodInvocationNode this) {
         return target + "(" + UtilPlume.join(", ", arguments) + ")";
     }
 
@@ -105,7 +105,7 @@ public class MethodInvocationNode extends Node {
     }
 
     @Override
-    public @NonDet int hashCode(@PolyDet MethodInvocationNode this) {
+    public @PolyDet int hashCode(@PolyDet MethodInvocationNode this) {
         return Objects.hash(target, arguments);
     }
 
