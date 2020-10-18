@@ -80,6 +80,20 @@ public abstract class UnderlyingAST implements UniqueId {
             return method;
         }
 
+        /**
+         * Returns the name of the method
+         *
+         * @return the name of the method
+         */
+        public String getMethodName() {
+            return method.getName().toString();
+        }
+
+        /**
+         * Returns the class tree this method belongs to.
+         *
+         * @return the class tree this method belongs to
+         */
         public ClassTree getClassTree() {
             return classTree;
         }
@@ -168,6 +182,15 @@ public abstract class UnderlyingAST implements UniqueId {
          */
         public MethodTree getMethod() {
             return method;
+        }
+
+        /**
+         * Returns the name of the enclosing method of the lambda.
+         *
+         * @return the name of the enclosing method of the lambda
+         */
+        public String getMethodName() {
+            return method.getName().toString();
         }
 
         @Override

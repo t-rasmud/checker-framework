@@ -209,7 +209,7 @@ public class DOTCFGVisualizer<
 
         if (ast.getKind() == UnderlyingAST.Kind.ARBITRARY_CODE) {
             CFGStatement cfgStatement = (CFGStatement) ast;
-            String clsName = cfgStatement.getClassTree().getSimpleName().toString();
+            String clsName = cfgStatement.getSimpleClassName();
             outFile.append(clsName);
             outFile.append("-initializer-");
             outFile.append(ast.getUid());
