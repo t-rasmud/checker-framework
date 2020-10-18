@@ -209,7 +209,7 @@ public class DOTCFGVisualizer<
 
         if (ast.getKind() == UnderlyingAST.Kind.ARBITRARY_CODE) {
             CFGStatement cfgStatement = (CFGStatement) ast;
-            String clsName = cfgStatement.getSimpleClassName();
+            String clsName = cfgStatement.getClassTree().getSimpleName().toString();
             outFile.append(clsName);
             outFile.append("-initializer-");
             outFile.append(ast.getUid());
@@ -222,9 +222,7 @@ public class DOTCFGVisualizer<
         } else if (ast.getKind() == UnderlyingAST.Kind.METHOD) {
             CFGMethod cfgMethod = (CFGMethod) ast;
             String clsName = cfgMethod.getSimpleClassName();
-            @SuppressWarnings(
-                    "determinism") // all known implementations have @Det toString method: Name
-            @Det String methodName = cfgMethod.getMethod().getName().toString();
+            String methodName = cfgMethod.getMethodName();
             StringJoiner params = new StringJoiner(",");
             for (VariableTree tree : cfgMethod.getMethod().getParameters()) {
                 @SuppressWarnings(
@@ -253,9 +251,7 @@ public class DOTCFGVisualizer<
         } else if (ast.getKind() == UnderlyingAST.Kind.LAMBDA) {
             CFGLambda cfgLambda = (CFGLambda) ast;
             String clsName = cfgLambda.getSimpleClassName();
-            @SuppressWarnings(
-                    "determinism") // all known implementations have @Det toString method: Name
-            @Det String methodName = cfgLambda.getMethod().getName().toString();
+            String methodName = cfgLambda.getMethodname();
             @SuppressWarnings("determinism") // true positive (debug output): hashCode
             @Det int hashCode = cfgLambda.getCode().hashCode();
             outFile.append(clsName);
