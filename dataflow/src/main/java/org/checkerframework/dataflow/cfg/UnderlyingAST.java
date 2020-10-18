@@ -5,6 +5,7 @@ import com.sun.source.tree.LambdaExpressionTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.Tree;
 import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.plumelib.util.UniqueId;
 import org.plumelib.util.UtilPlume;
 
@@ -13,6 +14,7 @@ import org.plumelib.util.UtilPlume;
  * graph.
  */
 public abstract class UnderlyingAST implements UniqueId {
+    /** The kinds of underlying ASTs. */
     public enum Kind {
         /** The underlying code is a whole method. */
         METHOD,
@@ -23,16 +25,22 @@ public abstract class UnderlyingAST implements UniqueId {
         ARBITRARY_CODE,
     }
 
+    /** The kind of the underlying AST. */
     protected final Kind kind;
 
     /** The unique ID of this object. */
     final transient long uid = UniqueId.nextUid.getAndIncrement();
 
     @Override
-    public long getUid() {
+    public long getUid(@UnknownInitialization UnderlyingAST this) {
         return uid;
     }
 
+    /**
+     * Creates an UnderlyingAST.
+     *
+     * @param kind the kind of the AST
+     */
     protected UnderlyingAST(Kind kind) {
         this.kind = kind;
     }
