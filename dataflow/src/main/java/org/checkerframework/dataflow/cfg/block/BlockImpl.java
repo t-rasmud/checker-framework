@@ -25,6 +25,7 @@ public abstract class BlockImpl implements Block {
      * @return the unique ID of this object.
      */
     @Override
+    @SuppressWarnings("determinism") // getUid implementation
     public @Det long getUid(@UnknownInitialization @PolyDet BlockImpl this) {
         return uid;
     }

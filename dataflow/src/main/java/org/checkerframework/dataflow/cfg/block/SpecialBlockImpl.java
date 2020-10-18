@@ -29,9 +29,7 @@ public class SpecialBlockImpl extends SingleSuccessorBlockImpl implements Specia
      */
     @Override
     public @Det List<@Det Node> getNodes(@Det SpecialBlockImpl this) {
-        @SuppressWarnings("determinism") // inference problem: Collections.emptyList()
-        @Det List<@Det Node> result = Collections.emptyList();
-        return result;
+        return Collections.emptyList();
     }
 
     @Override
@@ -40,7 +38,7 @@ public class SpecialBlockImpl extends SingleSuccessorBlockImpl implements Specia
     }
 
     @Override
-    public @Det String toString(@Det SpecialBlockImpl this) {
+    public @PolyDet String toString(@PolyDet SpecialBlockImpl this) {
         return "SpecialBlock(" + specialType + ")";
     }
 }

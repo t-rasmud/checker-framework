@@ -92,7 +92,7 @@ public class ExceptionBlockImpl extends SingleSuccessorBlockImpl implements Exce
     }
 
     @Override
-    public @Det String toString(@Det ExceptionBlockImpl this) {
+    public @PolyDet String toString(@PolyDet ExceptionBlockImpl this) {
         return "ExceptionBlock(" + node + ")";
     }
 }

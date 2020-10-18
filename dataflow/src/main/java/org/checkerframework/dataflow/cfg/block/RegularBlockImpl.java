@@ -62,7 +62,7 @@ public class RegularBlockImpl extends SingleSuccessorBlockImpl implements Regula
     }
 
     @Override
-    public @Det String toString(@Det RegularBlockImpl this) {
+    public @PolyDet String toString(@PolyDet RegularBlockImpl this) {
         return "RegularBlock(" + contents + ")";
     }
 

@@ -102,9 +102,7 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
      */
     @Override
     public @Det List<@Det Node> getNodes(@Det ConditionalBlockImpl this) {
-        @SuppressWarnings("determinism") // inference problem: Collections.emptyList()
-        @Det List<@Det Node> result = Collections.emptyList();
-        return result;
+        return Collections.emptyList();
     }
 
     @Override
@@ -113,7 +111,7 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
     }
 
     @Override
-    public @Det String toString(@Det ConditionalBlockImpl this) {
+    public @Det String toString(@PolyDet ConditionalBlockImpl this) {
         return "ConditionalBlock()";
     }
 }
