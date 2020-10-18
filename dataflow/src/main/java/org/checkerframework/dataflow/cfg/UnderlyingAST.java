@@ -81,7 +81,7 @@ public abstract class UnderlyingAST implements UniqueId {
          *
          * @return the simple name of the enclosing class
          */
-        public String getSimpleClassName() {
+        public @PolyDet String getSimpleClassName(@PolyDet CFGMethod this) {
             return classTree.getSimpleName().toString();
         }
 
@@ -145,7 +145,7 @@ public abstract class UnderlyingAST implements UniqueId {
          *
          * @return the simple name of the enclosing class
          */
-        public String getSimpleClassName() {
+        public @PolyDet String getSimpleClassName(@PolyDet CFGLambda this) {
             return classTree.getSimpleName().toString();
         }
 
@@ -192,7 +192,7 @@ public abstract class UnderlyingAST implements UniqueId {
          *
          * @return the simple name of the enclosing class
          */
-        public String getSimpleClassName() {
+        public @PolyDet String getSimpleClassName(@PolyDet CFGStatement this) {
             return classTree.getSimpleName().toString();
         }
 

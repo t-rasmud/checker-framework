@@ -112,9 +112,7 @@ public class CFGVisualizeLauncher {
             cfgVisualizeLauncher.generateDOTofCFGWithoutAnalysis(
                     input, output, method, clas, pdf, verbose);
         } else {
-            @SuppressWarnings("determinism") // true positive (debug output): hashCode
-            // output
-            @Det String stringGraph =
+            String stringGraph =
                     cfgVisualizeLauncher.generateStringOfCFGWithoutAnalysis(
                             input, method, clas, verbose);
             System.out.println(stringGraph);
@@ -150,8 +148,12 @@ public class CFGVisualizeLauncher {
      * @param verbose show verbose information in CFG
      * @return the String representation of the CFG
      */
-    protected @NonDet String generateStringOfCFGWithoutAnalysis(
-            String inputFile, String method, String clas, boolean verbose) {
+    protected @PolyDet String generateStringOfCFGWithoutAnalysis(
+            @PolyDet CFGVisualizeLauncher this,
+            @PolyDet String inputFile,
+            @PolyDet String method,
+            @PolyDet String clas,
+            @PolyDet boolean verbose) {
         @Nullable Map<@Det String, @NonDet Object> res =
                 generateStringOfCFG(inputFile, method, clas, verbose, null);
         if (res != null) {
@@ -205,10 +207,7 @@ public class CFGVisualizeLauncher {
 
         if (pdf && res != null) {
             assert res.get("dotFileName") != null : "@AssumeAssertion(nullness): specification";
-            @SuppressWarnings("determinism") // true positive (debug output): hashCode
-            // output
-            @Det String tmp = (String) res.get("dotFileName");
-            producePDF(tmp);
+            producePDF((String) res.get("dotFileName"));
         }
     }
 
