@@ -1,9 +1,9 @@
 package org.checkerframework.dataflow.constantpropagation;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.checkerframework.checker.determinism.qual.*;
-import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.Store;
@@ -16,13 +16,13 @@ import org.checkerframework.dataflow.expression.Receiver;
 public class ConstantPropagationStore implements Store<ConstantPropagationStore> {
 
     /** Information about variables gathered so far. */
-    @OrderNonDet Map<Node, Constant> contents;
+    Map<Node, Constant> contents;
 
     public ConstantPropagationStore() {
-        contents = new HashMap<>();
+        contents = new LinkedHashMap<>();
     }
 
-    protected ConstantPropagationStore(@OrderNonDet Map<Node, Constant> contents) {
+    protected ConstantPropagationStore(Map<Node, Constant> contents) {
         this.contents = contents;
     }
 
@@ -54,7 +54,7 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     @Override
     @SuppressWarnings(
             "determinism") // valid rule relaxation: copy clearly preserves determinism type
-    public @PolyDet ConstantPropagationStore copy(@PolyDet ConstantPropagationStore this) {
+    public ConstantPropagationStore copy(ConstantPropagationStore this) {
         return new ConstantPropagationStore(new HashMap<>(contents));
     }
 
@@ -94,6 +94,10 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
         return leastUpperBound(previous);
     }
 
+    @SuppressWarnings(
+            "determinism:enhancedfor.type.incompatible" // collection is not @OrderNonDet, so
+    // elements are @PolyDet
+    )
     @Override
     public @PolyDet boolean equals(
             @PolyDet ConstantPropagationStore this, @PolyDet @Nullable Object o) {
@@ -105,7 +109,7 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
         }
         ConstantPropagationStore other = (ConstantPropagationStore) o;
         // go through all of the information of the other object
-        for (Map.Entry<Node, Constant> e : other.contents.entrySet()) {
+        for (Map.@PolyDet Entry<Node, Constant> e : other.contents.entrySet()) {
             Node n = e.getKey();
             Constant otherVal = e.getValue();
             if (otherVal.isBottom()) {
@@ -120,7 +124,7 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
             }
         }
         // go through all of the information of the this object
-        for (Map.Entry<Node, Constant> e : contents.entrySet()) {
+        for (Map.@PolyDet Entry<Node, Constant> e : contents.entrySet()) {
             Node n = e.getKey();
             Constant thisVal = e.getValue();
             if (thisVal.isBottom()) {
@@ -135,10 +139,15 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
         return true;
     }
 
+    @SuppressWarnings(
+            "determinism" // collection is not @OrderNonDet, so elements are @PolyDet; also,
+    // hashCode of Entry<Node, Constant> is @PolyDet because Node and Constant
+    // override hashCode
+    )
     @Override
-    public @NonDet int hashCode(@PolyDet ConstantPropagationStore this) {
-        int s = 0;
-        for (Map.Entry<Node, Constant> e : contents.entrySet()) {
+    public @PolyDet int hashCode(@PolyDet ConstantPropagationStore this) {
+        @PolyDet int s = 0;
+        for (Map.@PolyDet Entry<Node, Constant> e : contents.entrySet()) {
             if (!e.getValue().isBottom()) {
                 s += e.hashCode();
             }
@@ -146,10 +155,14 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
         return s;
     }
 
+    @SuppressWarnings(
+            "determinism" // collection is not @OrderNonDet, so elements are @PolyDet; also,
+    // toString of Entry<Node, Constant> is @PolyDet because Node and Constant override toString
+    )
     @Override
-    public String toString(ConstantPropagationStore this) {
+    public @PolyDet String toString(@PolyDet ConstantPropagationStore this) {
         // only output local variable information
-        Map<Node, Constant> smallerContents = new @PolyDet HashMap<>();
+        @PolyDet Map<Node, Constant> smallerContents = new LinkedHashMap<>();
         for (Map.Entry<Node, Constant> e : contents.entrySet()) {
             if (e.getKey() instanceof LocalVariableNode) {
                 smallerContents.put(e.getKey(), e.getValue());
