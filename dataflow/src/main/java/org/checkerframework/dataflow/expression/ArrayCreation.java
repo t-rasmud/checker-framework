@@ -42,7 +42,7 @@ public class ArrayCreation extends Receiver {
         return dimensions;
     }
 
-    public @PolyDet List<@PolyDet Receiver> getInitializers(@PolyDet ArrayCreation this) {
+    public @PolyDet List<@Det Receiver> getInitializers(@PolyDet ArrayCreation this) {
         return initializers;
     }
 

@@ -43,7 +43,7 @@ public class ArrayCreationNode extends Node {
         this.initializers = initializers;
     }
 
-    public @PolyDet List<@PolyDet Node> getDimensions(@PolyDet ArrayCreationNode this) {
+    public @PolyDet List<Node> getDimensions(@PolyDet ArrayCreationNode this) {
         return dimensions;
     }
 
@@ -51,7 +51,7 @@ public class ArrayCreationNode extends Node {
         return dimensions.get(i);
     }
 
-    public @PolyDet List<@PolyDet Node> getInitializers(@PolyDet ArrayCreationNode this) {
+    public @PolyDet List<Node> getInitializers(@PolyDet ArrayCreationNode this) {
         return initializers;
     }
 

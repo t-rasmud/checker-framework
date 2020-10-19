@@ -65,7 +65,7 @@ public class MethodInvocationNode extends Node {
         return target;
     }
 
-    public @PolyDet List<@PolyDet Node> getArguments(@PolyDet MethodInvocationNode this) {
+    public @PolyDet List<Node> getArguments(@PolyDet MethodInvocationNode this) {
         return arguments;
     }
 

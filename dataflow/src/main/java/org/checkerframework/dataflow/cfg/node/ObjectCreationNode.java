@@ -42,7 +42,7 @@ public class ObjectCreationNode extends Node {
         return constructor;
     }
 
-    public @PolyDet List<@PolyDet Node> getArguments(@PolyDet ObjectCreationNode this) {
+    public @PolyDet List<Node> getArguments(@PolyDet ObjectCreationNode this) {
         return arguments;
     }
 
