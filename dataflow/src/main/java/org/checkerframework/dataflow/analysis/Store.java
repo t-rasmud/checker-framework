@@ -104,8 +104,9 @@ public interface Store<S extends Store<S>> {
      * @param viz the visualizer to visualize this store
      * @return the String representation of this store
      */
-    @PolyDet String visualize(@PolyDet CFGVisualizer<?, S, ?> viz);
+    String visualize(CFGVisualizer<?, S, ?> viz);
 
     @Override
-    @PolyDet String toString(@PolyDet Store<S> this);
+    @SuppressWarnings("determinism:override.receiver.invalid") // toString only on @Det
+    String toString(Store<S> this);
 }

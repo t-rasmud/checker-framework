@@ -136,12 +136,12 @@ public class LiveVarStore implements Store<LiveVarStore> {
     }
 
     @Override
-    public @PolyDet String visualize(@PolyDet CFGVisualizer<?, LiveVarStore, ?> viz) {
+    public String visualize(CFGVisualizer<?, LiveVarStore, ?> viz) {
         String key = "live variables";
         if (liveVarValueSet.isEmpty()) {
             return viz.visualizeStoreKeyVal(key, "none");
         }
-        @PolyDet StringJoiner sjStoreVal = new @PolyDet StringJoiner(", ");
+        StringJoiner sjStoreVal = new StringJoiner(", ");
         for (LiveVarValue liveVarValue : liveVarValueSet) {
             sjStoreVal.add(liveVarValue.toString());
         }
@@ -149,7 +149,8 @@ public class LiveVarStore implements Store<LiveVarStore> {
     }
 
     @Override
-    public @PolyDet String toString(@PolyDet LiveVarStore this) {
+    @SuppressWarnings("determinism:override.receiver.invalid") // toString only on @Det
+    public String toString(LiveVarStore this) {
         return liveVarValueSet.toString();
     }
 }

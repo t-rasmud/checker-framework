@@ -318,13 +318,14 @@ public class ControlFlowGraph implements UniqueId {
     }
 
     @Override
-    public @PolyDet String toString(@PolyDet ControlFlowGraph this) {
+    @SuppressWarnings("determinism:override.receiver.invalid") // toString only on @Det
+    public String toString(ControlFlowGraph this) {
         @OrderNonDet Map<String, Object> args = new HashMap<>();
         args.put("verbose", true);
 
         CFGVisualizer<?, ?, ?> viz = new StringCFGVisualizer<>();
         viz.init(args);
-        Map<@Det String, @Det Object> res = viz.visualize(this, this.getEntryBlock(), null);
+        Map<String, Object> res = viz.visualize(this, this.getEntryBlock(), null);
         viz.shutdown();
         if (res == null) {
             return "unvisualizable " + getClass().getCanonicalName();

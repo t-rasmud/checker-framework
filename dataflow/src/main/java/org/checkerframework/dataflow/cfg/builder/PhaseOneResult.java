@@ -70,7 +70,8 @@ public class PhaseOneResult {
     }
 
     @Override
-    public @PolyDet String toString(@PolyDet PhaseOneResult this) {
+    @SuppressWarnings("determinism:override.receiver.invalid") // toString only on @Det
+    public String toString(PhaseOneResult this) {
         StringJoiner sj = new StringJoiner(System.lineSeparator());
         for (ExtendedNode n : nodeList) {
             sj.add(nodeToString(n));
@@ -78,7 +79,7 @@ public class PhaseOneResult {
         return sj.toString();
     }
 
-    protected @PolyDet String nodeToString(@PolyDet PhaseOneResult this, @PolyDet ExtendedNode n) {
+    protected String nodeToString(PhaseOneResult this, @PolyDet ExtendedNode n) {
         if (n.getType() == ExtendedNodeType.CONDITIONAL_JUMP) {
             ConditionalJump t = (ConditionalJump) n;
             return "TwoTargetConditionalJump("
@@ -93,7 +94,7 @@ public class PhaseOneResult {
         }
     }
 
-    private String resolveLabel(Label label) {
+    private @PolyDet String resolveLabel(@PolyDet Label label) {
         Integer index = bindings.get(label);
         if (index == null) {
             return "unbound label: " + label;

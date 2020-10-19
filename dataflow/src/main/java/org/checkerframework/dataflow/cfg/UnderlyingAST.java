@@ -85,6 +85,8 @@ public abstract class UnderlyingAST implements UniqueId {
          *
          * @return the name of the method
          */
+        @SuppressWarnings(
+                "determinism") // all known implementations of Name have deterministic toString
         public String getMethodName() {
             return method.getName().toString();
         }
@@ -189,6 +191,8 @@ public abstract class UnderlyingAST implements UniqueId {
          *
          * @return the name of the enclosing method of the lambda
          */
+        @SuppressWarnings(
+                "determinism") // all known implementations of Name have deterministic toString
         public String getMethodName() {
             return method.getName().toString();
         }

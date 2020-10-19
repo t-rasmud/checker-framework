@@ -147,7 +147,7 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     }
 
     @Override
-    public @PolyDet String toString(@PolyDet ConstantPropagationStore this) {
+    public String toString(ConstantPropagationStore this) {
         // only output local variable information
         Map<Node, Constant> smallerContents = new @PolyDet HashMap<>();
         for (Map.Entry<Node, Constant> e : contents.entrySet()) {
@@ -171,9 +171,8 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
      */
     @Override
     @SuppressWarnings("nullness")
-    public @PolyDet String visualize(
-            @PolyDet ConstantPropagationStore this,
-            @PolyDet CFGVisualizer<?, ConstantPropagationStore, ?> viz) {
+    public String visualize(
+            ConstantPropagationStore this, CFGVisualizer<?, ConstantPropagationStore, ?> viz) {
         return viz.visualizeStoreKeyVal("constant propagation", null);
     }
 }
