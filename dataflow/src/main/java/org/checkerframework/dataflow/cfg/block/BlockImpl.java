@@ -22,7 +22,7 @@ public abstract class BlockImpl implements Block {
     /**
      * Returns the unique ID of this object.
      *
-     * @return the unique ID of this object.
+     * @return the unique ID of this object
      */
     @Override
     @SuppressWarnings("determinism") // getUid implementation

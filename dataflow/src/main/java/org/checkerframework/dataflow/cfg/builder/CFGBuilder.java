@@ -54,7 +54,19 @@ public abstract class CFGBuilder {
     /** Unique ids for trees. */
     static UniqueIdMap<Tree> treeUids = new UniqueIdMap<>();
 
-    /** Build the control flow graph of some code. */
+    /** Unique IDs for trees. */
+    static UniqueIdMap<Tree> treeUids = new UniqueIdMap<>();
+
+    /**
+     * Build the control flow graph of some code.
+     *
+     * @param root the compilation unit
+     * @param underlyingAST the AST that underlies the control frow graph
+     * @param assumeAssertionsDisabled can assertions be assumed to be disabled?
+     * @param assumeAssertionsEnabled can assertions be assumed to be enabled?
+     * @param env annotation processing environment containing type utilities
+     * @return a control flow graph
+     */
     public static ControlFlowGraph build(
             CompilationUnitTree root,
             UnderlyingAST underlyingAST,
@@ -149,6 +161,8 @@ public abstract class CFGBuilder {
     /**
      * Print a set of {@link Block}s and the edges between them. This is useful for examining the
      * results of phase two.
+     *
+     * @param blocks the blocks to print
      */
     protected static void printBlocks(Set<Block> blocks) {
         for (Block b : blocks) {

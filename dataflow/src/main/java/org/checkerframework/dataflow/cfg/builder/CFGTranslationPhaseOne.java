@@ -2128,7 +2128,6 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
             extendWithNode(
                     new MarkerNode(
                             switchTree,
-                            // BUG FIX
                             "start of switch statement #" + CFGBuilder.treeUids.get(switchTree),
                             env.getTypeUtils()));
 
@@ -2154,7 +2153,6 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
             extendWithNode(
                     new MarkerNode(
                             switchTree,
-                            // BUG FIX
                             "end of switch statement #" + CFGBuilder.treeUids.get(switchTree),
                             env.getTypeUtils()));
         }
@@ -3027,7 +3025,6 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
         extendWithNode(
                 new MarkerNode(
                         tree,
-                        // BUG FIX
                         "start of try statement #" + CFGBuilder.treeUids.get(tree),
                         env.getTypeUtils()));
 
