@@ -71,7 +71,7 @@ public class PhaseOneResult {
 
     @Override
     @SuppressWarnings("determinism:override.receiver.invalid") // toString only on @Det
-    public String toString(PhaseOneResult this) {
+    public String toString() {
         StringJoiner sj = new StringJoiner(System.lineSeparator());
         for (ExtendedNode n : nodeList) {
             sj.add(nodeToString(n));

@@ -149,8 +149,8 @@ public class LiveVarStore implements Store<LiveVarStore> {
     }
 
     @Override
-    @SuppressWarnings("determinism:override.receiver.invalid") // toString only on @Det
-    public String toString(LiveVarStore this) {
+    @SuppressWarnings("determinism") // toString only on @Det
+    public String toString() {
         return liveVarValueSet.toString();
     }
 }

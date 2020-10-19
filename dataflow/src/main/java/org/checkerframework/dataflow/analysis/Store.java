@@ -108,5 +108,5 @@ public interface Store<S extends Store<S>> {
 
     @Override
     @SuppressWarnings("determinism:override.receiver.invalid") // toString only on @Det
-    String toString(Store<S> this);
+    String toString();
 }

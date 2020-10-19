@@ -73,7 +73,7 @@ public abstract class TransferResult<V extends AbstractValue<V>, S extends Store
      *     org.checkerframework.dataflow.cfg.node.Node} corresponding to this transfer function
      *     result
      */
-    public abstract S getRegularStore(TransferResult<V, S> this);
+    public abstract S getRegularStore();
 
     /**
      * Returns the result store produced if the {@link org.checkerframework.dataflow.cfg.node.Node}

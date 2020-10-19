@@ -319,7 +319,7 @@ public class ControlFlowGraph implements UniqueId {
 
     @Override
     @SuppressWarnings("determinism:override.receiver.invalid") // toString only on @Det
-    public String toString(ControlFlowGraph this) {
+    public String toString() {
         @OrderNonDet Map<String, Object> args = new HashMap<>();
         args.put("verbose", true);
 
