@@ -12,9 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import org.checkerframework.checker.determinism.qual.Det;
-import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
-import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.KeyFor;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.AbstractValue;
@@ -71,16 +69,16 @@ public class DOTCFGVisualizer<
     }
 
     @Override
-    public @PolyDet String getSeparator(@PolyDet DOTCFGVisualizer<V, S, T> this) {
+    public @Det String getSeparator(@Det DOTCFGVisualizer<V, S, T> this) {
         return leftJustifiedTerminator;
     }
 
     @Override
     public @Nullable @OrderNonDet Map<String, Object> visualize(
-            @PolyDet DOTCFGVisualizer<V, S, T> this,
-            @PolyDet ControlFlowGraph cfg,
-            @PolyDet Block entry,
-            @PolyDet @Nullable Analysis<V, S, T> analysis) {
+            @Det DOTCFGVisualizer<V, S, T> this,
+            @Det ControlFlowGraph cfg,
+            @Det Block entry,
+            @Det @Nullable Analysis<V, S, T> analysis) {
 
         String dotGraph = visualizeGraph(cfg, entry, analysis);
         String dotFileName = dotOutputFileName(cfg.underlyingAST);
@@ -88,15 +86,13 @@ public class DOTCFGVisualizer<
         try {
             FileWriter fStream = new FileWriter(dotFileName);
             BufferedWriter out = new BufferedWriter(fStream);
-            @SuppressWarnings("determinism") // true positive (debug output): hashCode
-            @Det String tmp = dotGraph;
-            out.write(tmp);
+            out.write(dotGraph);
             out.close();
         } catch (IOException e) {
             throw new UserError("Error creating dot file (is the path valid?): " + dotFileName, e);
         }
 
-        Map<@Det String, @NonDet Object> res = new HashMap<>();
+        @OrderNonDet Map<String, Object> res = new HashMap<>();
         res.put("dotFileName", dotFileName);
 
         return res;
@@ -104,11 +100,11 @@ public class DOTCFGVisualizer<
 
     @SuppressWarnings("keyfor:enhancedfor.type.incompatible")
     @Override
-    public @PolyDet String visualizeNodes(
-            @PolyDet DOTCFGVisualizer<V, S, T> this,
-            @PolyDet Set<@PolyDet Block> blocks,
-            @PolyDet ControlFlowGraph cfg,
-            @PolyDet @Nullable Analysis<V, S, T> analysis) {
+    public @Det String visualizeNodes(
+            @Det DOTCFGVisualizer<V, S, T> this,
+            @Det Set<@Det Block> blocks,
+            @Det ControlFlowGraph cfg,
+            @Det @Nullable Analysis<V, S, T> analysis) {
 
         StringBuilder sbDotNodes = new StringBuilder();
 
@@ -148,49 +144,45 @@ public class DOTCFGVisualizer<
     }
 
     @Override
-    protected @PolyDet String visualizeEdge(
-            @PolyDet DOTCFGVisualizer<V, S, T> this,
-            @PolyDet Object sId,
-            @PolyDet Object eId,
-            @PolyDet String flowRule) {
+    protected @Det String visualizeEdge(
+            @Det DOTCFGVisualizer<V, S, T> this,
+            @Det Object sId,
+            @Det Object eId,
+            @Det String flowRule) {
         return "    " + format(sId) + " -> " + format(eId) + " [label=\"" + flowRule + "\"];";
     }
 
     @Override
-    public @PolyDet String visualizeBlock(
-            @PolyDet DOTCFGVisualizer<V, S, T> this,
-            @PolyDet Block bb,
-            @PolyDet @Nullable Analysis<V, S, T> analysis) {
+    public @Det String visualizeBlock(
+            @Det DOTCFGVisualizer<V, S, T> this,
+            @Det Block bb,
+            @Det @Nullable Analysis<V, S, T> analysis) {
         return super.visualizeBlockHelper(bb, analysis, getSeparator());
     }
 
     @Override
-    public @PolyDet String visualizeSpecialBlock(
-            @PolyDet DOTCFGVisualizer<V, S, T> this, @PolyDet SpecialBlock sbb) {
+    public @Det String visualizeSpecialBlock(
+            @Det DOTCFGVisualizer<V, S, T> this, @Det SpecialBlock sbb) {
         return super.visualizeSpecialBlockHelper(sbb);
     }
 
     @Override
-    public @PolyDet String visualizeConditionalBlock(
-            @PolyDet DOTCFGVisualizer<V, S, T> this, @PolyDet ConditionalBlock cbb) {
+    public @Det String visualizeConditionalBlock(
+            @Det DOTCFGVisualizer<V, S, T> this, @Det ConditionalBlock cbb) {
         // No extra content in DOT output.
         return "";
     }
 
     @Override
-    public @PolyDet String visualizeBlockTransferInputBefore(
-            @PolyDet DOTCFGVisualizer<V, S, T> this,
-            @PolyDet Block bb,
-            @PolyDet Analysis<V, S, T> analysis) {
+    public @Det String visualizeBlockTransferInputBefore(
+            @Det DOTCFGVisualizer<V, S, T> this, @Det Block bb, @Det Analysis<V, S, T> analysis) {
         return super.visualizeBlockTransferInputHelper(
                 VisualizeWhere.BEFORE, bb, analysis, getSeparator());
     }
 
     @Override
-    public @PolyDet String visualizeBlockTransferInputAfter(
-            @PolyDet DOTCFGVisualizer<V, S, T> this,
-            @PolyDet Block bb,
-            @PolyDet Analysis<V, S, T> analysis) {
+    public @Det String visualizeBlockTransferInputAfter(
+            @Det DOTCFGVisualizer<V, S, T> this, @Det Block bb, @Det Analysis<V, S, T> analysis) {
         return super.visualizeBlockTransferInputHelper(
                 VisualizeWhere.AFTER, bb, analysis, getSeparator());
     }
@@ -289,61 +281,48 @@ public class DOTCFGVisualizer<
     }
 
     @Override
-    protected @PolyDet String format(@PolyDet DOTCFGVisualizer<V, S, T> this, @PolyDet Object obj) {
+    protected @Det String format(@Det DOTCFGVisualizer<V, S, T> this, @Det Object obj) {
         return escapeDoubleQuotes(obj);
     }
 
     @Override
-    public @PolyDet String visualizeStoreThisVal(
-            @PolyDet DOTCFGVisualizer<V, S, T> this, @PolyDet V value) {
+    public @Det String visualizeStoreThisVal(@Det DOTCFGVisualizer<V, S, T> this, @Det V value) {
         return storeEntryIndent + "this > " + value;
     }
 
     @Override
-    public @PolyDet String visualizeStoreLocalVar(
-            @PolyDet DOTCFGVisualizer<V, S, T> this,
-            @PolyDet LocalVariable localVar,
-            @PolyDet V value) {
+    public @Det String visualizeStoreLocalVar(
+            @Det DOTCFGVisualizer<V, S, T> this, @Det LocalVariable localVar, @Det V value) {
         return storeEntryIndent + localVar + " > " + escapeDoubleQuotes(value);
     }
 
     @Override
-    public @PolyDet String visualizeStoreFieldVal(
-            @PolyDet DOTCFGVisualizer<V, S, T> this,
-            @PolyDet FieldAccess fieldAccess,
-            @PolyDet V value) {
+    public @Det String visualizeStoreFieldVal(
+            @Det DOTCFGVisualizer<V, S, T> this, @Det FieldAccess fieldAccess, @Det V value) {
         return storeEntryIndent + fieldAccess + " > " + escapeDoubleQuotes(value);
     }
 
     @Override
-    public @PolyDet String visualizeStoreArrayVal(
-            @PolyDet DOTCFGVisualizer<V, S, T> this,
-            @PolyDet ArrayAccess arrayValue,
-            @PolyDet V value) {
+    public @Det String visualizeStoreArrayVal(
+            @Det DOTCFGVisualizer<V, S, T> this, @Det ArrayAccess arrayValue, @Det V value) {
         return storeEntryIndent + arrayValue + " > " + escapeDoubleQuotes(value);
     }
 
     @Override
-    public @PolyDet String visualizeStoreMethodVals(
-            @PolyDet DOTCFGVisualizer<V, S, T> this,
-            @PolyDet MethodCall methodCall,
-            @PolyDet V value) {
+    public @Det String visualizeStoreMethodVals(
+            @Det DOTCFGVisualizer<V, S, T> this, @Det MethodCall methodCall, @Det V value) {
         return storeEntryIndent + escapeDoubleQuotes(methodCall) + " > " + value;
     }
 
     @Override
-    public @PolyDet String visualizeStoreClassVals(
-            @PolyDet DOTCFGVisualizer<V, S, T> this,
-            @PolyDet ClassName className,
-            @PolyDet V value) {
+    public @Det String visualizeStoreClassVals(
+            @Det DOTCFGVisualizer<V, S, T> this, @Det ClassName className, @Det V value) {
         return storeEntryIndent + className + " > " + escapeDoubleQuotes(value);
     }
 
     @Override
-    public @PolyDet String visualizeStoreKeyVal(
-            @PolyDet DOTCFGVisualizer<V, S, T> this,
-            @PolyDet String keyName,
-            @PolyDet Object value) {
+    public @Det String visualizeStoreKeyVal(
+            @Det DOTCFGVisualizer<V, S, T> this, @Det String keyName, @Det Object value) {
         return storeEntryIndent + keyName + " = " + value;
     }
 
@@ -353,7 +332,7 @@ public class DOTCFGVisualizer<
      * @param str the string to be escaped
      * @return the escaped version of the string
      */
-    private static @PolyDet String escapeDoubleQuotes(final @PolyDet String str) {
+    private static @Det String escapeDoubleQuotes(final @Det String str) {
         return str.replace("\"", "\\\"");
     }
 
@@ -363,7 +342,7 @@ public class DOTCFGVisualizer<
      * @param obj an object
      * @return an escaped version of the string representation of the object
      */
-    private static @PolyDet String escapeDoubleQuotes(final @PolyDet Object obj) {
+    private static @Det String escapeDoubleQuotes(final @Det Object obj) {
         return escapeDoubleQuotes(String.valueOf(obj));
     }
 
@@ -396,12 +375,12 @@ public class DOTCFGVisualizer<
     }
 
     @Override
-    protected String visualizeGraphHeader(@PolyDet DOTCFGVisualizer<V, S, T> this) {
+    protected String visualizeGraphHeader(@Det DOTCFGVisualizer<V, S, T> this) {
         return "digraph {" + lineSeparator;
     }
 
     @Override
-    protected String visualizeGraphFooter(@PolyDet DOTCFGVisualizer<V, S, T> this) {
+    protected String visualizeGraphFooter(@Det DOTCFGVisualizer<V, S, T> this) {
         return "}";
     }
 }
