@@ -54,9 +54,6 @@ public abstract class CFGBuilder {
     /** Unique ids for trees. */
     static UniqueIdMap<Tree> treeUids = new UniqueIdMap<>();
 
-    /** Unique IDs for trees. */
-    static UniqueIdMap<Tree> treeUids = new UniqueIdMap<>();
-
     /**
      * Build the control flow graph of some code.
      *
