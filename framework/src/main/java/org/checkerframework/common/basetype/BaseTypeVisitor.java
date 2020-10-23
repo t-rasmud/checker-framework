@@ -424,6 +424,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
             if (atypeFactory.hasQualifierParameterInHierarchy(classElement, top)) {
                 continue;
             }
+
             if (poly != null) {
                 illegalOnFieldsPolyQual.add(poly);
             }
