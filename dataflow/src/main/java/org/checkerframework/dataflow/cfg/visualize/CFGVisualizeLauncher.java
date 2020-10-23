@@ -149,12 +149,12 @@ public class CFGVisualizeLauncher {
      * @param verbose show verbose information in CFG
      * @return the String representation of the CFG
      */
-    protected @Det String generateStringOfCFGWithoutAnalysis(
-            @Det CFGVisualizeLauncher this,
-            @Det String inputFile,
-            @Det String method,
-            @Det String clas,
-            @Det boolean verbose) {
+    protected String generateStringOfCFGWithoutAnalysis(
+            CFGVisualizeLauncher this,
+            String inputFile,
+            String method,
+            String clas,
+            boolean verbose) {
         @Nullable @OrderNonDet Map<String, Object> res = generateStringOfCFG(inputFile, method, clas, verbose, null);
         if (res != null) {
             String stringGraph = (String) res.get("stringGraph");
@@ -308,7 +308,7 @@ public class CFGVisualizeLauncher {
             analysis.performAnalysis(cfg);
         }
 
-        @OrderNonDet Map<@Det String, @Det Object> args = new HashMap<>();
+        @OrderNonDet Map<@Det String, Object> args = new HashMap<>();
         args.put("verbose", verbose);
 
         CFGVisualizer<V, S, T> viz = new StringCFGVisualizer<>();

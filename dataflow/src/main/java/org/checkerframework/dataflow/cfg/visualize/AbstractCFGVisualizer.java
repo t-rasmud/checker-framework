@@ -54,7 +54,7 @@ public abstract class AbstractCFGVisualizer<
     protected boolean verbose;
 
     /** The line separator. */
-    protected final @Det String lineSeparator = System.lineSeparator();
+    protected final String lineSeparator = System.lineSeparator();
 
     /** The indentation for elements of the store. */
     protected final String storeEntryIndent = "  ";
@@ -89,11 +89,11 @@ public abstract class AbstractCFGVisualizer<
      * @param analysis the current analysis
      * @return the representation of the control flow graph
      */
-    protected @Det String visualizeGraph(
-            @Det AbstractCFGVisualizer<V, S, T> this,
-            @Det ControlFlowGraph cfg,
-            @Det Block entry,
-            @Det @Nullable Analysis<V, S, T> analysis) {
+    protected String visualizeGraph(
+            AbstractCFGVisualizer<V, S, T> this,
+            ControlFlowGraph cfg,
+            Block entry,
+            @Nullable Analysis<V, S, T> analysis) {
         return visualizeGraphHeader()
                 + visualizeGraphWithoutHeaderAndFooter(cfg, entry, analysis)
                 + visualizeGraphFooter();
@@ -107,13 +107,13 @@ public abstract class AbstractCFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the control flow graph
      */
-    protected @Det String visualizeGraphWithoutHeaderAndFooter(
-            @Det AbstractCFGVisualizer<V, S, T> this,
-            @Det ControlFlowGraph cfg,
-            @Det Block entry,
-            @Det @Nullable Analysis<V, S, T> analysis) {
-        @Det Set<@Det Block> visited = new @Det LinkedHashSet<>();
-        StringBuilder sbGraph = new @Det StringBuilder();
+    protected String visualizeGraphWithoutHeaderAndFooter(
+            AbstractCFGVisualizer<V, S, T> this,
+            ControlFlowGraph cfg,
+            Block entry,
+            @Nullable Analysis<V, S, T> analysis) {
+        Set<@Det Block> visited = new LinkedHashSet<>();
+        StringBuilder sbGraph = new StringBuilder();
         Queue<@Det Block> workList = new ArrayDeque<>();
         Block cur = entry;
         visited.add(entry);
@@ -138,11 +138,11 @@ public abstract class AbstractCFGVisualizer<
      * @param sbGraph the {@link StringBuilder} to store the graph; side effected by this method
      */
     protected void handleSuccessorsHelper(
-            @Det AbstractCFGVisualizer<V, S, T> this,
-            @Det Block cur,
-            @Det Set<@Det Block> visited,
-            @Det Queue<@Det Block> workList,
-            @Det StringBuilder sbGraph) {
+            AbstractCFGVisualizer<V, S, T> this,
+            Block cur,
+            Set<@Det Block> visited,
+            Queue<@Det Block> workList,
+            StringBuilder sbGraph) {
         if (cur.getType() == Block.BlockType.CONDITIONAL_BLOCK) {
             ConditionalBlock ccur = ((ConditionalBlock) cur);
             Block thenSuccessor = ccur.getThenSuccessor();
@@ -218,10 +218,10 @@ public abstract class AbstractCFGVisualizer<
      * @return the String representation of the block
      */
     protected String visualizeBlockHelper(
-            @Det AbstractCFGVisualizer<V, S, T> this,
-            @Det Block bb,
-            @Det @Nullable Analysis<V, S, T> analysis,
-            @Det String separator) {
+            AbstractCFGVisualizer<V, S, T> this,
+            Block bb,
+            @Nullable Analysis<V, S, T> analysis,
+            String separator) {
         StringBuilder sbBlock = new StringBuilder();
         String contents = loopOverBlockContents(bb, analysis, separator);
         if (!contents.isEmpty()) {
@@ -262,11 +262,11 @@ public abstract class AbstractCFGVisualizer<
      * @param separator the separator between the nodes of the block
      * @return the String representation of the contents of the block
      */
-    protected @Det String loopOverBlockContents(
-            @Det AbstractCFGVisualizer<V, S, T> this,
-            @Det Block bb,
-            @Det @Nullable Analysis<V, S, T> analysis,
-            @Det String separator) {
+    protected String loopOverBlockContents(
+            AbstractCFGVisualizer<V, S, T> this,
+            Block bb,
+            @Nullable Analysis<V, S, T> analysis,
+            String separator) {
 
         List<Node> contents = addBlockContent(bb);
         StringJoiner sjBlockContents = new StringJoiner(separator);
@@ -293,15 +293,12 @@ public abstract class AbstractCFGVisualizer<
      * @param obj an object
      * @return the formatted String from the given object
      */
-    protected abstract @Det String format(
-            @Det AbstractCFGVisualizer<V, S, T> this, @Det Object obj);
+    protected abstract String format(AbstractCFGVisualizer<V, S, T> this, Object obj);
 
     @Override
-    public @Det String visualizeBlockNode(
-            @Det AbstractCFGVisualizer<V, S, T> this,
-            @Det Node t,
-            @Det @Nullable Analysis<V, S, T> analysis) {
-        StringBuilder sbBlockNode = new @Det StringBuilder();
+    public String visualizeBlockNode(
+            AbstractCFGVisualizer<V, S, T> this, Node t, @Nullable Analysis<V, S, T> analysis) {
+        StringBuilder sbBlockNode = new StringBuilder();
         sbBlockNode.append(format(t)).append("   [ ").append(getNodeSimpleName(t)).append(" ]");
         if (analysis != null) {
             V value = analysis.getValue(t);
@@ -332,11 +329,11 @@ public abstract class AbstractCFGVisualizer<
      * @return the visualization of the transfer input before or after the given block
      */
     protected String visualizeBlockTransferInputHelper(
-            @Det AbstractCFGVisualizer<V, S, T> this,
-            @Det VisualizeWhere where,
-            @Det Block bb,
-            @Det Analysis<V, S, T> analysis,
-            @Det String separator) {
+            AbstractCFGVisualizer<V, S, T> this,
+            VisualizeWhere where,
+            Block bb,
+            Analysis<V, S, T> analysis,
+            String separator) {
         if (analysis == null) {
             throw new BugInCF(
                     "analysis must be non-null when visualizing the transfer input of a block.");
@@ -400,7 +397,7 @@ public abstract class AbstractCFGVisualizer<
      * @return the String representation of the special block
      */
     protected String visualizeSpecialBlockHelper(
-            @Det AbstractCFGVisualizer<V, S, T> this, @Det SpecialBlock sbb) {
+            AbstractCFGVisualizer<V, S, T> this, SpecialBlock sbb) {
         switch (sbb.getSpecialType()) {
             case ENTRY:
                 return "<entry>";
@@ -427,7 +424,7 @@ public abstract class AbstractCFGVisualizer<
         @OrderNonDet IdentityHashMap<Block, List<Integer>> depthFirstOrder = new IdentityHashMap<>();
         int count = 1;
         for (Block b : cfg.getDepthFirstOrderedBlocks()) {
-            depthFirstOrder.computeIfAbsent(b, k -> new @Det ArrayList<>());
+            depthFirstOrder.computeIfAbsent(b, k -> new ArrayList<>());
             @SuppressWarnings(
                     "nullness:assignment.type.incompatible") // computeIfAbsent's function doesn't
             // return null
@@ -438,7 +435,7 @@ public abstract class AbstractCFGVisualizer<
     }
 
     @Override
-    public @Det String visualizeStore(@Det AbstractCFGVisualizer<V, S, T> this, @Det S store) {
+    public String visualizeStore(AbstractCFGVisualizer<V, S, T> this, S store) {
         return store.visualize(this);
     }
 
@@ -450,11 +447,11 @@ public abstract class AbstractCFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the nodes
      */
-    protected abstract @Det String visualizeNodes(
-            @Det AbstractCFGVisualizer<V, S, T> this,
-            @Det Set<@Det Block> blocks,
-            @Det ControlFlowGraph cfg,
-            @Det @Nullable Analysis<V, S, T> analysis);
+    protected abstract String visualizeNodes(
+            AbstractCFGVisualizer<V, S, T> this,
+            Set<@Det Block> blocks,
+            ControlFlowGraph cfg,
+            @Nullable Analysis<V, S, T> analysis);
 
     /**
      * Generate the String representation of an edge.
@@ -464,25 +461,22 @@ public abstract class AbstractCFGVisualizer<
      * @param flowRule the content of the edge
      * @return the String representation of the edge
      */
-    protected abstract @Det String visualizeEdge(
-            @Det AbstractCFGVisualizer<V, S, T> this,
-            @Det Object sId,
-            @Det Object eId,
-            @Det String flowRule);
+    protected abstract String visualizeEdge(
+            AbstractCFGVisualizer<V, S, T> this, Object sId, Object eId, String flowRule);
 
     /**
      * Return the header of the generated graph.
      *
      * @return the String representation of the header of the control flow graph
      */
-    protected abstract String visualizeGraphHeader(@Det AbstractCFGVisualizer<V, S, T> this);
+    protected abstract String visualizeGraphHeader(AbstractCFGVisualizer<V, S, T> this);
 
     /**
      * Return the footer of the generated graph.
      *
      * @return the String representation of the footer of the control flow graph
      */
-    protected abstract @Det String visualizeGraphFooter(@Det AbstractCFGVisualizer<V, S, T> this);
+    protected abstract String visualizeGraphFooter(AbstractCFGVisualizer<V, S, T> this);
 
     /**
      * Given a list of process orders (integers), returns a string representation.

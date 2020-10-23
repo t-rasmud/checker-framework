@@ -31,9 +31,9 @@ import org.checkerframework.javacutil.BugInCF;
  * @param <T> the transfer function type that is used to approximate runtime behavior
  */
 public class BackwardAnalysisImpl<
-                V extends @Det AbstractValue<V>,
-                S extends @Det Store<S>,
-                T extends @Det BackwardTransferFunction<V, S>>
+                V extends AbstractValue<V>,
+                S extends Store<S>,
+                T extends BackwardTransferFunction<V, S>>
         extends AbstractAnalysis<V, S, T> implements BackwardAnalysis<V, S, T> {
 
     // TODO: Add widening support like what the forward analysis does.
@@ -105,7 +105,7 @@ public class BackwardAnalysisImpl<
                     currentInput = inputAfter.copy();
                     Node firstNode = null;
                     boolean addToWorklistAgain = false;
-                    @Det List<@Det Node> nodeList = rb.getNodes();
+                    List<@Det Node> nodeList = rb.getNodes();
                     @Det ListIterator<Node> reverseIter = nodeList.listIterator(nodeList.size());
                     while (reverseIter.hasPrevious()) {
                         Node node = reverseIter.previous();
@@ -131,7 +131,7 @@ public class BackwardAnalysisImpl<
                 }
             case EXCEPTION_BLOCK:
                 {
-                    @Det ExceptionBlock eb = (ExceptionBlock) b;
+                    ExceptionBlock eb = (ExceptionBlock) b;
                     TransferInput<V, S> inputAfter = getInput(eb);
                     assert inputAfter != null : "@AssumeAssertion(nullness): invariant";
                     currentInput = inputAfter.copy();

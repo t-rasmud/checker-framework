@@ -30,8 +30,7 @@ import org.plumelib.util.UniqueId;
  * @param <V> type of the abstract value that is tracked
  * @param <S> the store type used in the analysis
  */
-public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Store<S>>
-        implements UniqueId {
+public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> implements UniqueId {
 
     /** Abstract values of nodes. */
     protected final @OrderNonDet IdentityHashMap<Node, V> nodeValues;
@@ -193,7 +192,7 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
      * @return the abstract value for {@link Node} {@code n}, or {@code null} if no information is
      *     available
      */
-    public @Nullable V getValue(@Det Node n) {
+    public @Nullable V getValue(Node n) {
         return nodeValues.get(n);
     }
 
@@ -276,7 +275,7 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
         S merged = null;
         for (Node node : nodes) {
             @SuppressWarnings("determinism") // process is order insensitive: merging stores
-            @Det S s = getStoreBefore(node);
+            S s = getStoreBefore(node);
             if (merged == null) {
                 merged = s;
             } else if (s != null) {
@@ -374,7 +373,7 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
         S merged = null;
         for (Node node : nodes) {
             @SuppressWarnings("determinism") // process is order insensitive: merging stores
-            @Det S s = getStoreAfter(node);
+            S s = getStoreAfter(node);
             if (merged == null) {
                 merged = s;
             } else if (s != null) {
@@ -441,7 +440,7 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
      * @return the store before or after {@code node} (depends on the value of {@code before}) after
      *     running the analysis
      */
-    public static <V extends @Det AbstractValue<V>, S extends Store<S>> S runAnalysisFor(
+    public static <V extends AbstractValue<V>, S extends Store<S>> S runAnalysisFor(
             Node node,
             boolean before,
             TransferInput<V, S> transferInput,
@@ -486,8 +485,8 @@ public class AnalysisResult<V extends @Det AbstractValue<V>, S extends @Det Stor
      * @param nodeValues a map to format
      * @return a printed representation of the given map
      */
-    public static <V extends @Det Object> @NonDet String nodeValuesToString(
-            @OrderNonDet Map<@Det Node, V> nodeValues) {
+    public static <V extends Object> @NonDet String nodeValuesToString(
+            @OrderNonDet Map<Node, V> nodeValues) {
         if (nodeValues.isEmpty()) {
             return "{}";
         }

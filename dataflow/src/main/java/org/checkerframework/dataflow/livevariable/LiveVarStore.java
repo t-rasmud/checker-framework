@@ -25,7 +25,7 @@ import org.checkerframework.javacutil.BugInCF;
 public class LiveVarStore implements Store<LiveVarStore> {
 
     /** A set of live variable abstract values. */
-    private final @Det Set<LiveVarValue> liveVarValueSet;
+    private final Set<LiveVarValue> liveVarValueSet;
 
     /** Create a new LiveVarStore. */
     public LiveVarStore() {
@@ -37,7 +37,7 @@ public class LiveVarStore implements Store<LiveVarStore> {
      *
      * @param liveVarValueSet a set of live variable abstract values
      */
-    public LiveVarStore(@Det Set<LiveVarValue> liveVarValueSet) {
+    public LiveVarStore(Set<LiveVarValue> liveVarValueSet) {
         this.liveVarValueSet = liveVarValueSet;
     }
 

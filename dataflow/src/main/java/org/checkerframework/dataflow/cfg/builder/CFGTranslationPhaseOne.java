@@ -3264,9 +3264,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
             if (!accessedContinueLabels.isEmpty()) {
                 continueLabels = oldContinueLabels;
 
-                for (Map.Entry<@Det Name, @Det Label> tmpAccess :
-                        accessedContinueLabels.entrySet()) {
-                    Map.Entry<@Det Name, @Det Label> access = tmpAccess;
+                for (Map.Entry<@Det Name, Label> tmpAccess : accessedContinueLabels.entrySet()) {
+                    Map.Entry<@Det Name, Label> access = tmpAccess;
                     addLabelForNextNode(access.getValue());
                     extendWithNode(
                             new MarkerNode(

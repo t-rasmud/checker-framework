@@ -39,9 +39,7 @@ import org.checkerframework.javacutil.ElementUtils;
  * @param <T> the transfer function type that is used to approximated runtime behavior
  */
 public abstract class AbstractAnalysis<
-                V extends @Det AbstractValue<V>,
-                S extends @Det Store<S>,
-                T extends @Det TransferFunction<V, S>>
+                V extends AbstractValue<V>, S extends Store<S>, T extends TransferFunction<V, S>>
         implements Analysis<V, S, T> {
 
     /** The direction of this analysis. */
@@ -187,7 +185,7 @@ public abstract class AbstractAnalysis<
     }
 
     @Override
-    public @Nullable V getValue(@Det Node n) {
+    public @Nullable V getValue(Node n) {
         if (isRunning) {
             // we don't have a org.checkerframework.dataflow fact about the current node yet
             if (currentNode == null
@@ -415,7 +413,7 @@ public abstract class AbstractAnalysis<
      * @param <S> method return type should be a subtype of {@link Store}
      * @return the store for the target block
      */
-    protected static <S extends @Det Object> @Nullable S readFromStore(
+    protected static <S extends Object> @Nullable S readFromStore(
             @OrderNonDet Map<Block, S> stores, Block b) {
         return stores.get(b);
     }

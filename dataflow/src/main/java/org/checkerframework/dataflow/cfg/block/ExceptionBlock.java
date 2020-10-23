@@ -25,7 +25,7 @@ public interface ExceptionBlock extends SingleSuccessorBlock {
      * @return the node of this block
      */
     @Pure
-    @Det Node getNode(@Det ExceptionBlock this);
+    Node getNode(ExceptionBlock this);
 
     /**
      * Returns the list of exceptional successor blocks as an unmodifiable map.
@@ -33,5 +33,5 @@ public interface ExceptionBlock extends SingleSuccessorBlock {
      * @return the list of exceptional successor blocks as an unmodifiable map
      */
     @Pure
-    @Det Map<@Det TypeMirror, @Det Set<@Det Block>> getExceptionalSuccessors(@Det ExceptionBlock this);
+    Map<@Det TypeMirror, Set<@Det Block>> getExceptionalSuccessors(ExceptionBlock this);
 }

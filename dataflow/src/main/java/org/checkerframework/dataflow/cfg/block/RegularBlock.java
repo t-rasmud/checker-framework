@@ -17,7 +17,7 @@ public interface RegularBlock extends SingleSuccessorBlock {
      */
     @Deprecated // use getNodes instead
     @Pure
-    @Det List<@Det Node> getContents(@Det RegularBlock this);
+    List<@Det Node> getContents(RegularBlock this);
 
     /**
      * Returns the regular successor block.
@@ -25,9 +25,9 @@ public interface RegularBlock extends SingleSuccessorBlock {
      * @return the regular successor block
      */
     @Pure
-    @Det @Nullable Block getRegularSuccessor(@Det RegularBlock this);
+    @Nullable Block getRegularSuccessor(RegularBlock this);
 
     /** Is this block empty (i.e., does it not contain any contents). */
     @Pure
-    @Det boolean isEmpty(@Det RegularBlock this);
+    boolean isEmpty(RegularBlock this);
 }

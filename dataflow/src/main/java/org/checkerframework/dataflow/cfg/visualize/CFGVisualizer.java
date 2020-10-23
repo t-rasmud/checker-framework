@@ -41,7 +41,7 @@ public interface CFGVisualizer<
      *
      * @return the separator for lines within a node's representation
      */
-    public abstract @Det String getSeparator(@Det CFGVisualizer<V, S, T> this);
+    public abstract String getSeparator(CFGVisualizer<V, S, T> this);
 
     /**
      * Output a visualization representing the control flow graph starting at {@code entry}. The
@@ -60,7 +60,7 @@ public interface CFGVisualizer<
      *     String representation of the CFG ({@link StringCFGVisualizer})
      */
     @Nullable @OrderNonDet Map<String, Object> visualize(
-            @Det CFGVisualizer<V, S, T> this,
+            CFGVisualizer<V, S, T> this,
             ControlFlowGraph cfg,
             Block entry,
             @Nullable Analysis<V, S, T> analysis);
@@ -72,7 +72,7 @@ public interface CFGVisualizer<
      * @param store the store to visualize
      * @return the String representation of the given store
      */
-    @Det String visualizeStore(@Det CFGVisualizer<V, S, T> this, @Det S store);
+    String visualizeStore(CFGVisualizer<V, S, T> this, S store);
 
     /**
      * Called by {@code CFAbstractStore#internalVisualize()} to visualize a local variable.
@@ -81,8 +81,7 @@ public interface CFGVisualizer<
      * @param value the value of the local variable
      * @return the String representation of the local variable
      */
-    @Det String visualizeStoreLocalVar(
-            @Det CFGVisualizer<V, S, T> this, @Det LocalVariable localVar, @Det V value);
+    String visualizeStoreLocalVar(CFGVisualizer<V, S, T> this, LocalVariable localVar, V value);
 
     /**
      * Called by {@code CFAbstractStore#internalVisualize()} to visualize the value of the current
@@ -91,7 +90,7 @@ public interface CFGVisualizer<
      * @param value the value of the current object {@code this}
      * @return the String representation of {@code this}
      */
-    @Det String visualizeStoreThisVal(@Det CFGVisualizer<V, S, T> this, @Det V value);
+    String visualizeStoreThisVal(CFGVisualizer<V, S, T> this, V value);
 
     /**
      * Called by {@code CFAbstractStore#internalVisualize()} to visualize the value of one field
@@ -101,8 +100,7 @@ public interface CFGVisualizer<
      * @param value the value of the field
      * @return the String representation of the field
      */
-    @Det String visualizeStoreFieldVal(
-            @Det CFGVisualizer<V, S, T> this, @Det FieldAccess fieldAccess, @Det V value);
+    String visualizeStoreFieldVal(CFGVisualizer<V, S, T> this, FieldAccess fieldAccess, V value);
 
     /**
      * Called by {@code CFAbstractStore#internalVisualize()} to visualize the value of one array
@@ -112,8 +110,7 @@ public interface CFGVisualizer<
      * @param value the value of the array
      * @return the String representation of the array
      */
-    @Det String visualizeStoreArrayVal(
-            @Det CFGVisualizer<V, S, T> this, @Det ArrayAccess arrayValue, V value);
+    String visualizeStoreArrayVal(CFGVisualizer<V, S, T> this, ArrayAccess arrayValue, V value);
 
     /**
      * Called by {@code CFAbstractStore#internalVisualize()} to visualize the value of pure method
@@ -123,8 +120,7 @@ public interface CFGVisualizer<
      * @param value the value of the pure method call
      * @return the String representation of the pure method call
      */
-    @Det String visualizeStoreMethodVals(
-            @Det CFGVisualizer<V, S, T> this, MethodCall methodCall, @Det V value);
+    String visualizeStoreMethodVals(CFGVisualizer<V, S, T> this, MethodCall methodCall, V value);
 
     /**
      * Called by {@code CFAbstractStore#internalVisualize()} to visualize the value of class names
@@ -134,8 +130,7 @@ public interface CFGVisualizer<
      * @param value the value of the class name
      * @return the String representation of the class name
      */
-    @Det String visualizeStoreClassVals(
-            @Det CFGVisualizer<V, S, T> this, @Det ClassName className, @Det V value);
+    String visualizeStoreClassVals(CFGVisualizer<V, S, T> this, ClassName className, V value);
 
     /**
      * Called by {@code CFAbstractStore#internalVisualize()} to visualize the specific information
@@ -147,8 +142,7 @@ public interface CFGVisualizer<
      * @param value the value of the specific information to be visualized
      * @return the String representation of the specific information
      */
-    @Det String visualizeStoreKeyVal(
-            @Det CFGVisualizer<V, S, T> this, @Det String keyName, @Det Object value);
+    String visualizeStoreKeyVal(CFGVisualizer<V, S, T> this, String keyName, Object value);
 
     /**
      * Visualize a block based on the analysis.
@@ -157,10 +151,8 @@ public interface CFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the given block
      */
-    @Det String visualizeBlock(
-            @Det CFGVisualizer<V, S, T> this,
-            @Det Block bb,
-            @Det @Nullable Analysis<V, S, T> analysis);
+    String visualizeBlock(
+            CFGVisualizer<V, S, T> this, Block bb, @Nullable Analysis<V, S, T> analysis);
 
     /**
      * Visualize a SpecialBlock.
@@ -169,7 +161,7 @@ public interface CFGVisualizer<
      * @return the String representation of the type of the special block {@code sbb}: entry, exit,
      *     or exceptional-exit
      */
-    @Det String visualizeSpecialBlock(@Det CFGVisualizer<V, S, T> this, @Det SpecialBlock sbb);
+    String visualizeSpecialBlock(CFGVisualizer<V, S, T> this, SpecialBlock sbb);
 
     /**
      * Visualize a ConditionalBlock.
@@ -177,7 +169,7 @@ public interface CFGVisualizer<
      * @param cbb the conditional block
      * @return the String representation of the conditional block
      */
-    @Det String visualizeConditionalBlock(@Det CFGVisualizer<V, S, T> this, @Det ConditionalBlock cbb);
+    String visualizeConditionalBlock(CFGVisualizer<V, S, T> this, ConditionalBlock cbb);
 
     /**
      * Visualize the transferInput before a Block based on the analysis.
@@ -186,8 +178,8 @@ public interface CFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the transferInput before the given block
      */
-    @Det String visualizeBlockTransferInputBefore(
-            @Det CFGVisualizer<V, S, T> this, @Det Block bb, @Det Analysis<V, S, T> analysis);
+    String visualizeBlockTransferInputBefore(
+            CFGVisualizer<V, S, T> this, Block bb, Analysis<V, S, T> analysis);
 
     /**
      * Visualize the transferInput after a Block based on the analysis.
@@ -196,8 +188,8 @@ public interface CFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the transferInput after the given block
      */
-    @Det String visualizeBlockTransferInputAfter(
-            @Det CFGVisualizer<V, S, T> this, @Det Block bb, @Det Analysis<V, S, T> analysis);
+    String visualizeBlockTransferInputAfter(
+            CFGVisualizer<V, S, T> this, Block bb, Analysis<V, S, T> analysis);
 
     /**
      * Visualize a Node based on the analysis.
@@ -206,10 +198,8 @@ public interface CFGVisualizer<
      * @param analysis the current analysis
      * @return the String representation of the given node
      */
-    @Det String visualizeBlockNode(
-            @Det CFGVisualizer<V, S, T> this,
-            @Det Node t,
-            @Det @Nullable Analysis<V, S, T> analysis);
+    String visualizeBlockNode(
+            CFGVisualizer<V, S, T> this, Node t, @Nullable Analysis<V, S, T> analysis);
 
     /** Shutdown method called once from the shutdown hook of the {@code BaseTypeChecker}. */
     void shutdown();

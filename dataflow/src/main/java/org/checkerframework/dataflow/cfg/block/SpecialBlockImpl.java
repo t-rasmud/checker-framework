@@ -18,7 +18,7 @@ public class SpecialBlockImpl extends SingleSuccessorBlockImpl implements Specia
     }
 
     @Override
-    public @Det SpecialBlockType getSpecialType(@Det SpecialBlockImpl this) {
+    public SpecialBlockType getSpecialType(SpecialBlockImpl this) {
         return specialType;
     }
 
@@ -28,12 +28,12 @@ public class SpecialBlockImpl extends SingleSuccessorBlockImpl implements Specia
      * <p>This implementation returns an empty list.
      */
     @Override
-    public @Det List<@Det Node> getNodes(@Det SpecialBlockImpl this) {
+    public List<@Det Node> getNodes(SpecialBlockImpl this) {
         return Collections.emptyList();
     }
 
     @Override
-    public @Nullable @Det Node getLastNode(@Det SpecialBlockImpl this) {
+    public @Nullable Node getLastNode(SpecialBlockImpl this) {
         return null;
     }
 

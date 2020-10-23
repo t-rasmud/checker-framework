@@ -11,6 +11,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.analysis.Store;
 import org.checkerframework.dataflow.cfg.node.ArrayAccessNode;
@@ -100,7 +101,7 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
     final transient long uid = UniqueId.nextUid.getAndIncrement();
 
     @Override
-    public long getUid() {
+    public @PolyDet long getUid(@PolyDet CFAbstractStore<V, S> this) {
         return uid;
     }
 

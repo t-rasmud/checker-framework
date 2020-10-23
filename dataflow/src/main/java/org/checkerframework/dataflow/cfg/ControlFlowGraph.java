@@ -235,7 +235,7 @@ public class ControlFlowGraph implements UniqueId {
      *     postorder sequence
      */
     public List<Block> getDepthFirstOrderedBlocks() {
-        @Det List<Block> dfsOrderResult = new ArrayList<>();
+        List<Block> dfsOrderResult = new ArrayList<>();
         @OrderNonDet Set<Block> visited = new HashSet<>();
         @Det Deque<Block> worklist = new ArrayDeque<>();
         worklist.add(entryBlock);

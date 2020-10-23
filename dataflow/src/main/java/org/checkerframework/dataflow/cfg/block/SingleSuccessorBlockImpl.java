@@ -26,13 +26,13 @@ public abstract class SingleSuccessorBlockImpl extends BlockImpl implements Sing
     }
 
     @Override
-    public @Det @Nullable Block getSuccessor(@Det SingleSuccessorBlockImpl this) {
+    public @Nullable Block getSuccessor(SingleSuccessorBlockImpl this) {
         return successor;
     }
 
     @Override
-    public @Det Set<@Det Block> getSuccessors(@Det SingleSuccessorBlockImpl this) {
-        @Det Set<@Det Block> result = new @Det LinkedHashSet<>();
+    public Set<@Det Block> getSuccessors(SingleSuccessorBlockImpl this) {
+        Set<@Det Block> result = new LinkedHashSet<>();
         if (successor != null) {
             result.add(successor);
         }
@@ -44,18 +44,18 @@ public abstract class SingleSuccessorBlockImpl extends BlockImpl implements Sing
      *
      * @param successor the block that will be the successor of this
      */
-    public void setSuccessor(@Det SingleSuccessorBlockImpl this, @Det BlockImpl successor) {
+    public void setSuccessor(SingleSuccessorBlockImpl this, BlockImpl successor) {
         this.successor = successor;
         successor.addPredecessor(this);
     }
 
     @Override
-    public @Det FlowRule getFlowRule(@Det SingleSuccessorBlockImpl this) {
+    public FlowRule getFlowRule(SingleSuccessorBlockImpl this) {
         return flowRule;
     }
 
     @Override
-    public void setFlowRule(@Det SingleSuccessorBlockImpl this, @Det FlowRule rule) {
+    public void setFlowRule(SingleSuccessorBlockImpl this, FlowRule rule) {
         flowRule = rule;
     }
 }

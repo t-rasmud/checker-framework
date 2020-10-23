@@ -32,16 +32,16 @@ public class StringCFGVisualizer<
         extends AbstractCFGVisualizer<V, S, T> {
 
     @Override
-    public @Det String getSeparator(@Det StringCFGVisualizer<V, S, T> this) {
+    public String getSeparator(StringCFGVisualizer<V, S, T> this) {
         return "\n";
     }
 
     @Override
     public @OrderNonDet Map<String, Object> visualize(
-            @Det StringCFGVisualizer<V, S, T> this,
-            @Det ControlFlowGraph cfg,
-            @Det Block entry,
-            @Det @Nullable Analysis<V, S, T> analysis) {
+            StringCFGVisualizer<V, S, T> this,
+            ControlFlowGraph cfg,
+            Block entry,
+            @Nullable Analysis<V, S, T> analysis) {
         String stringGraph = visualizeGraph(cfg, entry, analysis);
         @OrderNonDet Map<String, Object> res = new HashMap<>();
         res.put("stringGraph", stringGraph);
@@ -50,12 +50,12 @@ public class StringCFGVisualizer<
 
     @SuppressWarnings("keyfor:enhancedfor.type.incompatible")
     @Override
-    public @Det String visualizeNodes(
-            @Det StringCFGVisualizer<V, S, T> this,
-            @Det Set<@Det Block> blocks,
-            @Det ControlFlowGraph cfg,
-            @Det @Nullable Analysis<V, S, T> analysis) {
-        StringJoiner sjStringNodes = new @Det StringJoiner(lineSeparator);
+    public String visualizeNodes(
+            StringCFGVisualizer<V, S, T> this,
+            Set<@Det Block> blocks,
+            ControlFlowGraph cfg,
+            @Nullable Analysis<V, S, T> analysis) {
+        StringJoiner sjStringNodes = new StringJoiner(lineSeparator);
         IdentityHashMap<@Det Block, @Det List<Integer>> processOrder = getProcessOrder(cfg);
 
         // Generate all the Nodes.
@@ -72,11 +72,8 @@ public class StringCFGVisualizer<
     }
 
     @Override
-    protected @Det String visualizeEdge(
-            @Det StringCFGVisualizer<V, S, T> this,
-            @Det Object sId,
-            @Det Object eId,
-            @Det String flowRule) {
+    protected String visualizeEdge(
+            StringCFGVisualizer<V, S, T> this, Object sId, Object eId, String flowRule) {
         if (this.verbose) {
             return sId + " -> " + eId + " " + flowRule;
         }
@@ -84,22 +81,19 @@ public class StringCFGVisualizer<
     }
 
     @Override
-    public @Det String visualizeBlock(
-            @Det StringCFGVisualizer<V, S, T> this,
-            @Det Block bb,
-            @Det @Nullable Analysis<V, S, T> analysis) {
+    public String visualizeBlock(
+            StringCFGVisualizer<V, S, T> this, Block bb, @Nullable Analysis<V, S, T> analysis) {
         return super.visualizeBlockHelper(bb, analysis, lineSeparator).trim();
     }
 
     @Override
-    public @Det String visualizeSpecialBlock(
-            @Det StringCFGVisualizer<V, S, T> this, @Det SpecialBlock sbb) {
+    public String visualizeSpecialBlock(StringCFGVisualizer<V, S, T> this, SpecialBlock sbb) {
         return super.visualizeSpecialBlockHelper(sbb);
     }
 
     @Override
-    public @Det String visualizeConditionalBlock(
-            @Det StringCFGVisualizer<V, S, T> this, @Det ConditionalBlock cbb) {
+    public String visualizeConditionalBlock(
+            StringCFGVisualizer<V, S, T> this, ConditionalBlock cbb) {
         return "ConditionalBlock: then: "
                 + cbb.getThenSuccessor().getUid()
                 + ", else: "
@@ -107,68 +101,64 @@ public class StringCFGVisualizer<
     }
 
     @Override
-    public @Det String visualizeBlockTransferInputBefore(
-            @Det StringCFGVisualizer<V, S, T> this,
-            @Det Block bb,
-            @Det Analysis<V, S, T> analysis) {
+    public String visualizeBlockTransferInputBefore(
+            StringCFGVisualizer<V, S, T> this, Block bb, Analysis<V, S, T> analysis) {
         return super.visualizeBlockTransferInputHelper(
                 VisualizeWhere.BEFORE, bb, analysis, lineSeparator);
     }
 
     @Override
-    public @Det String visualizeBlockTransferInputAfter(
-            @Det StringCFGVisualizer<V, S, T> this,
-            @Det Block bb,
-            @Det Analysis<V, S, T> analysis) {
+    public String visualizeBlockTransferInputAfter(
+            StringCFGVisualizer<V, S, T> this, Block bb, Analysis<V, S, T> analysis) {
         return super.visualizeBlockTransferInputHelper(
                 VisualizeWhere.AFTER, bb, analysis, lineSeparator);
     }
 
     @Override
     @RequiresDetToString
-    @SuppressWarnings("determinism") // toString is @Det because of @RequiresDetToString
-    protected @Det String format(@Det StringCFGVisualizer<V, S, T> this, @Det Object obj) {
+    @SuppressWarnings("determinism") // toString is because of @RequiresDetToString
+    protected String format(StringCFGVisualizer<V, S, T> this, Object obj) {
         return obj.toString();
     }
 
     @Override
-    public @Det String visualizeStoreThisVal(@Det StringCFGVisualizer<V, S, T> this, @Det V value) {
+    public String visualizeStoreThisVal(StringCFGVisualizer<V, S, T> this, V value) {
         return storeEntryIndent + "this > " + value;
     }
 
     @Override
-    public @Det String visualizeStoreLocalVar(
-            @Det StringCFGVisualizer<V, S, T> this, @Det LocalVariable localVar, @Det V value) {
+    public String visualizeStoreLocalVar(
+            StringCFGVisualizer<V, S, T> this, LocalVariable localVar, V value) {
         return storeEntryIndent + localVar + " > " + value;
     }
 
     @Override
-    public @Det String visualizeStoreFieldVal(
-            @Det StringCFGVisualizer<V, S, T> this, @Det FieldAccess fieldAccess, @Det V value) {
+    public String visualizeStoreFieldVal(
+            StringCFGVisualizer<V, S, T> this, FieldAccess fieldAccess, V value) {
         return storeEntryIndent + fieldAccess + " > " + value;
     }
 
     @Override
-    public @Det String visualizeStoreArrayVal(
-            @Det StringCFGVisualizer<V, S, T> this, @Det ArrayAccess arrayValue, @Det V value) {
+    public String visualizeStoreArrayVal(
+            StringCFGVisualizer<V, S, T> this, ArrayAccess arrayValue, V value) {
         return storeEntryIndent + arrayValue + " > " + value;
     }
 
     @Override
-    public @Det String visualizeStoreMethodVals(
-            @Det StringCFGVisualizer<V, S, T> this, @Det MethodCall methodCall, @Det V value) {
+    public String visualizeStoreMethodVals(
+            StringCFGVisualizer<V, S, T> this, MethodCall methodCall, V value) {
         return storeEntryIndent + methodCall + " > " + value;
     }
 
     @Override
-    public @Det String visualizeStoreClassVals(
-            @Det StringCFGVisualizer<V, S, T> this, @Det ClassName className, @Det V value) {
+    public String visualizeStoreClassVals(
+            StringCFGVisualizer<V, S, T> this, ClassName className, V value) {
         return storeEntryIndent + className + " > " + value;
     }
 
     @Override
-    public @Det String visualizeStoreKeyVal(
-            @Det StringCFGVisualizer<V, S, T> this, @Det String keyName, @Det Object value) {
+    public String visualizeStoreKeyVal(
+            StringCFGVisualizer<V, S, T> this, String keyName, Object value) {
         return storeEntryIndent + keyName + " = " + value;
     }
 
@@ -186,7 +176,7 @@ public class StringCFGVisualizer<
      * <p>StringCFGVisualizer does not need a specific header, so just return an empty string.
      */
     @Override
-    protected String visualizeGraphHeader(@Det StringCFGVisualizer<V, S, T> this) {
+    protected String visualizeGraphHeader(StringCFGVisualizer<V, S, T> this) {
         return "";
     }
 
@@ -196,7 +186,7 @@ public class StringCFGVisualizer<
      * <p>StringCFGVisualizer does not need a specific footer, so just return an empty string.
      */
     @Override
-    protected String visualizeGraphFooter(@Det StringCFGVisualizer<V, S, T> this) {
+    protected String visualizeGraphFooter(StringCFGVisualizer<V, S, T> this) {
         return "";
     }
 }

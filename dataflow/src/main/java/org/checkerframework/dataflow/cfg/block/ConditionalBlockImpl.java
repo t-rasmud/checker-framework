@@ -38,19 +38,19 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
     }
 
     /** Set the then branch successor. */
-    public void setThenSuccessor(@Det ConditionalBlockImpl this, @Det BlockImpl b) {
+    public void setThenSuccessor(ConditionalBlockImpl this, BlockImpl b) {
         thenSuccessor = b;
         b.addPredecessor(this);
     }
 
     /** Set the else branch successor. */
-    public void setElseSuccessor(@Det ConditionalBlockImpl this, @Det BlockImpl b) {
+    public void setElseSuccessor(ConditionalBlockImpl this, BlockImpl b) {
         elseSuccessor = b;
         b.addPredecessor(this);
     }
 
     @Override
-    public @Det Block getThenSuccessor(@Det ConditionalBlockImpl this) {
+    public Block getThenSuccessor(ConditionalBlockImpl this) {
         if (thenSuccessor == null) {
             throw new BugInCF(
                     "Requested thenSuccessor for conditional block before initialization");
@@ -59,7 +59,7 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
     }
 
     @Override
-    public @Det Block getElseSuccessor(@Det ConditionalBlockImpl this) {
+    public Block getElseSuccessor(ConditionalBlockImpl this) {
         if (elseSuccessor == null) {
             throw new BugInCF(
                     "Requested elseSuccessor for conditional block before initialization");
@@ -68,7 +68,7 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
     }
 
     @Override
-    public @Det Set<Block> getSuccessors(@Det ConditionalBlockImpl this) {
+    public Set<Block> getSuccessors(ConditionalBlockImpl this) {
         Set<@Det Block> result = new LinkedHashSet<>(2);
         result.add(getThenSuccessor());
         result.add(getElseSuccessor());
@@ -76,22 +76,22 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
     }
 
     @Override
-    public @Det FlowRule getThenFlowRule(@Det ConditionalBlockImpl this) {
+    public FlowRule getThenFlowRule(ConditionalBlockImpl this) {
         return thenFlowRule;
     }
 
     @Override
-    public @Det FlowRule getElseFlowRule(@Det ConditionalBlockImpl this) {
+    public FlowRule getElseFlowRule(ConditionalBlockImpl this) {
         return elseFlowRule;
     }
 
     @Override
-    public void setThenFlowRule(@Det ConditionalBlockImpl this, @Det FlowRule rule) {
+    public void setThenFlowRule(ConditionalBlockImpl this, FlowRule rule) {
         thenFlowRule = rule;
     }
 
     @Override
-    public void setElseFlowRule(@Det ConditionalBlockImpl this, @Det FlowRule rule) {
+    public void setElseFlowRule(ConditionalBlockImpl this, FlowRule rule) {
         elseFlowRule = rule;
     }
 
@@ -101,17 +101,17 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
      * <p>This implementation returns an empty list.
      */
     @Override
-    public @Det List<@Det Node> getNodes(@Det ConditionalBlockImpl this) {
+    public List<@Det Node> getNodes(ConditionalBlockImpl this) {
         return Collections.emptyList();
     }
 
     @Override
-    public @Det @Nullable Node getLastNode(@Det ConditionalBlockImpl this) {
+    public @Nullable Node getLastNode(ConditionalBlockImpl this) {
         return null;
     }
 
     @Override
-    public @Det String toString(@PolyDet ConditionalBlockImpl this) {
+    public String toString(@PolyDet ConditionalBlockImpl this) {
         return "ConditionalBlock()";
     }
 }

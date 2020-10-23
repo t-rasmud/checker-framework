@@ -7,7 +7,6 @@ import java.util.Objects;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
 import org.checkerframework.checker.determinism.qual.*;
-import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -20,7 +19,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class MarkerNode extends Node {
 
     protected final @Nullable Tree tree;
-    protected final @Det String message;
+    protected final String message;
 
     public MarkerNode(@Nullable Tree tree, String message, Types types) {
         super(types.getNoType(TypeKind.NONE));

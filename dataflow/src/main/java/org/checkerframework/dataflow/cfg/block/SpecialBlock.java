@@ -31,5 +31,5 @@ public interface SpecialBlock extends SingleSuccessorBlock {
      *
      * @return the type of this special basic block
      */
-    @Det SpecialBlockType getSpecialType(@Det SpecialBlock this);
+    SpecialBlockType getSpecialType(SpecialBlock this);
 }

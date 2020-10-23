@@ -303,9 +303,9 @@ public class CFGTranslationPhaseThree {
                     return singleSuccessorHolder(e, cur);
                 } else {
                     @SuppressWarnings("keyfor:assignment.type.incompatible") // ignore keyfor type
-                    Set<Map.@Det Entry<TypeMirror, @Det Set<Block>>> entrySet =
+                    Set<Map.@Det Entry<TypeMirror, Set<Block>>> entrySet =
                             e.getExceptionalSuccessors().entrySet();
-                    for (final Map.Entry<TypeMirror, @Det Set<Block>> entry : entrySet) {
+                    for (final Map.Entry<TypeMirror, Set<Block>> entry : entrySet) {
                         if (entry.getValue().contains(cur)) {
                             return new PredecessorHolder() {
                                 @Override

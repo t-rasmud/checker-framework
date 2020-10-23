@@ -1,6 +1,7 @@
 package org.checkerframework.checker.nullness;
 
 import java.util.concurrent.atomic.AtomicLong;
+import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.initialization.InitializationStore;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.nullness.qual.PolyNull;
@@ -29,7 +30,7 @@ public class NullnessStore extends InitializationStore<NullnessValue, NullnessSt
      * @return the unique ID of this object.
      */
     @Override
-    public long getUid() {
+    public @PolyDet long getUid(@PolyDet NullnessStore this) {
         return uid;
     }
 

@@ -16,32 +16,32 @@ public interface ConditionalBlock extends Block {
      *
      * @return the entry block of the then branch
      */
-    @Det Block getThenSuccessor(@Det ConditionalBlock this);
+    Block getThenSuccessor(ConditionalBlock this);
 
     /**
      * Returns the entry block of the else branch.
      *
      * @return the entry block of the else branch
      */
-    @Det Block getElseSuccessor(@Det ConditionalBlock this);
+    Block getElseSuccessor(ConditionalBlock this);
 
     /**
      * Returns the flow rule for information flowing from this block to its then successor.
      *
      * @return the flow rule for information flowing from this block to its then successor
      */
-    @Det FlowRule getThenFlowRule(@Det ConditionalBlock this);
+    FlowRule getThenFlowRule(ConditionalBlock this);
 
     /**
      * Returns the flow rule for information flowing from this block to its else successor.
      *
      * @return the flow rule for information flowing from this block to its else successor
      */
-    @Det FlowRule getElseFlowRule(@Det ConditionalBlock this);
+    FlowRule getElseFlowRule(ConditionalBlock this);
 
     /** Set the flow rule for information flowing from this block to its then successor. */
-    void setThenFlowRule(@Det ConditionalBlock this, Store.FlowRule rule);
+    void setThenFlowRule(ConditionalBlock this, Store.FlowRule rule);
 
     /** Set the flow rule for information flowing from this block to its else successor. */
-    void setElseFlowRule(@Det ConditionalBlock this, Store.FlowRule rule);
+    void setElseFlowRule(ConditionalBlock this, Store.FlowRule rule);
 }

@@ -32,21 +32,21 @@ public interface Block extends UniqueId {
      *
      * @return the type of this basic block
      */
-    @Det BlockType getType(@Det Block this);
+    BlockType getType(Block this);
 
     /**
      * Returns the predecessors of this basic block.
      *
      * @return the predecessors of this basic block
      */
-    @Det Set<@Det Block> getPredecessors(@Det Block this);
+    Set<@Det Block> getPredecessors(Block this);
 
     /**
      * Returns the successors of this basic block.
      *
      * @return the successors of this basic block
      */
-    @Det Set<@Det Block> getSuccessors(@Det Block this);
+    Set<@Det Block> getSuccessors(Block this);
 
     /**
      * Returns the nodes contained within this basic block. The list may be empty.
@@ -60,12 +60,12 @@ public interface Block extends UniqueId {
      * @return the nodes contained within this basic block
      */
     @Pure
-    @Det List<@Det Node> getNodes(@Det Block this);
+    List<@Det Node> getNodes(Block this);
 
     /**
      * Returns the last node of this block, or null if none.
      *
      * @return the last node of this block or {@code null}
      */
-    @Det @Nullable Node getLastNode(@Det Block this);
+    @Nullable Node getLastNode(Block this);
 }

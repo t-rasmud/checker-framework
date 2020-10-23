@@ -16,7 +16,7 @@ public interface SingleSuccessorBlock extends Block {
      *     successor
      */
     @Pure
-    @Nullable @Det Block getSuccessor(@Det SingleSuccessorBlock this);
+    @Nullable Block getSuccessor(SingleSuccessorBlock this);
 
     /**
      * Returns the flow rule for information flowing from this block to its successor.
@@ -24,8 +24,8 @@ public interface SingleSuccessorBlock extends Block {
      * @return the flow rule for information flowing from this block to its successor
      */
     @Pure
-    @Det FlowRule getFlowRule(@Det SingleSuccessorBlock this);
+    FlowRule getFlowRule(SingleSuccessorBlock this);
 
     /** Set the flow rule for information flowing from this block to its successor. */
-    void setFlowRule(@Det SingleSuccessorBlock this, @Det FlowRule rule);
+    void setFlowRule(SingleSuccessorBlock this, FlowRule rule);
 }

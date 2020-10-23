@@ -13,7 +13,7 @@ public abstract class BlockImpl implements Block {
     protected final BlockType type;
 
     /** The set of predecessors. */
-    protected final @Det Set<BlockImpl> predecessors;
+    protected final Set<BlockImpl> predecessors;
 
     /** The unique ID for the next-created object. */
     static final AtomicLong nextUid = new AtomicLong(0);
@@ -25,8 +25,7 @@ public abstract class BlockImpl implements Block {
      * @return the unique ID of this object
      */
     @Override
-    @SuppressWarnings("determinism") // getUid implementation
-    public @Det long getUid(@UnknownInitialization @PolyDet BlockImpl this) {
+    public @PolyDet long getUid(@UnknownInitialization @PolyDet BlockImpl this) {
         return uid;
     }
 
@@ -41,22 +40,22 @@ public abstract class BlockImpl implements Block {
     }
 
     @Override
-    public @Det BlockType getType(@Det BlockImpl this) {
+    public BlockType getType(BlockImpl this) {
         return type;
     }
 
     @Override
-    public @Det Set<@Det Block> getPredecessors(@Det BlockImpl this) {
+    public Set<@Det Block> getPredecessors(BlockImpl this) {
         // Not "Collections.unmodifiableSet(predecessors)" which has nondeterministic iteration
         // order.
         return new LinkedHashSet<>(predecessors);
     }
 
-    public void addPredecessor(@Det BlockImpl this, @Det BlockImpl pred) {
+    public void addPredecessor(BlockImpl this, BlockImpl pred) {
         predecessors.add(pred);
     }
 
-    public void removePredecessor(@Det BlockImpl this, @Det BlockImpl pred) {
+    public void removePredecessor(BlockImpl this, BlockImpl pred) {
         predecessors.remove(pred);
     }
 }

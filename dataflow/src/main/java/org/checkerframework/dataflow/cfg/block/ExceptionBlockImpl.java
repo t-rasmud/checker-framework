@@ -19,7 +19,7 @@ public class ExceptionBlockImpl extends SingleSuccessorBlockImpl implements Exce
     protected @Nullable Node node;
 
     /** Set of exceptional successors. */
-    protected final @Det Map<TypeMirror, @Det Set<Block>> exceptionalSuccessors;
+    protected final Map<TypeMirror, Set<Block>> exceptionalSuccessors;
 
     /** Create an empty exceptional block. */
     public ExceptionBlockImpl() {
@@ -34,7 +34,7 @@ public class ExceptionBlockImpl extends SingleSuccessorBlockImpl implements Exce
     }
 
     @Override
-    public @Det Node getNode(@Det ExceptionBlockImpl this) {
+    public Node getNode(ExceptionBlockImpl this) {
         if (node == null) {
             throw new BugInCF("Requested node for exception block before initialization");
         }
@@ -47,12 +47,12 @@ public class ExceptionBlockImpl extends SingleSuccessorBlockImpl implements Exce
      * <p>This implementation returns a singleton list.
      */
     @Override
-    public @Det List<@Det Node> getNodes(@Det ExceptionBlockImpl this) {
+    public List<@Det Node> getNodes(ExceptionBlockImpl this) {
         return Collections.singletonList(getNode());
     }
 
     @Override
-    public @Nullable Node getLastNode(@Det ExceptionBlockImpl this) {
+    public @Nullable Node getLastNode(ExceptionBlockImpl this) {
         return null;
     }
 
@@ -73,17 +73,16 @@ public class ExceptionBlockImpl extends SingleSuccessorBlockImpl implements Exce
     }
 
     @Override
-    public @Det Map<@Det TypeMirror, @Det Set<@Det Block>> getExceptionalSuccessors(
-            @Det ExceptionBlockImpl this) {
+    public Map<@Det TypeMirror, Set<@Det Block>> getExceptionalSuccessors(ExceptionBlockImpl this) {
         if (exceptionalSuccessors == null) {
-            @Det Map<@Det TypeMirror, @Det Set<@Det Block>> result = Collections.emptyMap();
+            Map<@Det TypeMirror, @Det Set<@Det Block>> result = Collections.emptyMap();
             return result;
         }
         return Collections.unmodifiableMap(exceptionalSuccessors);
     }
 
     @Override
-    public @Det Set<@Det Block> getSuccessors(@Det ExceptionBlockImpl this) {
+    public Set<@Det Block> getSuccessors(ExceptionBlockImpl this) {
         Set<@Det Block> result = new LinkedHashSet<>(super.getSuccessors());
         for (@Det Set<? extends Block> blocks : getExceptionalSuccessors().values()) {
             result.addAll(blocks);

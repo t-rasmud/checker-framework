@@ -23,13 +23,13 @@ public class RegularBlockImpl extends SingleSuccessorBlockImpl implements Regula
     }
 
     /** Add a node to the contents of this basic block. */
-    public void addNode(@Det RegularBlockImpl this, @Det Node t) {
+    public void addNode(RegularBlockImpl this, Node t) {
         contents.add(t);
         t.setBlock(this);
     }
 
     /** Add multiple nodes to the contents of this basic block. */
-    public void addNodes(@Det RegularBlockImpl this, @Det List<? extends Node> ts) {
+    public void addNodes(RegularBlockImpl this, List<? extends Node> ts) {
         for (Node t : ts) {
             addNode(t);
         }
@@ -37,7 +37,7 @@ public class RegularBlockImpl extends SingleSuccessorBlockImpl implements Regula
 
     @SuppressWarnings("deprecation") // implementation of deprecated method in interface
     @Override
-    public @Det List<@Det Node> getContents(@Det RegularBlockImpl this) {
+    public List<@Det Node> getContents(RegularBlockImpl this) {
         return getNodes();
     }
 
@@ -47,17 +47,17 @@ public class RegularBlockImpl extends SingleSuccessorBlockImpl implements Regula
      * <p>This implementation returns an non-empty list.
      */
     @Override
-    public @Det List<@Det Node> getNodes(@Det RegularBlockImpl this) {
+    public List<@Det Node> getNodes(RegularBlockImpl this) {
         return Collections.unmodifiableList(contents);
     }
 
     @Override
-    public @Nullable @Det Node getLastNode(@Det RegularBlockImpl this) {
+    public @Nullable Node getLastNode(RegularBlockImpl this) {
         return contents.get(contents.size() - 1);
     }
 
     @Override
-    public @Nullable @Det BlockImpl getRegularSuccessor(@Det RegularBlockImpl this) {
+    public @Nullable BlockImpl getRegularSuccessor(RegularBlockImpl this) {
         return successor;
     }
 
@@ -67,7 +67,7 @@ public class RegularBlockImpl extends SingleSuccessorBlockImpl implements Regula
     }
 
     @Override
-    public @Det boolean isEmpty(@Det RegularBlockImpl this) {
+    public boolean isEmpty(RegularBlockImpl this) {
         return contents.isEmpty();
     }
 }
