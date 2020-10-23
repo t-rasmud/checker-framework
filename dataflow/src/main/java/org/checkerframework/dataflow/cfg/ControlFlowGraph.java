@@ -325,7 +325,7 @@ public class ControlFlowGraph implements UniqueId {
 
         CFGVisualizer<?, ?, ?> viz = new StringCFGVisualizer<>();
         viz.init(args);
-        Map<String, Object> res = viz.visualize(this, this.getEntryBlock(), null);
+        @OrderNonDet Map<String, Object> res = viz.visualize(this, this.getEntryBlock(), null);
         viz.shutdown();
         if (res == null) {
             return "unvisualizable " + getClass().getCanonicalName();

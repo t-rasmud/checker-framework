@@ -176,7 +176,7 @@ public class CFGTranslationPhaseThree {
     protected static BlockImpl computeNeighborhoodOfEmptyBlock(
             RegularBlockImpl start,
             @OrderNonDet Set<RegularBlockImpl> emptyBlocks,
-            @OrderNonDet Set<PredecessorHolder> predecessors) {
+            Set<PredecessorHolder> predecessors) {
 
         // get empty neighborhood that come before 'start'
         computeNeighborhoodOfEmptyBlockBackwards(start, emptyBlocks, predecessors);
@@ -213,7 +213,7 @@ public class CFGTranslationPhaseThree {
     protected static void computeNeighborhoodOfEmptyBlockBackwards(
             RegularBlockImpl start,
             @OrderNonDet Set<RegularBlockImpl> emptyBlocks,
-            @OrderNonDet Set<PredecessorHolder> predecessors) {
+            Set<PredecessorHolder> predecessors) {
 
         RegularBlockImpl cur = start;
         emptyBlocks.add(cur);
