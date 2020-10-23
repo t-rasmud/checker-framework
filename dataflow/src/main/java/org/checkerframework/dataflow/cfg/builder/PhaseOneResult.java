@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
+import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.determinism.qual.NonDet;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
@@ -94,8 +95,8 @@ public class PhaseOneResult {
         }
     }
 
-    private @PolyDet String resolveLabel(@PolyDet Label label) {
-        Integer index = bindings.get(label);
+    private String resolveLabel(Label label) {
+        @Det Integer index = bindings.get(label);
         if (index == null) {
             return "unbound label: " + label;
         }

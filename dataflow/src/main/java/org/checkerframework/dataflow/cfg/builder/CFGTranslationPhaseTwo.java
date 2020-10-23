@@ -203,7 +203,7 @@ public class CFGTranslationPhaseTwo {
 
         // add missing exceptional edges
         for (@Det MissingEdge p : missingExceptionalEdges) {
-            Integer index = p.index;
+            @Det Integer index = p.index;
             TypeMirror cause = p.cause;
             ExceptionBlockImpl source = (ExceptionBlockImpl) p.source;
             if (index == null) {
