@@ -58,10 +58,10 @@ import java.lang.annotation.*;
  *
  * @see NoQualifierParameter
  */
-@Target({ElementType.TYPE, ElementType.PACKAGE})
 @Inherited
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.PACKAGE})
 public @interface HasQualifierParameter {
 
     /**

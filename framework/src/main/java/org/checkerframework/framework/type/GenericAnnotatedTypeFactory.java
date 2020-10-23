@@ -1712,6 +1712,7 @@ public abstract class GenericAnnotatedTypeFactory<
                 new DefaultInferredTypesApplier(getQualifierHierarchy(), this);
         applier.applyInferredType(type, as.getAnnotations(), as.getUnderlyingType());
     }
+
     /**
      * Applies defaults for types in a class with an qualifier parameter.
      *
