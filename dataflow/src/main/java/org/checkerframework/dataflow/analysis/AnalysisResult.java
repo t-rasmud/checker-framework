@@ -7,6 +7,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.concurrent.atomic.AtomicLong;
 import javax.lang.model.element.Element;
 import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.determinism.qual.Det;
@@ -61,8 +62,10 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> impl
                     TransferInput<V, S>, @OrderNonDet IdentityHashMap<Node, TransferResult<V, S>>>
             analysisCaches;
 
+    /** The unique ID for the next-created object. */
+    static final AtomicLong nextUid = new AtomicLong(0);
     /** The unique ID of this object. */
-    final transient long uid = UniqueId.nextUid.getAndIncrement();
+    final transient long uid = nextUid.getAndIncrement();
 
     @Override
     public @PolyDet long getUid(@PolyDet @UnknownInitialization AnalysisResult<V, S> this) {
