@@ -71,7 +71,7 @@ public abstract class Node implements UniqueId {
      * @return the unique ID of this object
      */
     @Override
-    public long getUid(@UnknownInitialization Node this) {
+    public @PolyDet long getUid(@PolyDet @UnknownInitialization Node this) {
         return uid;
     }
 
@@ -188,7 +188,7 @@ public abstract class Node implements UniqueId {
      *
      * @return a printed representation of this
      */
-    public String toStringDebug() {
+    public @PolyDet String toStringDebug(@PolyDet Node this) {
         return String.format("%s [%s]", this, this.getClassAndUid());
     }
 
