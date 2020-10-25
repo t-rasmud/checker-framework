@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.StringJoiner;
 import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.determinism.qual.Det;
-import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.dataflow.util.MostlySingleton;
 
@@ -48,10 +47,10 @@ class TryStack {
      * Returns the set of possible {@link Label}s where control may transfer when an exception of
      * the given type is thrown.
      */
-    public @OrderNonDet Set<Label> possibleLabels(TypeMirror thrown) {
+    public Set<Label> possibleLabels(TypeMirror thrown) {
         // Work up from the innermost frame until the exception is known to
         // be caught.
-        Set<@Det Label> labels = new MostlySingleton<>();
+        Set<@Det Label> labels = new @Det MostlySingleton<>();
         for (TryFrame frame : frames) {
             if (frame.possibleLabels(thrown, labels)) {
                 return labels;

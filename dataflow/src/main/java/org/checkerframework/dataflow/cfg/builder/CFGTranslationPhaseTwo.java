@@ -7,7 +7,6 @@ import java.util.Set;
 import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.determinism.qual.NonDet;
-import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.dataflow.cfg.ControlFlowGraph;
 import org.checkerframework.dataflow.cfg.block.BlockImpl;
@@ -165,7 +164,7 @@ public class CFGTranslationPhaseTwo {
                     }
 
                     // exceptional edges
-                    for (Map.@NonDet Entry<TypeMirror, @OrderNonDet Set<Label>> entry :
+                    for (Map.@NonDet Entry<TypeMirror, @Det Set<Label>> entry :
                             en.getExceptions().entrySet()) {
                         @SuppressWarnings("determinism") // true positive (order): modifying
                         // missingExceptionalEdges which should have
@@ -187,9 +186,7 @@ public class CFGTranslationPhaseTwo {
         }
 
         // add missing edges
-        for (MissingEdge ptmp : missingEdges) {
-            @SuppressWarnings("determinism") // process is order insensitive: setting successers
-            @Det MissingEdge p = ptmp;
+        for (MissingEdge p : missingEdges) {
             @Det Integer index = p.index;
             assert index != null : "CFGBuilder: problem in CFG construction " + p.source;
             ExtendedNode extendedNode = nodeList.get(index);

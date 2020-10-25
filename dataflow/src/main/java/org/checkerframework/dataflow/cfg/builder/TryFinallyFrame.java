@@ -2,8 +2,7 @@ package org.checkerframework.dataflow.cfg.builder;
 
 import java.util.Set;
 import javax.lang.model.type.TypeMirror;
-import org.checkerframework.checker.determinism.qual.OrderNonDet;
-import org.checkerframework.checker.determinism.qual.PolyDet;
+import org.checkerframework.checker.determinism.qual.*;
 
 /** A TryFinallyFrame applies to exceptions of any type. */
 class TryFinallyFrame implements TryFrame {
@@ -25,7 +24,7 @@ class TryFinallyFrame implements TryFrame {
     }
 
     @Override
-    public boolean possibleLabels(TypeMirror thrown, @OrderNonDet Set<Label> labels) {
+    public boolean possibleLabels(TypeMirror thrown, @Det Set<Label> labels) {
         labels.add(finallyLabel);
         return true;
     }

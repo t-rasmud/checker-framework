@@ -19,7 +19,7 @@ class NodeWithExceptionsHolder extends ExtendedNode {
      * Map from exception type to labels of successors that may be reached as a result of that
      * exception.
      */
-    protected final @OrderNonDet Map<@Det TypeMirror, @OrderNonDet Set<Label>> exceptions;
+    protected final @OrderNonDet Map<@Det TypeMirror, @Det Set<Label>> exceptions;
 
     /**
      * Construct a NodeWithExceptionsHolder for the given node and exceptions.
@@ -28,7 +28,7 @@ class NodeWithExceptionsHolder extends ExtendedNode {
      * @param exceptions the exceptions to hold
      */
     public NodeWithExceptionsHolder(
-            Node node, @OrderNonDet Map<@Det TypeMirror, @OrderNonDet Set<Label>> exceptions) {
+            Node node, @OrderNonDet Map<@Det TypeMirror, @Det Set<Label>> exceptions) {
         super(ExtendedNodeType.EXCEPTION_NODE);
         this.node = node;
         this.exceptions = exceptions;
@@ -39,7 +39,7 @@ class NodeWithExceptionsHolder extends ExtendedNode {
      *
      * @return exceptions for the node
      */
-    public @OrderNonDet Map<@Det TypeMirror, @OrderNonDet Set<Label>> getExceptions() {
+    public @OrderNonDet Map<@Det TypeMirror, @Det Set<Label>> getExceptions() {
         return exceptions;
     }
 
