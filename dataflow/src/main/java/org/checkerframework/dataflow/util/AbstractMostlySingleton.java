@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -16,7 +17,7 @@ import org.checkerframework.javacutil.BugInCF;
  * and 1 elements.
  */
 @SuppressWarnings("determinism") // not type checking this collection
-public abstract class AbstractMostlySingleton<T extends Object> implements Set<T> {
+public abstract class AbstractMostlySingleton<T extends Object> implements @Det Set<T> {
 
     /** The possible states of this set. */
     public enum State {
