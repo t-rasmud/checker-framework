@@ -349,14 +349,14 @@ public class DOTCFGVisualizer<
             // Open for append, in case of multiple sub-checkers.
             FileWriter fstream = new FileWriter(outDir + "/methods.txt", true);
             BufferedWriter out = new BufferedWriter(fstream);
-            for (Map.Entry<String, String> kv : generated.entrySet()) {
+            for (Map.Entry<String, String> kvTmp : generated.entrySet()) {
                 @SuppressWarnings(
                         "determinism") // process is order insensitive: order of writing files
                 // doesn't matter
-                Map.@Det Entry<String, String> tmp = kv;
-                out.write(tmp.getKey());
+                Map.@Det Entry<String, String> kv = kvTmp;
+                out.write(kv.getKey());
                 out.append("\t");
-                out.write(tmp.getValue());
+                out.write(kv.getValue());
                 out.append(lineSeparator);
             }
             out.close();

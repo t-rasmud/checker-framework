@@ -2,7 +2,6 @@ package org.checkerframework.dataflow.cfg.builder;
 
 import java.util.Set;
 import javax.lang.model.type.TypeMirror;
-import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 
 /**
@@ -15,7 +14,7 @@ interface TryFrame {
      * Label}s to the argument set. Return true if the exception is known to be caught by one of
      * those labels and false if it may propagate still further.
      */
-    public boolean possibleLabels(TypeMirror thrown, @OrderNonDet Set<Label> labels);
+    public boolean possibleLabels(TypeMirror thrown, Set<Label> labels);
 
     @Override
     @PolyDet String toString(@PolyDet TryFrame this);

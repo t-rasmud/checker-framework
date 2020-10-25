@@ -550,8 +550,7 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
     protected NodeWithExceptionsHolder extendWithNodeWithExceptions(
             Node node, List<TypeMirror> causes) {
         addToLookupMap(node);
-        Map<@Det TypeMirror, @OrderNonDet Set<Label>> exceptions =
-                new @OrderNonDet LinkedHashMap<>();
+        Map<@Det TypeMirror, @Det Set<Label>> exceptions = new LinkedHashMap<>();
         for (TypeMirror cause : causes) {
             exceptions.put(cause, tryStack.possibleLabels(cause));
         }
@@ -586,8 +585,7 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
     protected NodeWithExceptionsHolder insertNodeWithExceptionsAfter(
             Node node, List<TypeMirror> causes, Node pred) {
         addToLookupMap(node);
-        Map<@Det TypeMirror, @OrderNonDet Set<Label>> exceptions =
-                new @OrderNonDet LinkedHashMap<>();
+        Map<@Det TypeMirror, @Det Set<Label>> exceptions = new LinkedHashMap<>();
         for (TypeMirror cause : causes) {
             exceptions.put(cause, tryStack.possibleLabels(cause));
         }

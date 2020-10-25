@@ -1,8 +1,8 @@
 package org.checkerframework.dataflow.util;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Objects;
-import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.javacutil.BugInCF;
 
@@ -14,12 +14,12 @@ import org.checkerframework.javacutil.BugInCF;
 public final class MostlySingleton<T extends Object> extends AbstractMostlySingleton<T> {
 
     /** Create a MostlySingleton. */
-    public @OrderNonDet MostlySingleton() {
+    public MostlySingleton() {
         super(State.EMPTY);
     }
 
     /** Create a MostlySingleton. */
-    public @OrderNonDet MostlySingleton(T value) {
+    public MostlySingleton(T value) {
         super(State.SINGLETON, value);
     }
 
@@ -33,7 +33,7 @@ public final class MostlySingleton<T extends Object> extends AbstractMostlySingl
                 return true;
             case SINGLETON:
                 state = State.ANY;
-                set = new HashSet<>();
+                set = new LinkedHashSet<>();
                 assert value != null : "@AssumeAssertion(nullness): previous add is non-null";
                 set.add(value);
                 value = null;

@@ -203,8 +203,7 @@ public abstract class AbstractAnalysis<
             }
             // fall through when the current node is not 'n', and 'n' is not a subnode.
         }
-        V tmp = nodeValues.get(n);
-        return tmp;
+        return nodeValues.get(n);
     }
 
     /**
@@ -277,13 +276,13 @@ public abstract class AbstractAnalysis<
             return null;
         }
         V merged = null;
-        for (Node aNode : nodesCorrespondingToTree) {
+        for (Node aNodeTmp : nodesCorrespondingToTree) {
             @SuppressWarnings("determinism") // process is order insensitive: merging stores
-            @Det Node tmp = aNode;
-            if (tmp.isLValue()) {
+            @Det Node aNode = aNodeTmp;
+            if (aNode.isLValue()) {
                 return null;
             }
-            V v = getValue(tmp);
+            V v = getValue(aNode);
             if (merged == null) {
                 merged = v;
             } else if (v != null) {

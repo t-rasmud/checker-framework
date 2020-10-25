@@ -12,8 +12,8 @@ import org.checkerframework.checker.nullness.qual.PolyNull;
 import org.checkerframework.javacutil.BugInCF;
 
 /**
- * Base class for arbitrary-size sets that very efficient (more efficient than HashSet) for 0 and 1
- * elements.
+ * Base class for arbitrary-size sets that are very efficient (more efficient than HashSet) for 0
+ * and 1 elements.
  */
 @SuppressWarnings("determinism") // not type checking this collection
 public abstract class AbstractMostlySingleton<T extends Object> implements Set<T> {
@@ -33,7 +33,7 @@ public abstract class AbstractMostlySingleton<T extends Object> implements Set<T
     /** The current value, non-null when the state is SINGLETON. */
     protected @Nullable T value;
     /** The wrapped set, non-null when the state is ANY. */
-    protected @OrderNonDet @Nullable Set<T> set;
+    protected @Nullable Set<T> set;
 
     /** Create an AbstractMostlySingleton. */
     protected @OrderNonDet AbstractMostlySingleton(State s) {

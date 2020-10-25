@@ -8,7 +8,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.UnionType;
 import javax.lang.model.util.Types;
-import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.javacutil.Pair;
 
@@ -53,7 +52,7 @@ class TryCatchFrame implements TryFrame {
      * those labels and false if it may propagate still further.
      */
     @Override
-    public boolean possibleLabels(TypeMirror thrown, @OrderNonDet Set<Label> labels) {
+    public boolean possibleLabels(TypeMirror thrown, Set<Label> labels) {
         // A conservative approach would be to say that every catch block
         // might execute for any thrown exception, but we try to do better.
         //
