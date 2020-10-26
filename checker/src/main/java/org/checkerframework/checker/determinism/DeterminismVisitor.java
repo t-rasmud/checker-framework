@@ -159,7 +159,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                     AnnotationMirror argAnnotation =
                             argType.getAnnotationInHierarchy(atypeFactory.NONDET);
                     if (!isValidElementType(
-                            argAnnotation, baseAnnotation, tree, INVALID_ELEMENT_TYPE)) {
+                            useType, argAnnotation, baseAnnotation, tree, INVALID_ELEMENT_TYPE)) {
                         return false;
                     }
                 }
@@ -234,7 +234,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 AnnotationMirror componentAnno =
                         componentType.getAnnotationInHierarchy(atypeFactory.NONDET);
                 if (!isValidElementType(
-                        componentAnno, arrayType, tree, INVALID_ARRAY_COMPONENT_TYPE)) {
+                        type, componentAnno, arrayType, tree, INVALID_ARRAY_COMPONENT_TYPE)) {
                     return false;
                 }
                 if (componentType.getKind() == TypeKind.TYPEVAR) {
@@ -243,6 +243,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                                     .getUpperBound()
                                     .getAnnotationInHierarchy(atypeFactory.NONDET);
                     if (!isValidElementType(
+                            type,
                             componentUpperBoundAnnotation,
                             arrayType,
                             tree,
@@ -887,6 +888,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      * Reports the given {@code errorMessage} if {@code elementAnno} is not a valid element type of
      * a collection or array with {@code collectionAnno}.
      *
+     * @param atm the annotated type whose element to check for validity
      * @param elementAnno the annotation of the element type of an array or collection
      * @param collectionAnno the annotation of an array or collection
      * @param tree the tree to report errors on
@@ -894,12 +896,13 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      * @return true if {@code elementAnno} is a subtype of {@code collectionAnno}
      */
     private boolean isValidElementType(
+            AnnotatedTypeMirror atm,
             AnnotationMirror elementAnno,
             AnnotationMirror collectionAnno,
             Tree tree,
             @CompilerMessageKey String errorMessage) {
         if (!atypeFactory.getQualifierHierarchy().isSubtype(elementAnno, collectionAnno)) {
-            checker.reportError(tree, errorMessage, elementAnno, collectionAnno);
+            checker.reportError(tree, errorMessage, atm, elementAnno, collectionAnno);
             return false;
         }
         return true;
