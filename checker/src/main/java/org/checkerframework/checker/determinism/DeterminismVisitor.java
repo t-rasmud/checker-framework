@@ -267,7 +267,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             AnnotatedTypeMirror typeArgument,
             AnnotatedTypeMirror typeParameterUpperBound,
             Tree reportError) {
-        // Coolections as type parameters are legal since we do not allow
+        // Collections as type parameters are legal since we do not allow
         // unsafe mutations.
         if (atypeFactory.isCollectionType(typeArgument)) {
             return;
