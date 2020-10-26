@@ -21,6 +21,11 @@ public abstract class SingleSuccessorBlockImpl extends BlockImpl implements Sing
      */
     protected FlowRule flowRule = FlowRule.EACH_TO_EACH;
 
+    /**
+     * Creates a new SingleSuccessorBlock.
+     *
+     * @param type the type of this basic block
+     */
     protected SingleSuccessorBlockImpl(BlockType type) {
         super(type);
     }
@@ -50,12 +55,12 @@ public abstract class SingleSuccessorBlockImpl extends BlockImpl implements Sing
     }
 
     @Override
-    public FlowRule getFlowRule(SingleSuccessorBlockImpl this) {
+    public FlowRule getFlowRule() {
         return flowRule;
     }
 
     @Override
-    public void setFlowRule(SingleSuccessorBlockImpl this, FlowRule rule) {
+    public void setFlowRule(FlowRule rule) {
         flowRule = rule;
     }
 }

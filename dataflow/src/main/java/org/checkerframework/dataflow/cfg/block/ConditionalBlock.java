@@ -1,7 +1,6 @@
 package org.checkerframework.dataflow.cfg.block;
 
 import org.checkerframework.checker.determinism.qual.*;
-import org.checkerframework.dataflow.analysis.Store;
 import org.checkerframework.dataflow.analysis.Store.FlowRule;
 
 // Werner believes that a ConditionalBlock has to have exactly one RegularBlock (?) predecessor and
@@ -16,32 +15,40 @@ public interface ConditionalBlock extends Block {
      *
      * @return the entry block of the then branch
      */
-    Block getThenSuccessor(ConditionalBlock this);
+    Block getThenSuccessor();
 
     /**
      * Returns the entry block of the else branch.
      *
      * @return the entry block of the else branch
      */
-    Block getElseSuccessor(ConditionalBlock this);
+    Block getElseSuccessor();
 
     /**
      * Returns the flow rule for information flowing from this block to its then successor.
      *
      * @return the flow rule for information flowing from this block to its then successor
      */
-    FlowRule getThenFlowRule(ConditionalBlock this);
+    FlowRule getThenFlowRule();
 
     /**
      * Returns the flow rule for information flowing from this block to its else successor.
      *
      * @return the flow rule for information flowing from this block to its else successor
      */
-    FlowRule getElseFlowRule(ConditionalBlock this);
+    FlowRule getElseFlowRule();
 
-    /** Set the flow rule for information flowing from this block to its then successor. */
-    void setThenFlowRule(ConditionalBlock this, Store.FlowRule rule);
+    /**
+     * Set the flow rule for information flowing from this block to its then successor.
+     *
+     * @param rule the new flow rule for information flowing from this block to its then successor
+     */
+    void setThenFlowRule(FlowRule rule);
 
-    /** Set the flow rule for information flowing from this block to its else successor. */
-    void setElseFlowRule(ConditionalBlock this, Store.FlowRule rule);
+    /**
+     * Set the flow rule for information flowing from this block to its else successor.
+     *
+     * @param rule the new flow rule for information flowing from this block to its else successor
+     */
+    void setElseFlowRule(FlowRule rule);
 }

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.dataflow.analysis.Store;
 import org.checkerframework.dataflow.analysis.Store.FlowRule;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.javacutil.BugInCF;
@@ -21,13 +20,16 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
     protected @Nullable BlockImpl elseSuccessor;
 
     /**
-     * The initial values for the rules below say that the THEN store before a conditional block
-     * flows to BOTH of the stores of the then successor, while the ELSE store before a conditional
-     * block flows to BOTH of the stores of the else successor.
+     * The initial value says that the THEN store before a conditional block flows to BOTH of the
+     * stores of the then successor.
      */
-    protected Store.FlowRule thenFlowRule = Store.FlowRule.THEN_TO_BOTH;
+    protected FlowRule thenFlowRule = FlowRule.THEN_TO_BOTH;
 
-    protected Store.FlowRule elseFlowRule = Store.FlowRule.ELSE_TO_BOTH;
+    /**
+     * The initial value says that the ELSE store before a conditional block flows to BOTH of the
+     * stores of the else successor.
+     */
+    protected FlowRule elseFlowRule = FlowRule.ELSE_TO_BOTH;
 
     /**
      * Initialize an empty conditional basic block to be filled with contents and linked to other
@@ -50,7 +52,7 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
     }
 
     @Override
-    public Block getThenSuccessor(ConditionalBlockImpl this) {
+    public Block getThenSuccessor() {
         if (thenSuccessor == null) {
             throw new BugInCF(
                     "Requested thenSuccessor for conditional block before initialization");
@@ -59,7 +61,7 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
     }
 
     @Override
-    public Block getElseSuccessor(ConditionalBlockImpl this) {
+    public Block getElseSuccessor() {
         if (elseSuccessor == null) {
             throw new BugInCF(
                     "Requested elseSuccessor for conditional block before initialization");
@@ -68,7 +70,7 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
     }
 
     @Override
-    public Set<Block> getSuccessors(ConditionalBlockImpl this) {
+    public Set<Block> getSuccessors() {
         Set<@Det Block> result = new LinkedHashSet<>(2);
         result.add(getThenSuccessor());
         result.add(getElseSuccessor());
@@ -76,22 +78,22 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
     }
 
     @Override
-    public FlowRule getThenFlowRule(ConditionalBlockImpl this) {
+    public FlowRule getThenFlowRule() {
         return thenFlowRule;
     }
 
     @Override
-    public FlowRule getElseFlowRule(ConditionalBlockImpl this) {
+    public FlowRule getElseFlowRule() {
         return elseFlowRule;
     }
 
     @Override
-    public void setThenFlowRule(ConditionalBlockImpl this, FlowRule rule) {
+    public void setThenFlowRule(FlowRule rule) {
         thenFlowRule = rule;
     }
 
     @Override
-    public void setElseFlowRule(ConditionalBlockImpl this, FlowRule rule) {
+    public void setElseFlowRule(FlowRule rule) {
         elseFlowRule = rule;
     }
 
@@ -101,12 +103,12 @@ public class ConditionalBlockImpl extends BlockImpl implements ConditionalBlock 
      * <p>This implementation returns an empty list.
      */
     @Override
-    public List<@Det Node> getNodes(ConditionalBlockImpl this) {
+    public List<@Det Node> getNodes() {
         return Collections.emptyList();
     }
 
     @Override
-    public @Nullable Node getLastNode(ConditionalBlockImpl this) {
+    public @Nullable Node getLastNode() {
         return null;
     }
 

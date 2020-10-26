@@ -1,7 +1,7 @@
 package org.checkerframework.dataflow.cfg.builder;
 
 import org.checkerframework.checker.determinism.qual.PolyDet;
-import org.checkerframework.dataflow.analysis.Store;
+import org.checkerframework.dataflow.analysis.Store.FlowRule;
 import org.checkerframework.dataflow.cfg.builder.ExtendedNode.ExtendedNodeType;
 
 /**
@@ -21,9 +21,9 @@ class ConditionalJump extends ExtendedNode {
     protected final Label falseSucc;
 
     /** The true branch flow rule. */
-    protected Store.FlowRule trueFlowRule;
+    protected FlowRule trueFlowRule;
     /** The false branch flow rule. */
-    protected Store.FlowRule falseFlowRule;
+    protected FlowRule falseFlowRule;
 
     /**
      * Construct a ConditionalJump.
@@ -47,19 +47,39 @@ class ConditionalJump extends ExtendedNode {
         return falseSucc;
     }
 
-    public Store.FlowRule getTrueFlowRule() {
+    /**
+     * Returns the true branch flow rule.
+     *
+     * @return the true branch flow rule
+     */
+    public FlowRule getTrueFlowRule() {
         return trueFlowRule;
     }
 
-    public Store.FlowRule getFalseFlowRule() {
+    /**
+     * Returns the false branch flow rule.
+     *
+     * @return the false branch flow rule
+     */
+    public FlowRule getFalseFlowRule() {
         return falseFlowRule;
     }
 
-    public void setTrueFlowRule(Store.FlowRule rule) {
+    /**
+     * Sets the true branch flow rule.
+     *
+     * @param rule the new true branch flow rule
+     */
+    public void setTrueFlowRule(FlowRule rule) {
         trueFlowRule = rule;
     }
 
-    public void setFalseFlowRule(Store.FlowRule rule) {
+    /**
+     * Sets the false branch flow rule.
+     *
+     * @param rule the new false branch flow rule
+     */
+    public void setFalseFlowRule(FlowRule rule) {
         falseFlowRule = rule;
     }
 
