@@ -1,6 +1,5 @@
 package org.checkerframework.dataflow.constantpropagation;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.checkerframework.checker.determinism.qual.*;
@@ -18,6 +17,7 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     /** Information about variables gathered so far. */
     Map<Node, Constant> contents;
 
+    /** Creates a new ConstantPropagationStore. */
     public ConstantPropagationStore() {
         contents = new LinkedHashMap<>();
     }
@@ -55,14 +55,14 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     @SuppressWarnings(
             "determinism") // valid rule relaxation: copy clearly preserves determinism type
     public ConstantPropagationStore copy() {
-        return new ConstantPropagationStore(new HashMap<>(contents));
+        return new ConstantPropagationStore(new LinkedHashMap<>(contents));
     }
 
     @Override
     @SuppressWarnings(
             "determinism") // process is order insensitive: calculating a least upper bound
     public ConstantPropagationStore leastUpperBound(ConstantPropagationStore other) {
-        Map<Node, Constant> newContents = new HashMap<>();
+        Map<Node, Constant> newContents = new LinkedHashMap<>();
 
         // go through all of the information of the other class
         for (Map.Entry<Node, Constant> e : other.contents.entrySet()) {
@@ -162,7 +162,7 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     @Override
     public @PolyDet String toString(@PolyDet ConstantPropagationStore this) {
         // only output local variable information
-        @PolyDet Map<Node, Constant> smallerContents = new LinkedHashMap<>();
+        Map<Node, Constant> smallerContents = new LinkedHashMap<>();
         for (Map.Entry<Node, Constant> e : contents.entrySet()) {
             if (e.getKey() instanceof LocalVariableNode) {
                 smallerContents.put(e.getKey(), e.getValue());
