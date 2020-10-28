@@ -37,37 +37,19 @@ public class HasNextTransfer extends CFTransfer {
                 (HasNextAnnotatedTypeFactory) analysis.getTypeFactory();
         TransferResult<CFValue, CFStore> result = super.visitMethodInvocation(n, in);
         ExecutableElement iteratorNext =
-                TreeUtils.getMethod("java.util.Iterator", "hasNext", 0, factory.getProcessingEnv());
+                TreeUtils.getMethod("java.util.Iterator", "next", 0, factory.getProcessingEnv());
         if (NodeUtils.isMethodInvocation(n, iteratorNext, factory.getProcessingEnv())) {
             Receiver receiver = FlowExpressions.internalReprOf(factory, n);
-            System.out.println("here =========> " + n);
             if (result.containsTwoStores()) {
                 result.getThenStore().clearValue(receiver);
-                result.getThenStore().insertValue(receiver, HASNEXTTRUE);
+                result.getThenStore().insertValue(receiver, UNKNOWNHASNEXT);
+                result.getElseStore().clearValue(receiver);
+                result.getElseStore().insertValue(receiver, UNKNOWNHASNEXT);
+            } else {
+                result.getRegularStore().clearValue(receiver);
+                result.getRegularStore().insertValue(receiver, UNKNOWNHASNEXT);
             }
         }
         return result;
     }
-
-    //    @Override
-    //    public TransferResult<CFValue, CFStore> visitMethodInvocation(
-    //            MethodInvocationNode n, TransferInput<CFValue, CFStore> in) {
-    //        HasNextAnnotatedTypeFactory factory =
-    //                (HasNextAnnotatedTypeFactory) analysis.getTypeFactory();
-    //        TransferResult<CFValue, CFStore> result = super.visitMethodInvocation(n, in);
-    //        ExecutableElement iteratorNext =
-    //                TreeUtils.getMethod("java.util.Iterator", "next", 0,
-    // factory.getProcessingEnv());
-    //        if (NodeUtils.isMethodInvocation(n, iteratorNext, factory.getProcessingEnv())) {
-    //            Receiver receiver = FlowExpressions.internalReprOf(factory, n);
-    //            if (result.containsTwoStores()) {
-    //                result.getThenStore().clearValue(receiver);
-    //                result.getThenStore().insertValue(receiver, UNKNOWNHASNEXT);
-    //            } else {
-    //                result.getRegularStore().clearValue(receiver);
-    //                result.getRegularStore().insertValue(receiver, UNKNOWNHASNEXT);
-    //            }
-    //        }
-    //        return result;
-    //    }
 }

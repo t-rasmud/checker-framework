@@ -6,6 +6,7 @@ public class TestIllegalLoops {
         Iterator<Integer> iter = lst.iterator();
         while (iter.hasNext()) {
             iter.next();
+            // :: error: (illegal.next)
             iter.next();
         }
     }

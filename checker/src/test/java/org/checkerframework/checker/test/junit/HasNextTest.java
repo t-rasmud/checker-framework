@@ -22,6 +22,6 @@ public class HasNextTest extends CheckerFrameworkPerDirectoryTest {
 
     @Parameters
     public static String[] getTestDirs() {
-        return new String[] {"hasnext", "all-systems"};
+        return new String[] {"hasnext" /*, "all-systems"*/};
     }
 }
