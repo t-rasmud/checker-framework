@@ -7,8 +7,6 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Elements;
-import org.checkerframework.checker.hasnext.qual.HasNextBottom;
-import org.checkerframework.checker.hasnext.qual.HasNextFalse;
 import org.checkerframework.checker.hasnext.qual.HasNextTrue;
 import org.checkerframework.checker.hasnext.qual.UnknownHasNext;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -29,10 +27,6 @@ public class HasNextAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             AnnotationBuilder.fromClass(elements, UnknownHasNext.class);
     public final AnnotationMirror HASNEXTTRUE =
             AnnotationBuilder.fromClass(elements, HasNextTrue.class);
-    public final AnnotationMirror HASNEXTFALSE =
-            AnnotationBuilder.fromClass(elements, HasNextFalse.class);
-    public final AnnotationMirror HASNEXTBOTTOM =
-            AnnotationBuilder.fromClass(elements, HasNextBottom.class);
 
     public HasNextAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker);
@@ -59,7 +53,7 @@ public class HasNextAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     TreeUtils.getMethod("java.util.Iterator", "next", 0, processingEnv);
             if (TreeUtils.isMethodInvocation(node, iteratorNext, processingEnv)) {
                 if (!receiverType.hasAnnotation(HASNEXTTRUE)) {
-                    System.out.println("visiting: " + node.getMethodSelect() + " " + receiverType);
+                    checker.reportError(node, "illegal.next");
                 }
             }
             return super.visitMethodInvocation(node, annotatedTypeMirror);
@@ -85,21 +79,10 @@ public class HasNextAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
         @Override
         public boolean isSubtype(AnnotationMirror subAnno, AnnotationMirror superAnno) {
-            if (areSameByClass(subAnno, HasNextBottom.class)) {
-                return true;
-            } else if (areSameByClass(superAnno, UnknownHasNext.class)) {
+            if (areSameByClass(superAnno, UnknownHasNext.class)) {
                 return true;
             } else if (areSameByClass(superAnno, UnknownHasNext.class)
                     && areSameByClass(subAnno, HasNextTrue.class)) {
-                return true;
-            } else if (areSameByClass(superAnno, UnknownHasNext.class)
-                    && areSameByClass(subAnno, HasNextFalse.class)) {
-                return true;
-            } else if (areSameByClass(superAnno, HasNextTrue.class)
-                    && areSameByClass(subAnno, HasNextBottom.class)) {
-                return true;
-            } else if (areSameByClass(superAnno, HasNextFalse.class)
-                    && areSameByClass(subAnno, HasNextBottom.class)) {
                 return true;
             }
             return false;
@@ -124,7 +107,7 @@ public class HasNextAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             } else if (isSubtype(annotationMirror1, annotationMirror)) {
                 return annotationMirror1;
             }
-            return HASNEXTBOTTOM;
+            return HASNEXTTRUE;
         }
     }
 }
