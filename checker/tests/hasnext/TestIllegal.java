@@ -4,16 +4,16 @@ import java.util.Iterator;
 public class TestIllegal {
     void test(ArrayList<Integer> lst) {
         Iterator<Integer> iter = lst.iterator();
-        // :: error: (illegal.next)
+        // :: error: (method.invocation.invalid)
         iter.next();
     }
 
     void test1(ArrayList<Integer> lst) {
         Iterator<Integer> iter = lst.iterator();
         if (!iter.hasNext()) {
-            // :: error: (illegal.next)
+            // :: error: (method.invocation.invalid)
             iter.next();
-            // :: error: (illegal.next)
+            // :: error: (method.invocation.invalid)
             iter.next();
         }
     }
@@ -22,7 +22,7 @@ public class TestIllegal {
         Iterator<Integer> iter = lst.iterator();
         if (iter.hasNext()) {
             iter.next();
-            // :: error: (illegal.next)
+            // :: error: (method.invocation.invalid)
             iter.next();
         }
     }
@@ -30,7 +30,7 @@ public class TestIllegal {
     void test4(Iterator<Integer> iter) {
         if (iter.hasNext()) {
             iter.next();
-            // :: error: (illegal.next)
+            // :: error: (method.invocation.invalid)
             iter.next();
         }
     }
