@@ -26,4 +26,12 @@ public class TestIllegal {
             iter.next();
         }
     }
+
+    void test4(Iterator<Integer> iter) {
+        if (iter.hasNext()) {
+            iter.next();
+            // :: error: (illegal.next)
+            iter.next();
+        }
+    }
 }

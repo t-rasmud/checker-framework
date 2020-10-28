@@ -3,7 +3,6 @@ package org.checkerframework.checker.hasnext;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Elements;
-import org.checkerframework.checker.hasnext.qual.HasNextTrue;
 import org.checkerframework.checker.hasnext.qual.UnknownHasNext;
 import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
@@ -20,14 +19,12 @@ import org.checkerframework.javacutil.TreeUtils;
 
 public class HasNextTransfer extends CFTransfer {
     protected final AnnotationMirror UNKNOWNHASNEXT;
-    protected final AnnotationMirror HASNEXTTRUE;
 
     public HasNextTransfer(CFAbstractAnalysis<CFValue, CFStore, CFTransfer> analysis) {
         super(analysis);
         Elements elements =
                 ((HasNextAnnotatedTypeFactory) analysis.getTypeFactory()).getElementUtils();
         UNKNOWNHASNEXT = AnnotationBuilder.fromClass(elements, UnknownHasNext.class);
-        HASNEXTTRUE = AnnotationBuilder.fromClass(elements, HasNextTrue.class);
     }
 
     @Override
