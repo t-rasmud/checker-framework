@@ -25,9 +25,7 @@ public class NullnessAnalysis
     }
 
     @Override
-    public NullnessStore createEmptyStore(
-            boolean sequentialSemantics, boolean sideEffectsUnrefineAliases) {
-        assert sideEffectsUnrefineAliases == false;
+    public NullnessStore createEmptyStore(boolean sequentialSemantics) {
         return new NullnessStore(this, sequentialSemantics);
     }
 

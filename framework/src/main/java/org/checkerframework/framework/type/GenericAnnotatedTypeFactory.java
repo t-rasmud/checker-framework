@@ -315,9 +315,7 @@ public abstract class GenericAnnotatedTypeFactory<
 
         this.analysis = createFlowAnalysis(new ArrayList<>());
         this.transfer = analysis.getTransferFunction();
-        this.emptyStore =
-                analysis.createEmptyStore(
-                        transfer.usesSequentialSemantics(), transfer.sideEffectsUnrefineAliases());
+        this.emptyStore = analysis.createEmptyStore(transfer.usesSequentialSemantics());
 
         this.parseStubFiles();
     }

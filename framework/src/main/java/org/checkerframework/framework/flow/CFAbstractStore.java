@@ -97,15 +97,6 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
      */
     protected final boolean sequentialSemantics;
 
-    /**
-     * Should side-effecting methods unrefine local variable types?
-     *
-     * <p>For many type systems, once a local variable's type is refined, side effects to the
-     * variable's value do not change the variable's type annotations. For some type systems, a side
-     * effect to the value could change them; set this field to true.
-     */
-    protected final boolean sideEffectsUnrefineAliases;
-
     /** The unique ID for the next-created object. */
     static final AtomicLong nextUid = new AtomicLong(0);
     /** The unique ID of this object. */
@@ -120,10 +111,7 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
     /* Initialization */
     /* --------------------------------------------------------- */
 
-    protected CFAbstractStore(
-            CFAbstractAnalysis<V, S, ?> analysis,
-            boolean sequentialSemantics,
-            boolean sideEffectsUnrefineAliases) {
+    protected CFAbstractStore(CFAbstractAnalysis<V, S, ?> analysis, boolean sequentialSemantics) {
         this.analysis = analysis;
         localVariableValues = new HashMap<>();
         thisValue = null;
@@ -132,7 +120,6 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
         arrayValues = new HashMap<>();
         classValues = new HashMap<>();
         this.sequentialSemantics = sequentialSemantics;
-        this.sideEffectsUnrefineAliases = sideEffectsUnrefineAliases;
     }
 
     /** Copy constructor. */
@@ -145,7 +132,6 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
         arrayValues = new HashMap<>(other.arrayValues);
         classValues = new HashMap<>(other.classValues);
         sequentialSemantics = other.sequentialSemantics;
-        sideEffectsUnrefineAliases = other.sideEffectsUnrefineAliases;
     }
 
     /**
@@ -169,16 +155,14 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
         }
     }
 
-    /*
-     * Indicates whether the given method is side-effect-free as far as the
-     * current store is concerned.
-     * In some cases, a store for a checker allows for other mechanisms to specify
-     * whether a method is side-effect-free. For example, unannotated methods may
-     * be considered side-effect-free by default.
+    /**
+     * Indicates whether the given method is side-effect-free as far as the current store is
+     * concerned. In some cases, a store for a checker allows for other mechanisms to specify
+     * whether a method is side-effect-free. For example, unannotated methods may be considered
+     * side-effect-free by default.
      *
-     * @param atypeFactory     the type factory used to retrieve annotations on the method element
-     * @param method           the method element
-     *
+     * @param atypeFactory the type factory used to retrieve annotations on the method element
+     * @param method the method element
      * @return whether the method is side-effect-free
      */
     protected boolean isSideEffectFree(
@@ -215,59 +199,77 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
         if (!(analysis.checker.hasOption("assumeSideEffectFree")
                 || analysis.checker.hasOption("assumePure")
                 || isSideEffectFree(atypeFactory, method))) {
-            // update field values
-            Map<FieldAccess, V> newFieldValues = new HashMap<>();
-            for (Map.Entry<FieldAccess, V> e : fieldValues.entrySet()) {
-                FieldAccess fieldAccess = e.getKey();
-                V otherVal = e.getValue();
 
-                // case 3:
-                if (!((GenericAnnotatedTypeFactory<?, ?, ?, ?>) atypeFactory)
-                        .getSupportedMonotonicTypeQualifiers()
-                        .isEmpty()) {
-                    List<Pair<AnnotationMirror, AnnotationMirror>> fieldAnnotations =
-                            atypeFactory.getAnnotationWithMetaAnnotation(
-                                    fieldAccess.getField(), MonotonicQualifier.class);
-                    V newOtherVal = null;
-                    for (Pair<AnnotationMirror, AnnotationMirror> fieldAnnotation :
-                            fieldAnnotations) {
-                        AnnotationMirror monotonicAnnotation = fieldAnnotation.second;
-                        Name annotation =
-                                AnnotationUtils.getElementValueClassName(
-                                        monotonicAnnotation, "value", false);
-                        AnnotationMirror target =
-                                AnnotationBuilder.fromName(
-                                        atypeFactory.getElementUtils(), annotation);
-                        // Make sure the 'target' annotation is present.
-                        if (AnnotationUtils.containsSame(otherVal.getAnnotations(), target)) {
-                            newOtherVal =
-                                    analysis.createSingleAnnotationValue(
-                                                    target, otherVal.getUnderlyingType())
-                                            .mostSpecific(newOtherVal, null);
+            // update local variables
+            if (analysis.checker.sideEffectsUnrefineAliases) {
+                localVariableValues
+                        .entrySet()
+                        .removeIf(e -> !e.getKey().isUnmodifiableByOtherCode());
+            }
+
+            // update this value
+            if (analysis.checker.sideEffectsUnrefineAliases) {
+                thisValue = null;
+            }
+
+            // update field values
+            if (analysis.checker.sideEffectsUnrefineAliases) {
+                // fieldValues = new HashMap<>();
+                fieldValues.entrySet().removeIf(e -> !e.getKey().isUnmodifiableByOtherCode());
+            } else {
+                Map<FieldAccess, V> newFieldValues = new HashMap<>();
+                for (Map.Entry<FieldAccess, V> e : fieldValues.entrySet()) {
+                    FieldAccess fieldAccess = e.getKey();
+                    V otherVal = e.getValue();
+
+                    // case 3: the field has a monotonic annotation
+                    if (!((GenericAnnotatedTypeFactory<?, ?, ?, ?>) atypeFactory)
+                            .getSupportedMonotonicTypeQualifiers()
+                            .isEmpty()) {
+                        List<Pair<AnnotationMirror, AnnotationMirror>> fieldAnnotations =
+                                atypeFactory.getAnnotationWithMetaAnnotation(
+                                        fieldAccess.getField(), MonotonicQualifier.class);
+                        V newOtherVal = null;
+                        for (Pair<AnnotationMirror, AnnotationMirror> fieldAnnotation :
+                                fieldAnnotations) {
+                            AnnotationMirror monotonicAnnotation = fieldAnnotation.second;
+                            Name annotation =
+                                    AnnotationUtils.getElementValueClassName(
+                                            monotonicAnnotation, "value", false);
+                            AnnotationMirror target =
+                                    AnnotationBuilder.fromName(
+                                            atypeFactory.getElementUtils(), annotation);
+                            // Make sure the 'target' annotation is present.
+                            if (AnnotationUtils.containsSame(otherVal.getAnnotations(), target)) {
+                                newOtherVal =
+                                        analysis.createSingleAnnotationValue(
+                                                        target, otherVal.getUnderlyingType())
+                                                .mostSpecific(newOtherVal, null);
+                            }
+                        }
+                        if (newOtherVal != null) {
+                            // keep information for all hierarchies where we had a
+                            // monotone annotation.
+                            newFieldValues.put(fieldAccess, newOtherVal);
+                            continue;
                         }
                     }
-                    if (newOtherVal != null) {
-                        // keep information for all hierarchies where we had a
-                        // monotone annotation.
-                        newFieldValues.put(fieldAccess, newOtherVal);
-                        continue;
+
+                    // case 2:
+                    if (!fieldAccess.isUnassignableByOtherCode()) {
+                        continue; // remove information completely
                     }
-                }
 
-                // case 2:
-                if (!fieldAccess.isUnassignableByOtherCode()) {
-                    continue; // remove information completely
+                    // keep information
+                    newFieldValues.put(fieldAccess, otherVal);
                 }
-
-                // keep information
-                newFieldValues.put(fieldAccess, otherVal);
+                fieldValues = newFieldValues;
             }
-            fieldValues = newFieldValues;
+
+            arrayValues.clear();
 
             // update method values
             methodValues.entrySet().removeIf(e -> !e.getKey().isUnmodifiableByOtherCode());
-
-            arrayValues.clear();
         }
 
         // store information about method call if possible
@@ -890,7 +892,7 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
     }
 
     private S upperBound(S other, boolean shouldWiden) {
-        S newStore = analysis.createEmptyStore(sequentialSemantics, sideEffectsUnrefineAliases);
+        S newStore = analysis.createEmptyStore(sequentialSemantics);
 
         for (Map.Entry<LocalVariable, V> e : other.localVariableValues.entrySet()) {
             // local variables that are only part of one store, but not the

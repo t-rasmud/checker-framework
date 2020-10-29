@@ -119,7 +119,7 @@ public abstract class CFAbstractTransfer<
     protected CFAbstractTransfer(CFAbstractAnalysis<V, S, T> analysis) {
         this.analysis = analysis;
         this.sequentialSemantics = !analysis.checker.hasOption("concurrentSemantics");
-        this.sideEffectsUnrefineAliases = false;
+        this.sideEffectsUnrefineAliases = analysis.checker.sideEffectsUnrefineAliases;
         this.infer = analysis.checker.hasOption("infer");
     }
 
@@ -133,13 +133,11 @@ public abstract class CFAbstractTransfer<
      *     semantics.
      */
     protected CFAbstractTransfer(
-            CFAbstractAnalysis<V, S, T> analysis,
-            boolean forceConcurrentSemantics,
-            boolean sideEffectsUnrefineAliases) {
+            CFAbstractAnalysis<V, S, T> analysis, boolean forceConcurrentSemantics) {
         this.analysis = analysis;
         this.sequentialSemantics =
                 !(forceConcurrentSemantics || analysis.checker.hasOption("concurrentSemantics"));
-        this.sideEffectsUnrefineAliases = sideEffectsUnrefineAliases;
+        this.sideEffectsUnrefineAliases = analysis.checker.sideEffectsUnrefineAliases;
         this.infer = analysis.checker.hasOption("infer");
     }
 
@@ -282,7 +280,7 @@ public abstract class CFAbstractTransfer<
             if (fixedInitialStore != null) {
                 return fixedInitialStore;
             } else {
-                return analysis.createEmptyStore(sequentialSemantics, sideEffectsUnrefineAliases);
+                return analysis.createEmptyStore(sequentialSemantics);
             }
         }
 
@@ -294,7 +292,7 @@ public abstract class CFAbstractTransfer<
                 // copy knowledge
                 info = analysis.createCopiedStore(fixedInitialStore);
             } else {
-                info = analysis.createEmptyStore(sequentialSemantics, sideEffectsUnrefineAliases);
+                info = analysis.createEmptyStore(sequentialSemantics);
             }
 
             AnnotatedTypeFactory factory = analysis.getTypeFactory();

@@ -20,9 +20,8 @@ public class CFAnalysis extends CFAbstractAnalysis<CFValue, CFStore, CFTransfer>
     }
 
     @Override
-    public CFStore createEmptyStore(
-            boolean sequentialSemantics, boolean sideEffectsUnrefineAliases) {
-        return new CFStore(this, sequentialSemantics, sideEffectsUnrefineAliases);
+    public CFStore createEmptyStore(boolean sequentialSemantics) {
+        return new CFStore(this, sequentialSemantics);
     }
 
     @Override

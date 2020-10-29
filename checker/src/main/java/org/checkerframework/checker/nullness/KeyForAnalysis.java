@@ -29,9 +29,7 @@ public class KeyForAnalysis extends CFAbstractAnalysis<KeyForValue, KeyForStore,
     }
 
     @Override
-    public KeyForStore createEmptyStore(
-            boolean sequentialSemantics, boolean sideEffectsUnrefineAliases) {
-        assert sideEffectsUnrefineAliases == false;
+    public KeyForStore createEmptyStore(boolean sequentialSemantics) {
         return new KeyForStore(this, sequentialSemantics);
     }
 

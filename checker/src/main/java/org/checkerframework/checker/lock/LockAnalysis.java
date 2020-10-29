@@ -32,9 +32,7 @@ public class LockAnalysis extends CFAbstractAnalysis<CFValue, LockStore, LockTra
     }
 
     @Override
-    public LockStore createEmptyStore(
-            boolean sequentialSemantics, boolean sideEffectsUnrefineAliases) {
-        assert sideEffectsUnrefineAliases == false;
+    public LockStore createEmptyStore(boolean sequentialSemantics) {
         return new LockStore(this, sequentialSemantics);
     }
 
