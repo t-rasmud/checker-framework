@@ -214,7 +214,6 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
 
             // update field values
             if (analysis.checker.sideEffectsUnrefineAliases) {
-                // fieldValues = new HashMap<>();
                 fieldValues.entrySet().removeIf(e -> !e.getKey().isUnmodifiableByOtherCode());
             } else {
                 Map<FieldAccess, V> newFieldValues = new HashMap<>();
