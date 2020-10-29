@@ -30,7 +30,7 @@ public class LockTransfer extends CFAbstractTransfer<CFValue, LockStore, LockTra
 
     public LockTransfer(LockAnalysis analysis, LockChecker checker) {
         // Always run the Lock Checker with -AconcurrentSemantics turned on.
-        super(analysis, true /* useConcurrentSemantics */);
+        super(analysis, /*useConcurrentSemantics=*/ true, /*sideEffectsUnrefineAliases=*/ true);
         this.atypeFactory = (LockAnnotatedTypeFactory) analysis.getTypeFactory();
     }
 

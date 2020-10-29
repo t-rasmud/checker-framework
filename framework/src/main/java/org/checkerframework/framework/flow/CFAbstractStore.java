@@ -97,6 +97,15 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
      */
     protected final boolean sequentialSemantics;
 
+    /**
+     * Should side-effecting methods unrefine local variable types?
+     *
+     * <p>For many type systems, once a local variable's type is refined, side effects to the
+     * variable's value do not change the variable's type annotations. For some type systems, a side
+     * effect to the value could change them; set this field to true.
+     */
+    protected final boolean sideEffectsUnrefineAliases;
+
     /** The unique ID for the next-created object. */
     static final AtomicLong nextUid = new AtomicLong(0);
     /** The unique ID of this object. */
@@ -111,7 +120,10 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
     /* Initialization */
     /* --------------------------------------------------------- */
 
-    protected CFAbstractStore(CFAbstractAnalysis<V, S, ?> analysis, boolean sequentialSemantics) {
+    protected CFAbstractStore(
+            CFAbstractAnalysis<V, S, ?> analysis,
+            boolean sequentialSemantics,
+            boolean sideEffectsUnrefineAliases) {
         this.analysis = analysis;
         localVariableValues = new HashMap<>();
         thisValue = null;
@@ -120,6 +132,7 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
         arrayValues = new HashMap<>();
         classValues = new HashMap<>();
         this.sequentialSemantics = sequentialSemantics;
+        this.sideEffectsUnrefineAliases = sideEffectsUnrefineAliases;
     }
 
     /** Copy constructor. */
@@ -132,6 +145,7 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
         arrayValues = new HashMap<>(other.arrayValues);
         classValues = new HashMap<>(other.classValues);
         sequentialSemantics = other.sequentialSemantics;
+        sideEffectsUnrefineAliases = other.sideEffectsUnrefineAliases;
     }
 
     /**
@@ -876,7 +890,7 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
     }
 
     private S upperBound(S other, boolean shouldWiden) {
-        S newStore = analysis.createEmptyStore(sequentialSemantics);
+        S newStore = analysis.createEmptyStore(sequentialSemantics, sideEffectsUnrefineAliases);
 
         for (Map.Entry<LocalVariable, V> e : other.localVariableValues.entrySet()) {
             // local variables that are only part of one store, but not the

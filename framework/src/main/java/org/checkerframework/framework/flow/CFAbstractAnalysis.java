@@ -127,7 +127,8 @@ public abstract class CFAbstractAnalysis<
      *
      * @return an empty store of the appropriate type
      */
-    public abstract S createEmptyStore(boolean sequentialSemantics);
+    public abstract S createEmptyStore(
+            boolean sequentialSemantics, boolean sideEffectsUnrefineAliases);
 
     /**
      * Returns an identical copy of the store {@code s}.

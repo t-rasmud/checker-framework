@@ -107,12 +107,19 @@ public abstract class CFAbstractTransfer<
      */
     protected final boolean sequentialSemantics;
 
+    /**
+     * Should the analysis assume that side effects to a value can change the type of aliased
+     * references?
+     */
+    protected final boolean sideEffectsUnrefineAliases;
+
     /** Indicates that the whole-program inference is on. */
     private final boolean infer;
 
     protected CFAbstractTransfer(CFAbstractAnalysis<V, S, T> analysis) {
         this.analysis = analysis;
         this.sequentialSemantics = !analysis.checker.hasOption("concurrentSemantics");
+        this.sideEffectsUnrefineAliases = false;
         this.infer = analysis.checker.hasOption("infer");
     }
 
@@ -126,10 +133,13 @@ public abstract class CFAbstractTransfer<
      *     semantics.
      */
     protected CFAbstractTransfer(
-            CFAbstractAnalysis<V, S, T> analysis, boolean forceConcurrentSemantics) {
+            CFAbstractAnalysis<V, S, T> analysis,
+            boolean forceConcurrentSemantics,
+            boolean sideEffectsUnrefineAliases) {
         this.analysis = analysis;
         this.sequentialSemantics =
                 !(forceConcurrentSemantics || analysis.checker.hasOption("concurrentSemantics"));
+        this.sideEffectsUnrefineAliases = sideEffectsUnrefineAliases;
         this.infer = analysis.checker.hasOption("infer");
     }
 
@@ -143,6 +153,17 @@ public abstract class CFAbstractTransfer<
      */
     public boolean usesSequentialSemantics() {
         return sequentialSemantics;
+    }
+
+    /**
+     * Returns true if a side effect to a value can change the type of an aliased reference to a
+     * supertype.
+     *
+     * @return true if a side effect to a value can change the type of an aliased reference to a
+     *     supertype.
+     */
+    public boolean sideEffectsUnrefineAliases() {
+        return sideEffectsUnrefineAliases;
     }
 
     /**
@@ -261,7 +282,7 @@ public abstract class CFAbstractTransfer<
             if (fixedInitialStore != null) {
                 return fixedInitialStore;
             } else {
-                return analysis.createEmptyStore(sequentialSemantics);
+                return analysis.createEmptyStore(sequentialSemantics, sideEffectsUnrefineAliases);
             }
         }
 
@@ -273,7 +294,7 @@ public abstract class CFAbstractTransfer<
                 // copy knowledge
                 info = analysis.createCopiedStore(fixedInitialStore);
             } else {
-                info = analysis.createEmptyStore(sequentialSemantics);
+                info = analysis.createEmptyStore(sequentialSemantics, sideEffectsUnrefineAliases);
             }
 
             AnnotatedTypeFactory factory = analysis.getTypeFactory();

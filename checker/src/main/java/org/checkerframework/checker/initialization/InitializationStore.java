@@ -34,8 +34,11 @@ public class InitializationStore<V extends CFAbstractValue<V>, S extends Initial
     /** The set of fields that have 'invariant' annotation. */
     protected final Map<FieldAccess, V> invariantFields;
 
-    public InitializationStore(CFAbstractAnalysis<V, S, ?> analysis, boolean sequentialSemantics) {
-        super(analysis, sequentialSemantics);
+    public InitializationStore(
+            CFAbstractAnalysis<V, S, ?> analysis,
+            boolean sequentialSemantics,
+            boolean sideEffectsUnrefineAliases) {
+        super(analysis, sequentialSemantics, sideEffectsUnrefineAliases);
         initializedFields = new HashSet<>();
         invariantFields = new HashMap<>();
     }
