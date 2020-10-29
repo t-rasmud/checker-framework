@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.concurrent.atomic.AtomicLong;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -96,8 +97,10 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
      */
     protected final boolean sequentialSemantics;
 
+    /** The unique ID for the next-created object. */
+    static final AtomicLong nextUid = new AtomicLong(0);
     /** The unique ID of this object. */
-    final transient long uid = UniqueId.nextUid.getAndIncrement();
+    final transient long uid = nextUid.getAndIncrement();
 
     @Override
     public long getUid() {
@@ -152,16 +155,14 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
         }
     }
 
-    /*
-     * Indicates whether the given method is side-effect-free as far as the
-     * current store is concerned.
-     * In some cases, a store for a checker allows for other mechanisms to specify
-     * whether a method is side-effect-free. For example, unannotated methods may
-     * be considered side-effect-free by default.
+    /**
+     * Indicates whether the given method is side-effect-free as far as the current store is
+     * concerned. In some cases, a store for a checker allows for other mechanisms to specify
+     * whether a method is side-effect-free. For example, unannotated methods may be considered
+     * side-effect-free by default.
      *
-     * @param atypeFactory     the type factory used to retrieve annotations on the method element
-     * @param method           the method element
-     *
+     * @param atypeFactory the type factory used to retrieve annotations on the method element
+     * @param method the method element
      * @return whether the method is side-effect-free
      */
     protected boolean isSideEffectFree(
@@ -204,7 +205,7 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
                 FieldAccess fieldAccess = e.getKey();
                 V otherVal = e.getValue();
 
-                // case 3:
+                // case 3: the field has a monotonic annotation
                 if (!((GenericAnnotatedTypeFactory<?, ?, ?, ?>) atypeFactory)
                         .getSupportedMonotonicTypeQualifiers()
                         .isEmpty()) {
@@ -247,10 +248,10 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
             }
             fieldValues = newFieldValues;
 
+            arrayValues.clear();
+
             // update method values
             methodValues.entrySet().removeIf(e -> !e.getKey().isUnmodifiableByOtherCode());
-
-            arrayValues.clear();
         }
 
         // store information about method call if possible
