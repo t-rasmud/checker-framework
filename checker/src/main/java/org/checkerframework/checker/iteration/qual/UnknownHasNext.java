@@ -1,4 +1,4 @@
-package org.checkerframework.checker.hasnext.qual;
+package org.checkerframework.checker.iteration.qual;
 
 import java.lang.annotation.*;
 import org.checkerframework.framework.qual.*;

@@ -1,10 +1,10 @@
-package org.checkerframework.checker.hasnext;
+package org.checkerframework.checker.iteration;
 
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
 
-/** The HasNext Checker ensures that Iterator.next() does not throw NoSuchElementException. */
-public class HasNextChecker extends BaseTypeChecker {
+/** The Iteration Checker ensures that Iterator.next() does not throw NoSuchElementException. */
+public class IterationChecker extends BaseTypeChecker {
 
     @Override
     public GenericAnnotatedTypeFactory<?, ?, ?, ?> getTypeFactory() {

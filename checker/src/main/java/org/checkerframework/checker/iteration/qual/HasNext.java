@@ -1,4 +1,4 @@
-package org.checkerframework.checker.hasnext.qual;
+package org.checkerframework.checker.iteration.qual;
 
 import java.lang.annotation.*;
 import org.checkerframework.framework.qual.*;
@@ -11,4 +11,4 @@ import org.checkerframework.framework.qual.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})
 @SubtypeOf({UnknownHasNext.class})
-public @interface HasNextTrue {}
+public @interface HasNext {}
