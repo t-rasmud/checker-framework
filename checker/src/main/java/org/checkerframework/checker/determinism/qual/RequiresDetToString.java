@@ -8,10 +8,10 @@ import org.checkerframework.framework.qual.InheritedAnnotation;
 // https://checkerframework.org/manual/#java-expressions-as-arguments .
 // It ought to be changed to 1-based indexing.
 /**
- * A method with this annotation, for each specified parameter, may only be passed arguments where
- * the class's {@code toString} method returns a {@code Det} or {@code PolyDet} result. When written
- * with no arguments, every parameter must obey this restriction. When one or more integers are
- * specified, only the parameters at those indices are checked.
+ * When this annotation is written without any annotation value on a method, every parameter of the
+ * method may only be passed arguments such that their class's {@code toString} method returns a
+ * {@code Det} or {@code PolyDet} result. When one or more integers are specified as annotation
+ * values, only the parameters at those indices ought to obey this restriction.
  *
  * <p>For example, {@code @RequiresDetToString} on its own indicates that every argument must have a
  * deterministic {@code toString} method. Writing {@code @RequiresDetToString({0, 2})} indicates

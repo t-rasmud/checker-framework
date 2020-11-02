@@ -86,4 +86,9 @@ public class TestRequiresDetToString {
         @RequiresDetToString(0)
         public void method4() {}
     }
+
+    @RequiresDetToString
+    @PolyDet String m(@PolyDet Object o) {
+        return o.toString();
+    }
 }
