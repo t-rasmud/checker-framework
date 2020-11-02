@@ -23,6 +23,9 @@ import org.checkerframework.framework.qual.InheritedAnnotation;
  * each index in the override method's annotation, either the same index must appear in the
  * overridden method's annotation or the overridden method's annotation must be empty. If this rule
  * is violated, a warning is reported.
+ *
+ * <p>A user would typically write this annotation on formatting routines that call the {@code toString}
+ * method. The formal parameters of such routines can still be annotated as {@code @PolyDet}.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
