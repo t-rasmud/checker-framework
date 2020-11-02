@@ -534,6 +534,40 @@ deterministic.  If it is be too restrictive for your program:
   (Section~\ref{stub}).
 \end{itemize}
 
+\sectionAndLabel{Determinism of formatting routines that call \<toString>}{determinism-formatting-routines}
+The \<toString> method in JDK's \<Object> class returns a string consisting of the hashCode of the receiver
+on which \<toString> is called. Therefore we annotate it as
+\code{public @NonDet String toString(@PolyDet Object this)}.
+
+Formatting routines such as \<format> print the output of \<toString> method called on its arguments.
+Annotating the arguments of \<format> as \<@Det> doesn't guarantee that it will print deterministic output
+because the arguments' class may not have a \<toString> implementation that is deterministic.
+To enforce the check that the argument types of a method have a deterministic \<toString> implementation,
+the Determinism Checker defines a method declaration annotation
+\refqualclass{checker/determinism/qual}{@RequiresDetToString}. When this annotation is written without
+any annotation value on a method, every parameter of that method may only be passed arguments such
+that their class's \<toString> method returns a \<@Det> or \<@PolyDet> result.
+When one or more integers are specified as annotation values, only the parameters at those indices
+ought to obey this restriction.
+
+As an illustration, consider the following method annotated with \<@RequiresDetToString>:
+\begin{Verbatim}
+    @RequiresDetToString
+    @PolyDet String n(@PolyDet NewClass o) {...}
+\end{Verbatim}
+Unless \<NewClass> has a \<toString> implementation that returns \<@Det> or \<@PolyDet>,
+the checker will report an error.
+
+A user can also specify which specific arguments the check must apply to by
+supplying annotation values to \<RequiresDetToString>.
+For example, if the user annotates a method as:
+\begin{Verbatim}
+    @RequiresDetToString{0, 2}
+    @PolyDet String n(@PolyDet NewClass1 o1, @PolyDet NewClass2 o2, @PolyDet NewClass3 o3) {...}
+\end{Verbatim}
+then the checker will enforce deterministic \<toString> checks on \<NewClass1> and \<NewClass3>,
+but not on \<NewClass2>.
+
 
 \sectionAndLabel{Default annotations}{determinism-defaults}
 
