@@ -22,6 +22,6 @@ public class IterationTest extends CheckerFrameworkPerDirectoryTest {
 
     @Parameters
     public static String[] getTestDirs() {
-        return new String[] {"iteration" , "all-systems"};
+        return new String[] {"iteration", "all-systems"};
     }
 }
