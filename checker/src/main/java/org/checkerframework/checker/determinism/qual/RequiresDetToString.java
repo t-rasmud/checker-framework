@@ -8,7 +8,7 @@ import org.checkerframework.framework.qual.InheritedAnnotation;
 // https://checkerframework.org/manual/#java-expressions-as-arguments .
 // It ought to be changed to 1-based indexing.
 /**
- * When this annotation is written without any annotation value on a method, every parameter of the
+ * When this annotation is written without any annotation value on a method, every parameter of that
  * method may only be passed arguments such that their class's {@code toString} method returns a
  * {@code Det} or {@code PolyDet} result. When one or more integers are specified as annotation
  * values, only the parameters at those indices ought to obey this restriction.
