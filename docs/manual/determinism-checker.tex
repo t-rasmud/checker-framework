@@ -115,7 +115,7 @@ the type of the component type (see Figure~\ref{fig-determinism-collections}).
 For example, these types are valid:
 \begin{itemize}
     \item \code{@NonDet int @NonDet \ \ \ \ []}
-    \item \code{@NonDet \ int @Det \ \ \ \ \ \ \ []}
+    \item \code{@NonDet int @Det \ \ \ \ \ \ \ []}
     \item \code{@Det \ \ \ int @Det \ \ \ \ \ \ \ []}
     \item \code{@Det \ \ \ int @OrderNonDet[] @OrderNonDet[]}
 \end{itemize}
@@ -223,12 +223,13 @@ invariant with respect to the determinism qualifier. That is, a
 \code{@NonDet Collection} is unrelated by subtyping to an \code{@OrderNonDet Collection}
 which is unrelated to a \code{@Det Collection}.
 Assume for the sake of contradiction that collections are not invariant w.r.t. type qualifiers.
-That would make the following code valid:
+That would make the following code type-check, even though it
+non-deterministically changes a \code{@Det List}:
 \begin{Verbatim}
-    void test(Det List<Det String> dList, NonDet List<Det String> nList) {
-        NonDet List<Det String> ndList = dList;
-        ndList.addAll(nList);
-    }
+  void test(@Det List<@Det String> dList, @NonDet List<@Det String> nList) {
+    @NonDet List<@Det String> ndList = dList;
+    ndList.addAll(nList);
+  }
 \end{Verbatim}
 
 The above code is unsafe because \<nList> and \<dList> are aliases to
@@ -239,21 +240,22 @@ reference \<dList> non-deterministically.
 It is possible to create \<@NonDet> aliases to \<@OrderNonDet> or \<@Det> collections.
 (For instance, by calling \<next> or \<get>.) Consider the example below:
 \begin{Verbatim}
-    void aliasTest(OrderNonDet Set<Det List<Det String>> set, NonDet int index, Det String str) {
-    NonDet List<Det String> lst = set.iterator().next();
+  void aliasTest(@OrderNonDet Set<@Det List<@Det String>> set, @NonDet int index, @Det String str) {
+    @NonDet List<@Det String> lst = set.iterator().next();
     lst.add(index, str);
-    }
+  }
 \end{Verbatim}
 
 Variable \<lst> has type \code{@NonDet List<@Det String>} (as a result of set iteration)
 but an alias has type \code{@Det List<@Det String>} (as a member of set).
-The call \<list.add()> is unsafe and must not typecheck. It
+The call \<lst.add(...)> is unsafe and must not typecheck. It
 mutates \<lst> non-deterministically thereby violating the determinism
 guarantees provided by the \<@Det> reference.
+
 Our type system prevents the unsafe behavior by prohibiting
 any mutation of collections having types \code{@NonDet Collection<@OrderNonDet E>} or
 \code{@NonDet Collection<@Det E>}. It achieves
-this via a method declaration annotation \refqualclass{checker/determinism/qual}{@CheckReceiverForMutation}.
+this via a method declaration annotation \refqualclass{checker/determinism/qual}{CheckReceiverForMutation}.
 The receiver of a method with this annotation must satisfy the following property: if the
 receiver qualifier type is \<@NonDet>, then its type argument must be \<@NonDet>.
 
