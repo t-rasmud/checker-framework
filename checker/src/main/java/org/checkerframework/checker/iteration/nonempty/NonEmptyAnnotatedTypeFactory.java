@@ -1,7 +1,5 @@
 package org.checkerframework.checker.iteration.nonempty;
 
-import org.checkerframework.checker.iteration.qual.EnsuresNonEmpty;
-import org.checkerframework.checker.iteration.qual.EnsuresNonEmptyIf;
 import org.checkerframework.checker.iteration.qual.NonEmpty;
 import org.checkerframework.checker.iteration.qual.NonEmptyBottom;
 import org.checkerframework.checker.iteration.qual.PolyNonEmpty;
