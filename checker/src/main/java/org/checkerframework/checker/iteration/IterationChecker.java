@@ -1,5 +1,6 @@
 package org.checkerframework.checker.iteration;
 
+import org.checkerframework.checker.iteration.nonempty.NonEmptyChecker;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
 
@@ -19,7 +20,7 @@ public class IterationChecker extends BaseTypeChecker {
     protected LinkedHashSet<Class<? extends BaseTypeChecker>> getImmediateSubcheckerClasses() {
         LinkedHashSet<Class<? extends BaseTypeChecker>> checkers =
             super.getImmediateSubcheckerClasses();
-        checkers.add(NonEmptySubChecker.class);
+        checkers.add(NonEmptyChecker.class);
         return checkers;
     }
 }
