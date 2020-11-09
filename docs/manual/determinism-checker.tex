@@ -248,16 +248,19 @@ It is possible to create \<@NonDet> aliases to \<@OrderNonDet> or \<@Det> collec
 
 Variable \<lst> has type \code{@NonDet List<@Det String>} (as a result of set iteration)
 but an alias has type \code{@Det List<@Det String>} (as a member of set).
-The call \<lst.add(...)> is unsafe and must not typecheck. It
-mutates \<lst> non-deterministically thereby violating the determinism
-guarantees provided by the \<@Det> reference.
+The call \<lst.add(...)> must not type-check because it mutates \<lst> non-deterministically,
+thereby violating the determinism guarantees provided by the \<@Det> reference.
 
-Our type system prevents the unsafe behavior by prohibiting
-any mutation of collections having types \code{@NonDet Collection<@OrderNonDet E>} or
-\code{@NonDet Collection<@Det E>}. It achieves
-this via a method declaration annotation \refqualclass{checker/determinism/qual}{CheckReceiverForMutation}.
+In order to prevent such unsafe behavior, the Determinism Checker must
+prevent calls to mutation methods (like \<lst.add> above) on receivers of
+type \code{@NonDet Collection<@OrderNonDet E>} or \code{@NonDet Collection<@Det E>}.
+It achieves this via a method declaration annotation
+\refqualclass{checker/determinism/qual}{CheckReceiverForMutation}.
 The receiver of a method with this annotation must satisfy the following property: if the
 receiver qualifier type is \<@NonDet>, then its type argument must be \<@NonDet>.
+We annotate \<List.add> method in the JDK with \<@CheckReceiverForMutation>.
+As a result, the checker reports an error at \code{lst.add(index, str);}
+since the receiver qualifier has type \<@NonDet> and its type argument is not \<@NonDet>.
 
 \subsectionAndLabel{HashSet and HashMap}{determinism-hash-set}
 The \code{HashSet} and \code{HashMap} classes are special. Because iteration order is
