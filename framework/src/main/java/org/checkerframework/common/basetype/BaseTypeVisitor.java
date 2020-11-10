@@ -187,9 +187,6 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
     /** For storing visitor state. */
     protected final VisitorState visitorState;
 
-    /** An instance of the {@link ContractsUtils} helper class. */
-    protected final ContractsUtils contractsUtils;
-
     /** The element for java.util.Vector#copyInto. */
     private final ExecutableElement vectorCopyInto;
 
@@ -226,7 +223,6 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
 
         this.checker = checker;
         this.atypeFactory = typeFactory == null ? createTypeFactory() : typeFactory;
-        this.contractsUtils = ContractsUtils.getInstance(atypeFactory);
         this.positions = trees.getSourcePositions();
         this.visitorState = atypeFactory.getVisitorState();
         this.typeValidator = createTypeValidator();
@@ -895,7 +891,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
      */
     private void reportPurityError(String msgKeyPrefix, Pair<Tree, String> r) {
         String reason = r.second;
-        @SuppressWarnings("CompilerMessages")
+        @SuppressWarnings("compilermessages")
         @CompilerMessageKey String msgKey = msgKeyPrefix + reason;
         if (reason.equals("call") || reason.equals("call.method")) {
             MethodInvocationTree mitree = (MethodInvocationTree) r.first;
@@ -910,7 +906,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
             ExecutableElement methodElement,
             List<String> formalParamNames,
             boolean abstractMethod) {
-        Set<Contract> contracts = contractsUtils.getContracts(methodElement);
+        Set<Contract> contracts = atypeFactory.getContractsUtils().getContracts(methodElement);
 
         if (contracts.isEmpty()) {
             return;
@@ -944,13 +940,12 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
             if (expr != null && !abstractMethod) {
                 switch (contract.kind) {
                     case POSTCONDITION:
-                        checkPostcondition(node, annotation, contract.contractAnnotation, expr);
+                        checkPostcondition(node, annotation, expr);
                         break;
                     case CONDITIONALPOSTCONDITION:
                         checkConditionalPostcondition(
                                 node,
                                 annotation,
-                                contract.contractAnnotation,
                                 expr,
                                 ((ConditionalPostcondition) contract).resultValue);
                         break;
@@ -961,7 +956,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
             }
 
             if (formalParamNames != null && formalParamNames.contains(expression)) {
-                @SuppressWarnings("CompilerMessages")
+                @SuppressWarnings("compilermessages")
                 @CompilerMessageKey String key = "contracts." + contract.kind.errorKey + ".expression.parameter.name";
                 checker.reportWarning(
                         node,
@@ -986,7 +981,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
         if (dependentTypesHelper != null) {
             AnnotationMirror anno =
                     dependentTypesHelper.standardizeAnnotation(
-                            flowExprContext, path, annoFromContract, false);
+                            flowExprContext, path, annoFromContract, false, false);
             dependentTypesHelper.checkAnnotation(anno, path.getLeaf());
             return anno;
         } else {
@@ -1022,15 +1017,10 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
      *
      * @param methodTree declaration of the method
      * @param annotation expression's type must have this annotation
-     * @param contractAnnotation the user-written postcondition annotation, which mentions {@code
-     *     expression}. Used only for diagnostic messages.
-     * @param expression the expression that the postcondition {@code contractAnnotation} concerns
+     * @param expression the expression that must have an annotation
      */
     protected void checkPostcondition(
-            MethodTree methodTree,
-            AnnotationMirror annotation,
-            AnnotationMirror contractAnnotation,
-            Receiver expression) {
+            MethodTree methodTree, AnnotationMirror annotation, Receiver expression) {
         CFAbstractStore<?, ?> exitStore = atypeFactory.getRegularExitStore(methodTree);
         if (exitStore == null) {
             // if there is no regular exitStore, then the method
@@ -1079,17 +1069,11 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
      *
      * @param method tree of method with the postcondition
      * @param annotation expression's type must have this annotation
-     * @param contractAnnotation the user-written postcondition annotation, which mentions {@code
-     *     expression}. Used only for diagnostic messages.
      * @param expression the expression that the postcondition concerns
      * @param result result for which the postcondition is valid
      */
     protected void checkConditionalPostcondition(
-            MethodTree method,
-            AnnotationMirror annotation,
-            AnnotationMirror contractAnnotation,
-            Receiver expression,
-            boolean result) {
+            MethodTree method, AnnotationMirror annotation, Receiver expression, boolean result) {
         boolean booleanReturnType =
                 TypesUtils.isBooleanType(TreeUtils.typeOf(method.getReturnType()));
         if (!booleanReturnType) {
@@ -1454,7 +1438,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
         }
 
         ExecutableElement method = invokedMethod.getElement();
-        Name methodName = method.getSimpleName();
+        CharSequence methodName = ElementUtils.getSimpleNameOrDescription(method);
         checkTypeArguments(
                 node,
                 paramBounds,
@@ -1480,7 +1464,8 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
         }
 
         // check precondition annotations
-        checkPreconditions(node, contractsUtils.getPreconditions(invokedMethodElement));
+        checkPreconditions(
+                node, atypeFactory.getContractsUtils().getPreconditions(invokedMethodElement));
 
         if (TreeUtils.isSuperConstructorCall(node)) {
             checkSuperConstructorCall(node);
@@ -1776,7 +1761,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
                 AnnotatedTypes.expandVarArgs(atypeFactory, constructorType, passedArguments);
 
         ExecutableElement constructor = constructorType.getElement();
-        Name constructorName = constructor.getSimpleName();
+        CharSequence constructorName = ElementUtils.getSimpleNameOrDescription(constructor);
 
         checkArguments(params, passedArguments, constructorName, constructor.getParameters());
         checkVarargs(constructorType, node);
@@ -2911,7 +2896,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
             List<? extends AnnotatedTypeParameterBounds> paramBounds,
             List<? extends AnnotatedTypeMirror> typeargs,
             List<? extends Tree> typeargTrees,
-            Name typeOrMethodName,
+            CharSequence typeOrMethodName,
             List<?> paramNames) {
 
         // System.out.printf("BaseTypeVisitor.checkTypeArguments: %s, TVs: %s, TAs: %s, TATs: %s%n",
@@ -3163,7 +3148,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
     protected void checkArguments(
             List<? extends AnnotatedTypeMirror> requiredArgs,
             List<? extends ExpressionTree> passedArgs,
-            Name executableName,
+            CharSequence executableName,
             List<?> paramNames) {
         int size = requiredArgs.size();
         assert size == passedArgs.size()
@@ -3636,14 +3621,16 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
                 return;
             }
 
+            ContractsUtils contractsUtils = atypeFactory.getContractsUtils();
+
             // Check postconditions
-            ContractsUtils contracts = ContractsUtils.getInstance(atypeFactory);
-            Set<Postcondition> superPost = contracts.getPostconditions(overridden.getElement());
-            Set<Postcondition> subPost = contracts.getPostconditions(overrider.getElement());
+            Set<Postcondition> superPost =
+                    contractsUtils.getPostconditions(overridden.getElement());
+            Set<Postcondition> subPost = contractsUtils.getPostconditions(overrider.getElement());
             Set<Pair<Receiver, AnnotationMirror>> superPost2 =
                     resolveContracts(superPost, overridden);
             Set<Pair<Receiver, AnnotationMirror>> subPost2 = resolveContracts(subPost, overrider);
-            @SuppressWarnings("CompilerMessages")
+            @SuppressWarnings("compilermessages")
             @CompilerMessageKey String postmsg = "contracts.postcondition." + msgKey + ".invalid";
             checkContractsSubset(
                     overriderMeth,
@@ -3655,12 +3642,12 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
                     postmsg);
 
             // Check preconditions
-            Set<Precondition> superPre = contracts.getPreconditions(overridden.getElement());
-            Set<Precondition> subPre = contracts.getPreconditions(overrider.getElement());
+            Set<Precondition> superPre = contractsUtils.getPreconditions(overridden.getElement());
+            Set<Precondition> subPre = contractsUtils.getPreconditions(overrider.getElement());
             Set<Pair<Receiver, AnnotationMirror>> superPre2 =
                     resolveContracts(superPre, overridden);
             Set<Pair<Receiver, AnnotationMirror>> subPre2 = resolveContracts(subPre, overrider);
-            @SuppressWarnings("CompilerMessages")
+            @SuppressWarnings("compilermessages")
             @CompilerMessageKey String premsg = "contracts.precondition." + msgKey + ".invalid";
             checkContractsSubset(
                     overriderMeth,
@@ -3673,9 +3660,9 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
 
             // Check conditional postconditions
             Set<ConditionalPostcondition> superCPost =
-                    contracts.getConditionalPostconditions(overridden.getElement());
+                    contractsUtils.getConditionalPostconditions(overridden.getElement());
             Set<ConditionalPostcondition> subCPost =
-                    contracts.getConditionalPostconditions(overrider.getElement());
+                    contractsUtils.getConditionalPostconditions(overrider.getElement());
             // consider only 'true' postconditions
             Set<Postcondition> superCPostTrue = filterConditionalPostconditions(superCPost, true);
             Set<Postcondition> subCPostTrue = filterConditionalPostconditions(subCPost, true);
@@ -3683,7 +3670,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
                     resolveContracts(superCPostTrue, overridden);
             Set<Pair<Receiver, AnnotationMirror>> subCPostTrue2 =
                     resolveContracts(subCPostTrue, overrider);
-            @SuppressWarnings("CompilerMessages")
+            @SuppressWarnings("compilermessages")
             @CompilerMessageKey String posttruemsg = "contracts.conditional.postcondition.true." + msgKey + ".invalid";
             checkContractsSubset(
                     overriderMeth,
@@ -3701,7 +3688,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
                     resolveContracts(superCPostFalse, overridden);
             Set<Pair<Receiver, AnnotationMirror>> subCPostFalse2 =
                     resolveContracts(subCPostFalse, overrider);
-            @SuppressWarnings("CompilerMessages")
+            @SuppressWarnings("compilermessages")
             @CompilerMessageKey String postfalsemsg =
                     "contracts.conditional.postcondition.false." + msgKey + ".invalid";
             checkContractsSubset(

@@ -5,7 +5,7 @@ public class StateMatch {
     private double[][] elts = null;
 
     @SuppressWarnings({
-        "Interning",
+        "interning",
         "index",
         "determinism:invalid.type.on.conditional"
     }) // This code is inherently unsafe for the index checker, but adding index annotations
