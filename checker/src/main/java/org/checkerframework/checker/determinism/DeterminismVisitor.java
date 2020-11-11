@@ -746,7 +746,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     protected void checkArguments(
             List<? extends AnnotatedTypeMirror> requiredArgs,
             List<? extends ExpressionTree> passedArgs,
-            Name executableName,
+            CharSequence executableName,
             List<?> paramNames) {
         for (ExpressionTree arg : passedArgs) {
             AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
