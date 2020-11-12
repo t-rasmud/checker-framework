@@ -9,24 +9,49 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-
+/**
+ * Visitor for the NonEmpty Checker.
+ */
 public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactory> {
     public NonEmptyVisitor(BaseTypeChecker checker) {
         super(checker);
     }
 
+    /**
+     * Reports error if {@code @NonEmpty} is written on primitive types.
+     *
+     * @param type the use of the primitive type
+     * @param tree the tree where the type is used
+     * @return boolean
+     */
     @Override
     public boolean isValidUse(AnnotatedTypeMirror.AnnotatedPrimitiveType type, Tree tree) {
         reportErrorOnNonCollections(type, tree);
         return super.isValidUse(type, tree);
     }
 
+    /**
+     * Reports error if {@code @NonEmpty} is written on array types.
+     *
+     * @param type the array type use
+     * @param tree the tree where the type is used
+     * @return boolean
+     */
     @Override
     public boolean isValidUse(AnnotatedTypeMirror.AnnotatedArrayType type, Tree tree) {
         reportErrorOnNonCollections(type, tree);
         return super.isValidUse(type, tree);
     }
 
+    /**
+     * Reports error if {@code @NonEmpty} is written on declared types other than Collection, Iterator, Map,
+     * or their subtypes.
+     *
+     * @param declarationType the type of the class (TypeElement)
+     * @param useType the use of the class (instance type)
+     * @param tree the tree where the type is used
+     * @return boolean
+     */
     @Override
     public boolean isValidUse(AnnotatedTypeMirror.AnnotatedDeclaredType declarationType,
                               AnnotatedTypeMirror.AnnotatedDeclaredType useType, Tree tree) {

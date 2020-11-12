@@ -18,7 +18,7 @@ import org.checkerframework.framework.qual.PolymorphicQualifier;
  * {@code @PolyNonEmpty} has been replaced by {@code @}{@code NonEmpty}, for every possible
  * combination of Collection or Map arguments.
  *
- * @checker_framework.manual #nullness-checker Nullness Checker
+ * @checker_framework.manual #nonempty NonEmpty Checker
  * @checker_framework.manual #qualifier-polymorphism Qualifier polymorphism
  */
 @Documented

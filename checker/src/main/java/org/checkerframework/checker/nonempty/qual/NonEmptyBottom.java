@@ -13,7 +13,7 @@ import org.checkerframework.framework.qual.TypeUseLocation;
 /**
  * The bottom type in the NonEmpty type system. Programmers should rarely write this type.
  *
- * @checker_framework.manual #non-empty-checker NonEmpty Checker
+ * @checker_framework.manual #nonempty-checker NonEmpty Checker
  * @checker_framework.manual #bottom-type the bottom type
  */
 @Documented

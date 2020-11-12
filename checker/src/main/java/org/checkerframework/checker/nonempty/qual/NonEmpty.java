@@ -11,7 +11,7 @@ import org.checkerframework.framework.qual.SubtypeOf;
 /**
  * Indicates that the collection value assigned to the annotated variable is non-empty.
  *
- * @checker_framework.manual #map-key-checker Map Key Checker
+ * @checker_framework.manual #nonempty-checker NonEmpty Checker
  */
 @SubtypeOf(UnknownNonEmpty.class)
 @Documented

@@ -20,7 +20,7 @@ import org.checkerframework.framework.qual.TypeUseLocation;
  * a collection or a map. It is the top type qualifier in the {@link NonEmpty} hierarchy. It is also the default type
  * qualifier.
  *
- * @checker_framework.manual #map-key-checker Map Key Checker
+ * @checker_framework.manual #nonempty-checker NonEmpty Checker
  */
 @InvisibleQualifier
 @SubtypeOf({})
