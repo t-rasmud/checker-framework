@@ -1,4 +1,4 @@
-package org.checkerframework.checker.iteration.nonempty;
+package org.checkerframework.checker.nonempty;
 
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;

@@ -1,10 +1,9 @@
-package iteration;
+package nonempty;
 
-import org.checkerframework.checker.iteration.qual.NonEmpty;
+import org.checkerframework.checker.nonempty.qual.NonEmpty;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Random;
 
 public class TestInvalidNonEmpty {
     // :: error: (invalid.nonempty)

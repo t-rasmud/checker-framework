@@ -5,23 +5,23 @@ import java.util.List;
 import org.checkerframework.framework.test.CheckerFrameworkPerDirectoryTest;
 import org.junit.runners.Parameterized.Parameters;
 
-public class IterationTest extends CheckerFrameworkPerDirectoryTest {
+public class NonEmptyTest extends CheckerFrameworkPerDirectoryTest {
 
     /**
-     * Create a HasNextTest.
+     * Create a NonEmptyTest.
      *
      * @param testFiles the files containing test code, which will be type-checked
      */
-    public IterationTest(List<File> testFiles) {
+    public NonEmptyTest(List<File> testFiles) {
         super(
-                testFiles,
-                org.checkerframework.checker.iteration.IterationChecker.class,
-                "iteration",
-                "-Anomsgtext");
+            testFiles,
+            org.checkerframework.checker.nonempty.NonEmptyChecker.class,
+            "nonempty",
+            "-Anomsgtext");
     }
 
     @Parameters
     public static String[] getTestDirs() {
-        return new String[] {"iteration", "all-systems"};
+        return new String[] {"nonempty", "all-systems"};
     }
 }

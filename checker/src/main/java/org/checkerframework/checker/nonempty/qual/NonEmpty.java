@@ -1,13 +1,11 @@
-package org.checkerframework.checker.iteration.qual;
+package org.checkerframework.checker.nonempty.qual;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Collection;
 
-import org.checkerframework.framework.qual.RelevantJavaTypes;
 import org.checkerframework.framework.qual.SubtypeOf;
 
 /**

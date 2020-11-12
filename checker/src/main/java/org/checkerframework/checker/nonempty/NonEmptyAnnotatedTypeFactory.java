@@ -1,9 +1,9 @@
-package org.checkerframework.checker.iteration.nonempty;
+package org.checkerframework.checker.nonempty;
 
-import org.checkerframework.checker.iteration.qual.NonEmpty;
-import org.checkerframework.checker.iteration.qual.NonEmptyBottom;
-import org.checkerframework.checker.iteration.qual.PolyNonEmpty;
-import org.checkerframework.checker.iteration.qual.UnknownNonEmpty;
+import org.checkerframework.checker.nonempty.qual.NonEmpty;
+import org.checkerframework.checker.nonempty.qual.NonEmptyBottom;
+import org.checkerframework.checker.nonempty.qual.PolyNonEmpty;
+import org.checkerframework.checker.nonempty.qual.UnknownNonEmpty;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.common.basetype.BaseAnnotatedTypeFactory;
 import org.checkerframework.common.basetype.BaseTypeChecker;
