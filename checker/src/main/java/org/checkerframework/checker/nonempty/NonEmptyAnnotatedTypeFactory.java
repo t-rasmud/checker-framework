@@ -18,13 +18,19 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import org.checkerframework.javacutil.AnnotationBuilder;
 
-
+/**
+ * Defines type hierarchy of the NonEmpty Checker qualifiers. This is necessary for
+ * Checkers like the Iteration Checker that use the NonEmpty Checker as a subchecker.
+ */
 public class NonEmptyAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
+    /** The {@literal @}{@link UnknownNonEmpty} annotation. */
     public final AnnotationMirror UNKNOWNNONEMPTY =
         AnnotationBuilder.fromClass(elements, UnknownNonEmpty.class);
+    /** The {@literal @}{@link NonEmpty} annotation. */
     public final AnnotationMirror NONEMPTY =
         AnnotationBuilder.fromClass(elements, NonEmpty.class);
+    /** The {@literal @}{@link NonEmptyBottom} annotation. */
     public final AnnotationMirror NONEMPTYBOTTOM =
         AnnotationBuilder.fromClass(elements, NonEmptyBottom.class);
 
