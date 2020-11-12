@@ -9,14 +9,14 @@ import java.lang.annotation.Target;
 import org.checkerframework.framework.qual.PolymorphicQualifier;
 
 /**
- * A polymorphic qualifier for the Map Key (@NonEmpty) type system.
+ * A polymorphic qualifier for the {@code @NonEmpty} type system.
  *
  * <p>Any method written using {@code @PolyNonEmpty} conceptually has an arbitrary number of
  * versions: one in which every instance of {@code @PolyNonEmpty} has been replaced by
  * {@code @}{@link UnknownNonEmpty}, one in which every instance of {@code @}{@link PolyNonEmpty}
  * has been replaced by {@code @}{@link NonEmptyBottom}, and ones in which every instance of
  * {@code @PolyNonEmpty} has been replaced by {@code @}{@code NonEmpty}, for every possible
- * combination of map arguments.
+ * combination of Collection or Map arguments.
  *
  * @checker_framework.manual #nullness-checker Nullness Checker
  * @checker_framework.manual #qualifier-polymorphism Qualifier polymorphism

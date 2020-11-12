@@ -17,7 +17,7 @@ import org.checkerframework.framework.qual.TypeUseLocation;
  * Used internally by the type system; should never be written by a programmer.
  *
  * <p>Indicates that the value assigned to the annotated variable is not known to be a key for any
- * map. It is the top type qualifier in the {@link NonEmpty} hierarchy. It is also the default type
+ * a collection or a map. It is the top type qualifier in the {@link NonEmpty} hierarchy. It is also the default type
  * qualifier.
  *
  * @checker_framework.manual #map-key-checker Map Key Checker
