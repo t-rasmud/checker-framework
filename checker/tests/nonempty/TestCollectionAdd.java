@@ -20,7 +20,7 @@ public class TestCollectionAdd {
         m(a);
     }
 
-    void listAddq(List<Integer> a) {
+    void listAdd1(List<Integer> a) {
         a.add(5);
         m(a);
         // :: error: argument.type.incompatible
