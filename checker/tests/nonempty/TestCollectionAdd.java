@@ -19,4 +19,11 @@ public class TestCollectionAdd {
         // :: error: argument.type.incompatible
         m(a);
     }
+
+    void listAddq(List<Integer> a) {
+        a.add(5);
+        m(a);
+        // :: error: argument.type.incompatible
+        m(a);
+    }
 }
