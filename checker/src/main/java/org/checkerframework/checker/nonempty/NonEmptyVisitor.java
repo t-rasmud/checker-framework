@@ -1,9 +1,14 @@
 package org.checkerframework.checker.nonempty;
 import com.sun.source.tree.Tree;
+import org.checkerframework.checker.nonempty.qual.NonEmpty;
+import org.checkerframework.common.basetype.BaseAnnotatedTypeFactory;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
+import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.TypesUtils;
+
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.TypeMirror;
 import java.util.Collection;
 import java.util.Iterator;
@@ -12,10 +17,12 @@ import java.util.Map;
 /**
  * Visitor for the NonEmpty Checker.
  */
-public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactory> {
+public class NonEmptyVisitor extends BaseTypeVisitor<BaseAnnotatedTypeFactory> {
     private final TypeMirror collectionType = types.erasure(TypesUtils.typeFromClass(Collection.class, types, elements));
     private final TypeMirror iteratorType = types.erasure(TypesUtils.typeFromClass(Iterator.class, types, elements));
     private final TypeMirror mapType = types.erasure(TypesUtils.typeFromClass(Map.class, types, elements));
+    public final AnnotationMirror NONEMPTY =
+        AnnotationBuilder.fromClass(elements, NonEmpty.class);
 
     public NonEmptyVisitor(BaseTypeChecker checker) {
         super(checker);
@@ -71,7 +78,7 @@ public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactor
     }
 
     private void reportErrorOnNonCollections(AnnotatedTypeMirror type, Tree tree) {
-        if (type.hasAnnotation(atypeFactory.NONEMPTY)) {
+        if (type.hasAnnotation(NONEMPTY)) {
             checker.reportError(tree, "invalid.nonempty");
         }
     }
