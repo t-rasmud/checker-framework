@@ -8,6 +8,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.common.basetype.BaseAnnotatedTypeFactory;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.framework.type.ElementQualifierHierarchy;
+import org.checkerframework.framework.type.NoElementQualifierHierarchy;
 import org.checkerframework.framework.type.QualifierHierarchy;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -50,7 +51,7 @@ public class NonEmptyAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         return new NonEmptyQualifierHierarchy(this.getSupportedTypeQualifiers(), elements);
     }
 
-    private final class NonEmptyQualifierHierarchy extends ElementQualifierHierarchy {
+    private final class NonEmptyQualifierHierarchy extends NoElementQualifierHierarchy {
 
         public NonEmptyQualifierHierarchy(
             Set<Class<? extends Annotation>> qualifierClasses, Elements elements) {

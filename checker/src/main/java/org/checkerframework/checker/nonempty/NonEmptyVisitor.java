@@ -13,6 +13,10 @@ import java.util.Map;
  * Visitor for the NonEmpty Checker.
  */
 public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactory> {
+    private final TypeMirror collectionType = types.erasure(TypesUtils.typeFromClass(Collection.class, types, elements));
+    private final TypeMirror iteratorType = types.erasure(TypesUtils.typeFromClass(Iterator.class, types, elements));
+    private final TypeMirror mapType = types.erasure(TypesUtils.typeFromClass(Map.class, types, elements));
+
     public NonEmptyVisitor(BaseTypeChecker checker) {
         super(checker);
     }
@@ -56,9 +60,6 @@ public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactor
     public boolean isValidUse(AnnotatedTypeMirror.AnnotatedDeclaredType declarationType,
                               AnnotatedTypeMirror.AnnotatedDeclaredType useType, Tree tree) {
         TypeMirror tm = declarationType.getUnderlyingType();
-        TypeMirror collectionType = types.erasure(TypesUtils.typeFromClass(Collection.class, types, elements));
-        TypeMirror iteratorType = types.erasure(TypesUtils.typeFromClass(Iterator.class, types, elements));
-        TypeMirror mapType = types.erasure(TypesUtils.typeFromClass(Map.class, types, elements));
         boolean isCollection = types.isSubtype(tm, collectionType);
         boolean isIterator = types.isSubtype(tm, iteratorType);
         boolean isMap = types.isSubtype(tm, mapType);
