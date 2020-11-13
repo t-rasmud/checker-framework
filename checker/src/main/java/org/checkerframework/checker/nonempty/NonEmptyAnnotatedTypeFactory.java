@@ -65,6 +65,8 @@ public class NonEmptyAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 return true;
             } else if (areSameByClass(subQualifier, PolyNonEmpty.class)) {
                 return areSameByClass(superQualifier, PolyNonEmpty.class);
+            } else if (areSameByClass(subQualifier, NonEmpty.class)) {
+                return areSameByClass(superQualifier, NonEmpty.class);
             }
             return false;
         }
@@ -78,6 +80,9 @@ public class NonEmptyAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             } else if (areSameByClass(qualifier1, PolyNonEmpty.class)
                 && areSameByClass(qualifier2, PolyNonEmpty.class)) {
                 return qualifier1;
+            } else if (areSameByClass(qualifier1, NonEmpty.class)
+                && areSameByClass(qualifier2, NonEmpty.class)) {
+                return qualifier1;
             } else {
                 return UNKNOWNNONEMPTY;
             }
@@ -88,6 +93,9 @@ public class NonEmptyAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             if (areSameByClass(qualifier1, UnknownNonEmpty.class)) {
                 return qualifier2;
             } else if (areSameByClass(qualifier2, UnknownNonEmpty.class)) {
+                return qualifier1;
+            } else if (areSameByClass(qualifier1, NonEmpty.class)
+                && areSameByClass(qualifier2, NonEmpty.class)) {
                 return qualifier1;
             } else {
                 return NONEMPTYBOTTOM;
