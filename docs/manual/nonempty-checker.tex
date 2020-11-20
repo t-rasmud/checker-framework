@@ -4,6 +4,10 @@
 The NonEmpty Checker ensures that a Collection, Map, or an Iterator annotated as
 \code{@NonEmpty} contains atleast one element.
 
+To run the Nullness Checker, supply the
+\code{-processor org.checkerframework.checker.nonempty.NonEmptyChecker}
+command-line option to javac.
+
 \SectionAndLabel{Type Qualifiers and Hierarchy}
 The NonEmpty Checker supports the following type qualifiers:
 \begin{description}
@@ -30,3 +34,11 @@ The NonEmpty Checker supports the following type qualifiers:
     combination of Collection, Map, or Iterator arguments.
 
 \end{description}
+
+\begin{figure}
+    \includeimage{nonempty}{4cm}
+    \caption{Type hierarchy for the NonEmpty type system.}
+    \label{fig-nonempty-hierarchy}
+\end{figure}
+
+Figure~\ref{fig-nonempty-hierarchy} shows the qualifier hierarchy in the NonEmpty type system.
