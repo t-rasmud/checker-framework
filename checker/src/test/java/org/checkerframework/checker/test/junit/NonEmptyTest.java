@@ -14,10 +14,10 @@ public class NonEmptyTest extends CheckerFrameworkPerDirectoryTest {
      */
     public NonEmptyTest(List<File> testFiles) {
         super(
-            testFiles,
-            org.checkerframework.checker.nonempty.NonEmptyChecker.class,
-            "nonempty",
-            "-Anomsgtext");
+                testFiles,
+                org.checkerframework.checker.nonempty.NonEmptyChecker.class,
+                "nonempty",
+                "-Anomsgtext");
     }
 
     @Parameters
