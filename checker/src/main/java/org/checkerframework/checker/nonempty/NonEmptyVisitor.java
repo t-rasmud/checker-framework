@@ -89,7 +89,7 @@ public class NonEmptyVisitor extends BaseTypeVisitor<BaseAnnotatedTypeFactory> {
     }
 
     /**
-     * Reports an error if {@code type} has the qualifier {@NonEmpty}.
+     * Reports an error if {@code type} has the qualifier {@code @NonEmpty}.
      *
      * @param type AnnotatedTypeMirror
      * @param tree Tree
