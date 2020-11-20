@@ -16,15 +16,23 @@ import org.checkerframework.javacutil.TypesUtils;
 
 /** Visitor for the NonEmpty Checker. */
 public class NonEmptyVisitor extends BaseTypeVisitor<BaseAnnotatedTypeFactory> {
+    /** The java.util.Collection interface */
     private final TypeMirror collectionType =
             types.erasure(TypesUtils.typeFromClass(Collection.class, types, elements));
+    /** The java.util.Iterator interface */
     private final TypeMirror iteratorType =
             types.erasure(TypesUtils.typeFromClass(Iterator.class, types, elements));
+    /** The java.util.Map interface */
     private final TypeMirror mapType =
             types.erasure(TypesUtils.typeFromClass(Map.class, types, elements));
     /** The {@literal @}{@link NonEmpty} annotation. */
     private final AnnotationMirror NONEMPTY = AnnotationBuilder.fromClass(elements, NonEmpty.class);
 
+    /**
+     * NonEmptyVisitor constructor.
+     *
+     * @param checker BaseTypeChecker
+     */
     public NonEmptyVisitor(BaseTypeChecker checker) {
         super(checker);
     }
@@ -38,7 +46,7 @@ public class NonEmptyVisitor extends BaseTypeVisitor<BaseAnnotatedTypeFactory> {
      */
     @Override
     public boolean isValidUse(AnnotatedTypeMirror.AnnotatedPrimitiveType type, Tree tree) {
-        reportErrorOnNonCollections(type, tree);
+        reportErrorOnNonEmptyType(type, tree);
         return super.isValidUse(type, tree);
     }
 
@@ -51,7 +59,7 @@ public class NonEmptyVisitor extends BaseTypeVisitor<BaseAnnotatedTypeFactory> {
      */
     @Override
     public boolean isValidUse(AnnotatedTypeMirror.AnnotatedArrayType type, Tree tree) {
-        reportErrorOnNonCollections(type, tree);
+        reportErrorOnNonEmptyType(type, tree);
         return super.isValidUse(type, tree);
     }
 
@@ -74,13 +82,19 @@ public class NonEmptyVisitor extends BaseTypeVisitor<BaseAnnotatedTypeFactory> {
         boolean isIterator = types.isSubtype(tm, iteratorType);
         boolean isMap = types.isSubtype(tm, mapType);
         if (!isCollection && !isIterator && !isMap) {
-            reportErrorOnNonCollections(useType, tree);
+            reportErrorOnNonEmptyType(useType, tree);
         }
 
         return super.isValidUse(declarationType, useType, tree);
     }
 
-    private void reportErrorOnNonCollections(AnnotatedTypeMirror type, Tree tree) {
+    /**
+     * Reports an error if {@code type} has the qualifier {@NonEmpty}.
+     *
+     * @param type AnnotatedTypeMirror
+     * @param tree Tree
+     */
+    private void reportErrorOnNonEmptyType(AnnotatedTypeMirror type, Tree tree) {
         if (type.hasAnnotation(NONEMPTY)) {
             checker.reportError(tree, "invalid.nonempty");
         }
