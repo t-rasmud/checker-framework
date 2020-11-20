@@ -1,21 +1,23 @@
 package org.checkerframework.checker.nonempty;
+
 import com.sun.source.tree.Tree;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import javax.lang.model.type.TypeMirror;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.javacutil.TypesUtils;
-import javax.lang.model.type.TypeMirror;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
 
-/**
- * Visitor for the NonEmpty Checker.
- */
+/** Visitor for the NonEmpty Checker. */
 public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactory> {
-    private final TypeMirror collectionType = types.erasure(TypesUtils.typeFromClass(Collection.class, types, elements));
-    private final TypeMirror iteratorType = types.erasure(TypesUtils.typeFromClass(Iterator.class, types, elements));
-    private final TypeMirror mapType = types.erasure(TypesUtils.typeFromClass(Map.class, types, elements));
+    private final TypeMirror collectionType =
+            types.erasure(TypesUtils.typeFromClass(Collection.class, types, elements));
+    private final TypeMirror iteratorType =
+            types.erasure(TypesUtils.typeFromClass(Iterator.class, types, elements));
+    private final TypeMirror mapType =
+            types.erasure(TypesUtils.typeFromClass(Map.class, types, elements));
 
     public NonEmptyVisitor(BaseTypeChecker checker) {
         super(checker);
@@ -48,8 +50,8 @@ public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactor
     }
 
     /**
-     * Reports error if {@code @NonEmpty} is written on declared types other than Collection, Iterator, Map,
-     * or their subtypes.
+     * Reports error if {@code @NonEmpty} is written on declared types other than Collection,
+     * Iterator, Map, or their subtypes.
      *
      * @param declarationType the type of the class (TypeElement)
      * @param useType the use of the class (instance type)
@@ -57,8 +59,10 @@ public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactor
      * @return boolean
      */
     @Override
-    public boolean isValidUse(AnnotatedTypeMirror.AnnotatedDeclaredType declarationType,
-                              AnnotatedTypeMirror.AnnotatedDeclaredType useType, Tree tree) {
+    public boolean isValidUse(
+            AnnotatedTypeMirror.AnnotatedDeclaredType declarationType,
+            AnnotatedTypeMirror.AnnotatedDeclaredType useType,
+            Tree tree) {
         TypeMirror tm = declarationType.getUnderlyingType();
         boolean isCollection = types.isSubtype(tm, collectionType);
         boolean isIterator = types.isSubtype(tm, iteratorType);

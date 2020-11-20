@@ -1,10 +1,9 @@
 package nonempty;
 
-import org.checkerframework.checker.nonempty.qual.NonEmpty;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import org.checkerframework.checker.nonempty.qual.NonEmpty;
 
 public class TestInvalidNonEmpty {
     // :: error: (invalid.nonempty)
@@ -18,7 +17,7 @@ public class TestInvalidNonEmpty {
     void test3(@NonEmpty String a) {}
 
     // :: error: (invalid.nonempty)
-    void test4(int @NonEmpty[] a) {}
+    void test4(int @NonEmpty [] a) {}
 
     void test5(@NonEmpty Map<Integer, Integer> a) {}
 }
