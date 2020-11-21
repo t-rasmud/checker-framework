@@ -1,15 +1,24 @@
 Version 3.8.0, December 1, 2020
 
+The Initialized Fields Checker warns when a field is not initialized by a
+constructor.  This is more general than the Initialization Checker, which
+only checks that `@NonNull` fields are initialized.
+
 The manual describes how to modify an sbt build file to run the Checker
 Framework.
 
 The -AwarnUnneededSuppressions command-line option warns only about
 suppression strings that contain a checker name.
 
+The -AwarnUnneededSuppressionsExceptions=REGEX command-line option
+partially disables -AwarnUnneededSuppressions.  Most users don't need this.
+
 Implementation details:
 
 Added classes `SubtypeIsSubsetQualifierHierarchy` and
 `SubtypeIsSupersetQualifierHierarchy`.
+
+Moved the `contractsUtils` field from the visitor to the type factory.
 
 Method renamings:
   ElementUtils.getVerboseName => ElementUtils.getQualifiedName
