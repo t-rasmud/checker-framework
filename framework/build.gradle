@@ -18,8 +18,8 @@ def versions = [
 
 
 dependencies {
-    implementation project(':dataflow')
     implementation project(':javacutil')
+    implementation project(':dataflow')
     implementation files("${stubparserJar}")
     // AFU is an "includedBuild" imported in checker-framework/settings.gradle, so the version number doesn't matter.
     // https://docs.gradle.org/current/userguide/composite_builds.html#settings_defined_composite
@@ -27,7 +27,7 @@ dependencies {
         exclude group: 'com.google.errorprone', module: 'javac'
     }
     implementation project(':checker-qual')
-    implementation 'org.plumelib:plume-util:1.1.7'
+    implementation 'org.plumelib:plume-util:1.2.0'
     implementation 'org.plumelib:reflection-util:1.0.2'
 
     // TODO: it's a bug that annotatedlib:guava requires the error_prone_annotations dependency.
@@ -89,10 +89,7 @@ task copyAndMinimizeAnnotatedJdkFiles(dependsOn: cloneTypetoolsJdk, group: 'Buil
         SortedSet<String> annotatedForFiles = new TreeSet<>();
         tree.visit { FileVisitDetails fvd ->
             if (!fvd.file.isDirectory() && fvd.file.name.matches(".*\\.java")
-                    && !fvd.file.path.contains("org/checkerframework")
-                    && !fvd.file.name.matches("module-info.java")) {
-                // Ignore module-info until this JavaParser bug is fixed (and merged in the StubParser):
-                // https://github.com/javaparser/javaparser/issues/2615
+                    && !fvd.file.path.contains("org/checkerframework")) {
                 fvd.getFile().readLines().any { line ->
                     if (line.contains("@AnnotatedFor") || line.contains("org.checkerframework")) {
                         annotatedForFiles.add(fvd.file.absolutePath)
