@@ -119,9 +119,8 @@ public class BackwardAnalysisImpl<
                     // Propagate store to predecessors
                     for (Block pred : rb.getPredecessors()) {
                         assert currentInput != null : "@AssumeAssertion(nullness): invariant";
-                        Block tmp = pred;
                         propagateStoresTo(
-                                tmp,
+                                pred,
                                 firstNode,
                                 currentInput,
                                 FlowRule.EACH_TO_EACH,
@@ -147,8 +146,7 @@ public class BackwardAnalysisImpl<
                                             .leastUpperBound(exceptionStore)
                                     : transferResult.getRegularStore();
                     for (Block pred : eb.getPredecessors()) {
-                        Block tmp = pred;
-                        addStoreAfter(tmp, node, mergedStore, addToWorklistAgain);
+                        addStoreAfter(pred, node, mergedStore, addToWorklistAgain);
                     }
                     break;
                 }
@@ -159,8 +157,7 @@ public class BackwardAnalysisImpl<
                     assert inputAfter != null : "@AssumeAssertion(nullness): invariant";
                     TransferInput<V, S> input = inputAfter.copy();
                     for (Block pred : cb.getPredecessors()) {
-                        Block tmp = pred;
-                        propagateStoresTo(tmp, null, input, FlowRule.EACH_TO_EACH, false);
+                        propagateStoresTo(pred, null, input, FlowRule.EACH_TO_EACH, false);
                     }
                     break;
                 }
@@ -179,8 +176,7 @@ public class BackwardAnalysisImpl<
                         TransferInput<V, S> input = getInput(sb);
                         assert input != null : "@AssumeAssertion(nullness): invariant";
                         for (Block pred : sb.getPredecessors()) {
-                            Block tmp = pred;
-                            propagateStoresTo(tmp, null, input, FlowRule.EACH_TO_EACH, false);
+                            propagateStoresTo(pred, null, input, FlowRule.EACH_TO_EACH, false);
                         }
                     }
                     break;
