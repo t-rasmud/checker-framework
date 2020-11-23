@@ -7,6 +7,7 @@ public class Issue1431 {
 
     Outer<Object>.Inner<int[]> ic;
 
+    @SuppressWarnings("determinism:invalid.field.assignment")
     Issue1431(Outer<Object>.Inner<int[]> ic) {
         this.ic = ic;
     }
