@@ -13,10 +13,11 @@ The Iteration Checker supports the following type qualifiers:
 
     \item[\refqualclass{checker/iteration/qual}{UnknownHasNext}]
     Indicates either a non-iterator, or an iterator that might or might not have a next element.
+    This is the default type qualifier.
 
     \item[\refqualclass{checker/iteration/qual}{HasNext}]
     An expression whose type has this annotation is an iterator that has a next value -- that is,
-    {@code next()} will not throw NoSuchElementException.
+    \code{next()} will not throw NoSuchElementException.
 
 \end{description}
 
@@ -27,3 +28,51 @@ The Iteration Checker supports the following type qualifiers:
 \end{figure}
 
 Figure~\ref{fig-iteration-hierarchy} shows the qualifier hierarchy in the Iteration type system.
+
+\sectionAndLabel{Iteration Checker Rules}{iteration-rules}
+
+The Iteration Checker has the NonEmpty Checker as its subchecker (\chapterpageref{nonempty-checker})
+and issues a warning at a call to \code{Iterator.next()} if either of the
+following conditions is true:
+
+\begin{enumerate}
+    \item The receiver of \code{next()} has the type qualifier \code{@UnknownHasNext}.
+    \item The receiver of \code{next()} doesn't have the type qualifier \code{@NonEmpty}
+    from the NonEmpty type system.
+\end{enumerate}
+
+\sectionAndLabel{Examples}{iteration-examples}
+
+\begin{verbatim}
+    void test1(List<Integer> a) {
+        Iterator<Integer> iter = a.iterator();
+        if (iter.hasNext()) {
+            iter.next(); // OK
+        }
+        iter.next();  // error!
+    }
+\end{verbatim}
+
+In the above example, the first call to \code{next} is safe since it is in
+the then branch of the conditional (the postcondition of \code{hasNext} ensures that
+its receiver gets the annotation \code{@HasNext} if the results of \code{hasNext} is true).
+The second call to \code{next()} in unsafe and the Iterator checker issues a warning.
+
+\begin{verbatim}
+    void test2() {
+        List<Integer> a = new ArrayList<>();
+        a.add(5);
+        Iterator<Integer> iter = a.iterator();
+        iter.next();  // OK
+    }
+\end{verbatim}
+
+In the example above, the call to \code{next()} isn't preceded by a call to \code{hasNext()}.
+However, the call to \code{add()} ensures that the List \code{a} and subsequently
+the Iterator \code{iter} are annotated as \code{@NonEmpty} in the NonEmpty type system.
+Therefore, the Iteration Checker correctly type checks (second rule in~\ref{iteration-rules}).
+
+
+
+
+
