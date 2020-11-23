@@ -1,0 +1,29 @@
+\htmlhr
+\chapterAndLabel{Iteration Checker}{iteration-checker}
+
+The Iteration Checker ensures that \code{Iterator.next()} does not throw NoSuchElementException.
+
+To run the Iteration Checker, supply the
+\code{-processor org.checkerframework.checker.iteration.IterationChecker}
+command-line option to javac.
+
+\sectionAndLabel{Type Qualifiers and Hierarchy}{iteration-hierarchy}
+The Iteration Checker supports the following type qualifiers:
+\begin{description}
+
+    \item[\refqualclass{checker/iteration/qual}{UnknownHasNext}]
+    Indicates either a non-iterator, or an iterator that might or might not have a next element.
+
+    \item[\refqualclass{checker/iteration/qual}{HasNext}]
+    An expression whose type has this annotation is an iterator that has a next value -- that is,
+    {@code next()} will not throw NoSuchElementException.
+
+\end{description}
+
+\begin{figure}
+    \includeimage{iteration}{4cm}
+    \caption{Type hierarchy for the Iteration type system.}
+    \label{fig-iteration-hierarchy}
+\end{figure}
+
+Figure~\ref{fig-iteration-hierarchy} shows the qualifier hierarchy in the Iteration type system.
