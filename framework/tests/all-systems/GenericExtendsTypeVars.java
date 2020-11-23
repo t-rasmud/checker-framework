@@ -20,6 +20,7 @@ class Test<KK extends FF, FF extends MMyMap<KK, KK>> {
     KK kk;
     FF ff;
 
+    @SuppressWarnings("determinism:invalid.field.assignment")
     Test(KK kk, FF ff) {
         this.kk = kk;
         this.ff = ff;
@@ -29,6 +30,7 @@ class Test<KK extends FF, FF extends MMyMap<KK, KK>> {
 class RecursiveTypevarClass<T extends RecursiveTypevarClass<T>> {
     T t;
 
+    @SuppressWarnings("determinism:invalid.field.assignment")
     RecursiveTypevarClass(T t) {
         this.t = t;
     }
