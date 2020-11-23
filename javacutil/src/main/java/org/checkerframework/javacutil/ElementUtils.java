@@ -2,6 +2,8 @@ package org.checkerframework.javacutil;
 
 import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.code.Symbol;
+import com.sun.tools.javac.processing.JavacProcessingEnvironment;
+import com.sun.tools.javac.util.Context;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -31,7 +34,10 @@ import javax.tools.JavaFileObject;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.signature.qual.CanonicalName;
 
-/** A Utility class for analyzing {@code Element}s. */
+/**
+ * Utility methods for analyzing {@code Element}s. This complements {@link Elements}, providing
+ * functionality that it does not.
+ */
 public class ElementUtils {
 
     // Class cannot be instantiated.
@@ -173,17 +179,17 @@ public class ElementUtils {
      * Returns a verbose name that identifies the element.
      *
      * @param elt the element whose name to obtain
-     * @return the verbose name of the given element
+     * @return the qualified name of the given element
      */
-    public static String getVerboseName(Element elt) {
-        Name n = getQualifiedClassName(elt);
-        if (n == null) {
-            return "Unexpected element: " + elt;
-        }
+    public static String getQualifiedName(Element elt) {
         if (elt.getKind() == ElementKind.PACKAGE || isClassElement(elt)) {
+            Name n = getQualifiedClassName(elt);
+            if (n == null) {
+                return "Unexpected element: " + elt;
+            }
             return n.toString();
         } else {
-            return n + "." + elt;
+            return getQualifiedName(elt.getEnclosingElement()) + "." + elt;
         }
     }
 
@@ -195,7 +201,7 @@ public class ElementUtils {
      * @return the simple name of the method, followed by the simple names of the formal parameter
      *     types
      */
-    public static String getSimpleName(ExecutableElement element) {
+    public static String getSimpleSignature(ExecutableElement element) {
         // note: constructor simple name is <init>
         StringJoiner sj = new StringJoiner(",", element.getSimpleName() + "(", ")");
         for (Iterator<? extends VariableElement> i = element.getParameters().iterator();
@@ -203,6 +209,25 @@ public class ElementUtils {
             sj.add(TypesUtils.simpleTypeName(i.next().asType()));
         }
         return sj.toString();
+    }
+
+    /**
+     * Returns a user-friendly name for the given method. Does not return {@code "<init>"} or {@code
+     * "<clinit>"} as ExecutableElement.getSimpleName() does.
+     *
+     * @param element a method declaration
+     * @return a user-friendly name for the method
+     */
+    public static CharSequence getSimpleNameOrDescription(ExecutableElement element) {
+        Name result = element.getSimpleName();
+        switch (result.toString()) {
+            case "<init>":
+                return element.getEnclosingElement().getSimpleName();
+            case "<clinit>":
+                return "class initializer";
+            default:
+                return result;
+        }
     }
 
     /**
@@ -413,8 +438,11 @@ public class ElementUtils {
             // A constructor can only have a receiver if the class it creates has an outer type.
             TypeMirror t = element.getEnclosingElement().asType();
             return TypesUtils.hasEnclosingType(t);
-        } else if (element.getKind().isField()) {
-            if (ElementUtils.isStatic(element)) {
+        } else if (element.getKind() == ElementKind.FIELD) {
+            if (ElementUtils.isStatic(element)
+                    // Artificial fields in interfaces are not marked as static, so check that
+                    // the field is not declared in an interface.
+                    || element.getEnclosingElement().getKind().isInterface()) {
                 return false;
             } else {
                 // In constructors, the element for "this" is a non-static field, but that field
@@ -638,5 +666,21 @@ public class ElementUtils {
             throw new Error("Anonymous class " + clazz + " has no canonical name");
         }
         return processingEnv.getElementUtils().getTypeElement(className);
+    }
+
+    /**
+     * Get all the supertypes of a given type, including the type itself.
+     *
+     * @param type a type
+     * @param env the processing environment
+     * @return list including the type and all its supertypes, with a guarantee that supertypes
+     *     (i.e. those that appear in extends clauses) appear before indirect supertypes
+     */
+    public static List<TypeElement> closure(TypeElement type, ProcessingEnvironment env) {
+        Context ctx = ((JavacProcessingEnvironment) env).getContext();
+        com.sun.tools.javac.code.Types javacTypes = com.sun.tools.javac.code.Types.instance(ctx);
+        return javacTypes.closure(((Symbol) type).type).stream()
+                .map(t -> (TypeElement) t.tsym)
+                .collect(Collectors.toList());
     }
 }

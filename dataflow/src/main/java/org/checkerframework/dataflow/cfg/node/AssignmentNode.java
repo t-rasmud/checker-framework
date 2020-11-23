@@ -45,6 +45,11 @@ public class AssignmentNode extends Node {
         rhs.setAssignmentContext(new AssignmentLhsContext(lhs));
     }
 
+    /**
+     * Returns the left-hand-side of the assignment.
+     *
+     * @return the left-hand-side of the assignment
+     */
     public @PolyDet Node getTarget(@PolyDet AssignmentNode this) {
         return lhs;
     }

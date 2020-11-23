@@ -30,7 +30,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.dataflow.qual.Pure;
 import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.checkerframework.framework.type.visitor.AnnotatedTypeVisitor;
-import org.checkerframework.framework.type.visitor.SimpleAnnotatedTypeScanner;
 import org.checkerframework.framework.util.AnnotatedTypes;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
@@ -55,7 +54,7 @@ import org.checkerframework.javacutil.TypeKindUtils;
 public abstract class AnnotatedTypeMirror {
 
     /**
-     * Creates the appropriate AnnotatedTypeMirror specific wrapper for the provided type.
+     * Creates an AnnotatedTypeMirror for the provided type. The result contains no annotations.
      *
      * @param type the underlying type for the resulting AnnotatedTypeMirror
      * @param atypeFactory the type factory that will build the result
@@ -312,6 +311,20 @@ public abstract class AnnotatedTypeMirror {
     }
 
     /**
+     * Returns the annotations on this type; mutations affect this object, because the return type
+     * is an alias of the {@code annotations} field. It does not include annotations in deep types
+     * (type arguments, array components, etc).
+     *
+     * <p>The returned set should not be modified, but for efficiency reasons modification is not
+     * prevented. Modifications might break invariants.
+     *
+     * @return the set of the annotations on this; mutations affect this object
+     */
+    protected final Set<AnnotationMirror> getAnnotationsField() {
+        return annotations;
+    }
+
+    /**
      * Returns the single annotation on this type. It does not include annotations in deep types
      * (type arguments, array components, etc).
      *
@@ -331,20 +344,6 @@ public abstract class AnnotatedTypeMirror {
             throw new BugInCF("Bad annotation size for getAnnotation(): " + this);
         }
         return annotations.iterator().next();
-    }
-
-    /**
-     * Returns the annotations on this type.
-     *
-     * <p>It does not include annotations in deep types (type arguments, array components, etc).
-     *
-     * <p>The returned set should not be modified, but for efficiency reasons modification is not
-     * prevented. Modifications might break invariants.
-     *
-     * @return the set of the annotations on this, directly
-     */
-    protected final Set<AnnotationMirror> getAnnotationsField() {
-        return annotations;
     }
 
     /**
@@ -807,17 +806,8 @@ public abstract class AnnotatedTypeMirror {
      *     inference is insufficient
      */
     public boolean containsUninferredTypeArguments() {
-        return uninferredTypeArgumentScanner.visit(this);
+        return atypeFactory.containsUninferredTypeArguments(this);
     }
-
-    /** The implementation of the visitor for #containsUninferredTypeArguments. */
-    private final SimpleAnnotatedTypeScanner<Boolean, Void> uninferredTypeArgumentScanner =
-            new SimpleAnnotatedTypeScanner<>(
-                    (type, p) ->
-                            type.getKind() == TypeKind.WILDCARD
-                                    && ((AnnotatedWildcardType) type).isUninferredTypeArgument(),
-                    Boolean::logicalOr,
-                    false);
 
     /**
      * Create an {@link AnnotatedDeclaredType} with the underlying type of {@link Object}. It
@@ -856,7 +846,7 @@ public abstract class AnnotatedTypeMirror {
         private boolean declaration;
 
         /**
-         * Constructor for this type.
+         * Constructor for this type. The result contains no annotations.
          *
          * @param type underlying kind of this type
          * @param atypeFactory the AnnotatedTypeFactory used to create this type
@@ -1119,9 +1109,9 @@ public abstract class AnnotatedTypeMirror {
         }
 
         /**
-         * Sets the parameter types of this executable type.
+         * Sets the parameter types of this executable type, excluding the receiver.
          *
-         * @param params the parameter types
+         * @param params the parameter types, excluding the receiver
          */
         void setParameterTypes(List<? extends AnnotatedTypeMirror> params) {
             paramTypes.clear();
@@ -1129,9 +1119,9 @@ public abstract class AnnotatedTypeMirror {
         }
 
         /**
-         * Returns the parameter types of this executable type.
+         * Returns the parameter types of this executable type, excluding the receiver.
          *
-         * @return the parameter types of this executable type
+         * @return the parameter types of this executable type, excluding the receiver
          */
         public List<AnnotatedTypeMirror> getParameterTypes() {
             if (paramTypes.isEmpty()
@@ -1449,7 +1439,7 @@ public abstract class AnnotatedTypeMirror {
             String boundDescription, AnnotatedTypeMirror boundType, AnnotatedTypeMirror thisType) {
         if (boundType == null || boundType.isDeclaration()) {
             throw new BugInCF(
-                    "%s bounds should never be null or a declaration.%s  new bound = %s%s  type = %s",
+                    "%s bounds should never be null or a declaration.%n  new bound = %s%n  type = %s",
                     boundDescription, boundType, thisType);
         }
     }
@@ -2058,7 +2048,8 @@ public abstract class AnnotatedTypeMirror {
         protected List<AnnotatedTypeMirror> bounds;
 
         /**
-         * Creates an {@code AnnotatedIntersectionType} with the underlying type {@code type}.
+         * Creates an {@code AnnotatedIntersectionType} with the underlying type {@code type}. The
+         * result contains no annotations.
          *
          * @param type underlying kind of this type
          * @param atypeFactory the factory used to construct this intersection type
@@ -2090,7 +2081,9 @@ public abstract class AnnotatedTypeMirror {
                 Set<AnnotationMirror> newAnnos = this.getAnnotationsField();
                 if (bounds != null) {
                     for (AnnotatedTypeMirror bound : bounds) {
-                        bound.replaceAnnotations(newAnnos);
+                        if (bound.getKind() != TypeKind.TYPEVAR) {
+                            bound.replaceAnnotations(newAnnos);
+                        }
                     }
                 }
             }

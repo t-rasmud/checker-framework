@@ -14,6 +14,7 @@ optional-checker.tex \
 interning-checker.tex \
 lock-checker.tex \
 index-checker.tex \
+called-methods-checker.tex \
 fenum-checker.tex \
 tainting-checker.tex \
 determinism-checker.tex \
@@ -25,12 +26,13 @@ signature-checker.tex \
 guieffect-checker.tex \
 units-checker.tex \
 signedness-checker.tex \
-aliasing-checker.tex \
 purity-checker.tex \
 constant-value-checker.tex \
 returns-receiver-checker.tex \
 reflection-checker.tex \
 reflection-inference-rules.tex \
+initialized-fields-checker.tex \
+aliasing-checker.tex \
 subtyping-checker.tex \
 external-checkers.tex \
 typestate-checker.tex \
@@ -40,6 +42,7 @@ warnings.tex \
 inference.tex \
 annotating-libraries.tex \
 creating-a-checker.tex \
+accumulation-checker.tex \
 external-tools.tex \
 faq.tex \
 troubleshooting.tex \

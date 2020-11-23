@@ -39,6 +39,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.common.basetype.BaseTypeChecker;
+import org.checkerframework.dataflow.analysis.Analysis;
 import org.checkerframework.dataflow.analysis.AnalysisResult;
 import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
@@ -89,6 +90,7 @@ import org.checkerframework.framework.type.typeannotator.ListTypeAnnotator;
 import org.checkerframework.framework.type.typeannotator.PropagationTypeAnnotator;
 import org.checkerframework.framework.type.typeannotator.TypeAnnotator;
 import org.checkerframework.framework.util.AnnotatedTypes;
+import org.checkerframework.framework.util.ContractsUtils;
 import org.checkerframework.framework.util.FlowExpressionParseUtil;
 import org.checkerframework.framework.util.FlowExpressionParseUtil.FlowExpressionParseException;
 import org.checkerframework.framework.util.defaults.QualifierDefaults;
@@ -147,9 +149,12 @@ public abstract class GenericAnnotatedTypeFactory<
     /** to handle dependent type annotations */
     protected DependentTypesHelper dependentTypesHelper;
 
+    /** to handle method pre- and postconditions */
+    protected ContractsUtils contractsUtils;
+
     /**
      * The Java types on which users may write this type system's type annotations. null means no
-     * restrictions. Arrays are handled by separate field {@link #arraysAreRelevant}.
+     * restrictions. Arrays are handled by separate field {@code #arraysAreRelevant}.
      */
     public @Nullable Set<TypeMirror> relevantJavaTypes;
 
@@ -208,6 +213,17 @@ public abstract class GenericAnnotatedTypeFactory<
      * @see GenericAnnotatedTypeFactory#applyLocalVariableQualifierParameterDefaults
      */
     private Map<Tree, AnnotatedTypeMirror> initializerCache;
+
+    /**
+     * Should the analysis assume that side effects to a value can change the type of aliased
+     * references?
+     *
+     * <p>For many type systems, once a local variable's type is refined, side effects to the
+     * variable's value do not change the variable's type annotations. For some type systems, a side
+     * effect to the value could change them; set this field to true.
+     */
+    // Not final so that subclasses can set it.
+    public boolean sideEffectsUnrefineAliases = false;
 
     /** An empty store. */
     // Set in postInit only
@@ -295,6 +311,8 @@ public abstract class GenericAnnotatedTypeFactory<
                 }
             }
         }
+
+        contractsUtils = createContractsUtils();
 
         // Every subclass must call postInit, but it must be called after
         // all other initialization is finished.
@@ -553,6 +571,24 @@ public abstract class GenericAnnotatedTypeFactory<
 
     public DependentTypesHelper getDependentTypesHelper() {
         return dependentTypesHelper;
+    }
+
+    /**
+     * Creates an {@link ContractsUtils} and returns it.
+     *
+     * @return a new {@link ContractsUtils}
+     */
+    protected ContractsUtils createContractsUtils() {
+        return new ContractsUtils(this);
+    }
+
+    /**
+     * Returns the helper for method pre- and postconditions.
+     *
+     * @return the helper for method pre- and postconditions
+     */
+    public ContractsUtils getContractsUtils() {
+        return contractsUtils;
     }
 
     @Override
@@ -1014,7 +1050,11 @@ public abstract class GenericAnnotatedTypeFactory<
         }
         Store store =
                 AnalysisResult.runAnalysisFor(
-                        node, true, prevStore, analysis.getNodeValues(), flowResultAnalysisCaches);
+                        node,
+                        Analysis.BeforeOrAfter.BEFORE,
+                        prevStore,
+                        analysis.getNodeValues(),
+                        flowResultAnalysisCaches);
         return store;
     }
 
@@ -1062,7 +1102,7 @@ public abstract class GenericAnnotatedTypeFactory<
         Store res =
                 AnalysisResult.runAnalysisFor(
                         node,
-                        false,
+                        Analysis.BeforeOrAfter.AFTER,
                         analysis.getInput(node.getBlock()),
                         analysis.getNodeValues(),
                         flowResultAnalysisCaches);
@@ -1721,7 +1761,7 @@ public abstract class GenericAnnotatedTypeFactory<
      * qualifier parameter are initialized to the type of their initializer, rather than the default
      * for local variables.
      *
-     * @param tree Tree whose type is {@code type}
+     * @param tree a Tree whose type is {@code type}
      * @param type where the defaults are applied
      */
     protected void applyQualifierParameterDefaults(Tree tree, AnnotatedTypeMirror type) {
@@ -1736,7 +1776,7 @@ public abstract class GenericAnnotatedTypeFactory<
      * qualifier parameter are initialized to the type of their initializer, rather than the default
      * for local variables.
      *
-     * @param elt Element whose type is {@code type}
+     * @param elt an Element whose type is {@code type}
      * @param type where the defaults are applied
      */
     protected void applyQualifierParameterDefaults(
@@ -1790,7 +1830,7 @@ public abstract class GenericAnnotatedTypeFactory<
      * initializer, if an initializer is present. Does nothing for local variables with no
      * initializer.
      *
-     * @param elt Element whose type is {@code type}
+     * @param elt an Element whose type is {@code type}
      * @param type where the defaults are applied
      */
     private void applyLocalVariableQualifierParameterDefaults(
@@ -2170,5 +2210,20 @@ public abstract class GenericAnnotatedTypeFactory<
             default:
                 throw new BugInCF("isRelevantHelper(%s): Unexpected TypeKind %s", tm, tm.getKind());
         }
+    }
+
+    /**
+     * Return the type of the default value of the given type. The default value is 0, false, or
+     * null.
+     *
+     * @param typeMirror a type
+     * @return the annotated type of {@code type}'s default value
+     */
+    // TODO: Cache results to avoid recomputation.
+    public AnnotatedTypeMirror getDefaultValueAnnotatedType(TypeMirror typeMirror) {
+        AnnotatedTypeMirror defaultValue = AnnotatedTypeMirror.createType(typeMirror, this, false);
+        addComputedTypeAnnotations(
+                TreeUtils.getDefaultValueTree(typeMirror, processingEnv), defaultValue, false);
+        return defaultValue;
     }
 }

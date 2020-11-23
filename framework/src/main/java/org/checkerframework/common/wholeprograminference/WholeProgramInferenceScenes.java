@@ -10,6 +10,7 @@ import com.sun.tools.javac.code.Symbol.VarSymbol;
 import java.util.List;
 import java.util.Map;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
@@ -27,7 +28,9 @@ import org.checkerframework.framework.type.AnnotatedTypeFactory;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedDeclaredType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedExecutableType;
+import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
 import org.checkerframework.framework.util.AnnotatedTypes;
+import org.checkerframework.framework.util.dependenttypes.DependentTypesHelper;
 import org.checkerframework.javacutil.BugInCF;
 import org.checkerframework.javacutil.ElementUtils;
 import org.checkerframework.javacutil.TreeUtils;
@@ -169,7 +172,7 @@ public class WholeProgramInferenceScenes implements WholeProgramInference {
                     method.vivifyAndAddTypeMirrorToParameter(
                             i, argATM.getUnderlyingType(), ve.getSimpleName());
             storage.updateAnnotationSetInScene(
-                    param.type, atf, jaifPath, argATM, paramATM, TypeUseLocation.PARAMETER);
+                    param.type, TypeUseLocation.PARAMETER, argATM, paramATM, atf, jaifPath);
         }
     }
 
@@ -201,7 +204,7 @@ public class WholeProgramInferenceScenes implements WholeProgramInference {
                     method.vivifyAndAddTypeMirrorToParameter(
                             i, argATM.getUnderlyingType(), ve.getSimpleName());
             storage.updateAnnotationSetInScene(
-                    param.type, atf, jaifPath, argATM, paramATM, TypeUseLocation.PARAMETER);
+                    param.type, TypeUseLocation.PARAMETER, argATM, paramATM, atf, jaifPath);
         }
 
         AnnotatedDeclaredType argADT = overriddenMethod.getReceiverType();
@@ -210,7 +213,7 @@ public class WholeProgramInferenceScenes implements WholeProgramInference {
             if (paramATM != null) {
                 AField receiver = method.receiver;
                 storage.updateAnnotationSetInScene(
-                        receiver.type, atf, jaifPath, argADT, paramATM, TypeUseLocation.RECEIVER);
+                        receiver.type, TypeUseLocation.RECEIVER, argADT, paramATM, atf, jaifPath);
             }
         }
     }
@@ -260,7 +263,7 @@ public class WholeProgramInferenceScenes implements WholeProgramInference {
                         method.vivifyAndAddTypeMirrorToParameter(
                                 i, argATM.getUnderlyingType(), ve.getSimpleName());
                 storage.updateAnnotationSetInScene(
-                        param.type, atf, jaifPath, argATM, paramATM, TypeUseLocation.PARAMETER);
+                        param.type, TypeUseLocation.PARAMETER, argATM, paramATM, atf, jaifPath);
                 break;
             }
         }
@@ -323,7 +326,7 @@ public class WholeProgramInferenceScenes implements WholeProgramInference {
         // @GuardedBy({}).
         AnnotatedTypeMirror rhsATM = atf.getAnnotatedType(rhs.getTree());
         storage.updateAnnotationSetInScene(
-                field.type, atf, jaifPath, rhsATM, lhsATM, TypeUseLocation.FIELD);
+                field.type, TypeUseLocation.FIELD, rhsATM, lhsATM, atf, jaifPath);
     }
 
     /**
@@ -360,7 +363,7 @@ public class WholeProgramInferenceScenes implements WholeProgramInference {
             return;
         }
 
-        // See Issue 682
+        // Whole-program inference ignores some locations.  See Issue 682:
         // https://github.com/typetools/checker-framework/issues/682
         if (classSymbol == null) { // TODO: Handle anonymous classes.
             return;
@@ -379,8 +382,14 @@ public class WholeProgramInferenceScenes implements WholeProgramInference {
 
         // Type of the expression returned
         AnnotatedTypeMirror rhsATM = atf.getAnnotatedType(retNode.getTree().getExpression());
+        DependentTypesHelper dependentTypesHelper =
+                ((GenericAnnotatedTypeFactory) atf).getDependentTypesHelper();
+        if (dependentTypesHelper != null) {
+            dependentTypesHelper.standardizeReturnType(
+                    methodTree, rhsATM, /*removeErroneousExpressions=*/ true);
+        }
         storage.updateAnnotationSetInScene(
-                method.returnType, atf, jaifPath, rhsATM, lhsATM, TypeUseLocation.RETURN);
+                method.returnType, TypeUseLocation.RETURN, rhsATM, lhsATM, atf, jaifPath);
 
         // Now, update return types of overridden methods based on the implementation we just saw.
         // This inference is similar to the inference procedure for method parameters: both are
@@ -424,12 +433,31 @@ public class WholeProgramInferenceScenes implements WholeProgramInference {
 
             storage.updateAnnotationSetInScene(
                     overriddenMethodInSuperclass.returnType,
-                    atf,
-                    superJaifPath,
+                    TypeUseLocation.RETURN,
                     rhsATM,
                     overriddenMethodReturnType,
-                    TypeUseLocation.RETURN);
+                    atf,
+                    superJaifPath);
         }
+    }
+
+    @Override
+    public void addMethodDeclarationAnnotation(ExecutableElement methodElt, AnnotationMirror anno) {
+
+        // Do not infer types for library code, only for type-checked source code.
+        if (!ElementUtils.isElementFromSourceCode(methodElt)) {
+            return;
+        }
+
+        String className = getEnclosingClassName(methodElt);
+        String jaifPath = storage.getJaifPath(className);
+        AClass clazz =
+                storage.getAClass(className, jaifPath, ((MethodSymbol) methodElt).enclClass());
+        AMethod method = clazz.methods.getVivify(JVMNames.getJVMMethodSignature(methodElt));
+
+        scenelib.annotations.Annotation sceneAnno =
+                AnnotationConverter.annotationMirrorToAnnotation(anno);
+        method.tlAnnotationsHere.add(sceneAnno);
     }
 
     /** Write all modified scenes into .jaif files or stub files. */

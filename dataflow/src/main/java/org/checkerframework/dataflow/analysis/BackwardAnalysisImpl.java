@@ -322,7 +322,7 @@ public class BackwardAnalysisImpl<
     @Override
     public S runAnalysisFor(
             @FindDistinct Node node,
-            boolean before,
+            Analysis.BeforeOrAfter preOrPost,
             TransferInput<V, S> blockTransferInput,
             @OrderNonDet IdentityHashMap<Node, V> nodeValues,
                     @OrderNonDet Map<
@@ -351,7 +351,7 @@ public class BackwardAnalysisImpl<
                         while (reverseIter.hasPrevious()) {
                             Node n = reverseIter.previous();
                             setCurrentNode(n);
-                            if (n == node && !before) {
+                            if (n == node && preOrPost == Analysis.BeforeOrAfter.AFTER) {
                                 return store.getRegularStore();
                             }
                             // Copy the store to avoid changing other blocks' transfer inputs in
@@ -375,7 +375,7 @@ public class BackwardAnalysisImpl<
                                             + "\teb.getNode(): "
                                             + eb.getNode());
                         }
-                        if (!before) {
+                        if (preOrPost == Analysis.BeforeOrAfter.AFTER) {
                             return blockTransferInput.getRegularStore();
                         }
                         setCurrentNode(node);

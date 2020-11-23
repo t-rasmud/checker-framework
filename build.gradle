@@ -102,7 +102,7 @@ allprojects {
     //   * any new checkers have been added,
     //   * the patch level is 9 (keep the patch level as a single digit), or
     //   * backward-incompatible changes have been made to APIs or elsewhere.
-    version '3.7.1-SNAPSHOT'
+    version '3.8.0-SNAPSHOT'
 
     repositories {
         mavenCentral()
@@ -369,7 +369,7 @@ List<String> getJavaFilesToFormat(projectName) {
 
     List<String> args = new ArrayList<>();
     for (File f : javaFiles) {
-        args += f.absolutePath
+        args += project(projectName).relativePath(f)
     }
     return args
 }
@@ -827,6 +827,9 @@ subprojects {
         // Create a nonJunitTests task per project
         tasks.create(name: 'nonJunitTests', group: 'Verification') {
             description 'Run all Checker Framework tests except for the Junit tests.'
+            if (project.name.is('framework') || project.name.is('checker')) {
+                dependsOn('jtregTests')
+            }
             if (project.name.is('framework')) {
                 dependsOn('wholeProgramInferenceTests', 'loaderTests')
             }
@@ -850,12 +853,9 @@ subprojects {
             description 'Run the Checker Framework on itself'
             dependsOn('checkInterning', 'checkPurity', 'checkSignature')
             if (project.name.is('framework') || project.name.is('checker')) {
-                dependsOn('checkNullnessOnlyAnnotatedFor')
+                dependsOn('checkNullnessOnlyAnnotatedFor', 'checkCompilerMessages')
             } else {
                 dependsOn('checkNullness')
-            }
-            if (project.name.is('framework') || project.name.is('checker')) {
-                dependsOn('checkCompilerMessages', 'jtregTests')
             }
         }
 

@@ -210,7 +210,7 @@ public class PurityChecker {
             assert TreeUtils.isUseOfElement(node) : "@AssumeAssertion(nullness): tree kind";
             Element elt = TreeUtils.elementFromUse(node);
             if (!PurityUtils.hasPurityAnnotation(annoProvider, elt)) {
-                purityResult.addNotBothReason(node, "call.method");
+                purityResult.addNotBothReason(node, "call");
             } else {
                 EnumSet<Pure.@Det Kind> purityKinds =
                         (assumeDeterministic && assumeSideEffectFree)
@@ -221,11 +221,11 @@ public class PurityChecker {
                 boolean seFree =
                         assumeSideEffectFree || purityKinds.contains(Kind.SIDE_EFFECT_FREE);
                 if (!det && !seFree) {
-                    purityResult.addNotBothReason(node, "call.method");
+                    purityResult.addNotBothReason(node, "call");
                 } else if (!det) {
-                    purityResult.addNotDetReason(node, "call.method");
+                    purityResult.addNotDetReason(node, "call");
                 } else if (!seFree) {
-                    purityResult.addNotSEFreeReason(node, "call.method");
+                    purityResult.addNotSEFreeReason(node, "call");
                 }
             }
             return super.visitMethodInvocation(node, ignore);
@@ -279,7 +279,7 @@ public class PurityChecker {
                 purityResult.addNotDetReason(node, "object.creation");
             }
             if (!sideEffectFree) {
-                purityResult.addNotSEFreeReason(node, "call.constructor");
+                purityResult.addNotSEFreeReason(node, "call");
             }
 
             // TODO: if okThrowDeterministic, permit arguments to the newClass to be

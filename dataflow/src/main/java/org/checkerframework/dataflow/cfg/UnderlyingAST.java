@@ -84,7 +84,7 @@ public abstract class UnderlyingAST implements UniqueId {
         }
 
         /**
-         * Returns the name of the method
+         * Returns the name of the method.
          *
          * @return the name of the method
          */

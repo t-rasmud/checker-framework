@@ -1,7 +1,7 @@
 dependencies {
     implementation project(':javacutil')
     implementation project(':checker-qual')
-    implementation files('libs/plume-util-1.1.7.jar')
+    implementation files('libs/plume-util-1.2.0.jar')
 }
 
 shadowJar {

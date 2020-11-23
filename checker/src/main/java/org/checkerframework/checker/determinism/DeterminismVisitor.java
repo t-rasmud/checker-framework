@@ -745,7 +745,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
     protected void checkArguments(
             List<? extends AnnotatedTypeMirror> requiredArgs,
             List<? extends ExpressionTree> passedArgs,
-            Name executableName,
+            CharSequence executableName,
             List<?> paramNames) {
         for (ExpressionTree arg : passedArgs) {
             AnnotatedTypeMirror argType = atypeFactory.getAnnotatedType(arg);
@@ -887,9 +887,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      * Reports the given {@code errorMessage} if {@code elementAnno} is not a valid element type of
      * a collection or array with {@code collectionAnno}.
      *
-     * @param atm the annotated type whose element to check for validity
-     * @param elementAnno the annotation of the element type of an array or collection
-     * @param collectionAnno the annotation of an array or collection
+     * @param atm the annotated type whose element to check for validity; a collection or array type
+     * @param elementAnno the annotation on the element type of {@code atm}
+     * @param collectionAnno the main annotation on {@code atm}
      * @param tree the tree to report errors on
      * @param errorMessage the error message to report
      * @return true if {@code elementAnno} is a subtype of {@code collectionAnno}
