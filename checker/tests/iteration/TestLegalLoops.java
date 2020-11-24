@@ -2,6 +2,7 @@ package iteration;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 
 public class TestLegalLoops {
     void testWhile(ArrayList<Integer> lst) {
@@ -19,5 +20,16 @@ public class TestLegalLoops {
 
     void testForEach(ArrayList<Integer> lst) {
         for (Integer elem : lst) {}
+    }
+
+    public void toJSONString(Map map) {
+
+        StringBuffer sb = new StringBuffer();
+        Iterator iter = map.entrySet().iterator();
+
+        while (iter.hasNext()) {
+            sb.append(',');
+            Map.Entry entry = (Map.Entry) iter.next();
+        }
     }
 }

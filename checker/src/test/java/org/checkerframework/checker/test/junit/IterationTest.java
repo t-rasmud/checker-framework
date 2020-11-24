@@ -14,10 +14,10 @@ public class IterationTest extends CheckerFrameworkPerDirectoryTest {
      */
     public IterationTest(List<File> testFiles) {
         super(
-            testFiles,
-            org.checkerframework.checker.iteration.IterationChecker.class,
-            "iteration",
-            "-Anomsgtext");
+                testFiles,
+                org.checkerframework.checker.iteration.IterationChecker.class,
+                "iteration",
+                "-Anomsgtext");
     }
 
     @Parameters

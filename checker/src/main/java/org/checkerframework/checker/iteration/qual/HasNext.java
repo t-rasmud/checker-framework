@@ -12,4 +12,3 @@ import org.checkerframework.framework.qual.*;
 @Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})
 @SubtypeOf({UnknownHasNext.class})
 public @interface HasNext {}
-
