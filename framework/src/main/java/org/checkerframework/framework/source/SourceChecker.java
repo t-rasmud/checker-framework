@@ -211,7 +211,7 @@ import org.plumelib.util.UtilPlume;
     "warnUnneededSuppressions",
 
     // Exceptions to -AwarnUnneededSuppressions.
-    "noWarnUnneededSuppressions",
+    "warnUnneededSuppressionsExceptions",
 
     // Require that warning suppression annotations contain a checker key as a prefix in order for
     // the warning to be suppressed.
@@ -428,7 +428,7 @@ public abstract class SourceChecker extends AbstractTypeProcessor
      * Exceptions to -AwarnUnneededSuppressions processing. No warning about unneeded suppressions
      * is issued if the SuppressWarnings string matches this pattern.
      */
-    @Nullable Pattern warnUnneededSuppressionsExceptions;
+    private @Nullable Pattern warnUnneededSuppressionsExceptions;
 
     /**
      * SuppressWarnings strings supplied via the -AsuppressWarnings option. Do not use directly,
@@ -2268,7 +2268,7 @@ public abstract class SourceChecker extends AbstractTypeProcessor
      * Returns a sorted set of SuppressWarnings prefixes read from the {@link
      * SuppressWarningsPrefix} meta-annotation on the checker class. Or if no {@link
      * SuppressWarningsPrefix} is used, the checker name is used. {@link #SUPPRESS_ALL_PREFIX} is
-     * also added, at the end, unless {@link useAllcheckersPrefix} is false.
+     * also added, at the end, unless {@link #useAllcheckersPrefix} is false.
      *
      * @return a sorted set of SuppressWarnings prefixes
      */
@@ -2631,7 +2631,7 @@ public abstract class SourceChecker extends AbstractTypeProcessor
     /**
      * Returns the version of the Checker Framework.
      *
-     * @return Checker Framework version
+     * @return the Checker Framework version
      */
     private String getCheckerVersion() {
         Properties gitProperties = getProperties(getClass(), "/git.properties");
