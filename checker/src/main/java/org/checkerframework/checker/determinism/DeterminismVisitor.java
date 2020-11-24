@@ -152,8 +152,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 }
             }
             // Raises an error if the annotation on the type argument of a collection (or iterator)
-            // is
-            // a supertype of the annotation on the collection (or iterator).
+            // is a supertype of the annotation on the collection (or iterator).
             for (AnnotatedTypeMirror argType : useType.getTypeArguments()) {
                 if (!argType.getAnnotations().isEmpty()) {
                     AnnotationMirror argAnnotation =
