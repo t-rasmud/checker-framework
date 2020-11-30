@@ -2,7 +2,7 @@
 \chapterAndLabel{NonEmpty Checker}{nonempty-checker}
 
 The NonEmpty Checker ensures that a Collection, Map, or an Iterator annotated as
-\code{@NonEmpty} contains atleast one element.
+\code{@NonEmpty} contains at least one element.
 
 To run the NonEmpty Checker, supply the
 \code{-processor org.checkerframework.checker.nonempty.NonEmptyChecker}
@@ -14,24 +14,19 @@ The NonEmpty Checker supports the following type qualifiers:
 
     \item[\refqualclass{checker/nonempty/qual}{UnknownNonEmpty}]
     Indicates that the value assigned to the annotated variable is not known to be a non-empty
-    collection, map, or iterator. It is the top type qualifier in the NonEmpty type hierarchy. It is also the default type
-    qualifier.
-    It is used internally by the type system and should never be written by a programmer.
+    collection, map, or iterator. It is the default type
+    qualifier, so it should rarely be written by a programmer.
 
     \item[\refqualclass{checker/nonempty/qual}{NonEmpty}]
-    Indicates that the collection, map, or iterator value assigned to the annotated variable is non-empty.
+    Indicates that a collection, map, or iterator value is non-empty.
 
     \item[\refqualclass{checker/nonempty/qual}{NonEmptyBottom}]
     It is the bottom type in the NonEmpty type system. Programmers should rarely write this type.
 
     \item[\refqualclass{checker/nonempty/qual}{PolyNonEmpty}]
-    A polymorphic qualifier for the NonEmpty type system.
-    Any method written using \code{@PolyNonEmpty} conceptually has an arbitrary number of
-    versions: one in which every instance of \code{@PolyNonEmpty} has been replaced by
-    \code{@UnknownNonEmpty}, one in which every instance of \code{@PolyNonEmpty}
-    has been replaced by \code{@NonEmptyBottom}, and ones in which every instance of
-    \code{@PolyNonEmpty} has been replaced by \code{@NonEmpty}, for every possible
-    combination of Collection, Map, or Iterator arguments.
+    indicates qualifier polymorphism.
+    For a description of qualifier polymorphism, see
+    Section~\ref{method-qualifier-polymorphism}.
 
 \end{description}
 
