@@ -1,7 +1,9 @@
 \htmlhr
 \chapterAndLabel{Iteration Checker}{iteration-checker}
 
-The Iteration Checker ensures that \code{Iterator.next()} does not throw NoSuchElementException.
+The Iteration Checker ensures that
+\sunjavadoc{java.base/java/util/Iterator.html\#next()}{Iterator.next()}
+does not throw \code{NoSuchElementException}.
 
 To run the Iteration Checker, supply the
 \code{-processor org.checkerframework.checker.iteration.IterationChecker}
@@ -16,7 +18,8 @@ The Iteration Checker supports the following type qualifiers:
     This is the default type qualifier.
 
     \item[\refqualclass{checker/iteration/qual}{HasNext}]
-    An expression whose type has this annotation is an iterator that has a next value -- that is,
+    An expression whose type has this annotation is an iterator that has a next value --- that is,
+    \code{hasNext()} will return true and
     \code{next()} will not throw NoSuchElementException.
 
 \end{description}
