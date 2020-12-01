@@ -29,6 +29,8 @@ public class TestLegalLoops {
 
         while (iter.hasNext()) {
             sb.append(',');
+            // This is an FP
+            // :: error: method.invocation.invalid
             Map.Entry entry = (Map.Entry) iter.next();
         }
     }
