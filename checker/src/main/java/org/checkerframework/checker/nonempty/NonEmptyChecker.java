@@ -5,7 +5,7 @@ import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
 
 /**
  * The NonEmpty Checker ensures that a Collection, Map, or an Iterator annotated as
- * {@code @NonEmpty} contains atleast one element.
+ * {@code @NonEmpty} contains at least one element.
  */
 public class NonEmptyChecker extends BaseTypeChecker {
     @Override
