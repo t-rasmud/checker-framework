@@ -12,12 +12,11 @@ import org.checkerframework.framework.qual.SubtypeOf;
 import org.checkerframework.framework.qual.TypeUseLocation;
 
 /**
- * Used internally by the type system; should never be written by a programmer.
+ * Indicates that the collection, map, or iterator not known to be a non-empty. It is the top type
+ * qualifier in the {@link org.checkerframework.checker.nonempty.qual.NonEmpty} hierarchy. It is
+ * also the default type qualifier.
  *
- * <p>Indicates that the value assigned to the annotated variable is not known to be a non-empty
- * collection, map, or iterator. It is the top type qualifier in the {@link
- * org.checkerframework.checker.nonempty.qual.NonEmpty} hierarchy. It is also the default type
- * qualifier.
+ * <p>Used internally by the type system; should never be written by a programmer.
  *
  * @checker_framework.manual #nonempty-checker NonEmpty Checker
  */

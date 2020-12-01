@@ -10,12 +10,10 @@ import org.checkerframework.framework.qual.PolymorphicQualifier;
 /**
  * A polymorphic qualifier for the {@code @NonEmpty} type system.
  *
- * <p>Any method written using {@code @PolyNonEmpty} conceptually has an arbitrary number of
- * versions: one in which every instance of {@code @PolyNonEmpty} has been replaced by
- * {@code @}{@link UnknownNonEmpty}, one in which every instance of {@code @}{@link PolyNonEmpty}
- * has been replaced by {@code @}{@link NonEmptyBottom}, and ones in which every instance of
- * {@code @PolyNonEmpty} has been replaced by {@code @}{@link NonEmpty}, for every possible
- * combination of Collection, Map, or Iterator arguments.
+ * <p>Any method written using {@code @PolyNonEmpty} conceptually has two versions: one in which
+ * every instance of {@code @PolyNonEmpty} has been replaced by {@code @}{@link UnknownNonEmpty} and
+ * one in which every instance of {@code @PolyNonEmpty} has been replaced by {@code @}{@link
+ * NonEmpty}, for every possible combination of Collection, Map, or Iterator arguments.
  *
  * @checker_framework.manual #nonempty NonEmpty Checker
  * @checker_framework.manual #qualifier-polymorphism Qualifier polymorphism

@@ -20,23 +20,20 @@ The NonEmpty Checker supports the following type qualifiers:
 
     \item[\refqualclass{checker/nonempty/qual}{NonEmpty}]
     Indicates that the collection, map, or iterator value assigned to the annotated variable is non-empty.
-
-    \item[\refqualclass{checker/nonempty/qual}{NonEmptyBottom}]
-    It is the bottom type in the NonEmpty type system. Programmers should rarely write this type.
+    This is the bottom type qualifier.
 
     \item[\refqualclass{checker/nonempty/qual}{PolyNonEmpty}]
     A polymorphic qualifier for the NonEmpty type system.
-    Any method written using \code{@PolyNonEmpty} conceptually has an arbitrary number of
+    Any method written using \code{@PolyNonEmpty} conceptually has two
     versions: one in which every instance of \code{@PolyNonEmpty} has been replaced by
-    \code{@UnknownNonEmpty}, one in which every instance of \code{@PolyNonEmpty}
-    has been replaced by \code{@NonEmptyBottom}, and ones in which every instance of
+    \code{@UnknownNonEmpty} and one in which every instance of
     \code{@PolyNonEmpty} has been replaced by \code{@NonEmpty}, for every possible
     combination of Collection, Map, or Iterator arguments.
 
 \end{description}
 
 \begin{figure}
-    \includeimage{nonempty}{4cm}
+    \includeimage{nonempty}{3cm}
     \caption{Type hierarchy for the NonEmpty type system.}
     \label{fig-nonempty-hierarchy}
 \end{figure}
