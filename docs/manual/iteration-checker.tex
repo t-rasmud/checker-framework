@@ -35,14 +35,8 @@ Figure~\ref{fig-iteration-hierarchy} shows the qualifier hierarchy in the Iterat
 \sectionAndLabel{Iteration Checker Rules}{iteration-rules}
 
 The Iteration Checker has the NonEmpty Checker as its subchecker (\chapterpageref{nonempty-checker})
-and issues a warning at a call to \code{Iterator.next()} if either of the
-following conditions is true:
-
-\begin{enumerate}
-    \item The receiver of \code{next()} has the type qualifier \code{@UnknownHasNext}.
-    \item The receiver of \code{next()} doesn't have the type qualifier \code{@NonEmpty}
-    from the NonEmpty type system.
-\end{enumerate}
+and issues a warning at a call to \code{Iterator.next()} if the receiver of
+\code{next()} has the type qualifier \code{@UnknownHasNext}.
 
 \sectionAndLabel{Examples}{iteration-examples}
 
@@ -71,6 +65,7 @@ The second call to \code{next()} in unsafe and the Iterator checker issues a war
 \end{verbatim}
 
 In the example above, the call to \code{next()} isn't preceded by a call to \code{hasNext()}.
-However, the call to \code{add()} ensures that the List \code{a} and subsequently
-the Iterator \code{iter} are annotated as \code{@NonEmpty} in the NonEmpty type system.
-Therefore, the Iteration Checker correctly type checks (second rule in~\ref{iteration-rules}).
+However, the call to \code{add()} ensures that the List \code{a} is annotated as
+\code{@NonEmpty} in the NonEmpty type system.
+Consequently, the Iterator \code{iter} is annotated as \code{@HasNext}.
+Therefore, the Iteration Checker correctly type checks.
