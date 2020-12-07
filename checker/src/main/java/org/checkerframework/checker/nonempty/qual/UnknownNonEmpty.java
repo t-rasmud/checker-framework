@@ -5,11 +5,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.checkerframework.framework.qual.DefaultFor;
-import org.checkerframework.framework.qual.DefaultQualifierInHierarchy;
-import org.checkerframework.framework.qual.InvisibleQualifier;
-import org.checkerframework.framework.qual.SubtypeOf;
-import org.checkerframework.framework.qual.TypeUseLocation;
+import org.checkerframework.framework.qual.*;
 
 /**
  * Indicates that the collection, map, or iterator not known to be a non-empty. It is the top type
@@ -24,6 +20,7 @@ import org.checkerframework.framework.qual.TypeUseLocation;
 @SubtypeOf({})
 @DefaultQualifierInHierarchy
 @DefaultFor({TypeUseLocation.LOWER_BOUND})
+@QualifierForLiterals(LiteralKind.NULL)
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})
