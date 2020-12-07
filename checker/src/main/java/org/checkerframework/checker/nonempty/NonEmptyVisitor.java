@@ -12,6 +12,7 @@ import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.javacutil.AnnotationBuilder;
+import org.checkerframework.javacutil.TreeUtils;
 import org.checkerframework.javacutil.TypesUtils;
 
 /** Visitor for the NonEmpty Checker. */
@@ -77,6 +78,10 @@ public class NonEmptyVisitor extends BaseTypeVisitor<BaseAnnotatedTypeFactory> {
             AnnotatedTypeMirror.AnnotatedDeclaredType declarationType,
             AnnotatedTypeMirror.AnnotatedDeclaredType useType,
             Tree tree) {
+        if (TreeUtils.isClassLiteral(tree)) {
+            // Don't validate class literals
+            return true;
+        }
         TypeMirror tm = declarationType.getUnderlyingType();
         boolean isCollection = types.isSubtype(tm, collectionType);
         boolean isIterator = types.isSubtype(tm, iteratorType);
