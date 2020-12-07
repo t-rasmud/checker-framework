@@ -1,5 +1,6 @@
 package org.checkerframework.framework.flow;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
@@ -31,6 +33,7 @@ import org.checkerframework.dataflow.expression.MethodCall;
 import org.checkerframework.dataflow.expression.Receiver;
 import org.checkerframework.dataflow.expression.ThisReference;
 import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
 import org.checkerframework.dataflow.util.PurityUtils;
 import org.checkerframework.framework.qual.MonotonicQualifier;
 import org.checkerframework.framework.type.AnnotatedTypeFactory;
@@ -171,6 +174,43 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
         return PurityUtils.isSideEffectFree(atypeFactory, method);
     }
 
+    /**
+     * Indicates whether the method has the declaration annotation {@code @SideEffectsOnly}.
+     *
+     * @param atypeFactory the type factory used to retrieve annotations on the method element
+     * @param method the method element
+     * @return whether the method is annotated with {@code @SideEffectsOnly}
+     */
+    protected boolean isSideEffectsOnly(
+            AnnotatedTypeFactory atypeFactory, ExecutableElement method) {
+        AnnotationMirror sefOnlyAnnotation =
+                atypeFactory.getDeclAnnotation(method, SideEffectsOnly.class);
+        if (sefOnlyAnnotation != null) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns the annotation values of {@code @SideEffectsOnly}.
+     *
+     * @param atypeFactory the type factory used to retrieve annotations on the method element
+     * @param method the method element
+     * @return values of annotation elements of {@code @SideEffectsOnly} if the method has this
+     *     annotation
+     */
+    protected @Nullable Map<? extends ExecutableElement, ? extends AnnotationValue>
+            getSideEffectsOnlyValues(AnnotatedTypeFactory atypeFactory, ExecutableElement method) {
+        AnnotationMirror sefOnlyAnnotation =
+                atypeFactory.getDeclAnnotation(method, SideEffectsOnly.class);
+        if (sefOnlyAnnotation == null) {
+            return null;
+        }
+        Map<? extends ExecutableElement, ? extends AnnotationValue> elementValues =
+                sefOnlyAnnotation.getElementValues();
+        return elementValues;
+    }
+
     /* --------------------------------------------------------- */
     /* Handling of fields */
     /* --------------------------------------------------------- */
@@ -183,6 +223,8 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
      *   <li>If the method is side-effect-free (as indicated by {@link
      *       org.checkerframework.dataflow.qual.SideEffectFree} or {@link
      *       org.checkerframework.dataflow.qual.Pure}), then no information needs to be removed.
+     *   <li>If the method side effects few expressions (specified as annotation values of
+     *       {@code @SideEffectFree}), then information about those expressions is removed.
      *   <li>Otherwise, all information about field accesses {@code a.f} needs to be removed, except
      *       if the method {@code n} cannot modify {@code a.f} (e.g., if {@code a} is a local
      *       variable or {@code this}, and {@code f} is final).
@@ -196,6 +238,32 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
             MethodInvocationNode n, AnnotatedTypeFactory atypeFactory, V val) {
         ExecutableElement method = n.getTarget().getMethod();
 
+        List<String> sideEffectExpressions = null;
+        if (isSideEffectsOnly(atypeFactory, method)) {
+            Map<? extends ExecutableElement, ? extends AnnotationValue> valmap =
+                    getSideEffectsOnlyValues(atypeFactory, method);
+            if (valmap != null) {
+                Object value = null;
+                for (ExecutableElement elem : valmap.keySet()) {
+                    if (elem.getSimpleName().contentEquals("value")) {
+                        value = valmap.get(elem).getValue();
+                        break;
+                    }
+                }
+                if (value instanceof List) {
+                    AnnotationMirror sefOnlyAnnotation =
+                            atypeFactory.getDeclAnnotation(
+                                    method,
+                                    org.checkerframework.dataflow.qual.SideEffectsOnly.class);
+                    sideEffectExpressions =
+                            AnnotationUtils.getElementValueArray(
+                                    sefOnlyAnnotation, "value", String.class, true);
+                } else if (value instanceof String) {
+                    sideEffectExpressions = Collections.singletonList((String) value);
+                }
+            }
+        }
+
         // case 1: remove information if necessary
         if (!(analysis.checker.hasOption("assumeSideEffectFree")
                 || analysis.checker.hasOption("assumePure")
@@ -208,19 +276,45 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
             // TODO: Also remove if any element/argument to the annotation is not
             // isUnmodifiableByOtherCode.  Example: @KeyFor("valueThatCanBeMutated").
             if (sideEffectsUnrefineAliases) {
-                localVariableValues
-                        .entrySet()
-                        .removeIf(e -> !e.getKey().isUnmodifiableByOtherCode());
+                if (sideEffectExpressions != null) {
+                    final List<String> expressionsToRemove = sideEffectExpressions;
+                    localVariableValues
+                            .entrySet()
+                            .removeIf(
+                                    e ->
+                                            expressionsToRemove.contains(e.getKey().toString())
+                                                    && !e.getKey().isUnmodifiableByOtherCode());
+                } else {
+                    localVariableValues
+                            .entrySet()
+                            .removeIf(e -> !e.getKey().isUnmodifiableByOtherCode());
+                }
             }
 
             // update this value
             if (sideEffectsUnrefineAliases) {
-                thisValue = null;
+                if (sideEffectExpressions != null) {
+                    if (sideEffectExpressions.contains("this")) {
+                        thisValue = null;
+                    }
+                } else {
+                    thisValue = null;
+                }
             }
 
             // update field values
             if (sideEffectsUnrefineAliases) {
-                fieldValues.entrySet().removeIf(e -> !e.getKey().isUnmodifiableByOtherCode());
+                if (sideEffectExpressions != null) {
+                    final List<String> expressionsToRemove = sideEffectExpressions;
+                    fieldValues
+                            .entrySet()
+                            .removeIf(
+                                    e ->
+                                            expressionsToRemove.contains(e.getKey().toString())
+                                                    && !e.getKey().isUnmodifiableByOtherCode());
+                } else {
+                    fieldValues.entrySet().removeIf(e -> !e.getKey().isUnmodifiableByOtherCode());
+                }
             } else {
                 Map<FieldAccess, V> newFieldValues = new HashMap<>();
                 for (Map.Entry<FieldAccess, V> e : fieldValues.entrySet()) {
