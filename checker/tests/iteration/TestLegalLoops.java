@@ -3,7 +3,6 @@ package iteration;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
-import org.checkerframework.dataflow.qual.SideEffectsOnly;
 
 public class TestLegalLoops {
     void testWhile(ArrayList<Integer> lst) {
@@ -23,7 +22,6 @@ public class TestLegalLoops {
         for (Integer elem : lst) {}
     }
 
-    @SideEffectsOnly("sb")
     public void toJSONString(Map map) {
 
         StringBuffer sb = new StringBuffer();
