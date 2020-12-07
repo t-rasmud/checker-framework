@@ -15,9 +15,16 @@ import org.checkerframework.framework.type.treeannotator.TreeAnnotator;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.TreeUtils;
 
+/** Annotated type factory for the Iteration Checker. */
 public class IterationAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
+    /** {@link HasNext}. */
     private final AnnotationMirror HASNEXT = AnnotationBuilder.fromClass(elements, HasNext.class);
 
+    /**
+     * Constructor for IterationAnnotatedTypeFactory.
+     *
+     * @param checker BaseTypeChecker
+     */
     public IterationAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker);
         this.postInit();
@@ -28,12 +35,26 @@ public class IterationAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         return new ListTreeAnnotator(super.createTreeAnnotator(), new IterationTreeAnnotator(this));
     }
 
+    /** Tree Annotator for the Iteration Checker. */
     protected class IterationTreeAnnotator extends TreeAnnotator {
 
+        /**
+         * Tree annotator.
+         *
+         * @param atypeFactory AnnotatedTypeFactory
+         */
         protected IterationTreeAnnotator(AnnotatedTypeFactory atypeFactory) {
             super(atypeFactory);
         }
 
+        /**
+         * Annotates the return type of Collection.iterator() as {@code @HasNext} if the Collection
+         * is annotated as {@code @NonEmpty} in the NonEmpty Checker.
+         *
+         * @param node MethodInvocationTree
+         * @param annotatedTypeMirror AnnotatedTypeMirror
+         * @return Void
+         */
         @Override
         public Void visitMethodInvocation(
                 MethodInvocationTree node, AnnotatedTypeMirror annotatedTypeMirror) {
