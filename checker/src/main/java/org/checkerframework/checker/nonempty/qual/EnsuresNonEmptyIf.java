@@ -32,12 +32,17 @@ import org.checkerframework.framework.qual.InheritedAnnotation;
 @ConditionalPostconditionAnnotation(qualifier = NonEmpty.class)
 @InheritedAnnotation
 public @interface EnsuresNonEmptyIf {
-    /** The value the method must return, in order for the postcondition to hold. */
+    /**
+     * The value the method must return, in order for the postcondition to hold.
+     *
+     * @return The value the method must return, in order for the postcondition to hold
+     */
     boolean result();
 
     /**
      * Java expressions that are non-empty after the method returns the given result.
      *
+     * @return Java expressions that are non-empty after the method returns the given result
      * @checker_framework.manual #java-expressions-as-arguments Syntax of Java expressions
      */
     String[] expression();
