@@ -1,5 +1,6 @@
 package org.checkerframework.checker.iteration;
 
+import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodInvocationTree;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
@@ -51,6 +52,9 @@ public class IterationAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
          * Annotates the return type of Collection.iterator() as {@code @HasNext} if the Collection
          * is annotated as {@code @NonEmpty} in the NonEmpty Checker.
          *
+         * <p>Annotates the return type of ImageIO.getImageWritersByFormatName() as {@code HasNext}
+         * if the argument to ImageIO.getImageWritersByFormatName() is jpeg.
+         *
          * @param node MethodInvocationTree
          * @param annotatedTypeMirror AnnotatedTypeMirror
          * @return Void
@@ -65,6 +69,19 @@ public class IterationAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 AnnotatedTypeMirror receiverType =
                         getTypeFactoryOfSubchecker(NonEmptyChecker.class).getReceiverType(node);
                 if (receiverType.hasAnnotation(NonEmpty.class)) {
+                    annotatedTypeMirror.replaceAnnotation(HASNEXT);
+                }
+            }
+
+            ExecutableElement getImageWritersMethod =
+                    TreeUtils.getMethod(
+                            "javax.imageio.ImageIO",
+                            "getImageWritersByFormatName",
+                            1,
+                            processingEnv);
+            if (TreeUtils.isMethodInvocation(node, getImageWritersMethod, processingEnv)) {
+                ExpressionTree argument = node.getArguments().get(0);
+                if (argument.toString().equals("\"jpeg\"")) {
                     annotatedTypeMirror.replaceAnnotation(HASNEXT);
                 }
             }
