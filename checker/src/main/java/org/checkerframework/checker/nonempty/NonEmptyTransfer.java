@@ -8,6 +8,7 @@ import org.checkerframework.dataflow.analysis.ConditionalTransferResult;
 import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
 import org.checkerframework.dataflow.cfg.node.ConditionalNotNode;
+import org.checkerframework.dataflow.cfg.node.EqualToNode;
 import org.checkerframework.dataflow.cfg.node.GreaterThanNode;
 import org.checkerframework.dataflow.cfg.node.GreaterThanOrEqualNode;
 import org.checkerframework.dataflow.cfg.node.IntegerLiteralNode;
@@ -79,6 +80,40 @@ public class NonEmptyTransfer extends CFTransfer {
             GreaterThanOrEqualNode n, TransferInput<CFValue, CFStore> cfValueCFStoreTransferInput) {
         TransferResult<CFValue, CFStore> resultIn =
                 super.visitGreaterThanOrEqual(n, cfValueCFStoreTransferInput);
+
+        Node leftOp = n.getLeftOperand();
+        Node rightOp = n.getRightOperand();
+        if (leftOp instanceof MethodInvocationNode) {
+            if (NodeUtils.isMethodInvocation(leftOp, sizeMethod, processingEnv)) {
+                if (!(rightOp instanceof IntegerLiteralNode)) {
+                    return resultIn;
+                }
+                int rightOpInt = ((IntegerLiteralNode) rightOp).getValue();
+                if (rightOpInt >= 1) {
+                    Node leftReceiver = ((MethodInvocationNode) leftOp).getTarget().getReceiver();
+                    Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
+
+                    CFStore thenStore = resultIn.getRegularStore();
+                    CFStore elseStore = thenStore.copy();
+                    ConditionalTransferResult<CFValue, CFStore> newResult =
+                            new ConditionalTransferResult<>(
+                                    resultIn.getResultValue(), thenStore, elseStore);
+
+                    AnnotationBuilder builder =
+                            new AnnotationBuilder(processingEnv, NonEmpty.class);
+                    AnnotationMirror nonEmptyAnnotation = builder.build();
+                    thenStore.insertValue(leftRec, nonEmptyAnnotation);
+                    return newResult;
+                }
+            }
+        }
+        return resultIn;
+    }
+
+    @Override
+    public TransferResult<CFValue, CFStore> visitEqualTo(
+            EqualToNode n, TransferInput<CFValue, CFStore> p) {
+        TransferResult<CFValue, CFStore> resultIn = super.visitEqualTo(n, p);
 
         Node leftOp = n.getLeftOperand();
         Node rightOp = n.getRightOperand();
