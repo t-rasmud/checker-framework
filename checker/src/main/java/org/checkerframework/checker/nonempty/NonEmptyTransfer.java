@@ -12,6 +12,7 @@ import org.checkerframework.dataflow.cfg.node.EqualToNode;
 import org.checkerframework.dataflow.cfg.node.GreaterThanNode;
 import org.checkerframework.dataflow.cfg.node.GreaterThanOrEqualNode;
 import org.checkerframework.dataflow.cfg.node.IntegerLiteralNode;
+import org.checkerframework.dataflow.cfg.node.LessThanOrEqualNode;
 import org.checkerframework.dataflow.cfg.node.MethodInvocationNode;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.dataflow.expression.FlowExpressions;
@@ -111,8 +112,8 @@ public class NonEmptyTransfer extends CFTransfer {
     }
 
     @Override
-    public TransferResult<CFValue, CFStore> visitLessThanThanOrEqual(
-            GreaterThanOrEqualNode n, TransferInput<CFValue, CFStore> cfValueCFStoreTransferInput) {
+    public TransferResult<CFValue, CFStore> visitLessThanOrEqual(
+            LessThanOrEqualNode n, TransferInput<CFValue, CFStore> cfValueCFStoreTransferInput) {
         TransferResult<CFValue, CFStore> resultIn =
                 super.visitLessThanOrEqual(n, cfValueCFStoreTransferInput);
 
