@@ -175,6 +175,23 @@ public class NonEmptyTransfer extends CFTransfer {
                     thenStore.insertValue(leftRec, nonEmptyAnnotation);
                     return newResult;
                 }
+
+                if (rightOpInt == 0) {
+                    Node leftReceiver = ((MethodInvocationNode) leftOp).getTarget().getReceiver();
+                    Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
+
+                    CFStore thenStore = resultIn.getRegularStore();
+                    CFStore elseStore = thenStore.copy();
+                    ConditionalTransferResult<CFValue, CFStore> newResult =
+                            new ConditionalTransferResult<>(
+                                    resultIn.getResultValue(), thenStore, elseStore);
+
+                    AnnotationBuilder builder =
+                            new AnnotationBuilder(processingEnv, NonEmpty.class);
+                    AnnotationMirror nonEmptyAnnotation = builder.build();
+                    elseStore.insertValue(leftRec, nonEmptyAnnotation);
+                    return newResult;
+                }
             }
         }
         return resultIn;
