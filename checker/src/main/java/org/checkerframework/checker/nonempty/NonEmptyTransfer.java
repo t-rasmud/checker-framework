@@ -43,22 +43,24 @@ public class NonEmptyTransfer extends CFTransfer {
         Node rightOp = n.getRightOperand();
         //        @Nullable Tree leftOpTree = leftOp.getTree();
         if (leftOp instanceof MethodInvocationNode) {
-            int rightOpInt = Integer.parseInt(rightOp.toString());
-            if (NodeUtils.isMethodInvocation(leftOp, sizeMethod, processingEnv)
-                    && rightOpInt >= 0) {
-                Node leftReceiver = ((MethodInvocationNode) leftOp).getTarget().getReceiver();
-                Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
+            if (NodeUtils.isMethodInvocation(leftOp, sizeMethod, processingEnv)) {
+                int rightOpInt = Integer.parseInt(rightOp.toString());
+                if (rightOpInt >= 0) {
+                    Node leftReceiver = ((MethodInvocationNode) leftOp).getTarget().getReceiver();
+                    Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
 
-                CFStore thenStore = resultIn.getRegularStore();
-                CFStore elseStore = thenStore.copy();
-                ConditionalTransferResult<CFValue, CFStore> newResult =
-                        new ConditionalTransferResult<>(
-                                resultIn.getResultValue(), thenStore, elseStore);
+                    CFStore thenStore = resultIn.getRegularStore();
+                    CFStore elseStore = thenStore.copy();
+                    ConditionalTransferResult<CFValue, CFStore> newResult =
+                            new ConditionalTransferResult<>(
+                                    resultIn.getResultValue(), thenStore, elseStore);
 
-                AnnotationBuilder builder = new AnnotationBuilder(processingEnv, NonEmpty.class);
-                AnnotationMirror nonEmptyAnnotation = builder.build();
-                thenStore.insertValue(leftRec, nonEmptyAnnotation);
-                return newResult;
+                    AnnotationBuilder builder =
+                            new AnnotationBuilder(processingEnv, NonEmpty.class);
+                    AnnotationMirror nonEmptyAnnotation = builder.build();
+                    thenStore.insertValue(leftRec, nonEmptyAnnotation);
+                    return newResult;
+                }
             }
         }
         return resultIn;
