@@ -111,6 +111,41 @@ public class NonEmptyTransfer extends CFTransfer {
     }
 
     @Override
+    public TransferResult<CFValue, CFStore> visitLessThanThanOrEqual(
+            GreaterThanOrEqualNode n, TransferInput<CFValue, CFStore> cfValueCFStoreTransferInput) {
+        TransferResult<CFValue, CFStore> resultIn =
+                super.visitLessThanOrEqual(n, cfValueCFStoreTransferInput);
+
+        Node leftOp = n.getLeftOperand();
+        Node rightOp = n.getRightOperand();
+        if (leftOp instanceof MethodInvocationNode) {
+            if (NodeUtils.isMethodInvocation(leftOp, sizeMethod, processingEnv)) {
+                if (!(rightOp instanceof IntegerLiteralNode)) {
+                    return resultIn;
+                }
+                int rightOpInt = ((IntegerLiteralNode) rightOp).getValue();
+                if (rightOpInt <= 1) {
+                    Node leftReceiver = ((MethodInvocationNode) leftOp).getTarget().getReceiver();
+                    Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
+
+                    CFStore thenStore = resultIn.getRegularStore();
+                    CFStore elseStore = thenStore.copy();
+                    ConditionalTransferResult<CFValue, CFStore> newResult =
+                            new ConditionalTransferResult<>(
+                                    resultIn.getResultValue(), thenStore, elseStore);
+
+                    AnnotationBuilder builder =
+                            new AnnotationBuilder(processingEnv, NonEmpty.class);
+                    AnnotationMirror nonEmptyAnnotation = builder.build();
+                    elseStore.insertValue(leftRec, nonEmptyAnnotation);
+                    return newResult;
+                }
+            }
+        }
+        return resultIn;
+    }
+
+    @Override
     public TransferResult<CFValue, CFStore> visitEqualTo(
             EqualToNode n, TransferInput<CFValue, CFStore> p) {
         TransferResult<CFValue, CFStore> resultIn = super.visitEqualTo(n, p);
