@@ -44,7 +44,8 @@ public class NonEmptyTransfer extends CFTransfer {
         //        @Nullable Tree leftOpTree = leftOp.getTree();
         if (leftOp instanceof MethodInvocationNode) {
             int rightOpInt = Integer.parseInt(rightOp.toString());
-            if (NodeUtils.isMethodInvocation(leftOp, sizeMethod, processingEnv) && rightOpInt > 0) {
+            if (NodeUtils.isMethodInvocation(leftOp, sizeMethod, processingEnv)
+                    && rightOpInt >= 0) {
                 Node leftReceiver = ((MethodInvocationNode) leftOp).getTarget().getReceiver();
                 Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
 
