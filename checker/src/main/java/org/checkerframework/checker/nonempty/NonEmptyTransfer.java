@@ -8,6 +8,7 @@ import org.checkerframework.dataflow.analysis.ConditionalTransferResult;
 import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
 import org.checkerframework.dataflow.cfg.node.GreaterThanNode;
+import org.checkerframework.dataflow.cfg.node.IntegerLiteralNode;
 import org.checkerframework.dataflow.cfg.node.MethodInvocationNode;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.dataflow.expression.FlowExpressions;
@@ -44,7 +45,10 @@ public class NonEmptyTransfer extends CFTransfer {
         //        @Nullable Tree leftOpTree = leftOp.getTree();
         if (leftOp instanceof MethodInvocationNode) {
             if (NodeUtils.isMethodInvocation(leftOp, sizeMethod, processingEnv)) {
-                int rightOpInt = Integer.parseInt(rightOp.toString());
+                if (!(rightOp instanceof IntegerLiteralNode)) {
+                    return resultIn;
+                }
+                int rightOpInt = ((IntegerLiteralNode) rightOp).getValue();
                 if (rightOpInt >= 0) {
                     Node leftReceiver = ((MethodInvocationNode) leftOp).getTarget().getReceiver();
                     Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
