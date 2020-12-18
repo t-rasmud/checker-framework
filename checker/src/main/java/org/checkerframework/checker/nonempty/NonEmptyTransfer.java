@@ -57,8 +57,8 @@ public class NonEmptyTransfer extends CFTransfer {
     }
 
     /**
-     * For a conditional that checks Collection.size() > x where x >= 0, refines the type of the
-     * Collection to {@code @NonEmpty} in the then branch.
+     * For a conditional that checks {@code Collection.size() > x} where {@code x >= 0}, refines the
+     * type of the {@code Collection} to {@code @NonEmpty} in the then branch.
      *
      * @param n GreaterThanNode
      * @param cfValueCFStoreTransferInput TransferResult input
@@ -87,8 +87,8 @@ public class NonEmptyTransfer extends CFTransfer {
     }
 
     /**
-     * For a conditional that checks Collection.size() >= x where x >= 1, refines the type of the
-     * Collection to {@code @NonEmpty} in the then branch.
+     * For a conditional that checks {@code Collection.size() >= x} where {@code x >= 1}, refines
+     * the type of the {@code Collection} to {@code @NonEmpty} in the then branch.
      *
      * @param n GreaterThanOrEqualNode
      * @param cfValueCFStoreTransferInput TransferResult input
@@ -117,8 +117,8 @@ public class NonEmptyTransfer extends CFTransfer {
     }
 
     /**
-     * For a conditional that checks Collection.size() < 1, refines the type of the Collection to
-     * {@code @NonEmpty} in the else branch.
+     * For a conditional that checks {@code Collection.size() < 1}, refines the type of the {@code
+     * Collection} to {@code @NonEmpty} in the else branch.
      *
      * @param n LessThanNode
      * @param cfValueCFStoreTransferInput TransferResult input
@@ -147,10 +147,10 @@ public class NonEmptyTransfer extends CFTransfer {
     }
 
     /**
-     * For a conditional that checks Collection.size() <= x where x <= 1, refines the type of the
-     * Collection to {@code @NonEmpty} in the else branch. This is an over-approximation. The
-     * precise refinement would check for x == 0. This over-approximation is added based on observed
-     * code examples in benchmarks.
+     * For a conditional that checks {@code Collection.size() <= x} where {@code x <= 1}, refines
+     * the type of the {@code Collection} to {@code @NonEmpty} in the else branch. This is an
+     * over-approximation. The precise refinement would check for {@code x == 0}. This
+     * over-approximation is added based on observed code examples in benchmarks.
      *
      * @param n LessThanOrEqualNode
      * @param cfValueCFStoreTransferInput TransferResult input
@@ -179,11 +179,11 @@ public class NonEmptyTransfer extends CFTransfer {
     }
 
     /**
-     * For a conditional that checks Collection.size() == x where x >= 1, refines the type of the
-     * Collection to {@code @NonEmpty} in the then branch.
+     * For a conditional that checks {@code Collection.size() == x} where {@code x >= 1}, refines
+     * the type of the {@code Collection} to {@code @NonEmpty} in the then branch.
      *
-     * <p>For a conditional that checks Collection.size() == x where x == 1, refines the type of the
-     * Collection to {@code @NonEmpty} in the else branch.
+     * <p>For a conditional that checks {@code Collection.size() == x} where {@code x == 1}, refines
+     * the type of the {@code Collection} to {@code @NonEmpty} in the else branch.
      *
      * @param n EqualToNode
      * @param p TransferResult input
@@ -215,8 +215,8 @@ public class NonEmptyTransfer extends CFTransfer {
     }
 
     /**
-     * For a conditional that checks !Collection.isEmpty(), refines the type of the Collection to
-     * {@code @NonEmpty} in the then branch.
+     * For a conditional that checks {@code !Collection.isEmpty()}, refines the type of the {@code
+     * Collection} to {@code @NonEmpty} in the then branch.
      *
      * @param n ConditionalNotNode
      * @param cfValueCFStoreTransferInput TransferResult input
