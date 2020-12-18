@@ -12,6 +12,7 @@ import org.checkerframework.dataflow.cfg.node.EqualToNode;
 import org.checkerframework.dataflow.cfg.node.GreaterThanNode;
 import org.checkerframework.dataflow.cfg.node.GreaterThanOrEqualNode;
 import org.checkerframework.dataflow.cfg.node.IntegerLiteralNode;
+import org.checkerframework.dataflow.cfg.node.LessThanNode;
 import org.checkerframework.dataflow.cfg.node.LessThanOrEqualNode;
 import org.checkerframework.dataflow.cfg.node.MethodInvocationNode;
 import org.checkerframework.dataflow.cfg.node.Node;
@@ -31,6 +32,7 @@ public class NonEmptyTransfer extends CFTransfer {
     private final ExecutableElement isEmptyMethod;
     ProcessingEnvironment processingEnv;
     AnnotatedTypeFactory atypeFactory;
+    AnnotationMirror NONEMPTY;
 
     public NonEmptyTransfer(CFAnalysis analysis) {
         super(analysis);
@@ -39,6 +41,8 @@ public class NonEmptyTransfer extends CFTransfer {
         this.sizeMethod = TreeUtils.getMethod("java.util.Collection", "size", 0, processingEnv);
         this.isEmptyMethod =
                 TreeUtils.getMethod("java.util.Collection", "isEmpty", 0, processingEnv);
+        AnnotationBuilder builder = new AnnotationBuilder(processingEnv, NonEmpty.class);
+        NONEMPTY = builder.build();
     }
 
     @Override
@@ -56,20 +60,7 @@ public class NonEmptyTransfer extends CFTransfer {
                 }
                 int rightOpInt = ((IntegerLiteralNode) rightOp).getValue();
                 if (rightOpInt >= 0) {
-                    Node leftReceiver = ((MethodInvocationNode) leftOp).getTarget().getReceiver();
-                    Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
-
-                    CFStore thenStore = resultIn.getRegularStore();
-                    CFStore elseStore = thenStore.copy();
-                    ConditionalTransferResult<CFValue, CFStore> newResult =
-                            new ConditionalTransferResult<>(
-                                    resultIn.getResultValue(), thenStore, elseStore);
-
-                    AnnotationBuilder builder =
-                            new AnnotationBuilder(processingEnv, NonEmpty.class);
-                    AnnotationMirror nonEmptyAnnotation = builder.build();
-                    thenStore.insertValue(leftRec, nonEmptyAnnotation);
-                    return newResult;
+                    return refineThenStore(leftOp, resultIn);
                 }
             }
         }
@@ -91,20 +82,29 @@ public class NonEmptyTransfer extends CFTransfer {
                 }
                 int rightOpInt = ((IntegerLiteralNode) rightOp).getValue();
                 if (rightOpInt >= 1) {
-                    Node leftReceiver = ((MethodInvocationNode) leftOp).getTarget().getReceiver();
-                    Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
+                    return refineThenStore(leftOp, resultIn);
+                }
+            }
+        }
+        return resultIn;
+    }
 
-                    CFStore thenStore = resultIn.getRegularStore();
-                    CFStore elseStore = thenStore.copy();
-                    ConditionalTransferResult<CFValue, CFStore> newResult =
-                            new ConditionalTransferResult<>(
-                                    resultIn.getResultValue(), thenStore, elseStore);
+    @Override
+    public TransferResult<CFValue, CFStore> visitLessThan(
+            LessThanNode n, TransferInput<CFValue, CFStore> cfValueCFStoreTransferInput) {
+        TransferResult<CFValue, CFStore> resultIn =
+                super.visitLessThan(n, cfValueCFStoreTransferInput);
 
-                    AnnotationBuilder builder =
-                            new AnnotationBuilder(processingEnv, NonEmpty.class);
-                    AnnotationMirror nonEmptyAnnotation = builder.build();
-                    thenStore.insertValue(leftRec, nonEmptyAnnotation);
-                    return newResult;
+        Node leftOp = n.getLeftOperand();
+        Node rightOp = n.getRightOperand();
+        if (leftOp instanceof MethodInvocationNode) {
+            if (NodeUtils.isMethodInvocation(leftOp, sizeMethod, processingEnv)) {
+                if (!(rightOp instanceof IntegerLiteralNode)) {
+                    return resultIn;
+                }
+                int rightOpInt = ((IntegerLiteralNode) rightOp).getValue();
+                if (rightOpInt <= 1) {
+                    return refineElseStore(leftOp, resultIn);
                 }
             }
         }
@@ -126,20 +126,7 @@ public class NonEmptyTransfer extends CFTransfer {
                 }
                 int rightOpInt = ((IntegerLiteralNode) rightOp).getValue();
                 if (rightOpInt <= 1) {
-                    Node leftReceiver = ((MethodInvocationNode) leftOp).getTarget().getReceiver();
-                    Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
-
-                    CFStore thenStore = resultIn.getRegularStore();
-                    CFStore elseStore = thenStore.copy();
-                    ConditionalTransferResult<CFValue, CFStore> newResult =
-                            new ConditionalTransferResult<>(
-                                    resultIn.getResultValue(), thenStore, elseStore);
-
-                    AnnotationBuilder builder =
-                            new AnnotationBuilder(processingEnv, NonEmpty.class);
-                    AnnotationMirror nonEmptyAnnotation = builder.build();
-                    elseStore.insertValue(leftRec, nonEmptyAnnotation);
-                    return newResult;
+                    return refineElseStore(leftOp, resultIn);
                 }
             }
         }
@@ -160,37 +147,11 @@ public class NonEmptyTransfer extends CFTransfer {
                 }
                 int rightOpInt = ((IntegerLiteralNode) rightOp).getValue();
                 if (rightOpInt >= 1) {
-                    Node leftReceiver = ((MethodInvocationNode) leftOp).getTarget().getReceiver();
-                    Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
-
-                    CFStore thenStore = resultIn.getRegularStore();
-                    CFStore elseStore = thenStore.copy();
-                    ConditionalTransferResult<CFValue, CFStore> newResult =
-                            new ConditionalTransferResult<>(
-                                    resultIn.getResultValue(), thenStore, elseStore);
-
-                    AnnotationBuilder builder =
-                            new AnnotationBuilder(processingEnv, NonEmpty.class);
-                    AnnotationMirror nonEmptyAnnotation = builder.build();
-                    thenStore.insertValue(leftRec, nonEmptyAnnotation);
-                    return newResult;
+                    return refineThenStore(leftOp, resultIn);
                 }
 
                 if (rightOpInt == 0) {
-                    Node leftReceiver = ((MethodInvocationNode) leftOp).getTarget().getReceiver();
-                    Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
-
-                    CFStore thenStore = resultIn.getRegularStore();
-                    CFStore elseStore = thenStore.copy();
-                    ConditionalTransferResult<CFValue, CFStore> newResult =
-                            new ConditionalTransferResult<>(
-                                    resultIn.getResultValue(), thenStore, elseStore);
-
-                    AnnotationBuilder builder =
-                            new AnnotationBuilder(processingEnv, NonEmpty.class);
-                    AnnotationMirror nonEmptyAnnotation = builder.build();
-                    elseStore.insertValue(leftRec, nonEmptyAnnotation);
-                    return newResult;
+                    return refineElseStore(leftOp, resultIn);
                 }
             }
         }
@@ -205,21 +166,37 @@ public class NonEmptyTransfer extends CFTransfer {
         Node operand = n.getOperand();
         if (operand instanceof MethodInvocationNode) {
             if (NodeUtils.isMethodInvocation(operand, isEmptyMethod, processingEnv)) {
-                Node receiver = ((MethodInvocationNode) operand).getTarget().getReceiver();
-                Receiver rec = FlowExpressions.internalReprOf(atypeFactory, receiver);
-
-                CFStore thenStore = transferResult.getThenStore();
-                CFStore elseStore = transferResult.getElseStore();
-                ConditionalTransferResult<CFValue, CFStore> newResult =
-                        new ConditionalTransferResult<>(
-                                transferResult.getResultValue(), thenStore, elseStore);
-
-                AnnotationBuilder builder = new AnnotationBuilder(processingEnv, NonEmpty.class);
-                AnnotationMirror nonEmptyAnnotation = builder.build();
-                thenStore.insertValue(rec, nonEmptyAnnotation);
-                return newResult;
+                return refineThenStore(operand, transferResult);
             }
         }
         return transferResult;
+    }
+
+    TransferResult<CFValue, CFStore> refineThenStore(
+            Node operand, TransferResult<CFValue, CFStore> resultIn) {
+        Node leftReceiver = ((MethodInvocationNode) operand).getTarget().getReceiver();
+        Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
+
+        CFStore thenStore = resultIn.getRegularStore();
+        CFStore elseStore = thenStore.copy();
+        ConditionalTransferResult<CFValue, CFStore> newResult =
+                new ConditionalTransferResult<>(resultIn.getResultValue(), thenStore, elseStore);
+
+        thenStore.insertValue(leftRec, NONEMPTY);
+        return newResult;
+    }
+
+    TransferResult<CFValue, CFStore> refineElseStore(
+            Node operand, TransferResult<CFValue, CFStore> resultIn) {
+        Node leftReceiver = ((MethodInvocationNode) operand).getTarget().getReceiver();
+        Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
+
+        CFStore thenStore = resultIn.getRegularStore();
+        CFStore elseStore = thenStore.copy();
+        ConditionalTransferResult<CFValue, CFStore> newResult =
+                new ConditionalTransferResult<>(resultIn.getResultValue(), thenStore, elseStore);
+
+        elseStore.insertValue(leftRec, NONEMPTY);
+        return newResult;
     }
 }
