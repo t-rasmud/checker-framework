@@ -27,13 +27,24 @@ import org.checkerframework.framework.type.AnnotatedTypeFactory;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.TreeUtils;
 
+/** Defines transfer functions for the NonEmpty Checker. */
 public class NonEmptyTransfer extends CFTransfer {
+    /** Collection.size() method. */
     private final ExecutableElement sizeMethod;
+    /** Collection.isEmpty() method. */
     private final ExecutableElement isEmptyMethod;
+
     ProcessingEnvironment processingEnv;
+    /** The BaseTypeFactory. */
     AnnotatedTypeFactory atypeFactory;
+    /** The {@literal @}{@link NonEmpty} annotation. */
     AnnotationMirror NONEMPTY;
 
+    /**
+     * Constructor for NonEmptyTransfer.
+     *
+     * @param analysis CFAnalysis
+     */
     public NonEmptyTransfer(CFAnalysis analysis) {
         super(analysis);
         atypeFactory = analysis.getTypeFactory();
@@ -45,6 +56,14 @@ public class NonEmptyTransfer extends CFTransfer {
         NONEMPTY = builder.build();
     }
 
+    /**
+     * For a conditional that checks Collection.size() > x where x >= 0, refines the type of the
+     * Collection to {@code @NonEmpty} in the then branch.
+     *
+     * @param n GreaterThanNode
+     * @param cfValueCFStoreTransferInput TransferResult input
+     * @return TransferResult with possibly refined stores
+     */
     @Override
     public TransferResult<CFValue, CFStore> visitGreaterThan(
             GreaterThanNode n, TransferInput<CFValue, CFStore> cfValueCFStoreTransferInput) {
@@ -67,6 +86,14 @@ public class NonEmptyTransfer extends CFTransfer {
         return resultIn;
     }
 
+    /**
+     * For a conditional that checks Collection.size() >= x where x >= 1, refines the type of the
+     * Collection to {@code @NonEmpty} in the then branch.
+     *
+     * @param n GreaterThanOrEqualNode
+     * @param cfValueCFStoreTransferInput TransferResult input
+     * @return TransferResult with possibly refined stores
+     */
     @Override
     public TransferResult<CFValue, CFStore> visitGreaterThanOrEqual(
             GreaterThanOrEqualNode n, TransferInput<CFValue, CFStore> cfValueCFStoreTransferInput) {
@@ -89,6 +116,14 @@ public class NonEmptyTransfer extends CFTransfer {
         return resultIn;
     }
 
+    /**
+     * For a conditional that checks Collection.size() < 1, refines the type of the Collection to
+     * {@code @NonEmpty} in the else branch.
+     *
+     * @param n LessThanNode
+     * @param cfValueCFStoreTransferInput TransferResult input
+     * @return TransferResult with possibly refined stores
+     */
     @Override
     public TransferResult<CFValue, CFStore> visitLessThan(
             LessThanNode n, TransferInput<CFValue, CFStore> cfValueCFStoreTransferInput) {
@@ -103,7 +138,7 @@ public class NonEmptyTransfer extends CFTransfer {
                     return resultIn;
                 }
                 int rightOpInt = ((IntegerLiteralNode) rightOp).getValue();
-                if (rightOpInt <= 1) {
+                if (rightOpInt == 1) {
                     return refineElseStore(leftOp, resultIn);
                 }
             }
@@ -111,6 +146,16 @@ public class NonEmptyTransfer extends CFTransfer {
         return resultIn;
     }
 
+    /**
+     * For a conditional that checks Collection.size() <= x where x <= 1, refines the type of the
+     * Collection to {@code @NonEmpty} in the else branch. This is an over-approximation. The
+     * precise refinement would check for x == 0. This over-approximation is added based on observed
+     * code examples in benchmarks.
+     *
+     * @param n LessThanOrEqualNode
+     * @param cfValueCFStoreTransferInput TransferResult input
+     * @return TransferResult with possibly refined stores
+     */
     @Override
     public TransferResult<CFValue, CFStore> visitLessThanOrEqual(
             LessThanOrEqualNode n, TransferInput<CFValue, CFStore> cfValueCFStoreTransferInput) {
@@ -133,6 +178,17 @@ public class NonEmptyTransfer extends CFTransfer {
         return resultIn;
     }
 
+    /**
+     * For a conditional that checks Collection.size() == x where x >= 1, refines the type of the
+     * Collection to {@code @NonEmpty} in the then branch.
+     *
+     * <p>For a conditional that checks Collection.size() == x where x == 1, refines the type of the
+     * Collection to {@code @NonEmpty} in the else branch.
+     *
+     * @param n EqualToNode
+     * @param p TransferResult input
+     * @return TransferResult with possibly refined stores
+     */
     @Override
     public TransferResult<CFValue, CFStore> visitEqualTo(
             EqualToNode n, TransferInput<CFValue, CFStore> p) {
@@ -158,6 +214,14 @@ public class NonEmptyTransfer extends CFTransfer {
         return resultIn;
     }
 
+    /**
+     * For a conditional that checks !Collection.isEmpty(), refines the type of the Collection to
+     * {@code @NonEmpty} in the then branch.
+     *
+     * @param n ConditionalNotNode
+     * @param cfValueCFStoreTransferInput TransferResult input
+     * @return TransferResult with possibly refined stores
+     */
     @Override
     public TransferResult<CFValue, CFStore> visitConditionalNot(
             ConditionalNotNode n, TransferInput<CFValue, CFStore> cfValueCFStoreTransferInput) {
@@ -172,6 +236,13 @@ public class NonEmptyTransfer extends CFTransfer {
         return transferResult;
     }
 
+    /**
+     * Refines the type of receiver in {@code operand} to {@code @NonEmpty} in the then store.
+     *
+     * @param operand Node whose type qualifier is to be refined
+     * @param resultIn TransferResult input
+     * @return TransferResult with the refined type inserted in the then store
+     */
     TransferResult<CFValue, CFStore> refineThenStore(
             Node operand, TransferResult<CFValue, CFStore> resultIn) {
         Node leftReceiver = ((MethodInvocationNode) operand).getTarget().getReceiver();
@@ -186,6 +257,13 @@ public class NonEmptyTransfer extends CFTransfer {
         return newResult;
     }
 
+    /**
+     * Refines the type of receiver in {@code operand} to {@code @NonEmpty} in the else store.
+     *
+     * @param operand Node whose type qualifier is to be refined
+     * @param resultIn TransferResult input
+     * @return TransferResult with the refined type inserted in the else store
+     */
     TransferResult<CFValue, CFStore> refineElseStore(
             Node operand, TransferResult<CFValue, CFStore> resultIn) {
         Node leftReceiver = ((MethodInvocationNode) operand).getTarget().getReceiver();
