@@ -34,3 +34,24 @@ The NonEmpty Checker supports the following type qualifiers:
 \end{figure}
 
 Figure~\ref{fig-nonempty-hierarchy} shows the qualifier hierarchy in the NonEmpty type system.
+
+\subsectionAndLabel{Type-refinement rules in the NonEmpty Checker}{nonempty-type-refinement}
+
+The NonEmpty Checker has the following type-refinement rules (Section~\ref{type-refinement}):
+
+\begin{enumerate}
+    \item For a conditional that checks \code{Collection.size() > x} where \code{x >= 0},
+    the type of the \code{Collection} is refined to \code{@NonEmpty} in the \code{then} branch.
+    \item For a conditional that checks \code{Collection.size() >= x} where \code{x >= 1},
+    the type of the \code{Collection} is refined to \code{@NonEmpty} in the \code{then} branch.
+    \item For a conditional that checks \code{Collection.size() < 1},
+    the type of the \code{Collection} is refined to \code{@NonEmpty} in the \code{else} branch.
+    \item For a conditional that checks \code{Collection.size() <= x} where \code{x <= 1},
+    the type of the \code{Collection} is refined to \code{@NonEmpty} in the \code{else} branch.
+    \item For a conditional that checks \code{Collection.size() == x} where \code{x >= 1},
+    the type of the \code{Collection} is refined to \code{@NonEmpty} in the \code{then} branch.
+    \item For a conditional that checks \code{Collection.size() == x} where \code{x == 1},
+    the type of the \code{Collection} is refined to \code{@NonEmpty} in the \code{else} branch.
+    \item For a conditional that checks \code{!Collection.isEmpty()},
+    the type of the \code{Collection} is refined to \code{@NonEmpty} in the \code{then} branch.
+\end{enumerate}
