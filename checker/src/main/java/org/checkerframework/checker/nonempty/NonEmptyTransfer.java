@@ -33,7 +33,7 @@ public class NonEmptyTransfer extends CFTransfer {
     private final ExecutableElement sizeMethod;
     /** Collection.isEmpty() method. */
     private final ExecutableElement isEmptyMethod;
-
+    /** Processing environment. */
     ProcessingEnvironment processingEnv;
     /** The BaseTypeFactory. */
     AnnotatedTypeFactory atypeFactory;
