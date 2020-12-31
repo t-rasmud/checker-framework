@@ -1,7 +1,6 @@
 package org.checkerframework.dataflow.livevariable;
 
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.StringJoiner;
 import org.checkerframework.checker.determinism.qual.*;
@@ -28,8 +27,10 @@ public class LiveVarStore implements Store<LiveVarStore> {
     private final Set<LiveVarValue> liveVarValueSet;
 
     /** Create a new LiveVarStore. */
+    // true positive; `liveVarValueSet` is declared as a Det Set but assigned an OrderNonDet HashSet
+    // Fixed: https://github.com/typetools/checker-framework/commit/18f22f83efcb31791927adfc4f01d064b8eb8523
     public LiveVarStore() {
-        liveVarValueSet = new LinkedHashSet<>();
+        liveVarValueSet = new HashSet<>();
     }
 
     /**

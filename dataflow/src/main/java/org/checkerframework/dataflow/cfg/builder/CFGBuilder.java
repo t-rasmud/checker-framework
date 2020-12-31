@@ -158,19 +158,19 @@ public abstract class CFGBuilder {
      */
     protected static void printBlocks(Set<Block> blocks) {
         for (Block b : blocks) {
-            System.out.print(b.getUid() + ": " + b);
+            System.out.print(b.hashCode() + ": " + b);
             switch (b.getType()) {
                 case REGULAR_BLOCK:
                 case SPECIAL_BLOCK:
                     {
                         Block succ = ((SingleSuccessorBlockImpl) b).getSuccessor();
-                        System.out.println(" -> " + (succ != null ? succ.getUid() : "||"));
+                        System.out.println(" -> " + (succ != null ? succ.hashCode() : "||"));
                         break;
                     }
                 case EXCEPTION_BLOCK:
                     {
                         Block succ = ((SingleSuccessorBlockImpl) b).getSuccessor();
-                        System.out.print(" -> " + (succ != null ? succ.getUid() : "||") + " {");
+                        System.out.print(" -> " + (succ != null ? succ.hashCode() : "||") + " {");
                         for (Map.Entry<TypeMirror, Set<Block>> entry :
                                 ((ExceptionBlockImpl) b).getExceptionalSuccessors().entrySet()) {
                             System.out.print(entry.getKey() + " : " + entry.getValue() + ", ");
@@ -184,9 +184,9 @@ public abstract class CFGBuilder {
                         Block eSucc = ((ConditionalBlockImpl) b).getElseSuccessor();
                         System.out.println(
                                 " -> T "
-                                        + (tSucc != null ? tSucc.getUid() : "||")
+                                        + (tSucc != null ? tSucc.hashCode() : "||")
                                         + " F "
-                                        + (eSucc != null ? eSucc.getUid() : "||"));
+                                        + (eSucc != null ? eSucc.hashCode() : "||"));
                         break;
                     }
             }

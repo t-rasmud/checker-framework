@@ -189,6 +189,8 @@ public class DOTCFGVisualizer<
      */
     // true positive; calls `ast.hashCode()` which returns a NonDet int
     // Fixed: https://github.com/typetools/checker-framework/commit/bcba3cb7a508720766ee99ea19dd253f7c349b0a
+    // true positive; calls `cfgLambda.getCode().hashCode()` which returns a NonDet int
+    // Fixed: https://github.com/typetools/checker-framework/commit/24148f9140545e8b202b6f19961a5c4df25e936c
     protected String dotOutputFileName(UnderlyingAST ast) {
         StringBuilder srcLoc = new StringBuilder();
         StringBuilder outFile = new StringBuilder(outDir);
@@ -240,12 +242,12 @@ public class DOTCFGVisualizer<
             CFGLambda cfgLambda = (CFGLambda) ast;
             String clsName = cfgLambda.getSimpleClassName();
             String methodName = cfgLambda.getMethodName();
-            long uid = TreeUtils.treeUids.get(cfgLambda.getCode());
+            int hashCode = cfgLambda.getCode().hashCode();
             outFile.append(clsName);
             outFile.append("-");
             outFile.append(methodName);
             outFile.append("-");
-            outFile.append(uid);
+            outFile.append(hashCode);
 
             srcLoc.append("<");
             srcLoc.append(clsName);

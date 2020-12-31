@@ -35,7 +35,7 @@ import org.plumelib.util.UniqueId;
  *
  * @see org.checkerframework.dataflow.util.IdentityMostlySingleton
  */
-public abstract class Node implements UniqueId {
+public abstract class Node {
 
     /**
      * The basic block this node belongs to. If null, this object represents a method formal
@@ -60,20 +60,6 @@ public abstract class Node implements UniqueId {
      * {@link Tree}. Otherwise, it is the type is set by the {@link CFGBuilder}.
      */
     protected final TypeMirror type;
-
-    /** The unique ID for the next-created object. */
-    static final AtomicLong nextUid = new AtomicLong(0);
-    /** The unique ID of this object. */
-    final long uid = nextUid.getAndIncrement();
-    /**
-     * Returns the unique ID of this object.
-     *
-     * @return the unique ID of this object
-     */
-    @Override
-    public @PolyDet long getUid(@PolyDet @UnknownInitialization Node this) {
-        return uid;
-    }
 
     /**
      * Creates a new Node.
@@ -188,8 +174,15 @@ public abstract class Node implements UniqueId {
      *
      * @return a printed representation of this
      */
+    // true positive; call to `hashCode()` that returns NonDet int
+    // Fixed: https://github.com/typetools/checker-framework/commit/24148f9140545e8b202b6f19961a5c4df25e936c
     public @PolyDet String toStringDebug(@PolyDet Node this) {
-        return String.format("%s [%s]", this, this.getClassAndUid());
+        return String.format(
+            "%s [%s %s %s]",
+            this,
+            this.getClass().getSimpleName(),
+            this.hashCode(),
+            System.identityHashCode(this));
     }
 
     /**
