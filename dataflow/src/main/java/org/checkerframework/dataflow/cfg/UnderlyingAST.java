@@ -14,7 +14,7 @@ import org.plumelib.util.UtilPlume;
  * Represents an abstract syntax tree of type {@link Tree} that underlies a given control flow
  * graph.
  */
-public abstract class UnderlyingAST implements UniqueId {
+public abstract class UnderlyingAST {
     /** The kinds of underlying ASTs. */
     public enum Kind {
         /** The underlying code is a whole method. */
@@ -31,13 +31,6 @@ public abstract class UnderlyingAST implements UniqueId {
 
     /** The unique ID for the next-created object. */
     static final AtomicLong nextUid = new AtomicLong(0);
-    /** The unique ID of this object. */
-    final transient long uid = nextUid.getAndIncrement();
-
-    @Override
-    public @PolyDet long getUid(@PolyDet @UnknownInitialization UnderlyingAST this) {
-        return uid;
-    }
 
     /**
      * Creates an UnderlyingAST.

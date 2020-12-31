@@ -1,7 +1,6 @@
 package org.checkerframework.dataflow.cfg.builder;
 
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.lang.model.type.TypeMirror;
@@ -56,6 +55,8 @@ public class CFGTranslationPhaseThree {
      * @return the resulting control flow graph
      */
     @SuppressWarnings("nullness") // TODO: successors
+    // true positive; iteration over OrderNonDet collection `predecessors`
+    // fixed: https://github.com/typetools/checker-framework/commit/67702a13926eb3d17bde9cdbc7d4c66b7c570ea0
     public static ControlFlowGraph process(ControlFlowGraph cfg) {
         Set<@Det Block> worklist = cfg.getAllBlocks();
         Set<@Det Block> dontVisit = new HashSet<>();
@@ -89,7 +90,7 @@ public class CFGTranslationPhaseThree {
                 RegularBlockImpl b = (RegularBlockImpl) cur;
                 if (b.isEmpty()) {
                     Set<@Det RegularBlockImpl> emptyBlocks = new HashSet<>();
-                    Set<@Det PredecessorHolder> predecessors = new LinkedHashSet<>();
+                    Set<@Det PredecessorHolder> predecessors = new HashSet<>();
                     BlockImpl succ = computeNeighborhoodOfEmptyBlock(b, emptyBlocks, predecessors);
                     for (RegularBlockImpl tmpe : emptyBlocks) {
                         @SuppressWarnings("determinism") // order insensitive: removing empty blocks

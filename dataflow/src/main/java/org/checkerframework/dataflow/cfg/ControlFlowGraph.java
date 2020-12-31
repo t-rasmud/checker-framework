@@ -37,7 +37,6 @@ import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.dataflow.cfg.node.ReturnNode;
 import org.checkerframework.dataflow.cfg.visualize.CFGVisualizer;
 import org.checkerframework.dataflow.cfg.visualize.StringCFGVisualizer;
-import org.plumelib.util.UniqueId;
 
 /**
  * A control flow graph (CFG for short) of a single method.
@@ -47,7 +46,7 @@ import org.plumelib.util.UniqueId;
  * ExceptionBlock#getExceptionalSuccessors}, {@link RegularBlock#getRegularSuccessor}) and
  * predecessors (method {@link Block#getPredecessors}) of the entry and exit blocks.
  */
-public class ControlFlowGraph implements UniqueId {
+public class ControlFlowGraph {
 
     /** The entry block of the control flow graph. */
     protected final SpecialBlock entryBlock;
@@ -65,11 +64,6 @@ public class ControlFlowGraph implements UniqueId {
     static final AtomicLong nextUid = new AtomicLong(0);
     /** The unique ID of this object. */
     final transient long uid = nextUid.getAndIncrement();
-
-    @Override
-    public @PolyDet long getUid(@PolyDet @UnknownInitialization ControlFlowGraph this) {
-        return uid;
-    }
 
     /**
      * Maps from AST {@link Tree}s to sets of {@link Node}s.
@@ -322,6 +316,8 @@ public class ControlFlowGraph implements UniqueId {
 
     @Override
     @SuppressWarnings("determinism:override.receiver.invalid") // toString only on @Det
+    // true positive; calls Object.toString() which returns NonDet String
+    // Fixed: https://github.com/typetools/checker-framework/commit/bcba3cb7a508720766ee99ea19dd253f7c349b0a
     public String toString() {
         @OrderNonDet Map<String, Object> args = new HashMap<>();
         args.put("verbose", true);
@@ -331,12 +327,10 @@ public class ControlFlowGraph implements UniqueId {
         @OrderNonDet Map<String, Object> res = viz.visualize(this, this.getEntryBlock(), null);
         viz.shutdown();
         if (res == null) {
-            return "unvisualizable " + getClass().getCanonicalName();
+            return super.toString();
         }
         String stringGraph = (String) res.get("stringGraph");
-        return stringGraph == null
-                ? "unvisualizable " + getClass().getCanonicalName()
-                : stringGraph;
+        return stringGraph == null ? super.toString() : stringGraph;
     }
 
     /**

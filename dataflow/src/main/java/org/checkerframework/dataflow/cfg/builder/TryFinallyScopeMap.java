@@ -1,7 +1,6 @@
 package org.checkerframework.dataflow.cfg.builder;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.lang.model.element.Name;
 import org.checkerframework.checker.determinism.qual.Det;
@@ -20,8 +19,10 @@ class TryFinallyScopeMap extends HashMap<Name, Label> {
     private final @Det Map<Name, Label> accessedNames;
 
     /** Create a new TryFinallyScopeMap. */
+    // true positive; `accessedNames` is declared as a Det Map but assigned an OrderNonDet HashMap
+    // Fixed: https://github.com/typetools/checker-framework/commit/3057728a41b1dc1d53eaa2ffeb1bb1e9ec303e57
     protected @OrderNonDet TryFinallyScopeMap() {
-        this.accessedNames = new LinkedHashMap<>();
+        this.accessedNames = new HashMap<>();
     }
 
     @Override

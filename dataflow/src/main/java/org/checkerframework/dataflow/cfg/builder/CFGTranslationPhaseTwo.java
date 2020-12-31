@@ -1,7 +1,7 @@
 package org.checkerframework.dataflow.cfg.builder;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.lang.model.type.TypeMirror;
@@ -33,6 +33,8 @@ public class CFGTranslationPhaseTwo {
      *     successor)
      */
     @SuppressWarnings("interning:not.interned") // AST node comparisons
+    // true positive; Iteration over OrderNonDet collection `missingExceptionalEdges`
+    // Fixed: https://github.com/typetools/checker-framework/commit/601b6b5819a71194748c9a128befdfa01f37a8f8
     public static ControlFlowGraph process(PhaseOneResult in) {
 
         Map<@Det Label, @Det Integer> bindings = in.bindings;
@@ -51,7 +53,7 @@ public class CFGTranslationPhaseTwo {
         Set<@Det MissingEdge> missingEdges = new MostlySingleton<>();
 
         // missing exceptional edges
-        Set<@Det MissingEdge> missingExceptionalEdges = new LinkedHashSet<>();
+        Set<@Det MissingEdge> missingExceptionalEdges = new HashSet<>();
 
         // create start block
         SpecialBlockImpl startBlock = new SpecialBlockImpl(SpecialBlockType.ENTRY);

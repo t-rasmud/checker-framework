@@ -187,6 +187,8 @@ public class DOTCFGVisualizer<
      * @param ast an abstract syntax tree
      * @return the file name used for DOT output
      */
+    // true positive; calls `ast.hashCode()` which returns a NonDet int
+    // Fixed: https://github.com/typetools/checker-framework/commit/bcba3cb7a508720766ee99ea19dd253f7c349b0a
     protected String dotOutputFileName(UnderlyingAST ast) {
         StringBuilder srcLoc = new StringBuilder();
         StringBuilder outFile = new StringBuilder(outDir);
@@ -198,7 +200,7 @@ public class DOTCFGVisualizer<
             String clsName = cfgStatement.getSimpleClassName();
             outFile.append(clsName);
             outFile.append("-initializer-");
-            outFile.append(ast.getUid());
+            outFile.append(ast.hashCode());
 
             srcLoc.append("<");
             srcLoc.append(clsName);

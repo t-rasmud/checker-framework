@@ -68,7 +68,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -547,10 +546,12 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
      * @param causes set of exceptions that the node might throw
      * @return the node holder
      */
+    // true positive; The constructor for `NodeWithExceptionsHolder` expects a Det Map but is passed an OrderNonDet HashMap
+    // Fixed: https://github.com/typetools/checker-framework/commit/8e7287b0bca3c7c2bbff42719895197e189eda89
     protected NodeWithExceptionsHolder extendWithNodeWithExceptions(
             Node node, List<TypeMirror> causes) {
         addToLookupMap(node);
-        Map<@Det TypeMirror, @Det Set<Label>> exceptions = new LinkedHashMap<>();
+        Map<@Det TypeMirror, @Det Set<Label>> exceptions = new HashMap<>();
         for (TypeMirror cause : causes) {
             exceptions.put(cause, tryStack.possibleLabels(cause));
         }
@@ -567,6 +568,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
      * @param pred the desired predecessor of node
      * @return the node holder
      */
+    // true positive; The constructor for `NodeWithExceptionsHolder` expects a Det Map but is passed an OrderNonDet HashMap
+    // Fixed: https://github.com/typetools/checker-framework/commit/8e7287b0bca3c7c2bbff42719895197e189eda89
     protected <T extends Node> T insertNodeAfter(T node, Node pred) {
         addToLookupMap(node);
         insertExtendedNodeAfter(new NodeHolder(node), pred);
@@ -585,7 +588,7 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
     protected NodeWithExceptionsHolder insertNodeWithExceptionsAfter(
             Node node, List<TypeMirror> causes, Node pred) {
         addToLookupMap(node);
-        Map<@Det TypeMirror, @Det Set<Label>> exceptions = new LinkedHashMap<>();
+        Map<@Det TypeMirror, @Det Set<Label>> exceptions = new HashMap<>();
         for (TypeMirror cause : causes) {
             exceptions.put(cause, tryStack.possibleLabels(cause));
         }

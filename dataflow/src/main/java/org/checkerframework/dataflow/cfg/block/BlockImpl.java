@@ -1,6 +1,6 @@
 package org.checkerframework.dataflow.cfg.block;
 
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import org.checkerframework.checker.determinism.qual.*;
@@ -34,9 +34,11 @@ public abstract class BlockImpl implements Block {
      *
      * @param type the type of this basic block
      */
+    // true positive; `predecessors` is declared as a Det Set but assigned an OrderNonDet HashSet
+    // Fixed: https://github.com/typetools/checker-framework/commit/67702a13926eb3d17bde9cdbc7d4c66b7c570ea0
     protected BlockImpl(BlockType type) {
         this.type = type;
-        this.predecessors = new LinkedHashSet<>();
+        this.predecessors = new HashSet<>();
     }
 
     @Override
@@ -45,10 +47,12 @@ public abstract class BlockImpl implements Block {
     }
 
     @Override
+    // true positive; declared return type is a Det Set but OrderNonDet HashSet is returned
+    // Fixed: https://github.com/typetools/checker-framework/commit/67702a13926eb3d17bde9cdbc7d4c66b7c570ea0
     public Set<@Det Block> getPredecessors(BlockImpl this) {
         // Not "Collections.unmodifiableSet(predecessors)" which has nondeterministic iteration
         // order.
-        return new LinkedHashSet<>(predecessors);
+        return new HashSet<>(predecessors);
     }
 
     public void addPredecessor(BlockImpl this, BlockImpl pred) {
