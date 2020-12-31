@@ -79,10 +79,7 @@ public class AnnotationStatistics extends SourceChecker {
 
     @Override
     public void typeProcessingOver() {
-        Log log = getCompilerLog();
-        if (log.nerrors != 0) {
-            System.out.println("Not counting annotations, because compilation issued an error.");
-        } else if (annotationCount.isEmpty()) {
+        if (annotationCount.isEmpty()) {
             System.out.println("No annotations found.");
         } else {
             System.out.println("Found annotations: ");
