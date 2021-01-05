@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+
 import org.checkerframework.checker.compilermsgs.qual.CompilerMessageKey;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
@@ -901,7 +903,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             Tree tree,
             @CompilerMessageKey String errorMessage) {
         if (!atypeFactory.getQualifierHierarchy().isSubtype(elementAnno, collectionAnno)) {
-            checker.reportError(tree, errorMessage, atm, elementAnno, collectionAnno);
+            checker.reportError(TreeUtils.elementFromTree(tree), errorMessage, atm, elementAnno, collectionAnno);
             return false;
         }
         return true;
