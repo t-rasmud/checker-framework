@@ -903,7 +903,12 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             Tree tree,
             @CompilerMessageKey String errorMessage) {
         if (!atypeFactory.getQualifierHierarchy().isSubtype(elementAnno, collectionAnno)) {
-            checker.reportError(TreeUtils.elementFromTree(tree), errorMessage, atm, elementAnno, collectionAnno);
+            Element elem = TreeUtils.elementFromTree(tree);
+            if (atm.getKind() == TypeKind.ARRAY && elem != null) {
+                checker.reportError(elem, errorMessage, atm, elementAnno, collectionAnno);
+            } else {
+                checker.reportError(tree, errorMessage, atm, elementAnno, collectionAnno);
+            }
             return false;
         }
         return true;

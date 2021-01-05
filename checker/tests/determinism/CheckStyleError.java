@@ -30,12 +30,12 @@ public class CheckStyleError {
             final Object objParent = ctorParent.newInstance(null, true);
             final Object obj = constructor.newInstance(objParent);
 
+            // :: error: (invalid.array.component.type)
             final Class<?>[] param =
                     // :: error: (invalid.array.component.type)
                     new Class<?>[] {
                         String.class, String.class, String.class, Attributes.class,
                     };
-            // :: error: (invalid.array.component.type)
             final Method method = aClass.getDeclaredMethod("startElement", param);
 
             method.invoke(obj, "", "", "hello", null);
