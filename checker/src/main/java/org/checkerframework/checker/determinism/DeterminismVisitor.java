@@ -234,6 +234,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                         componentType.getAnnotationInHierarchy(atypeFactory.NONDET);
                 AnnotatedTypeMirror atm = null;
                 Element element = TreeUtils.elementFromTree(tree);
+                // element is null when tree is a NEW_ARRAY
                 if (element != null) {
                     atm = atypeFactory.getAnnotatedType(element);
                 } else {
