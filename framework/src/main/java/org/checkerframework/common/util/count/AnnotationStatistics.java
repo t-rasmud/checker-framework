@@ -16,7 +16,6 @@ import com.sun.source.tree.VariableTree;
 import com.sun.source.tree.WildcardTree;
 import com.sun.source.util.TreePath;
 import com.sun.tools.javac.tree.JCTree.JCAnnotation;
-import com.sun.tools.javac.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;

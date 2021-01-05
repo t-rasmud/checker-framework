@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-
 import org.checkerframework.checker.compilermsgs.qual.CompilerMessageKey;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;

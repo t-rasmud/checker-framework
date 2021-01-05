@@ -1,7 +1,6 @@
 package org.checkerframework.checker.tainting;
 
 import javax.lang.model.element.ExecutableElement;
-
 import org.checkerframework.common.basetype.BaseAnnotatedTypeFactory;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
