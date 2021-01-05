@@ -234,8 +234,15 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             if (!componentType.getAnnotations().isEmpty()) {
                 AnnotationMirror componentAnno =
                         componentType.getAnnotationInHierarchy(atypeFactory.NONDET);
+                AnnotatedTypeMirror atm = null;
+                Element element = TreeUtils.elementFromTree(tree);
+                if (element != null) {
+                    atm = atypeFactory.getAnnotatedType(element);
+                } else {
+                    atm = type;
+                }
                 if (!isValidElementType(
-                        type, componentAnno, arrayType, tree, INVALID_ARRAY_COMPONENT_TYPE)) {
+                        atm, componentAnno, arrayType, tree, INVALID_ARRAY_COMPONENT_TYPE)) {
                     return false;
                 }
                 if (componentType.getKind() == TypeKind.TYPEVAR) {
