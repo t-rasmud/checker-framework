@@ -35,7 +35,7 @@ public @interface PolyDet {
      * method that is annotated as {@code void method_name (@PolyDet a, @PolyDet("use") b)} would
      * not allow the method invocation {@code method_name(@Det a, @NonDet b)}.
      *
-     * <p>If {@code @PolyDet} resolves to {@link Det}, {@code @PolyDet("upDet"} gets replaced by
+     * <p>If {@code @PolyDet} resolves to {@link Det}, {@code @PolyDet("upDet")} gets replaced by
      * {@link OrderNonDet}.
      *
      * @return default value
