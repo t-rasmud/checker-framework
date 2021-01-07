@@ -184,10 +184,10 @@ public abstract class AbstractAnalysis<
     @Override
     public @Nullable V getValue(Node n) {
         if (isRunning) {
+            assert currentNode != null
+                    : "@AssumeAssertion(nullness): currentNode is nonull if isRunning.";
             // we don't have a org.checkerframework.dataflow fact about the current node yet
-            if (currentNode == null
-                    || currentNode == n
-                    || (currentTree != null && currentTree == n.getTree())) {
+            if (currentNode == n || (currentTree != null && currentTree == n.getTree())) {
                 return null;
             }
             // check that 'n' is a subnode of 'node'. Check immediate operands
@@ -366,8 +366,8 @@ public abstract class AbstractAnalysis<
     }
 
     /**
-     * Initialize class fields based on a given control flow graph. Sub-class may override this
-     * method to initialize customized fields.
+     * Initialize fields of this object based on a given control flow graph. Sub-class may override
+     * this method to initialize customized fields.
      *
      * @param cfg a given control flow graph
      */

@@ -12,7 +12,6 @@ import org.checkerframework.dataflow.cfg.UnderlyingAST.CFGMethod;
 import org.checkerframework.dataflow.cfg.UnderlyingAST.Kind;
 import org.checkerframework.dataflow.cfg.node.LocalVariableNode;
 import org.checkerframework.dataflow.expression.FieldAccess;
-import org.checkerframework.dataflow.expression.Receiver;
 import org.checkerframework.dataflow.expression.ThisReference;
 import org.checkerframework.framework.flow.CFAbstractAnalysis;
 import org.checkerframework.framework.flow.CFStore;
@@ -47,13 +46,13 @@ public class DeterminismTransfer extends CFTransfer {
             CFGMethod method = (CFGMethod) underlyingAST;
             final ClassTree classTree = method.getClassTree();
             TypeMirror classType = TreeUtils.typeOf(classTree);
-            Receiver receiver = new ThisReference(classType);
+            ThisReference receiver = new ThisReference(classType);
             for (Tree member : classTree.getMembers()) {
                 if (member.getKind() == Tree.Kind.VARIABLE) {
                     VariableElement e = TreeUtils.elementFromDeclaration((VariableTree) member);
                     if (!ElementUtils.isStatic(e)) {
                         TypeMirror fieldType = ElementUtils.getType(e);
-                        Receiver field = new FieldAccess(receiver, fieldType, e);
+                        FieldAccess field = new FieldAccess(receiver, fieldType, e);
                         initStore.clearValue(field);
                     }
                 }

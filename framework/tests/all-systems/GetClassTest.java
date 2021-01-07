@@ -1,7 +1,7 @@
 import java.util.Date;
 
 @SuppressWarnings("determinism")
-class GetClassTest {
+public class GetClassTest {
 
     // See AnnotatedTypeFactory.adaptGetClassReturnTypeToReceiver
 

@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.lang.model.element.Element;
 import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.dataflow.analysis.Analysis.BeforeOrAfter;
 import org.checkerframework.dataflow.cfg.block.Block;
 import org.checkerframework.dataflow.cfg.block.ExceptionBlock;
 import org.checkerframework.dataflow.cfg.node.AssignmentNode;
@@ -53,7 +52,7 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> impl
     /**
      * Caches of the analysis results for each input for the block of the node and each node.
      *
-     * @see #runAnalysisFor(Node, BeforeOrAfter, TransferInput, IdentityHashMap, Map)
+     * @see #runAnalysisFor(Node, Analysis.BeforeOrAfter, TransferInput, IdentityHashMap, Map)
      */
     protected final Map<TransferInput<V, S>, IdentityHashMap<Node, TransferResult<V, S>>>
             analysisCaches;
@@ -399,8 +398,8 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> impl
      * is returned.
      *
      * @param node the node to analyze
-     * @param preOrPost indicates which store to return: the store immediately before {@code node}
-     *     or the store after {@code node}
+     * @param preOrPost which store to return: the store immediately before {@code node} or the
+     *     store after {@code node}
      * @return the store before or after {@code node} (depends on the value of {@code before}) after
      *     running the analysis
      */
@@ -427,8 +426,8 @@ public class AnalysisResult<V extends AbstractValue<V>, S extends Store<S>> impl
      * @param <V> the abstract value type to be tracked by the analysis
      * @param <S> the store type used in the analysis
      * @param node the node to analyze
-     * @param preOrPost indicates which store to return: the store immediately before {@code node}
-     *     or the store after {@code node}
+     * @param preOrPost which store to return: the store immediately before {@code node} or the
+     *     store after {@code node}
      * @param transferInput a transfer input
      * @param nodeValues {@link #nodeValues}
      * @param analysisCaches {@link #analysisCaches}

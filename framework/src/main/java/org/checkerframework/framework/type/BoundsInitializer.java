@@ -35,7 +35,7 @@ import org.checkerframework.javacutil.BugInCF;
 import org.checkerframework.javacutil.Pair;
 import org.checkerframework.javacutil.TypeAnnotationUtils;
 import org.checkerframework.javacutil.TypesUtils;
-import org.plumelib.util.UtilPlume;
+import org.plumelib.util.StringsPlume;
 
 /**
  * BoundsInitializer creates AnnotatedTypeMirrors (without annotations) for the bounds of type
@@ -57,14 +57,14 @@ public class BoundsInitializer {
      * @param declaredType type whose arguments are initialized
      */
     public static void initializeTypeArgs(AnnotatedDeclaredType declaredType) {
-        final DeclaredType actualType = (DeclaredType) declaredType.actualType;
-        if (actualType.getTypeArguments().isEmpty() && !declaredType.wasRaw()) {
+        final DeclaredType underlyingType = (DeclaredType) declaredType.underlyingType;
+        if (underlyingType.getTypeArguments().isEmpty() && !declaredType.wasRaw()) {
             // No type arguments to infer.
             return;
         }
 
         final TypeElement typeElement =
-                (TypeElement) declaredType.atypeFactory.types.asElement(actualType);
+                (TypeElement) declaredType.atypeFactory.types.asElement(underlyingType);
         final List<AnnotatedTypeMirror> typeArgs = new ArrayList<>();
 
         // Create AnnotatedTypeMirror for each type argument and store them in the typeArgsMap.
@@ -612,12 +612,12 @@ public class BoundsInitializer {
          * @param declaredType declared type whose type arguments are initialized
          */
         private void initializeTypeArgs(AnnotatedDeclaredType declaredType) {
-            DeclaredType actualType = (DeclaredType) declaredType.actualType;
-            if (actualType.getTypeArguments().isEmpty() && !declaredType.wasRaw()) {
+            DeclaredType underlyingType = (DeclaredType) declaredType.underlyingType;
+            if (underlyingType.getTypeArguments().isEmpty() && !declaredType.wasRaw()) {
                 return;
             }
             TypeElement typeElement =
-                    (TypeElement) declaredType.atypeFactory.types.asElement(actualType);
+                    (TypeElement) declaredType.atypeFactory.types.asElement(underlyingType);
             List<AnnotatedTypeMirror> typeArgs;
             if (declaredType.typeArgs == null) {
                 typeArgs = new ArrayList<>();
@@ -905,7 +905,7 @@ public class BoundsInitializer {
 
         @Override
         public String toString() {
-            return UtilPlume.join(",", this);
+            return StringsPlume.join(",", this);
         }
 
         /**
@@ -1371,7 +1371,7 @@ public class BoundsInitializer {
             List<AnnotatedTypeMirror> typeArgs = new ArrayList<>(parentAdt.getTypeArguments());
             if (argIndex >= typeArgs.size()) {
                 throw new BugInCF(
-                        UtilPlume.joinLines(
+                        StringsPlume.joinLines(
                                 "Invalid type arg index.",
                                 "parent=" + parent,
                                 "replacement=" + replacement,
@@ -1389,7 +1389,7 @@ public class BoundsInitializer {
             List<AnnotatedTypeMirror> typeArgs = parentAdt.getTypeArguments();
             if (argIndex >= typeArgs.size()) {
                 throw new BugInCF(
-                        UtilPlume.joinLines(
+                        StringsPlume.joinLines(
                                 "Invalid type arg index.",
                                 "parent=" + parent,
                                 "argIndex=" + argIndex));
