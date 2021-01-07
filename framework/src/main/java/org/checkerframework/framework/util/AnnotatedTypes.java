@@ -595,6 +595,8 @@ public class AnnotatedTypes {
      * <p>The iterated type is the component type of an array, and the type argument of {@link
      * Iterable} for declared types.
      *
+     * @param processingEnv ProcessingEnvironment
+     * @param atypeFactory AnnotatedTypeFactory
      * @param iterableType the iterable type (either array or declared)
      * @return the types of elements in the iterable type
      */
