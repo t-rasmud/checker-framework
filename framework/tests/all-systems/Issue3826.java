@@ -1,3 +1,4 @@
+// @skip-test
 public class Issue3826 {
     public static <B, T extends B> void getOption(Class<T> cls, B[] opts) {}
 

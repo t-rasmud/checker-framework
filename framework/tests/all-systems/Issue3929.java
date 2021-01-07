@@ -9,6 +9,7 @@ public class Issue3929 {
 }
 
 class DefaultKeyedValues3929<K extends Comparable<K>> {
+    @SuppressWarnings("determinism:return.type.incompatible")
     public List<K> getKeys() {
         return new ArrayList<>();
     }
