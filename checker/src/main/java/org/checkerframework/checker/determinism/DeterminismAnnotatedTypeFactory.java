@@ -659,6 +659,8 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                         || AnnotationUtils.areSame(arrTopType, NONDET)
                         || AnnotationUtils.areSame(indextype, NONDET)) {
                     annotatedTypeMirror.replaceAnnotation(NONDET);
+                } else if (AnnotationUtils.areSame(arrTopType, POLYDET_DOWN)) {
+                    annotatedTypeMirror.replaceAnnotation(POLYDET_DOWN);
                 } else if (AnnotationUtils.areSameByName(arrTopType, POLYDET)) {
                     annotatedTypeMirror.replaceAnnotation(POLYDET_UP);
                 } else if (AnnotationUtils.areSame(indextype, POLYDET)) {
@@ -845,6 +847,22 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             type.replaceAnnotation(annotationMirror);
             return null;
         }
+    }
+
+    @Override
+    protected AnnotatedTypeMirror getIterableElementType(
+            ExpressionTree expression, AnnotatedTypeMirror iterableType) {
+        AnnotatedTypeMirror result = super.getIterableElementType(expression, iterableType);
+        if (iterableType.hasAnnotation(ORDERNONDET) || iterableType.hasAnnotation(NONDET)) {
+            result.replaceAnnotation(NONDET);
+        }
+        if (iterableType.hasAnnotation(POLYDET_UPDET)) {
+            result.replaceAnnotation(POLYDET_UPDET);
+        }
+        if (iterableType.hasAnnotation(POLYDET)) {
+            result.replaceAnnotation(POLYDET_UP);
+        }
+        return result;
     }
 
     /**
