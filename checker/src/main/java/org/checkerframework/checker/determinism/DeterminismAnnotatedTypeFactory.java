@@ -31,7 +31,6 @@ import org.checkerframework.framework.type.treeannotator.TreeAnnotator;
 import org.checkerframework.framework.type.typeannotator.ListTypeAnnotator;
 import org.checkerframework.framework.type.typeannotator.TypeAnnotator;
 import org.checkerframework.framework.type.visitor.SimpleAnnotatedTypeScanner;
-import org.checkerframework.framework.util.AnnotatedTypes;
 import org.checkerframework.framework.util.defaults.QualifierDefaults;
 import org.checkerframework.javacutil.*;
 
@@ -851,10 +850,10 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     }
 
     @Override
-    protected AnnotatedTypeMirror getIterableElementType(ExpressionTree expression, AnnotatedTypeMirror iterableType) {
+    protected AnnotatedTypeMirror getIterableElementType(
+            ExpressionTree expression, AnnotatedTypeMirror iterableType) {
         AnnotatedTypeMirror result = super.getIterableElementType(expression, iterableType);
-        if (iterableType.hasAnnotation(ORDERNONDET)
-            || iterableType.hasAnnotation(NONDET)) {
+        if (iterableType.hasAnnotation(ORDERNONDET) || iterableType.hasAnnotation(NONDET)) {
             result.replaceAnnotation(NONDET);
         }
         if (iterableType.hasAnnotation(POLYDET_UPDET)) {
