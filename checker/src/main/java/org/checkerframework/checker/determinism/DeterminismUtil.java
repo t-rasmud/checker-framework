@@ -11,6 +11,10 @@ import java.util.function.LongBinaryOperator;
 import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * Utility functions for operations on arrays and lists, that are annotated with determinism type
+ * qualifiers.
+ */
 @SuppressWarnings("determinism")
 public class DeterminismUtil {
 
@@ -102,6 +106,12 @@ public class DeterminismUtil {
     /// Duplicates
     ///
 
+    /**
+     * Returns true if the given iterator contains duplicate elements.
+     *
+     * @param iterator an iterator
+     * @return true if the given iterator contains duplicate elements
+     */
     public static <T> @PolyDet("down") boolean hasDuplicate(
             @PolyDet Iterable<? extends @PolyDet("use") T> iterator) {
         Set<T> set = new HashSet<T>();
@@ -114,6 +124,12 @@ public class DeterminismUtil {
         return false;
     }
 
+    /**
+     * Returns true if the given array contains duplicate elements.
+     *
+     * @param a an array
+     * @return true if the given array contains duplicate elements
+     */
     @SafeVarargs
     public static <T> @PolyDet("down") boolean hasDuplicate(@PolyDet("use") T @PolyDet ... a) {
         return hasDuplicate(Arrays.asList(a));
