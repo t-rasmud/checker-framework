@@ -1,5 +1,13 @@
 package org.checkerframework.checker.determinism;
 
+import com.google.common.primitives.Booleans;
+import com.google.common.primitives.Bytes;
+import com.google.common.primitives.Chars;
+import com.google.common.primitives.Doubles;
+import com.google.common.primitives.Floats;
+import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
+import com.google.common.primitives.Shorts;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -8,7 +16,6 @@ import java.util.function.BinaryOperator;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.IntBinaryOperator;
 import java.util.function.LongBinaryOperator;
-import java.util.stream.Collectors;
 import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -200,7 +207,77 @@ public class DeterminismUtil {
      * @param a an array
      * @return true if the given array contains duplicate elements
      */
-    public static <T> @PolyDet("down") boolean hasDuplicate(@PolyDet("use") int @PolyDet ... a) {
-        return hasDuplicate(Arrays.stream(a).boxed().collect(Collectors.toList()));
+    public static @PolyDet("down") boolean hasDuplicate(@PolyDet("use") boolean @PolyDet ... a) {
+        return hasDuplicate(Booleans.asList(a));
+    }
+
+    /**
+     * Returns true if the given array contains duplicate elements.
+     *
+     * @param a an array
+     * @return true if the given array contains duplicate elements
+     */
+    public static @PolyDet("down") boolean hasDuplicate(@PolyDet("use") byte @PolyDet ... a) {
+        return hasDuplicate(Bytes.asList(a));
+    }
+
+    /**
+     * Returns true if the given array contains duplicate elements.
+     *
+     * @param a an array
+     * @return true if the given array contains duplicate elements
+     */
+    public static @PolyDet("down") boolean hasDuplicate(@PolyDet("use") char @PolyDet ... a) {
+        return hasDuplicate(Chars.asList(a));
+    }
+
+    /**
+     * Returns true if the given array contains duplicate elements.
+     *
+     * @param a an array
+     * @return true if the given array contains duplicate elements
+     */
+    public static @PolyDet("down") boolean hasDuplicate(@PolyDet("use") float @PolyDet ... a) {
+        return hasDuplicate(Floats.asList(a));
+    }
+
+    /**
+     * Returns true if the given array contains duplicate elements.
+     *
+     * @param a an array
+     * @return true if the given array contains duplicate elements
+     */
+    public static @PolyDet("down") boolean hasDuplicate(@PolyDet("use") short @PolyDet ... a) {
+        return hasDuplicate(Shorts.asList(a));
+    }
+
+    /**
+     * Returns true if the given array contains duplicate elements.
+     *
+     * @param a an array
+     * @return true if the given array contains duplicate elements
+     */
+    public static @PolyDet("down") boolean hasDuplicate(@PolyDet("use") int @PolyDet ... a) {
+        return hasDuplicate(Ints.asList(a));
+    }
+
+    /**
+     * Returns true if the given array contains duplicate elements. Equality checking uses {@link
+     * Double#equals}.
+     *
+     * @param a an the given array iffs a does not contain duplicate elements
+     */
+    public static @PolyDet("down") boolean hasDuplicate(@PolyDet("use") double @PolyDet ... a) {
+        return hasDuplicate(Doubles.asList(a));
+    }
+
+    /**
+     * Returns true if the given array contains duplicate elements.
+     *
+     * @param a an array
+     * @return true if the given array contains duplicate elements
+     */
+    public static @PolyDet("down") boolean hasDuplicate(@PolyDet("use") long @PolyDet ... a) {
+        return hasDuplicate(Longs.asList(a));
     }
 }
