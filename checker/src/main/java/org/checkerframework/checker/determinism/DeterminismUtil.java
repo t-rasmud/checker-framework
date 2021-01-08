@@ -167,7 +167,11 @@ public class DeterminismUtil {
         Set<T> set = new HashSet<T>();
         System.out.printf("hasDuplicates%n");
         for (T each : iterator) {
-            System.out.printf("  %s [%s]%n", each, each.getClass());
+            if (each.getClass().isArray()) {
+                System.out.printf("  %s [%s]%n", Arrays.toString(each), each.getClass());
+            } else {
+                System.out.printf("  %s [%s]%n", each, each.getClass());
+            }
             if (!set.add(each)) {
                 // Already contained the element.
                 System.out.printf("  => true%n");
