@@ -26,7 +26,7 @@ public class DeterminismUtil {
      * Applies a commutative aggregation operation to the given array.
      *
      * @param <T> the type of the arguments and return of the function
-     * @param a the array to aggregate
+     * @param a the array to aggregate; must be non-empty
      * @param f the aggregation function
      * @return the aggregation of {@code a}, with respect to {@code f}
      */
@@ -40,7 +40,20 @@ public class DeterminismUtil {
     /**
      * Applies a commutative aggregation operation to the given array.
      *
+     * @param <T> the type of the arguments and return of the function
      * @param a the array to aggregate
+     * @param identity the identity value for the accumulating function
+     * @param f the aggregation function
+     * @return the aggregation of {@code a}, with respect to {@code f}
+     */
+    public static <T> @PolyDet("down") T reduce(@PolyDet T[] a, T identity, BinaryOperator<T> f) {
+        return Arrays.stream(a).reduce(identity, f);
+    }
+
+    /**
+     * Applies a commutative aggregation operation to the given array.
+     *
+     * @param a the array to aggregate; must be non-empty
      * @param f the aggregation function
      * @return the aggregation of {@code a}, with respect to {@code f}
      */
@@ -55,6 +68,18 @@ public class DeterminismUtil {
      * Applies a commutative aggregation operation to the given array.
      *
      * @param a the array to aggregate
+     * @param identity the identity value for the accumulating function
+     * @param f the aggregation function
+     * @return the aggregation of {@code a}, with respect to {@code f}
+     */
+    public static @PolyDet("down") int reduce(int[] a, int identity, IntBinaryOperator f) {
+        return Arrays.stream(a).reduce(identity, f);
+    }
+
+    /**
+     * Applies a commutative aggregation operation to the given array.
+     *
+     * @param a the array to aggregate; must be non-empty
      * @param f the aggregation function
      * @return the aggregation of {@code a}, with respect to {@code f}
      */
@@ -69,6 +94,18 @@ public class DeterminismUtil {
      * Applies a commutative aggregation operation to the given array.
      *
      * @param a the array to aggregate
+     * @param identity the identity value for the accumulating function
+     * @param f the aggregation function
+     * @return the aggregation of {@code a}, with respect to {@code f}
+     */
+    public static @PolyDet("down") long reduce(long[] a, long identity, LongBinaryOperator f) {
+        return Arrays.stream(a).reduce(identity, f);
+    }
+
+    /**
+     * Applies a commutative aggregation operation to the given array.
+     *
+     * @param a the array to aggregate; must be non-empty
      * @param f the aggregation function
      * @return the aggregation of {@code a}, with respect to {@code f}
      */
@@ -77,6 +114,19 @@ public class DeterminismUtil {
             throw new ArrayIndexOutOfBoundsException("Empty array passed to reduce");
         }
         return Arrays.stream(a).reduce(f).getAsDouble();
+    }
+
+    /**
+     * Applies a commutative aggregation operation to the given array.
+     *
+     * @param a the array to aggregate
+     * @param identity the identity value for the accumulating function
+     * @param f the aggregation function
+     * @return the aggregation of {@code a}, with respect to {@code f}
+     */
+    public static @PolyDet("down") double reduce(
+            double[] a, double identity, DoubleBinaryOperator f) {
+        return Arrays.stream(a).reduce(identity, f);
     }
 
     ///
@@ -115,12 +165,16 @@ public class DeterminismUtil {
     public static <T> @PolyDet("down") boolean hasDuplicate(
             @PolyDet Iterable<? extends @PolyDet("use") T> iterator) {
         Set<T> set = new HashSet<T>();
+        System.out.printf("hasDuplicates%n");
         for (T each : iterator) {
+            System.out.printf("  %s%n", each);
             if (!set.add(each)) {
                 // Already contained the element.
+                System.out.printf("  => true%n");
                 return true;
             }
         }
+        System.out.printf("  => false%n");
         return false;
     }
 
