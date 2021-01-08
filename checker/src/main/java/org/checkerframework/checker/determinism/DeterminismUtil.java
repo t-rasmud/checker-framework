@@ -167,6 +167,7 @@ public class DeterminismUtil {
     /**
      * Returns true if the given iterator contains duplicate elements.
      *
+     * @param <T> the type of elements
      * @param iterator an iterator
      * @return true if the given iterator contains duplicate elements
      */
@@ -185,6 +186,7 @@ public class DeterminismUtil {
     /**
      * Returns true if the given array contains duplicate elements.
      *
+     * @param <T> the type of elements
      * @param a an array
      * @return true if the given array contains duplicate elements
      */
@@ -258,6 +260,7 @@ public class DeterminismUtil {
      * Double#equals}.
      *
      * @param a an the given array iffs a does not contain duplicate elements
+     * @return true if the given array contains duplicate elements
      */
     public static @PolyDet("down") boolean hasDuplicate(@PolyDet("use") double @PolyDet ... a) {
         return hasDuplicate(Doubles.asList(a));
