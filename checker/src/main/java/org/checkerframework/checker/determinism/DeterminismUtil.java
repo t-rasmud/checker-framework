@@ -173,20 +173,12 @@ public class DeterminismUtil {
     public static <T> @PolyDet("down") boolean hasDuplicate(
             @PolyDet Iterable<? extends @PolyDet("use") T> iterator) {
         Set<T> set = new HashSet<T>();
-        System.out.printf("hasDuplicates%n");
         for (T each : iterator) {
-            if (each.getClass().isArray()) {
-                System.out.printf("  %s [%s]%n", Arrays.toString((Object[]) each), each.getClass());
-            } else {
-                System.out.printf("  %s [%s]%n", each, each.getClass());
-            }
             if (!set.add(each)) {
                 // Already contained the element.
-                System.out.printf("  => true%n");
                 return true;
             }
         }
-        System.out.printf("  => false%n");
         return false;
     }
 
