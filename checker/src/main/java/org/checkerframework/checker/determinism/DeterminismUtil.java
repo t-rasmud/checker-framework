@@ -8,6 +8,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.IntBinaryOperator;
 import java.util.function.LongBinaryOperator;
+import java.util.stream.Collectors;
 import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -200,6 +201,6 @@ public class DeterminismUtil {
      * @return true if the given array contains duplicate elements
      */
     public static <T> @PolyDet("down") boolean hasDuplicate(@PolyDet("use") int @PolyDet ... a) {
-        return hasDuplicate(Arrays.asList(a));
+        return hasDuplicate(Arrays.stream(a).boxed().collect(Collectors.toList()));
     }
 }
