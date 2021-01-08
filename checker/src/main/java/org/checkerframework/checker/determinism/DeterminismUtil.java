@@ -168,7 +168,7 @@ public class DeterminismUtil {
         System.out.printf("hasDuplicates%n");
         for (T each : iterator) {
             if (each.getClass().isArray()) {
-                System.out.printf("  %s [%s]%n", Arrays.toString(each), each.getClass());
+                System.out.printf("  %s [%s]%n", Arrays.toString((Object[]) each), each.getClass());
             } else {
                 System.out.printf("  %s [%s]%n", each, each.getClass());
             }
