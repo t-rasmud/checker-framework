@@ -192,4 +192,15 @@ public class DeterminismUtil {
     public static <T> @PolyDet("down") boolean hasDuplicate(@PolyDet("use") T @PolyDet ... a) {
         return hasDuplicate(Arrays.asList(a));
     }
+
+    /**
+     * Returns true if the given array contains duplicate elements.
+     *
+     * @param a an array
+     * @return true if the given array contains duplicate elements
+     */
+    @SafeVarargs
+    public static <T> @PolyDet("down") boolean hasDuplicate(@PolyDet("use") int @PolyDet ... a) {
+        return hasDuplicate(Arrays.asList(a));
+    }
 }
