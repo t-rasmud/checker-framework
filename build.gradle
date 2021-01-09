@@ -702,7 +702,7 @@ subprojects {
                     // 'org.checkerframework.checker.determinism.DeterminismChecker',
                     'org.checkerframework.checker.determinism.DeterminismChecker,org.checkerframework.common.util.count.AnnotationStatistics',
                     // ['-AonlyDefs=org.checkerframework.dataflow.', ]
-                    ['-AonlyDefs=org.checkerframework.dataflow.', '-Aannotations', '-Anolocations', '-Aannotationsummaryonly']
+                    ['-AonlyDefs=org.checkerframework.dataflow.', '-Awarns', '-Aannotations', '-Anolocations', '-Aannotationsummaryonly']
                     )
             // createCheckTypeTask(project.name, 'Determinism', 'org.checkerframework.checker.determinism.DeterminismChecker')
         }
