@@ -42,7 +42,7 @@ ext {
     afu = "${annotationTools}/annotation-file-utilities"
 
     stubparser = "${parentDir}/stubparser"
-    stubparserJar = "${stubparser}/javaparser-core/target/stubparser.jar"
+    stubparserJar = "${stubparser}/javaparser-core/target/stubparser-3.18.0.jar"
 
     jtregHome = "${parentDir}/jtreg"
     formatScriptsHome = "${project(':checker').projectDir}/bin-devel/.run-google-java-format"
@@ -853,13 +853,9 @@ subprojects {
             if (project.name.is('checker')) {
                 if (!isJava8) {
                     dependsOn('jtregJdk11Tests')
-                    // TODO: Remove this line, when wpiManyTests doesn't ignore wpi failures.
-                    dependsOn('wpiManyTests', 'wpiPlumeLibTests')
                 }
                 dependsOn('nullnessExtraTests', 'commandLineTests', 'tutorialTests',
-                          // TODO: Reinstate this line, when wpiManyTests doesn't ignore wpi failures.
-                          // 'wholeProgramInferenceTests', 'wpiManyTests', 'wpiPlumeLibTests')
-                          'wholeProgramInferenceTests')
+                          'wholeProgramInferenceTests', 'wpiManyTests', 'wpiPlumeLibTests')
             }
 
             if (project.name.is('dataflow')) {
@@ -902,7 +898,7 @@ subprojects {
 assemble.dependsOn(':checker:copyJarsToDist')
 
 task checkBasicStyle(group: 'Format') {
-    description 'Check basic style guidelines.  Not related to Checkstyle tool.'
+    description 'Check basic style guidelines, mostly whitespace.  Not related to Checkstyle tool.'
     String[] ignoreDirectories = ['.git',
                                   '.gradle',
                                   '.html-tools',
