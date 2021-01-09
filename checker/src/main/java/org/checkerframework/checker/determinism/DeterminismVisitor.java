@@ -397,7 +397,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             } else {
                 Element varElem = TreeUtils.elementFromTree(varTree);
                 MethodTree enclosingMethod =
-                        TreeUtils.enclosingMethod(atypeFactory.getPath(varTree));
+                        TreePathUtil.enclosingMethod(atypeFactory.getPath(varTree));
                 Element enclosingElem = TreeUtils.elementFromTree(enclosingMethod);
                 if (ElementUtils.isFinal(varElem)
                         && enclosingElem.getKind() == ElementKind.CONSTRUCTOR) {
