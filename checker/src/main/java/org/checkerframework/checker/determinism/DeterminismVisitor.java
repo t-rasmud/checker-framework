@@ -1,9 +1,6 @@
 package org.checkerframework.checker.determinism;
 
-import static javax.tools.Diagnostic.Kind.ERROR;
-
 import com.sun.source.tree.*;
-import com.sun.source.tree.Tree.Kind;
 import com.sun.tools.javac.tree.JCTree;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeKind;
+import javax.tools.Diagnostic.Kind;
 import org.checkerframework.checker.compilermsgs.qual.CompilerMessageKey;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
@@ -382,7 +380,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             if (atypeFactory.getQualifierHierarchy().isSubtype(exprAnno, varAnno)) {
                 super.commonAssignmentCheck(varTree, valueExp, errorKey);
                 // Assigning to a specific index of an "OrderNonDet" array is invalid.
-                if (varTree.getKind() == Kind.ARRAY_ACCESS) {
+                if (varTree.getKind() == Tree.Kind.ARRAY_ACCESS) {
                     varAnno =
                             atypeFactory
                                     .getAnnotatedType(((ArrayAccessTree) varTree).getExpression())
@@ -392,7 +390,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                         checker.reportError(varTree, INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno);
                     }
                 }
-            } else if (varTree.getKind() == Kind.ARRAY_ACCESS) {
+            } else if (varTree.getKind() == Tree.Kind.ARRAY_ACCESS) {
                 checker.reportError(varTree, INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno);
             } else {
                 Element varElem = TreeUtils.elementFromTree(varTree);
@@ -665,7 +663,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             } else {
                 @SuppressWarnings("compilermessages")
                 @CompilerMessageKey String errorKey = "invalid.polydet." + elemValue.toLowerCase();
-                errors.add(Pair.of(new DiagMessage(ERROR, errorKey), tree));
+                errors.add(Pair.of(new DiagMessage(Kind.ERROR, errorKey), tree));
             }
         }
         return false;
@@ -819,7 +817,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         // these cases, to get the most precision we must instead check the toString methods of each
         // branch.
         argument = TreeUtils.withoutParens(argument);
-        if (argument.getKind() == Kind.CONDITIONAL_EXPRESSION) {
+        if (argument.getKind() == Tree.Kind.CONDITIONAL_EXPRESSION) {
             ConditionalExpressionTree conditionalTree = (ConditionalExpressionTree) argument;
             return argumentSatisfiesDetToString(conditionalTree.getTrueExpression())
                     && argumentSatisfiesDetToString(conditionalTree.getFalseExpression());
