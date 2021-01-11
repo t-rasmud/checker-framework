@@ -1,7 +1,18 @@
 package org.checkerframework.checker.determinism;
 
-import com.sun.source.tree.*;
+import com.sun.source.tree.ArrayAccessTree;
+import com.sun.source.tree.ConditionalExpressionTree;
+import com.sun.source.tree.DoWhileLoopTree;
+import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.ForLoopTree;
+import com.sun.source.tree.IfTree;
+import com.sun.source.tree.InstanceOfTree;
+import com.sun.source.tree.MethodInvocationTree;
+import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.NewClassTree;
 import com.sun.source.tree.Tree;
+import com.sun.source.tree.VariableTree;
+import com.sun.source.tree.WhileLoopTree;
 import com.sun.tools.javac.tree.JCTree;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -396,7 +407,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             } else {
                 Element varElem = TreeUtils.elementFromTree(varTree);
                 MethodTree enclosingMethod =
-                        TreeUtils.enclosingMethod(atypeFactory.getPath(varTree));
+                        TreePathUtil.enclosingMethod(atypeFactory.getPath(varTree));
                 Element enclosingElem = TreeUtils.elementFromTree(enclosingMethod);
                 if (ElementUtils.isFinal(varElem)
                         && enclosingElem.getKind() == ElementKind.CONSTRUCTOR) {
