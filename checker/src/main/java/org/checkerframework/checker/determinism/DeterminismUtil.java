@@ -1,13 +1,5 @@
 package org.checkerframework.checker.determinism;
 
-import com.google.common.primitives.Booleans;
-import com.google.common.primitives.Bytes;
-import com.google.common.primitives.Chars;
-import com.google.common.primitives.Doubles;
-import com.google.common.primitives.Floats;
-import com.google.common.primitives.Ints;
-import com.google.common.primitives.Longs;
-import com.google.common.primitives.Shorts;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -16,6 +8,14 @@ import java.util.function.BinaryOperator;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.IntBinaryOperator;
 import java.util.function.LongBinaryOperator;
+import org.checkerframework.checker.determinism.com.google.common.primitives.Booleans;
+import org.checkerframework.checker.determinism.com.google.common.primitives.Bytes;
+import org.checkerframework.checker.determinism.com.google.common.primitives.Chars;
+import org.checkerframework.checker.determinism.com.google.common.primitives.Doubles;
+import org.checkerframework.checker.determinism.com.google.common.primitives.Floats;
+import org.checkerframework.checker.determinism.com.google.common.primitives.Ints;
+import org.checkerframework.checker.determinism.com.google.common.primitives.Longs;
+import org.checkerframework.checker.determinism.com.google.common.primitives.Shorts;
 import org.checkerframework.checker.determinism.qual.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 

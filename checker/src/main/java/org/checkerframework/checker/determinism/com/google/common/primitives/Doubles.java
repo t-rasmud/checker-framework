@@ -12,14 +12,14 @@
  * the License.
  */
 
-package com.google.common.primitives;
+package org.checkerframework.checker.determinism.com.google.common.primitives;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkElementIndex;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkPositionIndexes;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
+import static org.checkerframework.checker.determinism.com.google.common.base.Preconditions.checkArgument;
+import static org.checkerframework.checker.determinism.com.google.common.base.Preconditions.checkElementIndex;
+import static org.checkerframework.checker.determinism.com.google.common.base.Preconditions.checkNotNull;
+import static org.checkerframework.checker.determinism.com.google.common.base.Preconditions.checkPositionIndexes;
 
 import java.io.Serializable;
 import java.util.AbstractList;

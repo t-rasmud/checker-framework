@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.google.common.base;
+package org.checkerframework.checker.determinism.com.google.common.base;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
