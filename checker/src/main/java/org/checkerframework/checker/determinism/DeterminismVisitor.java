@@ -1,6 +1,18 @@
 package org.checkerframework.checker.determinism;
 
-import com.sun.source.tree.*;
+import com.sun.source.tree.ArrayAccessTree;
+import com.sun.source.tree.ConditionalExpressionTree;
+import com.sun.source.tree.DoWhileLoopTree;
+import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.ForLoopTree;
+import com.sun.source.tree.IfTree;
+import com.sun.source.tree.InstanceOfTree;
+import com.sun.source.tree.MethodInvocationTree;
+import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.NewClassTree;
+import com.sun.source.tree.Tree;
+import com.sun.source.tree.VariableTree;
+import com.sun.source.tree.WhileLoopTree;
 import com.sun.tools.javac.tree.JCTree;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeKind;
-import javax.tools.Diagnostic.Kind;
+import javax.tools.Diagnostic;
 import org.checkerframework.checker.compilermsgs.qual.CompilerMessageKey;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
@@ -663,7 +675,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             } else {
                 @SuppressWarnings("compilermessages")
                 @CompilerMessageKey String errorKey = "invalid.polydet." + elemValue.toLowerCase();
-                errors.add(Pair.of(new DiagMessage(Kind.ERROR, errorKey), tree));
+                errors.add(Pair.of(new DiagMessage(Diagnostic.Kind.ERROR, errorKey), tree));
             }
         }
         return false;
