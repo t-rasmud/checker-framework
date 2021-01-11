@@ -549,9 +549,12 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 && !TreeUtils.isConstructor(methodTree)) {
             AnnotatedDeclaredType receiverType =
                     atypeFactory.getAnnotatedType(methodTree).getReceiverType();
-            AnnotationMirror anno = receiverType.getAnnotationInHierarchy(atypeFactory.NONDET);
-            if (addPolyDetError(anno, receiver, errors)) {
-                return; // found @PolyDet or @PolyDet("noOrderNonDet")
+            if (receiverType != null) {
+                // receiverType is also null for annotation element declarations.
+                AnnotationMirror anno = receiverType.getAnnotationInHierarchy(atypeFactory.NONDET);
+                if (addPolyDetError(anno, receiver, errors)) {
+                    return; // found @PolyDet or @PolyDet("noOrderNonDet")
+                }
             }
         }
 
