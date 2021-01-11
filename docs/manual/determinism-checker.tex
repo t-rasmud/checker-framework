@@ -584,6 +584,15 @@ String @NonDet []}, which are valid types.
 The parameter type of the \code{main} method has an implicit annotation
 \<@Det String @Det[]>.
 
+
+\sectionAndLabel{Utility routines for arrays and collections}{determinism-utilities}
+
+Class \refclass{checker/determinism}{DeterminismUtil} provides static
+utility methods for working with arrays and collections.  They are properly
+annotated with determinism type qualifiers, so using them may reduce the number
+of annotations that you need to write.
+
+
 %%  LocalWords:  DeterminismChecker HashSet InputFile NonDet Det MyClass
 %%  LocalWords:  OrderNonDet PolyDet UsePolyDet println MyType keySet rhs
 %%  LocalWords:  CollectionType TestUserCollection upDet ordernondet addAll

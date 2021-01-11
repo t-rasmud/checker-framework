@@ -22,6 +22,8 @@ task copySources(type: Copy) {
     include '**/PurityUnqualified.java'    // TODO: Should we move this into a qual directory?
     // Utility classes
     // If you change this list, also update ../LICENSE.txt .
+    include "**/DeterminismUtil.java"
+    include "**/determinism/com/google/**/*.java"
     include "**/FormatUtil.java"
     include "**/I18nFormatUtil.java"
     include "**/NullnessUtil.java"
