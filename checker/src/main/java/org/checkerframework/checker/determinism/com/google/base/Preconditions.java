@@ -109,6 +109,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * @author Kevin Bourrillion
  * @since 2.0
  */
+@SuppressWarnings({"nullness"})
 public final class Preconditions {
     private Preconditions() {}
 
