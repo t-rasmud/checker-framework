@@ -1,19 +1,22 @@
-// @skip-test
-
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.determinism.qual.NonDet;
 
 public class NutzTest {
 
     public void test_weibo_post() {
         Response resp = Http.post2("http://weibo.com/kuyunhudong", null, 10000);
+        // :: error: method.invocation.invalid
         System.out.println(resp.getStatus());
+        // :: error: method.invocation.invalid
         System.out.println(resp.getContent());
+        // :: error: method.invocation.invalid
         System.out.println(resp.getStatus());
     }
 }
@@ -75,6 +78,7 @@ class Request {
     }
 
     public static Request get(String url) {
+        // :: error: argument.type.incompatible
         return create(url, METHOD.GET, new HashMap<String, Object>());
     }
 
@@ -204,8 +208,10 @@ class Response {
         String contextType = header.get("Content-Type");
         if (null != contextType) {
             for (String tmp : contextType.split(";")) {
+                // :: error: invalid.type.on.conditional
                 if (tmp == null) continue;
                 tmp = tmp.trim();
+                // :: error: argument.type.incompatible  :: error: invalid.type.on.conditional
                 if (tmp.startsWith("charset=")) return Strings.trim(tmp.substring(8)).trim();
             }
         }
@@ -243,7 +249,8 @@ abstract class Sender {
     }
 
     protected Map<String, String> getResponseHeader() {
-        Map<String, String> reHeaders = new HashMap<String, String>();
+        Map<@Det String, @Det String> reHeaders = new HashMap<String, String>();
+        // :: error: return.type.incompatible
         return reHeaders;
     }
 
