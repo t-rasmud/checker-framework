@@ -18,9 +18,9 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     Map<Node, Constant> contents;
 
     /** Creates a new ConstantPropagationStore. */
-    // true positive; `contents` is declared as a Det map but is assigned an OrderNonDet HashMap
-    // Fixed: https://github.com/typetools/checker-framework/commit/0a0ea1021409ca8d2d5d7e7f57556ed45cd2472d
     public ConstantPropagationStore() {
+        // true positive; `contents` is declared as a Det map but is assigned an OrderNonDet HashMap
+        // Fixed: https://github.com/typetools/checker-framework/commit/0a0ea1021409ca8d2d5d7e7f57556ed45cd2472d
         contents = new HashMap<>();
     }
 
@@ -57,6 +57,8 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     @SuppressWarnings(
             "determinism") // valid rule relaxation: copy clearly preserves determinism type
     public ConstantPropagationStore copy() {
+        // true positive; `contents` is declared as a Det map but is assigned an OrderNonDet HashMap
+        // Fixed: https://github.com/typetools/checker-framework/commit/0a0ea1021409ca8d2d5d7e7f57556ed45cd2472d
         return new ConstantPropagationStore(new HashMap<>(contents));
     }
 
@@ -64,6 +66,9 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     @SuppressWarnings(
             "determinism") // process is order insensitive: calculating a least upper bound
     public ConstantPropagationStore leastUpperBound(ConstantPropagationStore other) {
+
+        // true positive; `contents` is declared as a Det map but is assigned an OrderNonDet HashMap
+        // Fixed: https://github.com/typetools/checker-framework/commit/0a0ea1021409ca8d2d5d7e7f57556ed45cd2472d
         Map<Node, Constant> newContents = new HashMap<>();
 
         // go through all of the information of the other class
@@ -164,6 +169,8 @@ public class ConstantPropagationStore implements Store<ConstantPropagationStore>
     @Override
     public @PolyDet String toString(@PolyDet ConstantPropagationStore this) {
         // only output local variable information
+        // true positive; `contents` is declared as a Det map but is assigned an OrderNonDet HashMap
+        // Fixed: https://github.com/typetools/checker-framework/commit/0a0ea1021409ca8d2d5d7e7f57556ed45cd2472d
         Map<Node, Constant> smallerContents = new HashMap<>();
         for (Map.Entry<Node, Constant> e : contents.entrySet()) {
             if (e.getKey() instanceof LocalVariableNode) {

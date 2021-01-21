@@ -316,8 +316,6 @@ public class ControlFlowGraph {
 
     @Override
     @SuppressWarnings("determinism:override.receiver.invalid") // toString only on @Det
-    // true positive; calls Object.toString() which returns NonDet String
-    // Fixed: https://github.com/typetools/checker-framework/commit/bcba3cb7a508720766ee99ea19dd253f7c349b0a
     public String toString() {
         @OrderNonDet Map<String, Object> args = new HashMap<>();
         args.put("verbose", true);
@@ -327,9 +325,13 @@ public class ControlFlowGraph {
         @OrderNonDet Map<String, Object> res = viz.visualize(this, this.getEntryBlock(), null);
         viz.shutdown();
         if (res == null) {
+            // true positive; calls Object.toString() which returns NonDet String
+            // Fixed: https://github.com/typetools/checker-framework/commit/bcba3cb7a508720766ee99ea19dd253f7c349b0a
             return super.toString();
         }
         String stringGraph = (String) res.get("stringGraph");
+        // true positive; calls Object.toString() which returns NonDet String
+        // Fixed: https://github.com/typetools/checker-framework/commit/bcba3cb7a508720766ee99ea19dd253f7c349b0a
         return stringGraph == null ? super.toString() : stringGraph;
     }
 
