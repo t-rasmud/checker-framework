@@ -194,8 +194,6 @@ import org.checkerframework.javacutil.trees.TreeBuilder;
  * (which might only be a jump).
  */
 @SuppressWarnings("nullness") // TODO
-// true positive; Calls to `tree.hashCode()` and `switchTree.hashCode()` that return NonDet String
-// Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
 public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
 
     /** Annotation processing environment and its associated type and tree utilities. */
@@ -2136,6 +2134,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
             switchExpr.setInSource(false);
             extendWithNode(switchExpr);
 
+            // true positive; Calls `switchTree.hashCode()` that returns NonDet String
+            // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
             extendWithNode(
                     new MarkerNode(
                             switchTree,
@@ -2161,6 +2161,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
             addLabelForNextNode(breakTargetL.peekLabel());
             breakTargetL = oldBreakTargetL;
 
+            // true positive; Calls `switchTree.hashCode()` that returns NonDet String
+            // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
             extendWithNode(
                     new MarkerNode(
                             switchTree,
@@ -3025,6 +3027,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
         List<? extends CatchTree> catches = tree.getCatches();
         BlockTree finallyBlock = tree.getFinallyBlock();
 
+        // true positive; Call to `tree.hashCode()` that returns NonDet String
+        // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
         extendWithNode(
                 new MarkerNode(
                         tree,
@@ -3074,12 +3078,16 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
 
         tryStack.pushFrame(new TryCatchFrame(types, catchLabels));
 
+        // true positive; Call to `tree.hashCode()` that returns NonDet String
+        // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
         extendWithNode(
                 new MarkerNode(
                         tree,
                         "start of try block #" + tree.hashCode(),
                         env.getTypeUtils()));
         scan(tree.getBlock(), p);
+        // true positive; Call to `tree.hashCode()` that returns NonDet String
+        // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
         extendWithNode(
                 new MarkerNode(
                         tree,
@@ -3094,6 +3102,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
         int catchIndex = 0;
         for (CatchTree c : catches) {
             addLabelForNextNode(catchLabels.get(catchIndex).second);
+            // true positive; Call to `tree.hashCode()` that returns NonDet String
+            // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
             extendWithNode(
                     new MarkerNode(
                             tree,
@@ -3103,6 +3113,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                                     + tree.hashCode(),
                             env.getTypeUtils()));
             scan(c, p);
+            // true positive; Call to `tree.hashCode()` that returns NonDet String
+            // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
             extendWithNode(
                     new MarkerNode(
                             tree,
@@ -3124,12 +3136,16 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
 
             { // Scan 'finallyBlock' for only 'finallyLabel' (a successful path)
                 addLabelForNextNode(finallyLabel);
+                // true positive; Call to `tree.hashCode()` that returns NonDet String
+                // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                 extendWithNode(
                         new MarkerNode(
                                 tree,
                                 "start of finally block #" + tree.hashCode(),
                                 env.getTypeUtils()));
                 scan(finallyBlock, p);
+                // true positive; Call to `tree.hashCode()` that returns NonDet String
+                // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                 extendWithNode(
                         new MarkerNode(
                                 tree,
@@ -3145,6 +3161,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                 // later phase.  TODO: Don't we need a separate finally block for each kind of
                 // exception?
                 addLabelForNextNode(exceptionalFinallyLabel);
+                // true positive; Call to `tree.hashCode()` that returns NonDet String
+                // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                 extendWithNode(
                         new MarkerNode(
                                 tree,
@@ -3154,6 +3172,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
 
                 scan(finallyBlock, p);
 
+                // true positive; Call to `tree.hashCode()` that returns NonDet String
+                // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                 NodeWithExceptionsHolder throwing =
                         extendWithNodeWithException(
                                 new MarkerNode(
@@ -3170,6 +3190,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                 addLabelForNextNode(returnTargetL.peekLabel());
                 returnTargetL = oldReturnTargetL;
 
+                // true positive; Call to `tree.hashCode()` that returns NonDet String
+                // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                 extendWithNode(
                         new MarkerNode(
                                 tree,
@@ -3177,6 +3199,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                                         + tree.hashCode(),
                                 env.getTypeUtils()));
                 scan(finallyBlock, p);
+                // true positive; Call to `tree.hashCode()` that returns NonDet String
+                // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                 extendWithNode(
                         new MarkerNode(
                                 tree,
@@ -3191,12 +3215,16 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                 addLabelForNextNode(breakTargetL.peekLabel());
                 breakTargetL = oldBreakTargetL;
 
+                // true positive; Call to `tree.hashCode()` that returns NonDet String
+                // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                 extendWithNode(
                         new MarkerNode(
                                 tree,
                                 "start of finally block for break #" + tree.hashCode(),
                                 env.getTypeUtils()));
                 scan(finallyBlock, p);
+                // true positive; Call to `tree.hashCode()` that returns NonDet String
+                // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                 extendWithNode(
                         new MarkerNode(
                                 tree,
@@ -3214,6 +3242,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
 
                 for (Map.Entry<Name, Label> access : accessedBreakLabels.entrySet()) {
                     addLabelForNextNode(access.getValue());
+                    // true positive; Call to `tree.hashCode()` that returns NonDet String
+                    // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                     extendWithNode(
                             new MarkerNode(
                                     tree,
@@ -3223,6 +3253,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                                             + tree.hashCode(),
                                     env.getTypeUtils()));
                     scan(finallyBlock, p);
+                    // true positive; Call to `tree.hashCode()` that returns NonDet String
+                    // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                     extendWithNode(
                             new MarkerNode(
                                     tree,
@@ -3241,6 +3273,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                 addLabelForNextNode(continueTargetL.peekLabel());
                 continueTargetL = oldContinueTargetL;
 
+                // true positive; Call to `tree.hashCode()` that returns NonDet String
+                // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                 extendWithNode(
                         new MarkerNode(
                                 tree,
@@ -3248,6 +3282,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                                         + tree.hashCode(),
                                 env.getTypeUtils()));
                 scan(finallyBlock, p);
+                // true positive; Call to `tree.hashCode()` that returns NonDet String
+                // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                 extendWithNode(
                         new MarkerNode(
                                 tree,
@@ -3266,6 +3302,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
 
                 for (Map.Entry<Name, Label> access : accessedContinueLabels.entrySet()) {
                     addLabelForNextNode(access.getValue());
+                    // true positive; Call to `tree.hashCode()` that returns NonDet String
+                    // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                     extendWithNode(
                             new MarkerNode(
                                     tree,
@@ -3275,6 +3313,8 @@ public class CFGTranslationPhaseOne extends TreePathScanner<Node, Void> {
                                             + tree.hashCode(),
                                     env.getTypeUtils()));
                     scan(finallyBlock, p);
+                    // true positive; Call to `tree.hashCode()` thats return NonDet String
+                    // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                     extendWithNode(
                             new MarkerNode(
                                     tree,
