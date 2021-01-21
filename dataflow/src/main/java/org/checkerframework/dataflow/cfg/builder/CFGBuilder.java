@@ -158,18 +158,24 @@ public abstract class CFGBuilder {
      */
     protected static void printBlocks(Set<Block> blocks) {
         for (Block b : blocks) {
+            // true positive; Calls `b.hashCode()` that returns NonDet String
+            // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
             System.out.print(b.hashCode() + ": " + b);
             switch (b.getType()) {
                 case REGULAR_BLOCK:
                 case SPECIAL_BLOCK:
                     {
                         Block succ = ((SingleSuccessorBlockImpl) b).getSuccessor();
+                        // true positive; Calls `succ.hashCode()` that returns NonDet String
+                        // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                         System.out.println(" -> " + (succ != null ? succ.hashCode() : "||"));
                         break;
                     }
                 case EXCEPTION_BLOCK:
                     {
                         Block succ = ((SingleSuccessorBlockImpl) b).getSuccessor();
+                        // true positive; Calls `succ.hashCode()` that returns NonDet String
+                        // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                         System.out.print(" -> " + (succ != null ? succ.hashCode() : "||") + " {");
                         for (Map.Entry<TypeMirror, Set<Block>> entry :
                                 ((ExceptionBlockImpl) b).getExceptionalSuccessors().entrySet()) {
@@ -184,8 +190,12 @@ public abstract class CFGBuilder {
                         Block eSucc = ((ConditionalBlockImpl) b).getElseSuccessor();
                         System.out.println(
                                 " -> T "
+                                    // true positive; Calls `b.hashCode()` that returns NonDet String
+                                    // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                                         + (tSucc != null ? tSucc.hashCode() : "||")
                                         + " F "
+                                    // true positive; Calls `b.hashCode()` that returns NonDet String
+                                    // Fixed: https://github.com/typetools/checker-framework/commit/0ffe4902378112f0224d6134b64ff187f2ab95a7
                                         + (eSucc != null ? eSucc.hashCode() : "||"));
                         break;
                     }
