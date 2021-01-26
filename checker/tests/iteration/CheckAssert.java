@@ -16,4 +16,9 @@ public class CheckAssert {
         assert iter.hasNext() : "@AssumeAssertion(iteration)";
         iter.next();
     }
+
+    void test2(Collection<Integer> coll) {
+        assert !coll.isEmpty() : "@AssumeAssertion(nonempty)";
+        coll.iterator().next();
+    }
 }
