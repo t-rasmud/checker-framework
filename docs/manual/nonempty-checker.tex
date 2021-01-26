@@ -50,7 +50,7 @@ The NonEmpty Checker has the following type-refinement rules (Section~\ref{type-
     the type of the \code{Collection} is refined to \code{@NonEmpty} in the \code{else} branch.
     \item For a conditional that checks \code{Collection.size() == x} where \code{x >= 1},
     the type of the \code{Collection} is refined to \code{@NonEmpty} in the \code{then} branch.
-    \item For a conditional that checks \code{Collection.size() == x} where \code{x == 1},
+    \item For a conditional that checks \code{Collection.size() == x} where \code{x == 0},
     the type of the \code{Collection} is refined to \code{@NonEmpty} in the \code{else} branch.
     \item For a conditional that checks \code{!Collection.isEmpty()},
     the type of the \code{Collection} is refined to \code{@NonEmpty} in the \code{then} branch.
