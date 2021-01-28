@@ -51,19 +51,6 @@ public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactor
     }
 
     /**
-     * Reports error if {@code @NonEmpty} is written on array types.
-     *
-     * @param type the array type use
-     * @param tree the tree where the type is used
-     * @return boolean
-     */
-    @Override
-    public boolean isValidUse(AnnotatedTypeMirror.AnnotatedArrayType type, Tree tree) {
-        reportErrorOnNonEmptyType(type, tree);
-        return super.isValidUse(type, tree);
-    }
-
-    /**
      * Reports error if {@code @NonEmpty} is written on declared types other than Collection,
      * Iterator, Map, or their subtypes.
      *
