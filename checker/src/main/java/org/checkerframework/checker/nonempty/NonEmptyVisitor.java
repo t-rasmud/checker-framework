@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.nonempty.qual.NonEmpty;
-import org.checkerframework.common.basetype.BaseAnnotatedTypeFactory;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
@@ -16,7 +15,7 @@ import org.checkerframework.javacutil.TreeUtils;
 import org.checkerframework.javacutil.TypesUtils;
 
 /** Visitor for the NonEmpty Checker. */
-public class NonEmptyVisitor extends BaseTypeVisitor<BaseAnnotatedTypeFactory> {
+public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactory> {
     /** The java.util.Collection interface */
     private final TypeMirror collectionType =
             types.erasure(TypesUtils.typeFromClass(Collection.class, types, elements));

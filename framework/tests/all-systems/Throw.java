@@ -8,6 +8,7 @@ class Throw {
         }
     }
 
+    @SuppressWarnings("nonempty:method.invocation.invalid")
     void throwWildcard(List<? extends Exception> list) {
         try {
             throw list.get(0);

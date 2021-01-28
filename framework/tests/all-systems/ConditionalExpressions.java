@@ -49,6 +49,7 @@ public class ConditionalExpressions {
         }
     }
 
+    @SuppressWarnings("nonempty:method.invocation.invalid")
     class Generics {
         void foo1(List<Long> listS, List<Integer> listI) {
             Number s = (flag ? listI : listS).get(0);
