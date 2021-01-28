@@ -16,8 +16,5 @@ public class TestInvalidNonEmpty {
     // :: error: (invalid.nonempty)
     void test3(@NonEmpty String a) {}
 
-    // :: error: (invalid.nonempty)
-    void test4(int @NonEmpty [] a) {}
-
     void test5(@NonEmpty Map<Integer, Integer> a) {}
 }
