@@ -5,7 +5,10 @@
 import java.util.List;
 
 public abstract class Issue887 {
-    @SuppressWarnings("nullness") // See checker/tests/nullness/Issue887.java
+    @SuppressWarnings({
+        "nullness", // See checker/tests/nullness/Issue887.java
+        "nonempty:method.invocation.invalid"
+    })
     void test() {
         method(foo(null).get(0));
     }
