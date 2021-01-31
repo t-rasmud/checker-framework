@@ -1,5 +1,7 @@
 package org.checkerframework.checker.nonempty;
 
+import java.util.LinkedHashSet;
+import org.checkerframework.checker.sizeof.SizeOfChecker;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
 
@@ -13,5 +15,13 @@ public class NonEmptyChecker extends BaseTypeChecker {
         GenericAnnotatedTypeFactory<?, ?, ?, ?> result = super.getTypeFactory();
         result.sideEffectsUnrefineAliases = true;
         return result;
+    }
+
+    @Override
+    protected LinkedHashSet<Class<? extends BaseTypeChecker>> getImmediateSubcheckerClasses() {
+        LinkedHashSet<Class<? extends BaseTypeChecker>> checkers =
+                super.getImmediateSubcheckerClasses();
+        checkers.add(SizeOfChecker.class);
+        return checkers;
     }
 }
