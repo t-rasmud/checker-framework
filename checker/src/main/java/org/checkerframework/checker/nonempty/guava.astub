@@ -5,3 +5,16 @@ import org.checkerframework.checker.nonempty.qual.NonEmpty;
 class ImmutableList<E> {
     static <E> @NonEmpty ImmutableList<E> of(E element);
 }
+
+package com.google.common.base;
+
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
+class Preconditions {
+    @SideEffectFree
+    public static void checkState(boolean expression);
+}
+
+public interface Supplier<T> {
+    @PolyNonEmpty T get(@PolyNonEmpty Supplier<T> this);
+}
