@@ -1,31 +1,24 @@
 package org.checkerframework.checker.nonempty;
 
-import com.sun.source.tree.ExpressionTree;
-import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.tree.Tree;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.nonempty.qual.NonEmpty;
-import org.checkerframework.checker.sizeof.SizeOfChecker;
-import org.checkerframework.checker.sizeof.qual.SizeOf;
+import org.checkerframework.common.basetype.BaseAnnotatedTypeFactory;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
-import org.checkerframework.common.value.ValueCheckerUtils;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
-import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
 import org.checkerframework.javacutil.AnnotationBuilder;
-import org.checkerframework.javacutil.AnnotationUtils;
 import org.checkerframework.javacutil.TreeUtils;
 import org.checkerframework.javacutil.TypesUtils;
 
 /** Visitor for the NonEmpty Checker. */
-public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactory> {
+public class NonEmptyVisitor extends BaseTypeVisitor<BaseAnnotatedTypeFactory> {
     /** The java.util.Collection interface */
     private final TypeMirror collectionType =
             types.erasure(TypesUtils.typeFromClass(Collection.class, types, elements));
@@ -105,26 +98,28 @@ public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactor
         }
     }
 
-    @Override
-    protected void reportMethodInvocabilityError(
-            MethodInvocationTree node, AnnotatedTypeMirror found, AnnotatedTypeMirror expected) {
-        if (TreeUtils.isMethodInvocation(node, getMethod, processingEnv)) {
-            ExpressionTree indexArg = node.getArguments().get(0);
-            GenericAnnotatedTypeFactory<?, ?, ?, ?> sizeOfATF =
-                    atypeFactory.getTypeFactoryOfSubchecker(SizeOfChecker.class);
-            AnnotatedTypeMirror indexArgAnnoMirror = sizeOfATF.getAnnotatedType(indexArg);
-            AnnotationMirror indexArgAnno = indexArgAnnoMirror.getAnnotation();
-            if (AnnotationUtils.areSameByClass(indexArgAnno, SizeOf.class)) {
-                List<String> elementValues =
-                        ValueCheckerUtils.getValueOfAnnotationWithStringArgument(indexArgAnno);
-                String methodSelect = node.getMethodSelect().toString();
-                String[] splitMethodSelect = methodSelect.split("\\.");
-                if (elementValues.size() == 1
-                        && elementValues.get(0).equals(splitMethodSelect[0])) {
-                    return;
-                }
-            }
-        }
-        super.reportMethodInvocabilityError(node, found, expected);
-    }
+    //    @Override
+    //    protected void reportMethodInvocabilityError(
+    //            MethodInvocationTree node, AnnotatedTypeMirror found, AnnotatedTypeMirror
+    // expected) {
+    //        if (TreeUtils.isMethodInvocation(node, getMethod, processingEnv)) {
+    //            ExpressionTree indexArg = node.getArguments().get(0);
+    //            GenericAnnotatedTypeFactory<?, ?, ?, ?> sizeOfATF =
+    //                    atypeFactory.getTypeFactoryOfSubchecker(SizeOfChecker.class);
+    //            AnnotatedTypeMirror indexArgAnnoMirror = sizeOfATF.getAnnotatedType(indexArg);
+    //            AnnotationMirror indexArgAnno = indexArgAnnoMirror.getAnnotation();
+    //            if (AnnotationUtils.areSameByClass(indexArgAnno, SizeOf.class)) {
+    //                List<String> elementValues =
+    //
+    // ValueCheckerUtils.getValueOfAnnotationWithStringArgument(indexArgAnno);
+    //                String methodSelect = node.getMethodSelect().toString();
+    //                String[] splitMethodSelect = methodSelect.split("\\.");
+    //                if (elementValues.size() == 1
+    //                        && elementValues.get(0).equals(splitMethodSelect[0])) {
+    //                    return;
+    //                }
+    //            }
+    //        }
+    //        super.reportMethodInvocabilityError(node, found, expected);
+    //    }
 }
