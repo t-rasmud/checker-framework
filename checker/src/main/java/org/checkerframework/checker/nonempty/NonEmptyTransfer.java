@@ -291,6 +291,11 @@ public class NonEmptyTransfer
         System.out.println("nonempty store: " + in.getRegularStore().getSizeEqualitiesMap());
         if (n.getTarget().getTree().getKind() == Tree.Kind.VARIABLE) {
             if (NodeUtils.isMethodInvocation(n.getExpression(), sizeMethod, processingEnv)) {
+                Node leftReceiver = n.getTarget();
+                Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
+                Node rightReceiver = n.getExpression();
+                Receiver rightRec = FlowExpressions.internalReprOf(atypeFactory, rightReceiver);
+                in.getRegularStore().getSizeEqualitiesMap().put(leftRec.toString(), rightRec);
                 System.out.println("!!!!!");
             }
         }
