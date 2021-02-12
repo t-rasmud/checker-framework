@@ -1,6 +1,5 @@
 package org.checkerframework.checker.nonempty;
 
-import com.sun.source.tree.Tree;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
@@ -8,7 +7,6 @@ import org.checkerframework.checker.nonempty.qual.NonEmpty;
 import org.checkerframework.dataflow.analysis.ConditionalTransferResult;
 import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
-import org.checkerframework.dataflow.cfg.node.AssignmentNode;
 import org.checkerframework.dataflow.cfg.node.ConditionalNotNode;
 import org.checkerframework.dataflow.cfg.node.EqualToNode;
 import org.checkerframework.dataflow.cfg.node.GreaterThanNode;
@@ -284,21 +282,22 @@ public class NonEmptyTransfer
         return newResult;
     }
 
-    @Override
-    public TransferResult<NonEmptyValue, NonEmptyStore> visitAssignment(
-            AssignmentNode n, TransferInput<NonEmptyValue, NonEmptyStore> in) {
-        System.out.println("visiting assignment: " + n);
-        System.out.println("nonempty store: " + in.getRegularStore().getSizeEqualitiesMap());
-        if (n.getTarget().getTree().getKind() == Tree.Kind.VARIABLE) {
-            if (NodeUtils.isMethodInvocation(n.getExpression(), sizeMethod, processingEnv)) {
-                Node leftReceiver = n.getTarget();
-                Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
-                Node rightReceiver = n.getExpression();
-                Receiver rightRec = FlowExpressions.internalReprOf(atypeFactory, rightReceiver);
-                in.getRegularStore().getSizeEqualitiesMap().put(leftRec.toString(), rightRec);
-                System.out.println("!!!!!");
-            }
-        }
-        return super.visitAssignment(n, in);
-    }
+    //    @Override
+    //    public TransferResult<NonEmptyValue, NonEmptyStore> visitAssignment(
+    //            AssignmentNode n, TransferInput<NonEmptyValue, NonEmptyStore> in) {
+    //        System.out.println("visiting assignment: " + n);
+    //        System.out.println("nonempty store: " + in.getRegularStore().getSizeEqualitiesMap());
+    //        if (n.getTarget().getTree().getKind() == Tree.Kind.VARIABLE) {
+    //            if (NodeUtils.isMethodInvocation(n.getExpression(), sizeMethod, processingEnv)) {
+    //                Node leftReceiver = n.getTarget();
+    //                Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
+    //                Node rightReceiver = n.getExpression();
+    //                Receiver rightRec = FlowExpressions.internalReprOf(atypeFactory,
+    // rightReceiver);
+    //                in.getRegularStore().getSizeEqualitiesMap().put(leftRec.toString(), rightRec);
+    //                System.out.println("!!!!!");
+    //            }
+    //        }
+    //        return super.visitAssignment(n, in);
+    //    }
 }
