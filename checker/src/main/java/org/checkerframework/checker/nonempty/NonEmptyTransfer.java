@@ -222,7 +222,13 @@ public class NonEmptyTransfer
         String mapKey = leftOp.toString();
         if (sizeEqMap != null && sizeEqMap.containsKey(mapKey)) {
             Node mapVal = sizeEqMap.get(mapKey);
-            return refineThenStore(mapVal, resultIn);
+            int rightOpInt = ((IntegerLiteralNode) rightOp).getValue();
+            if (rightOpInt >= 1) {
+                return refineThenStore(mapVal, resultIn);
+            }
+            if (rightOpInt == 0) {
+                return refineElseStore(mapVal, resultIn);
+            }
         }
         return resultIn;
     }
