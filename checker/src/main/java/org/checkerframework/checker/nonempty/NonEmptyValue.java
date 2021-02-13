@@ -1,17 +1,15 @@
 package org.checkerframework.checker.nonempty;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.framework.flow.CFAbstractAnalysis;
 import org.checkerframework.framework.flow.CFAbstractValue;
-import org.checkerframework.framework.qual.JavaExpression;
 
 public class NonEmptyValue extends CFAbstractValue<NonEmptyValue> {
-    protected Map<String, JavaExpression> sizeEqualitiesMap;
+    protected static Map<String, Node> sizeEqualitiesMap;
 
     /**
      * Creates a new CFAbstractValue.
@@ -25,8 +23,5 @@ public class NonEmptyValue extends CFAbstractValue<NonEmptyValue> {
             Set<AnnotationMirror> annotations,
             TypeMirror underlyingType) {
         super(analysis, annotations, underlyingType);
-        if (underlyingType.getKind() == TypeKind.INT) {
-            sizeEqualitiesMap = new HashMap<>();
-        }
     }
 }
