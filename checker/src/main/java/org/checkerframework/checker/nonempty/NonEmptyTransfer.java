@@ -295,16 +295,22 @@ public class NonEmptyTransfer
     @Override
     public TransferResult<NonEmptyValue, NonEmptyStore> visitAssignment(
             AssignmentNode n, TransferInput<NonEmptyValue, NonEmptyStore> in) {
-        if (n.getTarget().getTree().getKind() == Tree.Kind.VARIABLE) {
+        Tree.Kind targetKind = n.getTarget().getTree().getKind();
+        if (targetKind == Tree.Kind.VARIABLE || targetKind == Tree.Kind.IDENTIFIER) {
+            NonEmptyStore store = in.getRegularStore();
+            Node leftReceiver = n.getTarget();
+            Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
+            Map<String, Node> sizeEqMap = store.getSizeEqualitiesMap();
+            String mapKey = leftRec.toString();
             if (NodeUtils.isMethodInvocation(n.getExpression(), sizeMethod, processingEnv)) {
-                Node leftReceiver = n.getTarget();
-                Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
                 Node rightReceiver = n.getExpression();
-                NonEmptyStore store = in.getRegularStore();
-                if (store.getSizeEqualitiesMap() == null) {
+                if (sizeEqMap == null) {
                     store.createSizeEqualifiesMap();
+                    sizeEqMap = store.getSizeEqualitiesMap();
                 }
-                store.getSizeEqualitiesMap().put(leftRec.toString(), rightReceiver);
+                sizeEqMap.put(mapKey, rightReceiver);
+            } else if (sizeEqMap != null && sizeEqMap.containsKey(mapKey)) {
+                store.getSizeEqualitiesMap().remove(mapKey);
             }
         }
         return super.visitAssignment(n, in);
