@@ -191,6 +191,14 @@ public class NonEmptyTransfer
      * <p>For a conditional that checks {@code Collection.size() == x} where {@code x == 1}, refines
      * the type of the {@code Collection} to {@code @NonEmpty} in the else branch.
      *
+     * <p>For a conditional that checks {@code size == x} where {@code x >= 1} and size =
+     * Collection.size(), refines the type of the {@code Collection} to {@code @NonEmpty} in the
+     * then branch.
+     *
+     * <p>For a conditional that checks {@code size == x} where {@code x == 0} and size =
+     * Collection.size(), refines the type of the {@code Collection} to {@code @NonEmpty} in the
+     * else branch.
+     *
      * @param n EqualToNode
      * @param p TransferResult input
      * @return TransferResult with possibly refined stores
@@ -222,7 +230,13 @@ public class NonEmptyTransfer
         String mapKey = leftOp.toString();
         if (sizeEqMap != null && sizeEqMap.containsKey(mapKey)) {
             Node mapVal = sizeEqMap.get(mapKey);
-            return refineThenStore(mapVal, resultIn);
+            int rightOpInt = ((IntegerLiteralNode) rightOp).getValue();
+            if (rightOpInt >= 1) {
+                return refineThenStore(mapVal, resultIn);
+            }
+            if (rightOpInt == 0) {
+                return refineElseStore(mapVal, resultIn);
+            }
         }
         return resultIn;
     }
@@ -292,6 +306,18 @@ public class NonEmptyTransfer
         return newResult;
     }
 
+    /**
+     * Updates the {@code sizeEqualitiesMap} in the NonEmptyStore as follows:
+     *
+     * <p>If the assignment statement assigns {@code collection.size()} to {@code size}, adds {@code
+     * size} as the key and {@code collection.size()} as the value.
+     *
+     * <p>For any other update to {@code size}, removes {@code size} from the map.
+     *
+     * @param n AssignmentNode
+     * @param in TransferInput input
+     * @return TransferResult with the updated NonEmptyStore
+     */
     @Override
     public TransferResult<NonEmptyValue, NonEmptyStore> visitAssignment(
             AssignmentNode n, TransferInput<NonEmptyValue, NonEmptyStore> in) {
