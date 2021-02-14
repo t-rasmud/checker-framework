@@ -230,6 +230,9 @@ public class NonEmptyTransfer
         String mapKey = leftOp.toString();
         if (sizeEqMap != null && sizeEqMap.containsKey(mapKey)) {
             Node mapVal = sizeEqMap.get(mapKey);
+            if (!(rightOp instanceof IntegerLiteralNode)) {
+                return resultIn;
+            }
             int rightOpInt = ((IntegerLiteralNode) rightOp).getValue();
             if (rightOpInt >= 1) {
                 return refineThenStore(mapVal, resultIn);
