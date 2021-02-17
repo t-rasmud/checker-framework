@@ -19,8 +19,7 @@ import org.checkerframework.dataflow.cfg.node.LessThanNode;
 import org.checkerframework.dataflow.cfg.node.LessThanOrEqualNode;
 import org.checkerframework.dataflow.cfg.node.MethodInvocationNode;
 import org.checkerframework.dataflow.cfg.node.Node;
-import org.checkerframework.dataflow.expression.FlowExpressions;
-import org.checkerframework.dataflow.expression.Receiver;
+import org.checkerframework.dataflow.expression.JavaExpression;
 import org.checkerframework.dataflow.util.NodeUtils;
 import org.checkerframework.framework.flow.CFAbstractTransfer;
 import org.checkerframework.framework.type.AnnotatedTypeFactory;
@@ -277,7 +276,7 @@ public class NonEmptyTransfer
     TransferResult<NonEmptyValue, NonEmptyStore> refineThenStore(
             Node operand, TransferResult<NonEmptyValue, NonEmptyStore> resultIn) {
         Node leftReceiver = ((MethodInvocationNode) operand).getTarget().getReceiver();
-        Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
+        JavaExpression leftRec = JavaExpression.fromNode(atypeFactory, leftReceiver);
 
         NonEmptyStore thenStore = resultIn.getRegularStore();
         NonEmptyStore elseStore = thenStore.copy();
@@ -298,7 +297,7 @@ public class NonEmptyTransfer
     TransferResult<NonEmptyValue, NonEmptyStore> refineElseStore(
             Node operand, TransferResult<NonEmptyValue, NonEmptyStore> resultIn) {
         Node leftReceiver = ((MethodInvocationNode) operand).getTarget().getReceiver();
-        Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
+        JavaExpression leftRec = JavaExpression.fromNode(atypeFactory, leftReceiver);
 
         NonEmptyStore thenStore = resultIn.getRegularStore();
         NonEmptyStore elseStore = thenStore.copy();
@@ -328,7 +327,7 @@ public class NonEmptyTransfer
         if (targetKind == Tree.Kind.VARIABLE || targetKind == Tree.Kind.IDENTIFIER) {
             NonEmptyStore store = in.getRegularStore();
             Node leftReceiver = n.getTarget();
-            Receiver leftRec = FlowExpressions.internalReprOf(atypeFactory, leftReceiver);
+            JavaExpression leftRec = JavaExpression.fromNode(atypeFactory, leftReceiver);
             Map<String, Node> sizeEqMap = store.getSizeEqualitiesMap();
             String mapKey = leftRec.toString();
             if (NodeUtils.isMethodInvocation(n.getExpression(), sizeMethod, processingEnv)) {
