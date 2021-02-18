@@ -27,7 +27,7 @@ public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactor
     /** The java.util.Map interface */
     private final TypeMirror mapType =
             types.erasure(TypesUtils.typeFromClass(Map.class, types, elements));
-
+    /** The processing environment */
     ProcessingEnvironment processingEnv = atypeFactory.getProcessingEnv();
     /** The {@code Collection.size()} method */
     ExecutableElement getMethod = TreeUtils.getMethod("java.util.List", "get", 1, processingEnv);
