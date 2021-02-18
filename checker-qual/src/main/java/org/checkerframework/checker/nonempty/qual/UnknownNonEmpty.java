@@ -15,8 +15,7 @@ import org.checkerframework.framework.qual.TypeUseLocation;
 
 /**
  * Indicates that the collection, map, or iterator not known to be a non-empty. It is the top type
- * qualifier in the {@link NonEmpty} hierarchy. It is
- * also the default type qualifier.
+ * qualifier in the {@link NonEmpty} hierarchy. It is also the default type qualifier.
  *
  * <p>Used internally by the type system; should never be written by a programmer.
  *
