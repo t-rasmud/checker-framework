@@ -10,9 +10,18 @@ import org.checkerframework.framework.flow.CFAbstractAnalysis;
 import org.checkerframework.framework.flow.CFAbstractValue;
 import org.checkerframework.javacutil.Pair;
 
+/** Boiler plate code to glue together all the parts of the NonEmpty dataflow classes. */
 public class NonEmptyAnalysis
         extends CFAbstractAnalysis<NonEmptyValue, NonEmptyStore, NonEmptyTransfer> {
 
+    /**
+     * Constructor for NonEmptyAnalysis.
+     *
+     * @param checker BaseTypeChecker
+     * @param factory NonEmptyAnnotatedTypeFactory
+     * @param fieldValues List of field values
+     * @param maxCountBeforeWidening int
+     */
     protected NonEmptyAnalysis(
             BaseTypeChecker checker,
             NonEmptyAnnotatedTypeFactory factory,
@@ -21,6 +30,13 @@ public class NonEmptyAnalysis
         super(checker, factory, fieldValues, maxCountBeforeWidening);
     }
 
+    /**
+     * Constructor for NonEmptyAnalysis.
+     *
+     * @param checker BaseTypeChecker
+     * @param factory NonEmptyAnnotatedTypeFactory
+     * @param fieldValues List of field values
+     */
     protected NonEmptyAnalysis(
             BaseTypeChecker checker,
             NonEmptyAnnotatedTypeFactory factory,

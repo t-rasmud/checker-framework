@@ -7,8 +7,11 @@ import javax.lang.model.type.TypeMirror;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.framework.flow.CFAbstractAnalysis;
 import org.checkerframework.framework.flow.CFAbstractValue;
+import org.checkerframework.framework.flow.CFValue;
 
+/** Behaves just like {@link CFValue}, but additionally tracks size equalities. */
 public class NonEmptyValue extends CFAbstractValue<NonEmptyValue> {
+    /** Map that stores size equalities. */
     protected static Map<String, Node> sizeEqualitiesMap;
 
     /**
