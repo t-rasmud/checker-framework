@@ -1,10 +1,14 @@
 package org.checkerframework.checker.iteration;
 
-import com.sun.source.tree.ExpressionTree;
-import com.sun.source.tree.MethodInvocationTree;
+import com.sun.source.tree.*;
+import java.util.Iterator;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.iteration.qual.HasNext;
+import org.checkerframework.checker.iteration.qual.UnknownHasNext;
 import org.checkerframework.checker.nonempty.NonEmptyChecker;
 import org.checkerframework.checker.nonempty.qual.NonEmpty;
 import org.checkerframework.common.basetype.BaseAnnotatedTypeFactory;
@@ -14,13 +18,21 @@ import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.treeannotator.ListTreeAnnotator;
 import org.checkerframework.framework.type.treeannotator.TreeAnnotator;
 import org.checkerframework.javacutil.AnnotationBuilder;
+import org.checkerframework.javacutil.AnnotationUtils;
+import org.checkerframework.javacutil.ElementUtils;
 import org.checkerframework.javacutil.TreeUtils;
+import org.checkerframework.javacutil.TypesUtils;
 
 /** Annotated type factory for the Iteration Checker. */
 public class IterationAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** {@link HasNext}. */
     private final AnnotationMirror HASNEXT = AnnotationBuilder.fromClass(elements, HasNext.class);
-
+    /** {@link UnknownHasNext}. */
+    private final AnnotationMirror UNKNOWN_HASNEXT =
+            AnnotationBuilder.fromClass(elements, UnknownHasNext.class);
+    /** The java.util.Iterator interface */
+    private final TypeMirror iteratorType =
+            types.erasure(TypesUtils.typeFromClass(Iterator.class, types, elements));
     /**
      * Constructor for IterationAnnotatedTypeFactory.
      *
@@ -88,5 +100,36 @@ public class IterationAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
             return super.visitMethodInvocation(node, annotatedTypeMirror);
         }
+    }
+
+    @Override
+    public void postAsMemberOf(
+            AnnotatedTypeMirror type, AnnotatedTypeMirror owner, Element element) {
+        super.postAsMemberOf(type, owner, element);
+        // For the field access of "element" whose type is "type" and whose access expression's type
+        // is "owner".
+        // A final Iterator field of a "@HasNext" object gets the type "@HasNext".
+        if (!isLHS && element.getKind() == ElementKind.FIELD && ElementUtils.isFinal(element)) {
+            boolean isIterator = types.isSubtype(type.getUnderlyingType(), iteratorType);
+            if (isIterator) {
+                AnnotationMirror expressionAnno =
+                        owner.getEffectiveAnnotationInHierarchy(UNKNOWN_HASNEXT);
+                if (AnnotationUtils.areSame(expressionAnno, HASNEXT)) {
+                    type.replaceAnnotation(HASNEXT);
+                }
+            }
+        }
+    }
+
+    /** Is the type of a left hand side currently being computed? */
+    private boolean isLHS = false;
+
+    @Override
+    public AnnotatedTypeMirror getAnnotatedTypeLhs(Tree lhsTree) {
+        boolean oldIsLhs = isLHS;
+        isLHS = true;
+        AnnotatedTypeMirror type = super.getAnnotatedTypeLhs(lhsTree);
+        isLHS = oldIsLhs;
+        return type;
     }
 }
