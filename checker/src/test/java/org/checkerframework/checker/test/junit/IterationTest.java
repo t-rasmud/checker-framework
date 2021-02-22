@@ -17,7 +17,8 @@ public class IterationTest extends CheckerFrameworkPerDirectoryTest {
                 testFiles,
                 org.checkerframework.checker.iteration.IterationChecker.class,
                 "iteration",
-                "-Anomsgtext");
+                "-Anomsgtext",
+                "-AassumeAssertionsAreEnabled");
     }
 
     @Parameters
