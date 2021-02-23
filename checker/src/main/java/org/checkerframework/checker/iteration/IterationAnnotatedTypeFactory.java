@@ -1,6 +1,8 @@
 package org.checkerframework.checker.iteration;
 
-import com.sun.source.tree.*;
+import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.MethodInvocationTree;
+import com.sun.source.tree.Tree;
 import java.util.Iterator;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
