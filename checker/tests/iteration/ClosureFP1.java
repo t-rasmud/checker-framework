@@ -9,7 +9,7 @@ public class ClosureFP1 {
     private class NeighborIterator implements Iterator {
 
         List<Integer> inEdgeList = new ArrayList<>();
-        List<Integer> outEdgeList = new ArrayList();
+        List<Integer> outEdgeList = new ArrayList<>();
 
         private final Iterator<Integer> in = inEdgeList.iterator();
         private final Iterator<Integer> out = outEdgeList.iterator();
