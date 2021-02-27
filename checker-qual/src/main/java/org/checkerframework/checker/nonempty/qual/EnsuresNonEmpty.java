@@ -23,7 +23,7 @@ import org.checkerframework.framework.qual.PostconditionAnnotation;
  *
  * @see NonEmpty
  * @see EnsuresNonEmptyIf
- * @checker_framework.manual #map-key-checker Map Key Checker
+ * @checker_framework.manual #nonempty-checker NonEmpty Checker
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

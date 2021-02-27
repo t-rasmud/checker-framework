@@ -57,8 +57,8 @@ public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactor
     }
 
     /**
-     * Reports error if {@code @NonEmpty} is written on declared types other than Collection,
-     * Iterator, Map, or their subtypes.
+     * Reports error if {@code @NonEmpty} is written on a declared (non-primitive) type other than
+     * Collection, Iterator, Map, or their subtypes.
      *
      * @param declarationType the type of the class (TypeElement)
      * @param useType the use of the class (instance type)
