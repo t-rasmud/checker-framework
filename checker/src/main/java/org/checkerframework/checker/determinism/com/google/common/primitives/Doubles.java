@@ -464,7 +464,9 @@ public final class Doubles {
      * NaN} is used as a parameter to any of its methods.
      *
      * <p><b>Note:</b> when possible, you should represent your data as an {@link
-     * ImmutableDoubleArray} instead, which has an {@link ImmutableDoubleArray#asList asList} view.
+     * org.checkerframework.com.google.common.primitives.ImmutableDoubleArray} instead, which has an
+     * {@link org.checkerframework.com.google.common.primitives.ImmutableDoubleArray#asList asList}
+     * view.
      *
      * @param backingArray the array to back the list
      * @return a list view of the array

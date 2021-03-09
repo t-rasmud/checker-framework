@@ -16,7 +16,7 @@ import org.checkerframework.checker.determinism.com.google.common.primitives.Flo
 import org.checkerframework.checker.determinism.com.google.common.primitives.Ints;
 import org.checkerframework.checker.determinism.com.google.common.primitives.Longs;
 import org.checkerframework.checker.determinism.com.google.common.primitives.Shorts;
-import org.checkerframework.checker.determinism.qual.*;
+import org.checkerframework.checker.determinism.qual.PolyDet;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**

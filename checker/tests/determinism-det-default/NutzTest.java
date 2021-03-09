@@ -207,10 +207,8 @@ class Response {
         String contextType = header.get("Content-Type");
         if (null != contextType) {
             for (String tmp : contextType.split(";")) {
-                // :: error: invalid.type.on.conditional
                 if (tmp == null) continue;
                 tmp = tmp.trim();
-                // :: error: argument.type.incompatible  :: error: invalid.type.on.conditional
                 if (tmp.startsWith("charset=")) return Strings.trim(tmp.substring(8)).trim();
             }
         }

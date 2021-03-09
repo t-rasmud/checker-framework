@@ -267,7 +267,8 @@ public final class Longs {
      *
      * <p>If you need to convert and concatenate several values (possibly even of different types),
      * use a shared {@link java.nio.ByteBuffer} instance, or use {@link
-     * com.google.common.io.ByteStreams#newDataOutput()} to get a growable buffer.
+     * org.checkerframework.com.google.common.io.ByteStreams#newDataOutput()} to get a growable
+     * buffer.
      */
     public static byte[] toByteArray(long value) {
         // Note that this code needs to stay compatible with GWT, which has known
@@ -599,7 +600,9 @@ public final class Longs {
      * for the returned list is unspecified.
      *
      * <p><b>Note:</b> when possible, you should represent your data as an {@link
-     * ImmutableLongArray} instead, which has an {@link ImmutableLongArray#asList asList} view.
+     * org.checkerframework.com.google.common.primitives.ImmutableLongArray} instead, which has an
+     * {@link org.checkerframework.com.google.common.primitives.ImmutableLongArray#asList asList}
+     * view.
      *
      * @param backingArray the array to back the list
      * @return a list view of the array

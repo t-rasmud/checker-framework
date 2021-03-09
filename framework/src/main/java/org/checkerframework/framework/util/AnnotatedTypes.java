@@ -606,91 +606,6 @@ public class AnnotatedTypes {
     }
 
     /**
-     * Returns the iterated type of the passed iterable type, and throws {@link
-     * IllegalArgumentException} if the passed type is not iterable.
-     *
-     * <p>The iterated type is the component type of an array, and the type argument of {@link
-     * Iterable} for declared types.
-     *
-     * @param processingEnv ProcessingEnvironment
-     * @param atypeFactory AnnotatedTypeFactory
-     * @param iterableType the iterable type (either array or declared)
-     * @return the types of elements in the iterable type
-     */
-    public static AnnotatedTypeMirror getIteratedType(
-            ProcessingEnvironment processingEnv,
-            AnnotatedTypeFactory atypeFactory,
-            AnnotatedTypeMirror iterableType) {
-        if (iterableType.getKind() == TypeKind.ARRAY) {
-            return ((AnnotatedArrayType) iterableType).getComponentType();
-        }
-
-        // For type variables and wildcards take the effective upper bound.
-        if (iterableType.getKind() == TypeKind.WILDCARD) {
-            return getIteratedType(
-                    processingEnv,
-                    atypeFactory,
-                    ((AnnotatedWildcardType) iterableType).getExtendsBound().deepCopy());
-        }
-        if (iterableType.getKind() == TypeKind.TYPEVAR) {
-            return getIteratedType(
-                    processingEnv,
-                    atypeFactory,
-                    ((AnnotatedTypeVariable) iterableType).getUpperBound());
-        }
-
-        if (iterableType.getKind() != TypeKind.DECLARED) {
-            throw new BugInCF("AnnotatedTypes.getIteratedType: not iterable type: " + iterableType);
-        }
-
-        TypeElement iterableElement = ElementUtils.getTypeElement(processingEnv, Iterable.class);
-        AnnotatedDeclaredType iterableElmType = atypeFactory.getAnnotatedType(iterableElement);
-        AnnotatedDeclaredType dt = asSuper(atypeFactory, iterableType, iterableElmType);
-        if (dt.getTypeArguments().isEmpty()) {
-            TypeElement e = ElementUtils.getTypeElement(processingEnv, Object.class);
-            AnnotatedDeclaredType t = atypeFactory.getAnnotatedType(e);
-            return t;
-        } else {
-            return dt.getTypeArguments().get(0);
-        }
-    }
-
-    /**
-     * Returns the super types of {@code type} that are declared types.
-     *
-     * @param type AnnotatedTypeMirror
-     * @return the super types of {@code type} that are declared types.
-     */
-    public static Set<AnnotatedDeclaredType> getSuperTypes(AnnotatedTypeMirror type) {
-        Set<AnnotatedDeclaredType> supertypes = new LinkedHashSet<>();
-        if (type == null) {
-            return supertypes;
-        }
-        // Set up a stack containing the type mirror of subtype, which
-        // is our starting point.
-        Deque<AnnotatedTypeMirror> stack = new ArrayDeque<>();
-        stack.push(type);
-
-        while (!stack.isEmpty()) {
-            AnnotatedTypeMirror current = stack.pop();
-
-            // For each direct supertype of the current type, if it
-            // hasn't already been visited, push it onto the stack and
-            // add it to our supertypes set.
-            for (AnnotatedTypeMirror supertype : current.directSuperTypes()) {
-                if (supertype.getKind() == TypeKind.DECLARED && !supertypes.contains(supertype)) {
-                    stack.push(supertype);
-                    supertypes.add((AnnotatedDeclaredType) supertype);
-                } else if (supertype.getKind() == TypeKind.TYPEVAR
-                        || supertype.getKind() == TypeKind.WILDCARD) {
-                    stack.push(supertype);
-                }
-            }
-        }
-        return supertypes;
-    }
-
-    /**
      * Returns all the supertypes (direct or indirect) of the given declared type.
      *
      * @param type a declared type
@@ -770,65 +685,6 @@ public class AnnotatedTypes {
         }
 
         return Collections.unmodifiableMap(overrides);
-    }
-
-    /**
-     * If type overrides {@code overridenMethod}, the return the pair of {@code type} and the
-     * ExecutableElement that overrides {@code overridenMethod}. Otherwise, search the supertypes of
-     * {@code type} for a type that overrides {@code overridenMethod}. If one of the supertypes
-     * overrides the method, then a pair of that supertype and the ExecutableElement for the method
-     * are return. Otherwise, null is returned.
-     *
-     * @param type AnnotatedTypeMirror
-     * @param overridenMethod ExecutableElement
-     * @param env ProcessingEnvironment
-     * @return the pair of {@code type} and the ExecutableElement that overrides {@code
-     *     overridenMethod}
-     */
-    public static Pair<AnnotatedDeclaredType, ExecutableElement> getOverriddenMethod(
-            AnnotatedTypeMirror type,
-            ExecutableElement overridenMethod,
-            ProcessingEnvironment env) {
-
-        if (type.getKind() == TypeKind.DECLARED) {
-            AnnotatedDeclaredType declaredType = (AnnotatedDeclaredType) type;
-            ExecutableElement supermethod = getMethod(overridenMethod, declaredType, env);
-            if (supermethod != null) {
-                return Pair.of(declaredType, supermethod);
-            }
-        }
-
-        final Collection<AnnotatedDeclaredType> supertypes = getSuperTypes(type);
-        for (AnnotatedDeclaredType supertype : supertypes) {
-            ExecutableElement supermethod = getMethod(overridenMethod, supertype, env);
-            if (supermethod != null) {
-                return Pair.of(supertype, supermethod);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns the method in type that overrides {@code overridenMethod} or null if no such method
-     * exists.
-     *
-     * @param overridenMethod ExecutableElement
-     * @param type AnnotatedDeclaredType
-     * @param env ProcessingEnvironment
-     * @return ExecutableElement
-     */
-    private static ExecutableElement getMethod(
-            ExecutableElement overridenMethod,
-            AnnotatedDeclaredType type,
-            ProcessingEnvironment env) {
-        TypeElement typeE = (TypeElement) type.getUnderlyingType().asElement();
-        for (ExecutableElement method : ElementFilter.methodsIn(typeE.getEnclosedElements())) {
-            if (ElementUtils.isMethod(method, overridenMethod, env)) {
-                return method;
-            }
-        }
-        return null;
     }
 
     /**
@@ -915,6 +771,100 @@ public class AnnotatedTypes {
                         type2.getUnderlyingType(),
                         atypeFactory.getProcessingEnv());
         return leastUpperBound(atypeFactory, type1, type2, lub);
+    }
+
+    /**
+     * If type overrides {@code overridenMethod}, the return the pair of {@code type} and the
+     * ExecutableElement that overrides {@code overridenMethod}. Otherwise, search the supertypes of
+     * {@code type} for a type that overrides {@code overridenMethod}. If one of the supertypes
+     * overrides the method, then a pair of that supertype and the ExecutableElement for the method
+     * are return. Otherwise, null is returned.
+     *
+     * @param type AnnotatedTypeMirror
+     * @param overridenMethod ExecutableElement
+     * @param env ProcessingEnvironment
+     * @return the pair of {@code type} and the ExecutableElement that overrides {@code
+     *     overridenMethod}
+     */
+    public static Pair<AnnotatedDeclaredType, ExecutableElement> getOverriddenMethod(
+            AnnotatedTypeMirror type,
+            ExecutableElement overridenMethod,
+            ProcessingEnvironment env) {
+
+        if (type.getKind() == TypeKind.DECLARED) {
+            AnnotatedDeclaredType declaredType = (AnnotatedDeclaredType) type;
+            ExecutableElement supermethod = getMethod(overridenMethod, declaredType, env);
+            if (supermethod != null) {
+                return Pair.of(declaredType, supermethod);
+            }
+        }
+
+        final Collection<AnnotatedDeclaredType> supertypes = getSuperTypes(type);
+        for (AnnotatedDeclaredType supertype : supertypes) {
+            ExecutableElement supermethod = getMethod(overridenMethod, supertype, env);
+            if (supermethod != null) {
+                return Pair.of(supertype, supermethod);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the super types of {@code type} that are declared types.
+     *
+     * @param type AnnotatedTypeMirror
+     * @return the super types of {@code type} that are declared types.
+     */
+    public static Set<AnnotatedDeclaredType> getSuperTypes(AnnotatedTypeMirror type) {
+        Set<AnnotatedDeclaredType> supertypes = new LinkedHashSet<>();
+        if (type == null) {
+            return supertypes;
+        }
+        // Set up a stack containing the type mirror of subtype, which
+        // is our starting point.
+        Deque<AnnotatedTypeMirror> stack = new ArrayDeque<>();
+        stack.push(type);
+
+        while (!stack.isEmpty()) {
+            AnnotatedTypeMirror current = stack.pop();
+
+            // For each direct supertype of the current type, if it
+            // hasn't already been visited, push it onto the stack and
+            // add it to our supertypes set.
+            for (AnnotatedTypeMirror supertype : current.directSupertypes()) {
+                if (supertype.getKind() == TypeKind.DECLARED && !supertypes.contains(supertype)) {
+                    stack.push(supertype);
+                    supertypes.add((AnnotatedDeclaredType) supertype);
+                } else if (supertype.getKind() == TypeKind.TYPEVAR
+                        || supertype.getKind() == TypeKind.WILDCARD) {
+                    stack.push(supertype);
+                }
+            }
+        }
+        return supertypes;
+    }
+
+    /**
+     * Returns the method in type that overrides {@code overridenMethod} or null if no such method
+     * exists.
+     *
+     * @param overridenMethod ExecutableElement
+     * @param type AnnotatedDeclaredType
+     * @param env ProcessingEnvironment
+     * @return ExecutableElement
+     */
+    private static ExecutableElement getMethod(
+            ExecutableElement overridenMethod,
+            AnnotatedDeclaredType type,
+            ProcessingEnvironment env) {
+        TypeElement typeE = (TypeElement) type.getUnderlyingType().asElement();
+        for (ExecutableElement method : ElementFilter.methodsIn(typeE.getEnclosedElements())) {
+            if (ElementUtils.isMethod(method, overridenMethod, env)) {
+                return method;
+            }
+        }
+        return null;
     }
 
     /**

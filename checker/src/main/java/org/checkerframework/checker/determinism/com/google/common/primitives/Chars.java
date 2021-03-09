@@ -288,7 +288,8 @@ public final class Chars {
      *
      * <p>If you need to convert and concatenate several values (possibly even of different types),
      * use a shared {@link java.nio.ByteBuffer} instance, or use {@link
-     * com.google.common.io.ByteStreams#newDataOutput()} to get a growable buffer.
+     * org.checkerframework.com.google.common.io.ByteStreams#newDataOutput()} to get a growable
+     * buffer.
      */
     public static byte[] toByteArray(char value) {
         return new byte[] {(byte) (value >> 8), (byte) value};

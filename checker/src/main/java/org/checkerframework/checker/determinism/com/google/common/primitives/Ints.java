@@ -294,7 +294,8 @@ public final class Ints {
      *
      * <p>If you need to convert and concatenate several values (possibly even of different types),
      * use a shared {@link java.nio.ByteBuffer} instance, or use {@link
-     * com.google.common.io.ByteStreams#newDataOutput()} to get a growable buffer.
+     * org.checkerframework.com.google.common.io.ByteStreams#newDataOutput()} to get a growable
+     * buffer.
      */
     public static byte[] toByteArray(int value) {
         return new byte[] {
@@ -500,8 +501,10 @@ public final class Ints {
      * written to or read from it. For example, whether {@code list.get(0) == list.get(0)} is true
      * for the returned list is unspecified.
      *
-     * <p><b>Note:</b> when possible, you should represent your data as an {@link ImmutableIntArray}
-     * instead, which has an {@link ImmutableIntArray#asList asList} view.
+     * <p><b>Note:</b> when possible, you should represent your data as an {@link
+     * org.checkerframework.com.google.common.primitives.ImmutableIntArray} instead, which has an
+     * {@link org.checkerframework.com.google.common.primitives.ImmutableIntArray#asList asList}
+     * view.
      *
      * @param backingArray the array to back the list
      * @return a list view of the array

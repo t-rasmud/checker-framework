@@ -611,7 +611,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 checker.reportError(
                         methodTree,
                         "invalid.requiresdettostring",
-                        ElementUtils.enclosingClass(entry.getValue()).asType());
+                        ElementUtils.enclosingTypeElement(entry.getValue()).asType());
             }
         }
     }
@@ -1027,7 +1027,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
 
             // Fix up method reference parameters.
             // See https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.13.1
-            if (methodReference) {
+            if (isMethodReference) {
                 // The functional interface of an unbound member reference has an extra parameter
                 // (the receiver).
                 if (((JCTree.JCMemberReference) overriderTree)
@@ -1055,14 +1055,15 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                                 overriderTree instanceof MethodTree
                                         ? ((MethodTree) overriderTree).getParameters().get(index)
                                         : overriderTree;
+
                         checker.reportError(
                                 posTree,
                                 "override.param.invalid",
                                 overrider.getElement().getParameters().get(index).toString(),
-                                overriderMeth,
-                                overriderTyp,
-                                overriddenMeth,
-                                overriddenTyp,
+                                overrider.toString(),
+                                overriderType,
+                                overridden.toString(),
+                                overriddenType,
                                 overriderParam,
                                 overriddenParam);
                         return false;
@@ -1083,10 +1084,10 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                                 posTree,
                                 "override.param.invalid",
                                 overrider.getElement().getParameters().get(index).toString(),
-                                overriderMeth,
-                                overriderTyp,
-                                overriddenMeth,
-                                overriddenTyp,
+                                overrider.toString(),
+                                overriderType,
+                                overridden.toString(),
+                                overriddenType,
                                 overriderParam,
                                 overriddenParam);
                         return false;

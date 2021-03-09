@@ -1433,7 +1433,7 @@ public class DeterminismAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             return;
         }
 
-        TypeElement enclosingClass = ElementUtils.enclosingClass(elt);
+        TypeElement enclosingClass = ElementUtils.enclosingTypeElement(elt);
         Set<AnnotationMirror> tops = getQualifierParameterHierarchies(enclosingClass);
         if (AnnotationUtils.containsSameByClass(tops, NonDet.class)) {
             type.addAnnotation(POLYDET);

@@ -31,8 +31,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 /**
  * Static utility methods pertaining to {@code byte} primitives, that are not already found in
  * either {@link Byte} or {@link Arrays}, <i>and interpret bytes as neither signed nor unsigned</i>.
- * The methods which specifically treat bytes as signed or unsigned are found in {@link SignedBytes}
- * and {@link UnsignedBytes}.
+ * The methods which specifically treat bytes as signed or unsigned are found in {@link
+ * org.checkerframework.com.google.common.primitives.SignedBytes} and {@link
+ * org.checkerframework.com.google.common.primitives.UnsignedBytes}.
  *
  * <p>See the Guava User Guide article on <a
  * href="https://github.com/google/guava/wiki/PrimitivesExplained">primitive utilities</a>.
