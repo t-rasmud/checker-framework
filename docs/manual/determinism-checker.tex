@@ -547,7 +547,7 @@ type qualifiers in the Determinism Checker.
 
 In the JDK, printing methods such as \<println> are annotated as taking a
 deterministic result.  This guarantees that a program's output will be
-deterministic.  If it is be too restrictive for your program:
+deterministic.  If it is too restrictive for your program:
 \begin{itemize}
 \item
   You can define your own printing methods, some of which can take
@@ -642,6 +642,15 @@ String @NonDet []}, which are valid types.
 \sectionAndLabel{Implicit annotations}{determinism-implicits}
 The parameter type of the \code{main} method has an implicit annotation
 \<@Det String @Det[]>.
+
+
+\sectionAndLabel{Utility routines for arrays and collections}{determinism-utilities}
+
+Class \refclass{checker/determinism}{DeterminismUtil} provides static
+utility methods for working with arrays and collections.  They are properly
+annotated with determinism type qualifiers, so using them may reduce the number
+of annotations that you need to write.
+
 
 %%  LocalWords:  DeterminismChecker HashSet InputFile NonDet Det MyClass
 %%  LocalWords:  OrderNonDet PolyDet UsePolyDet println MyType keySet rhs

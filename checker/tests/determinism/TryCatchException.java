@@ -1,5 +1,3 @@
-package determinism;
-
 public class TryCatchException {
     void bar() {
         try {

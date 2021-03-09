@@ -1,9 +1,18 @@
 package org.checkerframework.checker.determinism;
 
-import static javax.tools.Diagnostic.Kind.ERROR;
-
-import com.sun.source.tree.*;
-import com.sun.source.tree.Tree.Kind;
+import com.sun.source.tree.ArrayAccessTree;
+import com.sun.source.tree.ConditionalExpressionTree;
+import com.sun.source.tree.DoWhileLoopTree;
+import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.ForLoopTree;
+import com.sun.source.tree.IfTree;
+import com.sun.source.tree.InstanceOfTree;
+import com.sun.source.tree.MethodInvocationTree;
+import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.NewClassTree;
+import com.sun.source.tree.Tree;
+import com.sun.source.tree.VariableTree;
+import com.sun.source.tree.WhileLoopTree;
 import com.sun.tools.javac.tree.JCTree;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,8 +20,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.lang.model.element.*;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
+import javax.tools.Diagnostic;
 import org.checkerframework.checker.compilermsgs.qual.CompilerMessageKey;
 import org.checkerframework.checker.determinism.qual.OrderNonDet;
 import org.checkerframework.checker.determinism.qual.PolyDet;
@@ -29,7 +43,11 @@ import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedDeclared
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedPrimitiveType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedTypeVariable;
 import org.checkerframework.framework.util.AnnotatedTypes;
-import org.checkerframework.javacutil.*;
+import org.checkerframework.javacutil.AnnotationUtils;
+import org.checkerframework.javacutil.ElementUtils;
+import org.checkerframework.javacutil.Pair;
+import org.checkerframework.javacutil.TreePathUtil;
+import org.checkerframework.javacutil.TreeUtils;
 
 /** Visitor for the determinism type-system. */
 public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedTypeFactory> {
@@ -152,8 +170,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 }
             }
             // Raises an error if the annotation on the type argument of a collection (or iterator)
-            // is
-            // a supertype of the annotation on the collection (or iterator).
+            // is a supertype of the annotation on the collection (or iterator).
             for (AnnotatedTypeMirror argType : useType.getTypeArguments()) {
                 if (!argType.getAnnotations().isEmpty()) {
                     AnnotationMirror argAnnotation =
@@ -233,8 +250,16 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             if (!componentType.getAnnotations().isEmpty()) {
                 AnnotationMirror componentAnno =
                         componentType.getAnnotationInHierarchy(atypeFactory.NONDET);
+                AnnotatedTypeMirror atm = null;
+                Element element = TreeUtils.elementFromTree(tree);
+                // element is null when tree is a NEW_ARRAY
+                if (element != null) {
+                    atm = atypeFactory.getAnnotatedType(element);
+                } else {
+                    atm = type;
+                }
                 if (!isValidElementType(
-                        type, componentAnno, arrayType, tree, INVALID_ARRAY_COMPONENT_TYPE)) {
+                        atm, componentAnno, arrayType, tree, INVALID_ARRAY_COMPONENT_TYPE)) {
                     return false;
                 }
                 if (componentType.getKind() == TypeKind.TYPEVAR) {
@@ -375,7 +400,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             if (atypeFactory.getQualifierHierarchy().isSubtype(exprAnno, varAnno)) {
                 super.commonAssignmentCheck(varTree, valueExp, errorKey);
                 // Assigning to a specific index of an "OrderNonDet" array is invalid.
-                if (varTree.getKind() == Kind.ARRAY_ACCESS) {
+                if (varTree.getKind() == Tree.Kind.ARRAY_ACCESS) {
                     varAnno =
                             atypeFactory
                                     .getAnnotatedType(((ArrayAccessTree) varTree).getExpression())
@@ -385,12 +410,12 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                         checker.reportError(varTree, INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno);
                     }
                 }
-            } else if (varTree.getKind() == Kind.ARRAY_ACCESS) {
+            } else if (varTree.getKind() == Tree.Kind.ARRAY_ACCESS) {
                 checker.reportError(varTree, INVALID_ARRAY_ASSIGNMENT, varAnno, exprAnno);
             } else {
                 Element varElem = TreeUtils.elementFromTree(varTree);
                 MethodTree enclosingMethod =
-                        TreeUtils.enclosingMethod(atypeFactory.getPath(varTree));
+                        TreePathUtil.enclosingMethod(atypeFactory.getPath(varTree));
                 Element enclosingElem = TreeUtils.elementFromTree(enclosingMethod);
                 if (ElementUtils.isFinal(varElem)
                         && enclosingElem.getKind() == ElementKind.CONSTRUCTOR) {
@@ -430,33 +455,6 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             }
             super.commonAssignmentCheck(varTree, valueExp, errorKey);
         }
-    }
-
-    // Hack: Remove this after it's fixed on the master branch.
-    @Override
-    public Void visitEnhancedForLoop(EnhancedForLoopTree node, Void p) {
-        AnnotatedTypeMirror var = this.atypeFactory.getAnnotatedTypeLhs(node.getVariable());
-        AnnotatedTypeMirror iterableType = this.atypeFactory.getAnnotatedType(node.getExpression());
-        AnnotatedTypeMirror iteratedType =
-                AnnotatedTypes.getIteratedType(
-                        this.checker.getProcessingEnvironment(), this.atypeFactory, iterableType);
-        boolean valid = this.validateTypeOf(node.getVariable());
-        if (iterableType.hasAnnotation(atypeFactory.ORDERNONDET)
-                || iterableType.hasAnnotation(atypeFactory.NONDET)) {
-            iteratedType.replaceAnnotation(atypeFactory.NONDET);
-        }
-        if (iterableType.hasAnnotation(atypeFactory.POLYDET)) {
-            iteratedType.replaceAnnotation(atypeFactory.POLYDET_UP);
-        }
-        if (valid) {
-            this.commonAssignmentCheck(
-                    var, iteratedType, node.getExpression(), "enhancedfor.type.incompatible");
-        }
-
-        scan(node.getVariable(), p);
-        scan(node.getExpression(), p);
-        scan(node.getStatement(), p);
-        return null;
     }
 
     /**
@@ -559,9 +557,12 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 && !TreeUtils.isConstructor(methodTree)) {
             AnnotatedDeclaredType receiverType =
                     atypeFactory.getAnnotatedType(methodTree).getReceiverType();
-            AnnotationMirror anno = receiverType.getAnnotationInHierarchy(atypeFactory.NONDET);
-            if (addPolyDetError(anno, receiver, errors)) {
-                return; // found @PolyDet or @PolyDet("noOrderNonDet")
+            if (receiverType != null) {
+                // receiverType is also null for annotation element declarations.
+                AnnotationMirror anno = receiverType.getAnnotationInHierarchy(atypeFactory.NONDET);
+                if (addPolyDetError(anno, receiver, errors)) {
+                    return; // found @PolyDet or @PolyDet("noOrderNonDet")
+                }
             }
         }
 
@@ -618,7 +619,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                 checker.reportError(
                         methodTree,
                         "invalid.requiresdettostring",
-                        ElementUtils.enclosingClass(entry.getValue()).asType());
+                        ElementUtils.enclosingTypeElement(entry.getValue()).asType());
             }
         }
     }
@@ -685,7 +686,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             } else {
                 @SuppressWarnings("compilermessages")
                 @CompilerMessageKey String errorKey = "invalid.polydet." + elemValue.toLowerCase();
-                errors.add(Pair.of(new DiagMessage(ERROR, errorKey), tree));
+                errors.add(Pair.of(new DiagMessage(Diagnostic.Kind.ERROR, errorKey), tree));
             }
         }
         return false;
@@ -839,7 +840,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
         // these cases, to get the most precision we must instead check the toString methods of each
         // branch.
         argument = TreeUtils.withoutParens(argument);
-        if (argument.getKind() == Kind.CONDITIONAL_EXPRESSION) {
+        if (argument.getKind() == Tree.Kind.CONDITIONAL_EXPRESSION) {
             ConditionalExpressionTree conditionalTree = (ConditionalExpressionTree) argument;
             return argumentSatisfiesDetToString(conditionalTree.getTrueExpression())
                     && argumentSatisfiesDetToString(conditionalTree.getFalseExpression());
@@ -888,9 +889,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      * Reports the given {@code errorMessage} if {@code elementAnno} is not a valid element type of
      * a collection or array with {@code collectionAnno}.
      *
-     * @param atm the annotated type whose element to check for validity
-     * @param elementAnno the annotation of the element type of an array or collection
-     * @param collectionAnno the annotation of an array or collection
+     * @param atm the annotated type whose element to check for validity; a collection or array type
+     * @param elementAnno the annotation on the element type of {@code atm}
+     * @param collectionAnno the main annotation on {@code atm}
      * @param tree the tree to report errors on
      * @param errorMessage the error message to report
      * @return true if {@code elementAnno} is a subtype of {@code collectionAnno}
@@ -902,7 +903,12 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
             Tree tree,
             @CompilerMessageKey String errorMessage) {
         if (!atypeFactory.getQualifierHierarchy().isSubtype(elementAnno, collectionAnno)) {
-            checker.reportError(tree, errorMessage, atm, elementAnno, collectionAnno);
+            Element elem = TreeUtils.elementFromTree(tree);
+            if (atm.getKind() == TypeKind.ARRAY && elem != null) {
+                checker.reportError(elem, errorMessage, atm, elementAnno, collectionAnno);
+            } else {
+                checker.reportError(tree, errorMessage, atm, elementAnno, collectionAnno);
+            }
             return false;
         }
         return true;
@@ -1029,7 +1035,7 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
 
             // Fix up method reference parameters.
             // See https://docs.oracle.com/javase/specs/jls/se11/html/jls-15.html#jls-15.13.1
-            if (methodReference) {
+            if (isMethodReference) {
                 // The functional interface of an unbound member reference has an extra parameter
                 // (the receiver).
                 if (((JCTree.JCMemberReference) overriderTree)
@@ -1057,14 +1063,15 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                                 overriderTree instanceof MethodTree
                                         ? ((MethodTree) overriderTree).getParameters().get(index)
                                         : overriderTree;
+
                         checker.reportError(
                                 posTree,
                                 "override.param.invalid",
                                 overrider.getElement().getParameters().get(index).toString(),
-                                overriderMeth,
-                                overriderTyp,
-                                overriddenMeth,
-                                overriddenTyp,
+                                overrider.toString(),
+                                overriderType,
+                                overridden.toString(),
+                                overriddenType,
                                 overriderParam,
                                 overriddenParam);
                         return false;
@@ -1085,10 +1092,10 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
                                 posTree,
                                 "override.param.invalid",
                                 overrider.getElement().getParameters().get(index).toString(),
-                                overriderMeth,
-                                overriderTyp,
-                                overriddenMeth,
-                                overriddenTyp,
+                                overrider.toString(),
+                                overriderType,
+                                overridden.toString(),
+                                overriddenType,
                                 overriderParam,
                                 overriddenParam);
                         return false;

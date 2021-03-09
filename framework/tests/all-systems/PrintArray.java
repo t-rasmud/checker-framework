@@ -4,7 +4,7 @@ public class PrintArray {
     // test in all-systems.
     @SuppressWarnings({
         "i18n",
-        "nullness:known.nonnull",
+        "nullness:nulltest.redundant",
         "determinism:invalid.type.on.conditional",
         "determinism:method.invocation.invalid"
     })

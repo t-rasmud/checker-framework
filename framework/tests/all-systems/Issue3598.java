@@ -2,7 +2,7 @@ import java.util.function.Function;
 import org.checkerframework.checker.determinism.qual.Det;
 import org.checkerframework.checker.determinism.qual.PolyDet;
 
-class Issue3598 {
+public class Issue3598 {
 
     static class DClass extends EClass {}
 

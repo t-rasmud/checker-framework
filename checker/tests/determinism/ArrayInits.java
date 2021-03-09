@@ -1,5 +1,3 @@
-package determinism;
-
 import java.util.Arrays;
 import org.checkerframework.checker.determinism.qual.*;
 

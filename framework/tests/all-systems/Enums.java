@@ -3,7 +3,7 @@ import java.lang.annotation.ElementType;
 class MyEnumSet<E extends Enum<E>> {}
 
 @SuppressWarnings("determinism")
-class Enumeration {
+public class Enums {
     public enum VarFlags {
         IS_PARAM,
         NO_DUPS
@@ -33,7 +33,7 @@ class Enumeration {
         }
 
         public <SSS extends Object> SSS firstNonNull(SSS first, SSS second) {
-            @SuppressWarnings("nullness:known.nonnull")
+            @SuppressWarnings("nullness:nulltest.redundant")
             SSS res = first != null ? first : checkNotNull(second);
             return res;
         }

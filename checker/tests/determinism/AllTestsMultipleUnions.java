@@ -1,5 +1,3 @@
-package determinism;
-
 public class AllTestsMultipleUnions {
     public static boolean flag = false;
 

@@ -1,4 +1,4 @@
-class Issue2446 {
+public class Issue2446 {
     static class One<T, V> {}
 
     @SuppressWarnings("super.invocation.invalid")

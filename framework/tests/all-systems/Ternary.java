@@ -1,7 +1,7 @@
 import java.lang.ref.WeakReference;
 
 @SuppressWarnings("determinism")
-class Ternary<F> {
+public class Ternary<F> {
     void m1(boolean b) {
         String s = b ? new String("foo") : null;
     }
@@ -62,7 +62,7 @@ class Ternary<F> {
     }
 
     public void test(MyWeakRef<? extends F> existingRef) {
-        @SuppressWarnings("known.nonnull")
+        @SuppressWarnings("nulltest.redundant")
         F existing = existingRef == null ? null : existingRef.get();
     }
 

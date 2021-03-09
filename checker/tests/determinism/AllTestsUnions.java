@@ -1,5 +1,3 @@
-package determinism;
-
 public class AllTestsUnions {
     void foo1(MyInterface<Throwable> param) throws Throwable {
         try {

@@ -1,5 +1,3 @@
-package determinism;
-
 // Test case for issue #775
 
 public class AllTestsUnionCrash {

@@ -10,6 +10,7 @@ import java.util.List;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.compilermsgs.qual.CompilerMessageKey;
 import org.checkerframework.checker.formatter.FormatterTreeUtil.FormatCall;
@@ -23,7 +24,9 @@ import org.checkerframework.common.basetype.BaseTypeVisitor;
 import org.checkerframework.common.wholeprograminference.WholeProgramInference;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.javacutil.AnnotationUtils;
+import org.checkerframework.javacutil.BugInCF;
 import org.checkerframework.javacutil.ElementUtils;
+import org.checkerframework.javacutil.TreePathUtil;
 import org.checkerframework.javacutil.TreeUtils;
 import org.checkerframework.javacutil.TypesUtils;
 
@@ -39,20 +42,34 @@ public class FormatterVisitor extends BaseTypeVisitor<FormatterAnnotatedTypeFact
     }
 
     @Override
-    public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
-        FormatterTreeUtil tu = atypeFactory.treeUtil;
-        if (tu.isFormatCall(node, atypeFactory)) {
-            FormatCall fc = atypeFactory.treeUtil.new FormatCall(node, atypeFactory);
-            MethodTree enclosingMethod = TreeUtils.enclosingMethod(atypeFactory.getPath(fc.node));
+    public Void visitMethod(MethodTree node, Void p) {
+        ExecutableElement methodElement = TreeUtils.elementFromDeclaration(node);
+        if (atypeFactory.getDeclAnnotation(methodElement, FormatMethod.class) != null) {
+            int formatStringIndex = FormatterVisitor.formatStringIndex(methodElement);
+            if (formatStringIndex == -1) {
+                checker.reportError(node, "format.method.invalid", methodElement.getSimpleName());
+            }
+        }
+        return super.visitMethod(node, p);
+    }
 
-            Result<String> errMissingFormat = fc.hasFormatAnnotation();
+    @Override
+    public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
+        FormatterTreeUtil ftu = atypeFactory.treeUtil;
+        FormatCall fc = ftu.create(node, atypeFactory);
+        if (fc != null) {
+            MethodTree enclosingMethod =
+                    TreePathUtil.enclosingMethod(atypeFactory.getPath(fc.invocationTree));
+
+            Result<String> errMissingFormat = fc.errMissingFormatAnnotation();
             if (errMissingFormat != null) {
                 // The string's type has no @Format annotation.
                 if (isWrappedFormatCall(fc, enclosingMethod)) {
                     // Nothing to do, because call is legal.
                 } else {
                     // I.1
-                    tu.failure(errMissingFormat, "format.string.invalid", errMissingFormat.value());
+                    ftu.failure(
+                            errMissingFormat, "format.string.invalid", errMissingFormat.value());
                 }
             } else {
                 // The string has a @Format annotation.
@@ -60,48 +77,54 @@ public class FormatterVisitor extends BaseTypeVisitor<FormatterAnnotatedTypeFact
                 ConversionCategory[] formatCats = fc.getFormatCategories();
                 switch (invc.value()) {
                     case VARARG:
-                        Result<TypeMirror>[] paramTypes = fc.getParamTypes();
-                        int paraml = paramTypes.length;
+                        Result<TypeMirror>[] argTypes = fc.getArgTypes();
+                        int argl = argTypes.length;
                         int formatl = formatCats.length;
-                        if (paraml < formatl) {
+                        if (argl < formatl) {
                             // For assignments, format.missing.arguments is issued
                             // from commonAssignmentCheck.
                             // II.1
-                            tu.failure(invc, "format.missing.arguments", formatl, paraml);
+                            ftu.failure(invc, "format.missing.arguments", formatl, argl);
                         } else {
-                            if (paraml > formatl) {
+                            if (argl > formatl) {
                                 // II.2
-                                tu.warning(invc, "format.excess.arguments", formatl, paraml);
+                                ftu.warning(invc, "format.excess.arguments", formatl, argl);
                             }
                             for (int i = 0; i < formatl; ++i) {
                                 ConversionCategory formatCat = formatCats[i];
-                                Result<TypeMirror> param = paramTypes[i];
-                                TypeMirror paramType = param.value();
+                                Result<TypeMirror> arg = argTypes[i];
+                                TypeMirror argType = arg.value();
 
                                 switch (formatCat) {
                                     case UNUSED:
                                         // I.2
-                                        tu.warning(param, "format.argument.unused", " " + (1 + i));
+                                        ftu.warning(arg, "format.argument.unused", " " + (1 + i));
                                         break;
                                     case NULL:
                                         // I.3
-                                        tu.failure(param, "format.specifier.null", " " + (1 + i));
+                                        if (argType.getKind() == TypeKind.NULL) {
+                                            ftu.warning(
+                                                    arg, "format.specifier.null", " " + (1 + i));
+                                        } else {
+                                            ftu.failure(
+                                                    arg, "format.specifier.null", " " + (1 + i));
+                                        }
                                         break;
                                     case GENERAL:
                                         break;
                                     default:
-                                        if (!fc.isValidParameter(formatCat, paramType)) {
+                                        if (!fc.isValidArgument(formatCat, argType)) {
                                             // II.3
                                             ExecutableElement method =
                                                     TreeUtils.elementFromUse(node);
                                             CharSequence methodName =
                                                     ElementUtils.getSimpleNameOrDescription(method);
-                                            tu.failure(
-                                                    param,
+                                            ftu.failure(
+                                                    arg,
                                                     "argument.type.incompatible",
-                                                    "", // parameter name is not useful
+                                                    "in varargs position",
                                                     methodName,
-                                                    paramType,
+                                                    argType,
                                                     formatCat);
                                         }
                                         break;
@@ -109,21 +132,30 @@ public class FormatterVisitor extends BaseTypeVisitor<FormatterAnnotatedTypeFact
                             }
                         }
                         break;
-                    case NULLARRAY:
-                        /* continue */
                     case ARRAY:
+                        // III
+                        if (!isWrappedFormatCall(fc, enclosingMethod)) {
+                            ftu.warning(invc, "format.indirect.arguments");
+                        }
+                        // TODO:  If it is explict array construction, such as "new Object[] {
+                        // ... }", then we could treat it like the VARARGS case, analyzing each
+                        // argument.  "new array" is probably rare, in the varargs position.
+                        // fall through
+                    case NULLARRAY:
                         for (ConversionCategory cat : formatCats) {
                             if (cat == ConversionCategory.NULL) {
                                 // I.3
-                                tu.failure(invc, "format.specifier.null", "");
+                                if (invc.value() == FormatterTreeUtil.InvocationType.NULLARRAY) {
+                                    ftu.warning(invc, "format.specifier.null", "");
+                                } else {
+                                    ftu.failure(invc, "format.specifier.null", "");
+                                }
                             }
                             if (cat == ConversionCategory.UNUSED) {
                                 // I.2
-                                tu.warning(invc, "format.argument.unused", "");
+                                ftu.warning(invc, "format.argument.unused", "");
                             }
                         }
-                        // III
-                        tu.warning(invc, "format.indirect.arguments");
                         break;
                 }
             }
@@ -158,52 +190,84 @@ public class FormatterVisitor extends BaseTypeVisitor<FormatterAnnotatedTypeFact
         boolean withinFormatMethod =
                 (atypeFactory.getDeclAnnotation(enclosingMethodElement, FormatMethod.class)
                         != null);
-        return withinFormatMethod && forwardsArguments(fc.node, enclosingMethod);
+        return withinFormatMethod && forwardsArguments(fc.invocationTree, enclosingMethod);
     }
 
     /**
-     * Returns true if {@code fc} is within a method m, and fc's arguments are m's formal
-     * parameters. In other words, fc forwards m's arguments.
+     * Returns true if {@code invocationTree}'s arguments are {@code enclosingMethod}'s formal
+     * parameters. In other words, {@code invocationTree} forwards {@code enclosingMethod}'s
+     * arguments.
      *
-     * @param invocTree an invocation of a method
+     * <p>Only arguments from the first String formal parameter onward count. Returns false if there
+     * is no String formal parameter.
+     *
+     * @param invocationTree an invocation of a method
      * @param enclosingMethod the method that contains the call
-     * @return true if {@code fc} is a call to a method that forwards its containing method's
-     *     arguments
+     * @return true if {@code invocationTree} is a call to a method that forwards its containing
+     *     method's arguments
      */
     private boolean forwardsArguments(
-            MethodInvocationTree invocTree, @Nullable MethodTree enclosingMethod) {
+            MethodInvocationTree invocationTree, @Nullable MethodTree enclosingMethod) {
 
         if (enclosingMethod == null) {
             return false;
         }
+
         ExecutableElement enclosingMethodElement =
                 TreeUtils.elementFromDeclaration(enclosingMethod);
-
-        List<? extends ExpressionTree> args = invocTree.getArguments();
-        List<? extends VariableTree> params = enclosingMethod.getParameters();
-        List<? extends VariableElement> paramElements = enclosingMethodElement.getParameters();
-
-        // Strip off leading Locale arguments.
-        if (!args.isEmpty() && FormatterTreeUtil.isLocale(args.get(0), atypeFactory)) {
-            args = args.subList(1, args.size());
-        }
-        if (!params.isEmpty()
-                && TypesUtils.isDeclaredOfName(paramElements.get(0).asType(), "java.util.Locale")) {
-            params = params.subList(1, params.size());
-        }
-
-        if (args.size() != params.size()) {
+        int paramIndex = formatStringIndex(enclosingMethodElement);
+        if (paramIndex == -1) {
             return false;
         }
-        for (int i = 0; i < args.size(); i++) {
-            ExpressionTree arg = args.get(i);
-            if (!(arg instanceof IdentifierTree
-                    && ((IdentifierTree) arg).getName() == params.get(i).getName())) {
+
+        ExecutableElement calledMethodElement = TreeUtils.elementFromUse(invocationTree);
+        int callIndex = formatStringIndex(calledMethodElement);
+        if (callIndex == -1) {
+            throw new BugInCF(
+                    "Method "
+                            + calledMethodElement
+                            + " is annotated @FormatMethod but has no String formal parameter");
+        }
+
+        List<? extends ExpressionTree> args = invocationTree.getArguments();
+        List<? extends VariableTree> params = enclosingMethod.getParameters();
+
+        if (params.size() - paramIndex != args.size() - callIndex) {
+            return false;
+        }
+        while (paramIndex < params.size()) {
+            ExpressionTree argTree = args.get(callIndex);
+            if (argTree.getKind() != Tree.Kind.IDENTIFIER) {
                 return false;
             }
+            VariableTree param = params.get(paramIndex);
+            if (param.getName() != ((IdentifierTree) argTree).getName()) {
+                return false;
+            }
+            paramIndex++;
+            callIndex++;
         }
 
         return true;
+    }
+
+    // TODO: Should this be the last String argument?  That would require that every method
+    // annotated with @FormatMethod uses varargs syntax.
+    /**
+     * Returns the index of the format string of a method: the first formal parameter with declared
+     * type String.
+     *
+     * @param m a method
+     * @return the index of the last String formal parameter, or -1 if none
+     */
+    public static int formatStringIndex(ExecutableElement m) {
+        List<? extends VariableElement> params = m.getParameters();
+        for (int i = 0; i < params.size(); i++) {
+            if (TypesUtils.isString(params.get(i).asType())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override

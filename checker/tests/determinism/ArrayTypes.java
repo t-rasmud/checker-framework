@@ -5,8 +5,8 @@ public class ArrayTypes {
     public static void f(@PolyDet Object @PolyDet [] arr) {}
 
     public static void g() {
-        @PolyDet Object @PolyDet [] arr = (new ArrayList<String>()).toArray();
         // :: error: (invalid.array.component.type)
+        @PolyDet Object @PolyDet [] arr = (new ArrayList<String>()).toArray();
         f(arr);
     }
 

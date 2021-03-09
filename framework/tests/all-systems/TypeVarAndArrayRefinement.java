@@ -1,4 +1,4 @@
-class TypeVarAndArrayRefinement {
+public class TypeVarAndArrayRefinement {
 
     @SuppressWarnings("determinism")
     private <T extends Enum<T>> T getEnumValue(Class<T> enumType, String name) {

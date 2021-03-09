@@ -1,5 +1,3 @@
-package determinism;
-
 import org.checkerframework.checker.determinism.qual.*;
 
 public class MethodParamsAnnotated {
