@@ -171,6 +171,9 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 char
      */
     public static void checkArgument(boolean b, @Nullable String errorMessageTemplate, char p1) {
         if (!b) {
@@ -184,6 +187,9 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 int
      */
     public static void checkArgument(boolean b, @Nullable String errorMessageTemplate, int p1) {
         if (!b) {
@@ -197,6 +203,9 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 long
      */
     public static void checkArgument(boolean b, @Nullable String errorMessageTemplate, long p1) {
         if (!b) {
@@ -210,6 +219,9 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 Object
      */
     public static void checkArgument(
             boolean b, @Nullable String errorMessageTemplate, @Nullable Object p1) {
@@ -224,6 +236,10 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 char
+     * @param p2 char
      */
     public static void checkArgument(
             boolean b, @Nullable String errorMessageTemplate, char p1, char p2) {
@@ -238,6 +254,10 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 char
+     * @param p2 int
      */
     public static void checkArgument(
             boolean b, @Nullable String errorMessageTemplate, char p1, int p2) {
@@ -252,6 +272,10 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 char
+     * @param p2 long
      */
     public static void checkArgument(
             boolean b, @Nullable String errorMessageTemplate, char p1, long p2) {
@@ -266,6 +290,10 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 char
+     * @param p2 Object
      */
     public static void checkArgument(
             boolean b, @Nullable String errorMessageTemplate, char p1, @Nullable Object p2) {
@@ -280,6 +308,10 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 int
+     * @param p2 char
      */
     public static void checkArgument(
             boolean b, @Nullable String errorMessageTemplate, int p1, char p2) {
@@ -294,6 +326,10 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 int
+     * @param p2 int
      */
     public static void checkArgument(
             boolean b, @Nullable String errorMessageTemplate, int p1, int p2) {
@@ -308,6 +344,10 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 int
+     * @param p2 long
      */
     public static void checkArgument(
             boolean b, @Nullable String errorMessageTemplate, int p1, long p2) {
@@ -322,6 +362,10 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 int
+     * @param p2 Object
      */
     public static void checkArgument(
             boolean b, @Nullable String errorMessageTemplate, int p1, @Nullable Object p2) {
@@ -336,6 +380,10 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 long
+     * @param p2 char
      */
     public static void checkArgument(
             boolean b, @Nullable String errorMessageTemplate, long p1, char p2) {
@@ -350,6 +398,10 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 long
+     * @param p2 int
      */
     public static void checkArgument(
             boolean b, @Nullable String errorMessageTemplate, long p1, int p2) {
@@ -364,6 +416,10 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 long
+     * @param p2 long
      */
     public static void checkArgument(
             boolean b, @Nullable String errorMessageTemplate, long p1, long p2) {
@@ -378,6 +434,10 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 long
+     * @param p2 Object
      */
     public static void checkArgument(
             boolean b, @Nullable String errorMessageTemplate, long p1, @Nullable Object p2) {
@@ -392,6 +452,10 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 Object
+     * @param p2 char
      */
     public static void checkArgument(
             boolean b, @Nullable String errorMessageTemplate, @Nullable Object p1, char p2) {
@@ -406,6 +470,10 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 Object
+     * @param p2 int
      */
     public static void checkArgument(
             boolean b, @Nullable String errorMessageTemplate, @Nullable Object p1, int p2) {
@@ -420,6 +488,10 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 Object
+     * @param p2 long
      */
     public static void checkArgument(
             boolean b, @Nullable String errorMessageTemplate, @Nullable Object p1, long p2) {
@@ -434,6 +506,10 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 Object
+     * @param p2 Object
      */
     public static void checkArgument(
             boolean b,
@@ -451,6 +527,11 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 Object
+     * @param p2 Object
+     * @param p3 Object
      */
     public static void checkArgument(
             boolean b,
@@ -469,6 +550,12 @@ public final class Preconditions {
      * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail.
+     * @param p1 Object
+     * @param p2 Object
+     * @param p3 Object
+     * @param p4 Object
      */
     public static void checkArgument(
             boolean b,
@@ -543,6 +630,9 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 char
      */
     public static void checkState(boolean b, @Nullable String errorMessageTemplate, char p1) {
         if (!b) {
@@ -557,6 +647,9 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 int
      */
     public static void checkState(boolean b, @Nullable String errorMessageTemplate, int p1) {
         if (!b) {
@@ -571,6 +664,9 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 long
      */
     public static void checkState(boolean b, @Nullable String errorMessageTemplate, long p1) {
         if (!b) {
@@ -585,6 +681,9 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 Object
      */
     public static void checkState(
             boolean b, @Nullable String errorMessageTemplate, @Nullable Object p1) {
@@ -600,6 +699,10 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 char
+     * @param p2 char
      */
     public static void checkState(
             boolean b, @Nullable String errorMessageTemplate, char p1, char p2) {
@@ -615,6 +718,10 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 char
+     * @param p2 int
      */
     public static void checkState(
             boolean b, @Nullable String errorMessageTemplate, char p1, int p2) {
@@ -630,6 +737,10 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 char
+     * @param p2 long
      */
     public static void checkState(
             boolean b, @Nullable String errorMessageTemplate, char p1, long p2) {
@@ -645,6 +756,10 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 char
+     * @param p2 Object
      */
     public static void checkState(
             boolean b, @Nullable String errorMessageTemplate, char p1, @Nullable Object p2) {
@@ -660,6 +775,10 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 int
+     * @param p2 char
      */
     public static void checkState(
             boolean b, @Nullable String errorMessageTemplate, int p1, char p2) {
@@ -675,6 +794,10 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 int
+     * @param p2 int
      */
     public static void checkState(
             boolean b, @Nullable String errorMessageTemplate, int p1, int p2) {
@@ -690,6 +813,10 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 int
+     * @param p2 long
      */
     public static void checkState(
             boolean b, @Nullable String errorMessageTemplate, int p1, long p2) {
@@ -705,6 +832,10 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 int
+     * @param p2 Object
      */
     public static void checkState(
             boolean b, @Nullable String errorMessageTemplate, int p1, @Nullable Object p2) {
@@ -720,6 +851,10 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 long
+     * @param p2 char
      */
     public static void checkState(
             boolean b, @Nullable String errorMessageTemplate, long p1, char p2) {
@@ -735,6 +870,10 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 long
+     * @param p2 int
      */
     public static void checkState(
             boolean b, @Nullable String errorMessageTemplate, long p1, int p2) {
@@ -750,6 +889,10 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 long
+     * @param p2 long
      */
     public static void checkState(
             boolean b, @Nullable String errorMessageTemplate, long p1, long p2) {
@@ -765,6 +908,10 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 long
+     * @param p2 Object
      */
     public static void checkState(
             boolean b, @Nullable String errorMessageTemplate, long p1, @Nullable Object p2) {
@@ -780,6 +927,10 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 Object
+     * @param p2 char
      */
     public static void checkState(
             boolean b, @Nullable String errorMessageTemplate, @Nullable Object p1, char p2) {
@@ -795,6 +946,10 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 Object
+     * @param p2 int
      */
     public static void checkState(
             boolean b, @Nullable String errorMessageTemplate, @Nullable Object p1, int p2) {
@@ -810,6 +965,10 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 Object
+     * @param p2 long
      */
     public static void checkState(
             boolean b, @Nullable String errorMessageTemplate, @Nullable Object p1, long p2) {
@@ -825,6 +984,10 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 Object
+     * @param p2 Object
      */
     public static void checkState(
             boolean b,
@@ -843,6 +1006,11 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 Object
+     * @param p2 Object
+     * @param p3 Object
      */
     public static void checkState(
             boolean b,
@@ -862,6 +1030,12 @@ public final class Preconditions {
      * <p>See {@link #checkState(boolean, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param b a boolean expression
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 Object
+     * @param p2 Object
+     * @param p3 Object
+     * @param p4 Object
      */
     public static void checkState(
             boolean b,
@@ -939,6 +1113,11 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 char
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, char p1) {
@@ -954,6 +1133,11 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 int
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, int p1) {
@@ -969,6 +1153,11 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 long
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, long p1) {
@@ -984,6 +1173,11 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 Object
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, @Nullable Object p1) {
@@ -999,6 +1193,12 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 char
+     * @param p2 char
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, char p1, char p2) {
@@ -1014,6 +1214,12 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 char
+     * @param p2 int
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, char p1, int p2) {
@@ -1029,6 +1235,12 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 char
+     * @param p2 long
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, char p1, long p2) {
@@ -1044,6 +1256,12 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 char
+     * @param p2 Object
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, char p1, @Nullable Object p2) {
@@ -1059,6 +1277,12 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 int
+     * @param p2 char
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, int p1, char p2) {
@@ -1074,6 +1298,12 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 int
+     * @param p2 int
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, int p1, int p2) {
@@ -1089,6 +1319,12 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 int
+     * @param p2 long
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, int p1, long p2) {
@@ -1104,6 +1340,12 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 int
+     * @param p2 Object
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, int p1, @Nullable Object p2) {
@@ -1119,6 +1361,12 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 long
+     * @param p2 char
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, long p1, char p2) {
@@ -1134,6 +1382,12 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 long
+     * @param p2 int
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, long p1, int p2) {
@@ -1149,6 +1403,12 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 long
+     * @param p2 long
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, long p1, long p2) {
@@ -1164,6 +1424,12 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 long
+     * @param p2 Object
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, long p1, @Nullable Object p2) {
@@ -1179,6 +1445,12 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 Object
+     * @param p2 char
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, @Nullable Object p1, char p2) {
@@ -1194,6 +1466,12 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 Object
+     * @param p2 int
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, @Nullable Object p1, int p2) {
@@ -1209,6 +1487,12 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 Object
+     * @param p2 long
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj, @Nullable String errorMessageTemplate, @Nullable Object p1, long p2) {
@@ -1224,6 +1508,12 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 Object
+     * @param p2 Object
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj,
@@ -1242,6 +1532,13 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 Object
+     * @param p2 Object
+     * @param p3 Object
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj,
@@ -1261,6 +1558,14 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param obj Object reference to be checked
+     * @param errorMessageTemplate a template for the exception message should the check fail
+     * @param p1 Object
+     * @param p2 Object
+     * @param p3 Object
+     * @param p4 Object
+     * @return {@code obj} if it is not null
+     * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj,

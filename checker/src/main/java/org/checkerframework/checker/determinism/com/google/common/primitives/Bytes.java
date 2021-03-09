@@ -107,6 +107,8 @@ public final class Bytes {
      *
      * @param array the array to search for the sequence {@code target}
      * @param target the array to search for as a sub-sequence of {@code array}
+     * @return the start position of the first occurrence of the specified {@code target} within
+     *     {@code array}, or {@code -1} if there is no such occurrence
      */
     public static int indexOf(byte[] array, byte[] target) {
         checkNotNull(array, "array");
@@ -371,6 +373,7 @@ public final class Bytes {
      * Collections.reverse(Bytes.asList(array))}, but is likely to be more efficient.
      *
      * @since 23.1
+     * @param array input byte array
      */
     public static void reverse(byte[] array) {
         checkNotNull(array);
@@ -383,6 +386,9 @@ public final class Bytes {
      * Collections.reverse(Bytes.asList(array).subList(fromIndex, toIndex))}, but is likely to be
      * more efficient.
      *
+     * @param array input byte array
+     * @param fromIndex start index
+     * @param toIndex end index
      * @throws IndexOutOfBoundsException if {@code fromIndex < 0}, {@code toIndex > array.length},
      *     or {@code toIndex > fromIndex}
      * @since 23.1

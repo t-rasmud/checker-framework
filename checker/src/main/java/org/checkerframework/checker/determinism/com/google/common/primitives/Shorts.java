@@ -164,6 +164,8 @@ public final class Shorts {
      *
      * @param array the array to search for the sequence {@code target}
      * @param target the array to search for as a sub-sequence of {@code array}
+     * @return the start position of the first occurrence of the specified {@code target} within
+     *     {@code array}, or {@code -1} if there is no such occurrence
      */
     public static int indexOf(short[] array, short[] target) {
         checkNotNull(array, "array");
@@ -255,6 +257,8 @@ public final class Shorts {
      * @param value the {@code short} value to constrain
      * @param min the lower bound (inclusive) of the range to constrain {@code value} to
      * @param max the upper bound (inclusive) of the range to constrain {@code value} to
+     * @return the value nearest to {@code value} which is within the closed range {@code
+     *     [min..max]}
      * @throws IllegalArgumentException if {@code min > max}
      * @since 21.0
      */
@@ -294,6 +298,9 @@ public final class Shorts {
      * use a shared {@link java.nio.ByteBuffer} instance, or use {@link
      * org.checkerframework.com.google.common.io.ByteStreams#newDataOutput()} to get a growable
      * buffer.
+     *
+     * @param value input short value
+     * @return a big-endian representation of {@code value} in a 2-element byte array
      */
     public static byte[] toByteArray(short value) {
         return new byte[] {(byte) (value >> 8), (byte) value};
@@ -307,6 +314,9 @@ public final class Shorts {
      * <p>Arguably, it's preferable to use {@link java.nio.ByteBuffer}; that library exposes much
      * more flexibility at little cost in readability.
      *
+     * @param bytes input byte array
+     * @return the {@code short} value whose big-endian representation is stored in the first 2
+     *     bytes of {@code bytes}
      * @throws IllegalArgumentException if {@code bytes} has fewer than 2 elements
      */
     public static short fromByteArray(byte[] bytes) {
@@ -318,6 +328,10 @@ public final class Shorts {
      * Returns the {@code short} value whose byte representation is the given 2 bytes, in big-endian
      * order; equivalent to {@code Shorts.fromByteArray(new byte[] {b1, b2})}.
      *
+     * @param b1 first byte
+     * @param b2 second byte
+     * @return the {@code short} value whose byte representation is the given 2 bytes, in big-endian
+     *     order
      * @since 7.0
      */
     public static short fromBytes(byte b1, byte b2) {
@@ -352,6 +366,7 @@ public final class Shorts {
      * @param separator the text that should appear between consecutive values in the resulting
      *     string (but not at the start or end)
      * @param array an array of {@code short} values, possibly empty
+     * @return a string containing the supplied {@code short} values separated by {@code separator}
      */
     public static String join(String separator, short... array) {
         checkNotNull(separator);
@@ -379,6 +394,7 @@ public final class Shorts {
      * support only identity equality), but it is consistent with {@link Arrays#equals(short[],
      * short[])}.
      *
+     * @return a comparator that compares two {@code short} arrays
      * @since 2.0
      */
     public static Comparator<short[]> lexicographicalComparator() {
@@ -409,6 +425,7 @@ public final class Shorts {
     /**
      * Sorts the elements of {@code array} in descending order.
      *
+     * @param array input short array
      * @since 23.1
      */
     public static void sortDescending(short[] array) {
@@ -420,6 +437,9 @@ public final class Shorts {
      * Sorts the elements of {@code array} between {@code fromIndex} inclusive and {@code toIndex}
      * exclusive in descending order.
      *
+     * @param array input short array
+     * @param fromIndex start index
+     * @param toIndex end index
      * @since 23.1
      */
     public static void sortDescending(short[] array, int fromIndex, int toIndex) {
@@ -433,6 +453,7 @@ public final class Shorts {
      * Reverses the elements of {@code array}. This is equivalent to {@code
      * Collections.reverse(Shorts.asList(array))}, but is likely to be more efficient.
      *
+     * @param array input short array
      * @since 23.1
      */
     public static void reverse(short[] array) {
@@ -446,6 +467,9 @@ public final class Shorts {
      * Collections.reverse(Shorts.asList(array).subList(fromIndex, toIndex))}, but is likely to be
      * more efficient.
      *
+     * @param array input short array
+     * @param fromIndex start index
+     * @param toIndex end index
      * @throws IndexOutOfBoundsException if {@code fromIndex < 0}, {@code toIndex > array.length},
      *     or {@code toIndex > fromIndex}
      * @since 23.1

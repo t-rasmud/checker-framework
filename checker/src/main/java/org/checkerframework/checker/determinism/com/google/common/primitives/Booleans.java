@@ -75,6 +75,7 @@ public final class Booleans {
      * e.g. {@code Comparators.comparing(Foo::hasBar, trueFirst())}.
      *
      * @since 21.0
+     * @return a {@code Comparator<Boolean>} that sorts {@code true} before {@code false}
      */
     public static Comparator<Boolean> trueFirst() {
         return BooleanComparator.TRUE_FIRST;
@@ -87,6 +88,7 @@ public final class Booleans {
      * e.g. {@code Comparators.comparing(Foo::hasBar, falseFirst())}.
      *
      * @since 21.0
+     * @return a {@code Comparator<Boolean>} that sorts {@code false} before {@code true}
      */
     public static Comparator<Boolean> falseFirst() {
         return BooleanComparator.FALSE_FIRST;
@@ -177,6 +179,8 @@ public final class Booleans {
      *
      * @param array the array to search for the sequence {@code target}
      * @param target the array to search for as a sub-sequence of {@code array}
+     * @return the start position of the first occurrence of the specified {@code target} within
+     *     {@code array}, or {@code -1} if there is no such occurrence
      */
     public static int indexOf(boolean[] array, boolean[] target) {
         checkNotNull(array, "array");
@@ -269,6 +273,8 @@ public final class Booleans {
      * @param separator the text that should appear between consecutive values in the resulting
      *     string (but not at the start or end)
      * @param array an array of {@code boolean} values, possibly empty
+     * @return a string containing the supplied {@code boolean} values separated by {@code
+     *     separator}
      */
     public static String join(String separator, boolean... array) {
         checkNotNull(separator);
@@ -297,6 +303,7 @@ public final class Booleans {
      * boolean[])}.
      *
      * @since 2.0
+     * @return a comparator that compares two {@code boolean} arrays
      */
     public static Comparator<boolean[]> lexicographicalComparator() {
         return LexicographicalComparator.INSTANCE;
@@ -504,6 +511,7 @@ public final class Booleans {
      * Returns the number of {@code values} that are {@code true}.
      *
      * @since 16.0
+     * @return the number of {@code values} that are {@code true}
      */
     public static int countTrue(boolean... values) {
         int count = 0;

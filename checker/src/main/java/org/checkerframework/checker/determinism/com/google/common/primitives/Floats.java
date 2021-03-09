@@ -89,6 +89,7 @@ public final class Floats {
      *
      * <p><b>Java 8 users:</b> use {@link Float#isFinite(float)} instead.
      *
+     * @param value input float value
      * @since 10.0
      */
     public static boolean isFinite(float value) {
@@ -147,6 +148,8 @@ public final class Floats {
      *
      * @param array the array to search for the sequence {@code target}
      * @param target the array to search for as a sub-sequence of {@code array}
+     * @return the start position of the first occurrence of the specified {@code target} within
+     *     {@code array}, or {@code -1} if there is no such occurrence
      */
     public static int indexOf(float[] array, float[] target) {
         checkNotNull(array, "array");
@@ -235,6 +238,8 @@ public final class Floats {
      * @param value the {@code float} value to constrain
      * @param min the lower bound (inclusive) of the range to constrain {@code value} to
      * @param max the upper bound (inclusive) of the range to constrain {@code value} to
+     * @return the value nearest to {@code value} which is within the closed range {@code
+     *     [min..max]}
      * @throws IllegalArgumentException if {@code min > max}
      * @since 21.0
      */
@@ -299,6 +304,8 @@ public final class Floats {
      * @param separator the text that should appear between consecutive values in the resulting
      *     string (but not at the start or end)
      * @param array an array of {@code float} values, possibly empty
+     * @return a string containing the supplied {@code float} values, converted to strings as
+     *     specified by {@link Float#toString(float)}, and separated by {@code separator}
      */
     public static String join(String separator, float... array) {
         checkNotNull(separator);
@@ -326,6 +333,7 @@ public final class Floats {
      * support only identity equality), but it is consistent with {@link Arrays#equals(float[],
      * float[])}.
      *
+     * @return a comparator that compares two {@code float} arrays
      * @since 2.0
      */
     public static Comparator<float[]> lexicographicalComparator() {
@@ -359,6 +367,7 @@ public final class Floats {
      * <p>Note that this method uses the total order imposed by {@link Float#compare}, which treats
      * all NaN values as equal and 0.0 as greater than -0.0.
      *
+     * @param array input float array
      * @since 23.1
      */
     public static void sortDescending(float[] array) {
@@ -373,6 +382,9 @@ public final class Floats {
      * <p>Note that this method uses the total order imposed by {@link Float#compare}, which treats
      * all NaN values as equal and 0.0 as greater than -0.0.
      *
+     * @param array input float array
+     * @param fromIndex start index
+     * @param toIndex end index
      * @since 23.1
      */
     public static void sortDescending(float[] array, int fromIndex, int toIndex) {
@@ -386,6 +398,7 @@ public final class Floats {
      * Reverses the elements of {@code array}. This is equivalent to {@code
      * Collections.reverse(Floats.asList(array))}, but is likely to be more efficient.
      *
+     * @param array input float array
      * @since 23.1
      */
     public static void reverse(float[] array) {
@@ -399,6 +412,9 @@ public final class Floats {
      * Collections.reverse(Floats.asList(array).subList(fromIndex, toIndex))}, but is likely to be
      * more efficient.
      *
+     * @param array input float array
+     * @param fromIndex start index
+     * @param toIndex end index
      * @throws IndexOutOfBoundsException if {@code fromIndex < 0}, {@code toIndex > array.length},
      *     or {@code toIndex > fromIndex}
      * @since 23.1

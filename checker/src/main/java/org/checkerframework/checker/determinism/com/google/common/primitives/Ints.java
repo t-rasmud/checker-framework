@@ -167,6 +167,8 @@ public final class Ints {
      *
      * @param array the array to search for the sequence {@code target}
      * @param target the array to search for as a sub-sequence of {@code array}
+     * @return the start position of the first occurrence of the specified {@code target} within
+     *     {@code array}, or {@code -1} if there is no such occurrence
      */
     public static int indexOf(int[] array, int[] target) {
         checkNotNull(array, "array");
@@ -258,6 +260,8 @@ public final class Ints {
      * @param value the {@code int} value to constrain
      * @param min the lower bound (inclusive) of the range to constrain {@code value} to
      * @param max the upper bound (inclusive) of the range to constrain {@code value} to
+     * @return the value nearest to {@code value} which is within the closed range {@code
+     *     [min..max]}
      * @throws IllegalArgumentException if {@code min > max}
      * @since 21.0
      */
@@ -296,6 +300,9 @@ public final class Ints {
      * use a shared {@link java.nio.ByteBuffer} instance, or use {@link
      * org.checkerframework.com.google.common.io.ByteStreams#newDataOutput()} to get a growable
      * buffer.
+     *
+     * @param value input int value
+     * @return a big-endian representation of {@code value} in a 4-element byte array
      */
     public static byte[] toByteArray(int value) {
         return new byte[] {
@@ -312,6 +319,9 @@ public final class Ints {
      * <p>Arguably, it's preferable to use {@link java.nio.ByteBuffer}; that library exposes much
      * more flexibility at little cost in readability.
      *
+     * @param bytes input byte array
+     * @return the {@code int} value whose big-endian representation is stored in the first 4 bytes
+     *     of {@code bytes}
      * @throws IllegalArgumentException if {@code bytes} has fewer than 4 elements
      */
     public static int fromByteArray(byte[] bytes) {
@@ -323,6 +333,12 @@ public final class Ints {
      * Returns the {@code int} value whose byte representation is the given 4 bytes, in big-endian
      * order; equivalent to {@code Ints.fromByteArray(new byte[] {b1, b2, b3, b4})}.
      *
+     * @param b1 first byte
+     * @param b2 second byte
+     * @param b3 third byte
+     * @param b4 last byte
+     * @return the {@code int} value whose byte representation is the given 4 bytes, in big-endian
+     *     order
      * @since 7.0
      */
     public static int fromBytes(byte b1, byte b2, byte b3, byte b4) {
@@ -356,6 +372,7 @@ public final class Ints {
      * @param separator the text that should appear between consecutive values in the resulting
      *     string (but not at the start or end)
      * @param array an array of {@code int} values, possibly empty
+     * @return a string containing the supplied {@code int} values separated by {@code separator}
      */
     public static String join(String separator, int... array) {
         checkNotNull(separator);
@@ -383,6 +400,7 @@ public final class Ints {
      * support only identity equality), but it is consistent with {@link Arrays#equals(int[],
      * int[])}.
      *
+     * @return a comparator that compares two {@code int} arrays
      * @since 2.0
      */
     public static Comparator<int[]> lexicographicalComparator() {
@@ -413,6 +431,7 @@ public final class Ints {
     /**
      * Sorts the elements of {@code array} in descending order.
      *
+     * @param array input int array
      * @since 23.1
      */
     public static void sortDescending(int[] array) {
@@ -424,6 +443,9 @@ public final class Ints {
      * Sorts the elements of {@code array} between {@code fromIndex} inclusive and {@code toIndex}
      * exclusive in descending order.
      *
+     * @param array input int array
+     * @param fromIndex start index
+     * @param toIndex end index
      * @since 23.1
      */
     public static void sortDescending(int[] array, int fromIndex, int toIndex) {
@@ -437,6 +459,7 @@ public final class Ints {
      * Reverses the elements of {@code array}. This is equivalent to {@code
      * Collections.reverse(Ints.asList(array))}, but is likely to be more efficient.
      *
+     * @param array input int array
      * @since 23.1
      */
     public static void reverse(int[] array) {
@@ -450,6 +473,9 @@ public final class Ints {
      * Collections.reverse(Ints.asList(array).subList(fromIndex, toIndex))}, but is likely to be
      * more efficient.
      *
+     * @param array input int array
+     * @param fromIndex start index
+     * @param toIndex end index
      * @throws IndexOutOfBoundsException if {@code fromIndex < 0}, {@code toIndex > array.length},
      *     or {@code toIndex > fromIndex}
      * @since 23.1

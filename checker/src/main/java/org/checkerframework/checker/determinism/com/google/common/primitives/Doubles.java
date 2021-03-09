@@ -96,6 +96,8 @@ public final class Doubles {
      * <p><b>Java 8 users:</b> use {@link Double#isFinite(double)} instead.
      *
      * @since 10.0
+     * @param value input double value
+     * @return {@code true} if {@code value} represents a real number
      */
     public static boolean isFinite(double value) {
         return NEGATIVE_INFINITY < value && value < POSITIVE_INFINITY;
@@ -153,6 +155,8 @@ public final class Doubles {
      *
      * @param array the array to search for the sequence {@code target}
      * @param target the array to search for as a sub-sequence of {@code array}
+     * @return he start position of the first occurrence of the specified {@code target} within
+     *     {@code array}, or {@code -1} if there is no such occurrence
      */
     public static int indexOf(double[] array, double[] target) {
         checkNotNull(array, "array");
@@ -243,6 +247,8 @@ public final class Doubles {
      * @param value the {@code double} value to constrain
      * @param min the lower bound (inclusive) of the range to constrain {@code value} to
      * @param max the upper bound (inclusive) of the range to constrain {@code value} to
+     * @return the value nearest to {@code value} which is within the closed range {@code
+     *     [min..max]}
      * @throws IllegalArgumentException if {@code min > max}
      * @since 21.0
      */
@@ -309,6 +315,8 @@ public final class Doubles {
      * @param separator the text that should appear between consecutive values in the resulting
      *     string (but not at the start or end)
      * @param array an array of {@code double} values, possibly empty
+     * @return a string containing the supplied {@code double} values, converted to strings as
+     *     specified by {@link Double#toString(double)}, and separated by {@code separator}
      */
     public static String join(String separator, double... array) {
         checkNotNull(separator);
@@ -337,6 +345,7 @@ public final class Doubles {
      * double[])}.
      *
      * @since 2.0
+     * @return a comparator that compares two {@code double} arrays
      */
     public static Comparator<double[]> lexicographicalComparator() {
         return LexicographicalComparator.INSTANCE;
@@ -370,6 +379,7 @@ public final class Doubles {
      * all NaN values as equal and 0.0 as greater than -0.0.
      *
      * @since 23.1
+     * @param array input double array
      */
     public static void sortDescending(double[] array) {
         checkNotNull(array);
@@ -384,6 +394,9 @@ public final class Doubles {
      * all NaN values as equal and 0.0 as greater than -0.0.
      *
      * @since 23.1
+     * @param array input double array
+     * @param fromIndex start index
+     * @param toIndex end index
      */
     public static void sortDescending(double[] array, int fromIndex, int toIndex) {
         checkNotNull(array);
@@ -397,6 +410,7 @@ public final class Doubles {
      * Collections.reverse(Doubles.asList(array))}, but is likely to be more efficient.
      *
      * @since 23.1
+     * @param array input double array
      */
     public static void reverse(double[] array) {
         checkNotNull(array);
@@ -409,6 +423,9 @@ public final class Doubles {
      * Collections.reverse(Doubles.asList(array).subList(fromIndex, toIndex))}, but is likely to be
      * more efficient.
      *
+     * @param array input double array
+     * @param fromIndex start index
+     * @param toIndex end index
      * @throws IndexOutOfBoundsException if {@code fromIndex < 0}, {@code toIndex > array.length},
      *     or {@code toIndex > fromIndex}
      * @since 23.1

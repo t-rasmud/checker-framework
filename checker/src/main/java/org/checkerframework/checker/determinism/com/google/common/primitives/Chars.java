@@ -161,6 +161,8 @@ public final class Chars {
      *
      * @param array the array to search for the sequence {@code target}
      * @param target the array to search for as a sub-sequence of {@code array}
+     * @return the start position of the first occurrence of the specified {@code target} within
+     *     {@code array}, or {@code -1} if there is no such occurrence
      */
     public static int indexOf(char[] array, char[] target) {
         checkNotNull(array, "array");
@@ -252,6 +254,8 @@ public final class Chars {
      * @param value the {@code char} value to constrain
      * @param min the lower bound (inclusive) of the range to constrain {@code value} to
      * @param max the upper bound (inclusive) of the range to constrain {@code value} to
+     * @return the value nearest to {@code value} which is within the closed range {@code
+     *     [min..max]}
      * @throws IllegalArgumentException if {@code min > max}
      * @since 21.0
      */
@@ -290,6 +294,9 @@ public final class Chars {
      * use a shared {@link java.nio.ByteBuffer} instance, or use {@link
      * org.checkerframework.com.google.common.io.ByteStreams#newDataOutput()} to get a growable
      * buffer.
+     *
+     * @param value input char
+     * @return a big-endian representation of {@code value} in a 2-element byte array
      */
     public static byte[] toByteArray(char value) {
         return new byte[] {(byte) (value >> 8), (byte) value};
@@ -303,6 +310,9 @@ public final class Chars {
      * <p>Arguably, it's preferable to use {@link java.nio.ByteBuffer}; that library exposes much
      * more flexibility at little cost in readability.
      *
+     * @param bytes input byte array
+     * @return the {@code char} value whose big-endian representation is stored in the first 2 bytes
+     *     of {@code bytes}
      * @throws IllegalArgumentException if {@code bytes} has fewer than 2 elements
      */
     public static char fromByteArray(byte[] bytes) {
@@ -315,6 +325,10 @@ public final class Chars {
      * order; equivalent to {@code Chars.fromByteArray(new byte[] {b1, b2})}.
      *
      * @since 7.0
+     * @param b1 first byte
+     * @param b2 second byte
+     * @return the {@code char} value whose byte representation is the given 2 bytes, in big-endian
+     *     order
      */
     public static char fromBytes(byte b1, byte b2) {
         return (char) ((b1 << 8) | (b2 & 0xFF));
@@ -347,6 +361,7 @@ public final class Chars {
      * @param separator the text that should appear between consecutive values in the resulting
      *     string (but not at the start or end)
      * @param array an array of {@code char} values, possibly empty
+     * @return a string containing the supplied {@code char} values separated by {@code separator}
      */
     public static String join(String separator, char... array) {
         checkNotNull(separator);
@@ -376,6 +391,7 @@ public final class Chars {
      * char[])}.
      *
      * @since 2.0
+     * @return a comparator that compares two {@code char} arrays
      */
     public static Comparator<char[]> lexicographicalComparator() {
         return LexicographicalComparator.INSTANCE;
@@ -433,6 +449,7 @@ public final class Chars {
      * Sorts the elements of {@code array} in descending order.
      *
      * @since 23.1
+     * @param array input char array
      */
     public static void sortDescending(char[] array) {
         checkNotNull(array);
@@ -444,6 +461,9 @@ public final class Chars {
      * exclusive in descending order.
      *
      * @since 23.1
+     * @param array input char array
+     * @param fromIndex start index
+     * @param toIndex end index
      */
     public static void sortDescending(char[] array, int fromIndex, int toIndex) {
         checkNotNull(array);
@@ -457,6 +477,7 @@ public final class Chars {
      * Collections.reverse(Chars.asList(array))}, but is likely to be more efficient.
      *
      * @since 23.1
+     * @param array input char array
      */
     public static void reverse(char[] array) {
         checkNotNull(array);
@@ -469,6 +490,9 @@ public final class Chars {
      * Collections.reverse(Chars.asList(array).subList(fromIndex, toIndex))}, but is likely to be
      * more efficient.
      *
+     * @param array input char array
+     * @param fromIndex start index
+     * @param toIndex end index
      * @throws IndexOutOfBoundsException if {@code fromIndex < 0}, {@code toIndex > array.length},
      *     or {@code toIndex > fromIndex}
      * @since 23.1
