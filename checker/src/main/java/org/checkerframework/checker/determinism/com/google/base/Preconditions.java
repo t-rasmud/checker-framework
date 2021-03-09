@@ -1052,6 +1052,7 @@ public final class Preconditions {
     /**
      * Ensures that an object reference passed as a parameter to the calling method is not null.
      *
+     * @param <T> Type of the Object reference
      * @param reference an object reference
      * @return the non-null reference that was validated
      * @throws NullPointerException if {@code reference} is null
@@ -1067,6 +1068,7 @@ public final class Preconditions {
     /**
      * Ensures that an object reference passed as a parameter to the calling method is not null.
      *
+     * @param <T> Type of the Object reference
      * @param reference an object reference
      * @param errorMessage the exception message to use if the check fails; will be converted to a
      *     string using {@link String#valueOf(Object)}
@@ -1085,6 +1087,7 @@ public final class Preconditions {
     /**
      * Ensures that an object reference passed as a parameter to the calling method is not null.
      *
+     * @param <T> Type of the Object reference
      * @param reference an object reference
      * @param errorMessageTemplate a template for the exception message should the check fail. The
      *     message is formed by replacing each {@code %s} placeholder in the template with an
@@ -1113,6 +1116,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 char
@@ -1133,6 +1137,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 int
@@ -1153,6 +1158,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 long
@@ -1173,6 +1179,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 Object
@@ -1193,6 +1200,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 char
@@ -1214,6 +1222,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 char
@@ -1235,6 +1244,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 char
@@ -1256,6 +1266,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 char
@@ -1277,6 +1288,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 int
@@ -1298,6 +1310,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 int
@@ -1319,6 +1332,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 int
@@ -1340,6 +1354,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 int
@@ -1361,6 +1376,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 long
@@ -1382,6 +1398,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 long
@@ -1403,6 +1420,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 long
@@ -1424,6 +1442,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 long
@@ -1445,6 +1464,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 Object
@@ -1466,6 +1486,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 Object
@@ -1487,6 +1508,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 Object
@@ -1508,6 +1530,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 Object
@@ -1532,6 +1555,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 Object
@@ -1558,6 +1582,7 @@ public final class Preconditions {
      * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
      *
      * @since 20.0 (varargs overload since 2.0)
+     * @param <T> Type of the Object reference
      * @param obj Object reference to be checked
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 Object

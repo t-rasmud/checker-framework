@@ -90,6 +90,7 @@ public final class Floats {
      * <p><b>Java 8 users:</b> use {@link Float#isFinite(float)} instead.
      *
      * @param value input float value
+     * @return {@code true} if {@code value} represents a real number
      * @since 10.0
      */
     public static boolean isFinite(float value) {

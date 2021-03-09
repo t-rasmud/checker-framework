@@ -511,6 +511,7 @@ public final class Booleans {
      * Returns the number of {@code values} that are {@code true}.
      *
      * @since 16.0
+     * @param values input boolean values
      * @return the number of {@code values} that are {@code true}
      */
     public static int countTrue(boolean... values) {
@@ -527,6 +528,7 @@ public final class Booleans {
      * Reverses the elements of {@code array}. This is equivalent to {@code
      * Collections.reverse(Booleans.asList(array))}, but is likely to be more efficient.
      *
+     * @param array input boolean array
      * @since 23.1
      */
     public static void reverse(boolean[] array) {
@@ -540,6 +542,9 @@ public final class Booleans {
      * Collections.reverse(Booleans.asList(array).subList(fromIndex, toIndex))}, but is likely to be
      * more efficient.
      *
+     * @param array input boolean array
+     * @param fromIndex start index
+     * @param toIndex end index
      * @throws IndexOutOfBoundsException if {@code fromIndex < 0}, {@code toIndex > array.length},
      *     or {@code toIndex > fromIndex}
      * @since 23.1
