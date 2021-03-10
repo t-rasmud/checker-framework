@@ -222,6 +222,8 @@ The Determinism Checker treats Collection classes as
 invariant with respect to the determinism qualifier. That is, a
 \code{@NonDet Collection} is unrelated by subtyping to an \code{@OrderNonDet Collection}
 which is unrelated to a \code{@Det Collection}.
+This is analogous to java's invariant treatment of Collection classes
+w.r.t their type arguments.
 
 Assume for the sake of contradiction that collections are not invariant w.r.t. type qualifiers.
 That would make the following code type-check, even though it
@@ -587,16 +589,15 @@ the checker will report an error.
 % Implementation bug: @RequiresDetToString incorrectly uses 0-based indexing for formal parameters.
 % As a result, the programmer cannot specify that the receiver must have deterministic toString()
 % https://github.com/t-rasmud/checker-framework/issues/224
-A user can also specify which specific arguments the check must apply to by
+A user can also specify which specific arguments must have deterministic \<toString> by
 supplying annotation values to \<RequiresDetToString>.
 For example, if the user annotates a method as:
 \begin{Verbatim}
     @RequiresDetToString({0, 2})
     static @PolyDet String n(@PolyDet NewClass1 o1, @PolyDet NewClass2 o2, @PolyDet NewClass3 o3) {...}
 \end{Verbatim}
-then the checker will enforce deterministic \<toString> checks on \<NewClass1> and \<NewClass3>,
-but not on \<NewClass2>.
-
+then the checker will report errors if the \<toString> implementations of \<NewClass1>
+and \<NewClass3> do not return a deterministic \<String>.
 
 \sectionAndLabel{Default annotations}{determinism-defaults}
 
