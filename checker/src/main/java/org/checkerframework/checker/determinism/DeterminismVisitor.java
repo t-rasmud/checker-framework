@@ -697,6 +697,9 @@ public class DeterminismVisitor extends BaseTypeVisitor<DeterminismAnnotatedType
      * each parameter of {@code node} specified by the annotation, checks that the declared type of
      * any {@code Det} argument overrides {@code toString} returning a {@code @Det String} or
      * {@code @PolyDet}. Otherwise issues an error.
+     *
+     * <p>Bug: This check doesn't consider the receiver.
+     * https://github.com/t-rasmud/checker-framework/issues/224
      */
     @Override
     public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
