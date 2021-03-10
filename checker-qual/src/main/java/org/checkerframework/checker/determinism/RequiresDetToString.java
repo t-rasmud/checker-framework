@@ -19,10 +19,8 @@ import org.checkerframework.framework.qual.InheritedAnnotation;
  *
  * <p>For example, if a method is annotated as {@code @RequiresDetToString()}, then at every call,
  * all arguments must have {@code toString} method return a {@code @Det} or {@code @PolyDet} result.
- *
- * <p>{@code @RequiresDetToString} on its own indicates that every argument must have a
- * deterministic {@code toString} method. Writing {@code @RequiresDetToString({0, 2})} indicates
- * that the first and third arguments must have deterministic {@code toString} methods.
+ * Writing {@code @RequiresDetToString({0, 2})} indicates that the first and third arguments must
+ * have deterministic {@code toString} methods.
  *
  * <p>When used on an override method, the overridden method must also have
  * {@code @RequireDetToString} on the same parameters. Specifically, if the override method's
