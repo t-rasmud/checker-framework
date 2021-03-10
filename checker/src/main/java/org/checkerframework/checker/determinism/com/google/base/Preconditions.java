@@ -14,6 +14,9 @@
 
 package org.checkerframework.checker.determinism.com.google.common.base;
 
+import org.checkerframework.checker.formatter.qual.ConversionCategory;
+import org.checkerframework.checker.formatter.qual.Format;
+import org.checkerframework.checker.formatter.qual.FormatMethod;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -155,9 +158,10 @@ public final class Preconditions {
      *     are converted to strings using {@link String#valueOf(Object)}.
      * @throws IllegalArgumentException if {@code expression} is false
      */
+    @FormatMethod
     public static void checkArgument(
             boolean expression,
-            @Nullable String errorMessageTemplate,
+            @Nullable @Format({ConversionCategory.GENERAL}) String errorMessageTemplate,
             @Nullable Object @Nullable ... errorMessageArgs) {
         if (!expression) {
             throw new IllegalArgumentException(
@@ -175,7 +179,10 @@ public final class Preconditions {
      * @param errorMessageTemplate a template for the exception message should the check fail.
      * @param p1 char
      */
-    public static void checkArgument(boolean b, @Nullable String errorMessageTemplate, char p1) {
+    public static void checkArgument(
+            boolean b,
+            @Nullable @Format(ConversionCategory.CHAR) String errorMessageTemplate,
+            char p1) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1));
         }
@@ -191,7 +198,10 @@ public final class Preconditions {
      * @param errorMessageTemplate a template for the exception message should the check fail.
      * @param p1 int
      */
-    public static void checkArgument(boolean b, @Nullable String errorMessageTemplate, int p1) {
+    public static void checkArgument(
+            boolean b,
+            @Nullable @Format(ConversionCategory.INT) String errorMessageTemplate,
+            int p1) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1));
         }
@@ -207,7 +217,10 @@ public final class Preconditions {
      * @param errorMessageTemplate a template for the exception message should the check fail.
      * @param p1 long
      */
-    public static void checkArgument(boolean b, @Nullable String errorMessageTemplate, long p1) {
+    public static void checkArgument(
+            boolean b,
+            @Nullable @Format(ConversionCategory.INT) String errorMessageTemplate,
+            long p1) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1));
         }
@@ -224,7 +237,9 @@ public final class Preconditions {
      * @param p1 Object
      */
     public static void checkArgument(
-            boolean b, @Nullable String errorMessageTemplate, @Nullable Object p1) {
+            boolean b,
+            @Nullable @Format(ConversionCategory.GENERAL) String errorMessageTemplate,
+            @Nullable Object p1) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1));
         }
@@ -242,7 +257,10 @@ public final class Preconditions {
      * @param p2 char
      */
     public static void checkArgument(
-            boolean b, @Nullable String errorMessageTemplate, char p1, char p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.CHAR, ConversionCategory.CHAR}) String errorMessageTemplate,
+            char p1,
+            char p2) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -260,7 +278,10 @@ public final class Preconditions {
      * @param p2 int
      */
     public static void checkArgument(
-            boolean b, @Nullable String errorMessageTemplate, char p1, int p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.CHAR, ConversionCategory.INT}) String errorMessageTemplate,
+            char p1,
+            int p2) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -278,7 +299,10 @@ public final class Preconditions {
      * @param p2 long
      */
     public static void checkArgument(
-            boolean b, @Nullable String errorMessageTemplate, char p1, long p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.CHAR, ConversionCategory.INT}) String errorMessageTemplate,
+            char p1,
+            long p2) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -296,7 +320,10 @@ public final class Preconditions {
      * @param p2 Object
      */
     public static void checkArgument(
-            boolean b, @Nullable String errorMessageTemplate, char p1, @Nullable Object p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.CHAR, ConversionCategory.GENERAL}) String errorMessageTemplate,
+            char p1,
+            @Nullable Object p2) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -314,7 +341,10 @@ public final class Preconditions {
      * @param p2 char
      */
     public static void checkArgument(
-            boolean b, @Nullable String errorMessageTemplate, int p1, char p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.CHAR, ConversionCategory.CHAR}) String errorMessageTemplate,
+            int p1,
+            char p2) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -332,7 +362,10 @@ public final class Preconditions {
      * @param p2 int
      */
     public static void checkArgument(
-            boolean b, @Nullable String errorMessageTemplate, int p1, int p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.INT}) String errorMessageTemplate,
+            int p1,
+            int p2) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -350,7 +383,10 @@ public final class Preconditions {
      * @param p2 long
      */
     public static void checkArgument(
-            boolean b, @Nullable String errorMessageTemplate, int p1, long p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.INT}) String errorMessageTemplate,
+            int p1,
+            long p2) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -368,7 +404,10 @@ public final class Preconditions {
      * @param p2 Object
      */
     public static void checkArgument(
-            boolean b, @Nullable String errorMessageTemplate, int p1, @Nullable Object p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.GENERAL}) String errorMessageTemplate,
+            int p1,
+            @Nullable Object p2) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -386,7 +425,10 @@ public final class Preconditions {
      * @param p2 char
      */
     public static void checkArgument(
-            boolean b, @Nullable String errorMessageTemplate, long p1, char p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.CHAR}) String errorMessageTemplate,
+            long p1,
+            char p2) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -404,7 +446,10 @@ public final class Preconditions {
      * @param p2 int
      */
     public static void checkArgument(
-            boolean b, @Nullable String errorMessageTemplate, long p1, int p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.INT}) String errorMessageTemplate,
+            long p1,
+            int p2) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -422,7 +467,10 @@ public final class Preconditions {
      * @param p2 long
      */
     public static void checkArgument(
-            boolean b, @Nullable String errorMessageTemplate, long p1, long p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.INT}) String errorMessageTemplate,
+            long p1,
+            long p2) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -440,7 +488,10 @@ public final class Preconditions {
      * @param p2 Object
      */
     public static void checkArgument(
-            boolean b, @Nullable String errorMessageTemplate, long p1, @Nullable Object p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.GENERAL}) String errorMessageTemplate,
+            long p1,
+            @Nullable Object p2) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -458,7 +509,10 @@ public final class Preconditions {
      * @param p2 char
      */
     public static void checkArgument(
-            boolean b, @Nullable String errorMessageTemplate, @Nullable Object p1, char p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.GENERAL, ConversionCategory.CHAR}) String errorMessageTemplate,
+            @Nullable Object p1,
+            char p2) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -476,7 +530,10 @@ public final class Preconditions {
      * @param p2 int
      */
     public static void checkArgument(
-            boolean b, @Nullable String errorMessageTemplate, @Nullable Object p1, int p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.GENERAL, ConversionCategory.INT}) String errorMessageTemplate,
+            @Nullable Object p1,
+            int p2) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -494,7 +551,10 @@ public final class Preconditions {
      * @param p2 long
      */
     public static void checkArgument(
-            boolean b, @Nullable String errorMessageTemplate, @Nullable Object p1, long p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.GENERAL, ConversionCategory.INT}) String errorMessageTemplate,
+            @Nullable Object p1,
+            long p2) {
         if (!b) {
             throw new IllegalArgumentException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -513,7 +573,7 @@ public final class Preconditions {
      */
     public static void checkArgument(
             boolean b,
-            @Nullable String errorMessageTemplate,
+                    @Nullable @Format({ConversionCategory.GENERAL, ConversionCategory.GENERAL}) String errorMessageTemplate,
             @Nullable Object p1,
             @Nullable Object p2) {
         if (!b) {
@@ -535,7 +595,12 @@ public final class Preconditions {
      */
     public static void checkArgument(
             boolean b,
-            @Nullable String errorMessageTemplate,
+                    @Nullable @Format({
+                        ConversionCategory.GENERAL,
+                        ConversionCategory.GENERAL,
+                        ConversionCategory.GENERAL
+                    })
+                    String errorMessageTemplate,
             @Nullable Object p1,
             @Nullable Object p2,
             @Nullable Object p3) {
@@ -559,7 +624,13 @@ public final class Preconditions {
      */
     public static void checkArgument(
             boolean b,
-            @Nullable String errorMessageTemplate,
+                    @Nullable @Format({
+                        ConversionCategory.GENERAL,
+                        ConversionCategory.GENERAL,
+                        ConversionCategory.GENERAL,
+                        ConversionCategory.GENERAL
+                    })
+                    String errorMessageTemplate,
             @Nullable Object p1,
             @Nullable Object p2,
             @Nullable Object p3,
@@ -614,9 +685,10 @@ public final class Preconditions {
      * @throws IllegalStateException if {@code expression} is false
      * @see org.checkerframework.com.google.common.base.Verify#verify Verify.verify()
      */
+    @FormatMethod
     public static void checkState(
             boolean expression,
-            @Nullable String errorMessageTemplate,
+            @Nullable @Format(ConversionCategory.GENERAL) String errorMessageTemplate,
             @Nullable Object @Nullable ... errorMessageArgs) {
         if (!expression) {
             throw new IllegalStateException(String.format(errorMessageTemplate, errorMessageArgs));
@@ -634,7 +706,10 @@ public final class Preconditions {
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 char
      */
-    public static void checkState(boolean b, @Nullable String errorMessageTemplate, char p1) {
+    public static void checkState(
+            boolean b,
+            @Nullable @Format(ConversionCategory.CHAR) String errorMessageTemplate,
+            char p1) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1));
         }
@@ -651,7 +726,10 @@ public final class Preconditions {
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 int
      */
-    public static void checkState(boolean b, @Nullable String errorMessageTemplate, int p1) {
+    public static void checkState(
+            boolean b,
+            @Nullable @Format(ConversionCategory.INT) String errorMessageTemplate,
+            int p1) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1));
         }
@@ -668,7 +746,10 @@ public final class Preconditions {
      * @param errorMessageTemplate a template for the exception message should the check fail
      * @param p1 long
      */
-    public static void checkState(boolean b, @Nullable String errorMessageTemplate, long p1) {
+    public static void checkState(
+            boolean b,
+            @Nullable @Format(ConversionCategory.INT) String errorMessageTemplate,
+            long p1) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1));
         }
@@ -686,7 +767,9 @@ public final class Preconditions {
      * @param p1 Object
      */
     public static void checkState(
-            boolean b, @Nullable String errorMessageTemplate, @Nullable Object p1) {
+            boolean b,
+            @Nullable @Format(ConversionCategory.GENERAL) String errorMessageTemplate,
+            @Nullable Object p1) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1));
         }
@@ -705,7 +788,10 @@ public final class Preconditions {
      * @param p2 char
      */
     public static void checkState(
-            boolean b, @Nullable String errorMessageTemplate, char p1, char p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.CHAR, ConversionCategory.CHAR}) String errorMessageTemplate,
+            char p1,
+            char p2) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -724,7 +810,10 @@ public final class Preconditions {
      * @param p2 int
      */
     public static void checkState(
-            boolean b, @Nullable String errorMessageTemplate, char p1, int p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.CHAR, ConversionCategory.INT}) String errorMessageTemplate,
+            char p1,
+            int p2) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -743,7 +832,10 @@ public final class Preconditions {
      * @param p2 long
      */
     public static void checkState(
-            boolean b, @Nullable String errorMessageTemplate, char p1, long p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.CHAR, ConversionCategory.INT}) String errorMessageTemplate,
+            char p1,
+            long p2) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -762,7 +854,10 @@ public final class Preconditions {
      * @param p2 Object
      */
     public static void checkState(
-            boolean b, @Nullable String errorMessageTemplate, char p1, @Nullable Object p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.CHAR, ConversionCategory.GENERAL}) String errorMessageTemplate,
+            char p1,
+            @Nullable Object p2) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -781,7 +876,10 @@ public final class Preconditions {
      * @param p2 char
      */
     public static void checkState(
-            boolean b, @Nullable String errorMessageTemplate, int p1, char p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.CHAR}) String errorMessageTemplate,
+            int p1,
+            char p2) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -800,7 +898,10 @@ public final class Preconditions {
      * @param p2 int
      */
     public static void checkState(
-            boolean b, @Nullable String errorMessageTemplate, int p1, int p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.INT}) String errorMessageTemplate,
+            int p1,
+            int p2) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -819,7 +920,10 @@ public final class Preconditions {
      * @param p2 long
      */
     public static void checkState(
-            boolean b, @Nullable String errorMessageTemplate, int p1, long p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.INT}) String errorMessageTemplate,
+            int p1,
+            long p2) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -838,7 +942,10 @@ public final class Preconditions {
      * @param p2 Object
      */
     public static void checkState(
-            boolean b, @Nullable String errorMessageTemplate, int p1, @Nullable Object p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.GENERAL}) String errorMessageTemplate,
+            int p1,
+            @Nullable Object p2) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -857,7 +964,10 @@ public final class Preconditions {
      * @param p2 char
      */
     public static void checkState(
-            boolean b, @Nullable String errorMessageTemplate, long p1, char p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.CHAR}) String errorMessageTemplate,
+            long p1,
+            char p2) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -876,7 +986,10 @@ public final class Preconditions {
      * @param p2 int
      */
     public static void checkState(
-            boolean b, @Nullable String errorMessageTemplate, long p1, int p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.INT}) String errorMessageTemplate,
+            long p1,
+            int p2) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -895,7 +1008,10 @@ public final class Preconditions {
      * @param p2 long
      */
     public static void checkState(
-            boolean b, @Nullable String errorMessageTemplate, long p1, long p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.INT}) String errorMessageTemplate,
+            long p1,
+            long p2) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -914,7 +1030,10 @@ public final class Preconditions {
      * @param p2 Object
      */
     public static void checkState(
-            boolean b, @Nullable String errorMessageTemplate, long p1, @Nullable Object p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.GENERAL}) String errorMessageTemplate,
+            long p1,
+            @Nullable Object p2) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -933,7 +1052,10 @@ public final class Preconditions {
      * @param p2 char
      */
     public static void checkState(
-            boolean b, @Nullable String errorMessageTemplate, @Nullable Object p1, char p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.GENERAL, ConversionCategory.CHAR}) String errorMessageTemplate,
+            @Nullable Object p1,
+            char p2) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -952,7 +1074,10 @@ public final class Preconditions {
      * @param p2 int
      */
     public static void checkState(
-            boolean b, @Nullable String errorMessageTemplate, @Nullable Object p1, int p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.GENERAL, ConversionCategory.INT}) String errorMessageTemplate,
+            @Nullable Object p1,
+            int p2) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -971,7 +1096,10 @@ public final class Preconditions {
      * @param p2 long
      */
     public static void checkState(
-            boolean b, @Nullable String errorMessageTemplate, @Nullable Object p1, long p2) {
+            boolean b,
+                    @Nullable @Format({ConversionCategory.GENERAL, ConversionCategory.INT}) String errorMessageTemplate,
+            @Nullable Object p1,
+            long p2) {
         if (!b) {
             throw new IllegalStateException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -991,7 +1119,7 @@ public final class Preconditions {
      */
     public static void checkState(
             boolean b,
-            @Nullable String errorMessageTemplate,
+                    @Nullable @Format({ConversionCategory.GENERAL, ConversionCategory.GENERAL}) String errorMessageTemplate,
             @Nullable Object p1,
             @Nullable Object p2) {
         if (!b) {
@@ -1014,7 +1142,12 @@ public final class Preconditions {
      */
     public static void checkState(
             boolean b,
-            @Nullable String errorMessageTemplate,
+                    @Nullable @Format({
+                        ConversionCategory.GENERAL,
+                        ConversionCategory.GENERAL,
+                        ConversionCategory.GENERAL
+                    })
+                    String errorMessageTemplate,
             @Nullable Object p1,
             @Nullable Object p2,
             @Nullable Object p3) {
@@ -1039,7 +1172,13 @@ public final class Preconditions {
      */
     public static void checkState(
             boolean b,
-            @Nullable String errorMessageTemplate,
+                    @Nullable @Format({
+                        ConversionCategory.GENERAL,
+                        ConversionCategory.GENERAL,
+                        ConversionCategory.GENERAL,
+                        ConversionCategory.GENERAL,
+                    })
+                    String errorMessageTemplate,
             @Nullable Object p1,
             @Nullable Object p2,
             @Nullable Object p3,
@@ -1100,9 +1239,10 @@ public final class Preconditions {
      * @throws NullPointerException if {@code reference} is null
      * @see org.checkerframework.com.google.common.base.Verify#verifyNotNull Verify.verifyNotNull()
      */
+    @FormatMethod
     public static <T extends @NonNull Object> T checkNotNull(
             T reference,
-            @Nullable String errorMessageTemplate,
+            @Nullable @Format(ConversionCategory.GENERAL) String errorMessageTemplate,
             @Nullable Object @Nullable ... errorMessageArgs) {
         if (reference == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, errorMessageArgs));
@@ -1124,7 +1264,9 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, char p1) {
+            T obj,
+            @Nullable @Format(ConversionCategory.CHAR) String errorMessageTemplate,
+            char p1) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1));
         }
@@ -1145,7 +1287,7 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, int p1) {
+            T obj, @Nullable @Format(ConversionCategory.INT) String errorMessageTemplate, int p1) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1));
         }
@@ -1166,7 +1308,7 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, long p1) {
+            T obj, @Nullable @Format(ConversionCategory.INT) String errorMessageTemplate, long p1) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1));
         }
@@ -1187,7 +1329,9 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, @Nullable Object p1) {
+            T obj,
+            @Nullable @Format(ConversionCategory.GENERAL) String errorMessageTemplate,
+            @Nullable Object p1) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1));
         }
@@ -1209,7 +1353,10 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, char p1, char p2) {
+            T obj,
+                    @Nullable @Format({ConversionCategory.CHAR, ConversionCategory.CHAR}) String errorMessageTemplate,
+            char p1,
+            char p2) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -1231,7 +1378,10 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, char p1, int p2) {
+            T obj,
+                    @Nullable @Format({ConversionCategory.CHAR, ConversionCategory.INT}) String errorMessageTemplate,
+            char p1,
+            int p2) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -1253,7 +1403,10 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, char p1, long p2) {
+            T obj,
+                    @Nullable @Format({ConversionCategory.CHAR, ConversionCategory.INT}) String errorMessageTemplate,
+            char p1,
+            long p2) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -1275,7 +1428,10 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, char p1, @Nullable Object p2) {
+            T obj,
+                    @Nullable @Format({ConversionCategory.CHAR, ConversionCategory.GENERAL}) String errorMessageTemplate,
+            char p1,
+            @Nullable Object p2) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -1297,7 +1453,10 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, int p1, char p2) {
+            T obj,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.CHAR}) String errorMessageTemplate,
+            int p1,
+            char p2) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -1319,7 +1478,10 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, int p1, int p2) {
+            T obj,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.INT}) String errorMessageTemplate,
+            int p1,
+            int p2) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -1341,7 +1503,10 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, int p1, long p2) {
+            T obj,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.INT}) String errorMessageTemplate,
+            int p1,
+            long p2) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -1363,7 +1528,10 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, int p1, @Nullable Object p2) {
+            T obj,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.GENERAL}) String errorMessageTemplate,
+            int p1,
+            @Nullable Object p2) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -1385,7 +1553,10 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, long p1, char p2) {
+            T obj,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.CHAR}) String errorMessageTemplate,
+            long p1,
+            char p2) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -1407,7 +1578,10 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, long p1, int p2) {
+            T obj,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.INT}) String errorMessageTemplate,
+            long p1,
+            int p2) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -1429,7 +1603,10 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, long p1, long p2) {
+            T obj,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.INT}) String errorMessageTemplate,
+            long p1,
+            long p2) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -1451,7 +1628,10 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, long p1, @Nullable Object p2) {
+            T obj,
+                    @Nullable @Format({ConversionCategory.INT, ConversionCategory.GENERAL}) String errorMessageTemplate,
+            long p1,
+            @Nullable Object p2) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -1473,7 +1653,10 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, @Nullable Object p1, char p2) {
+            T obj,
+                    @Nullable @Format({ConversionCategory.GENERAL, ConversionCategory.CHAR}) String errorMessageTemplate,
+            @Nullable Object p1,
+            char p2) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -1495,7 +1678,10 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, @Nullable Object p1, int p2) {
+            T obj,
+                    @Nullable @Format({ConversionCategory.GENERAL, ConversionCategory.INT}) String errorMessageTemplate,
+            @Nullable Object p1,
+            int p2) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -1517,7 +1703,10 @@ public final class Preconditions {
      * @throws NullPointerException if {@code obj} is null
      */
     public static <T extends @NonNull Object> T checkNotNull(
-            T obj, @Nullable String errorMessageTemplate, @Nullable Object p1, long p2) {
+            T obj,
+                    @Nullable @Format({ConversionCategory.GENERAL, ConversionCategory.INT}) String errorMessageTemplate,
+            @Nullable Object p1,
+            long p2) {
         if (obj == null) {
             throw new NullPointerException(String.format(errorMessageTemplate, p1, p2));
         }
@@ -1540,7 +1729,7 @@ public final class Preconditions {
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj,
-            @Nullable String errorMessageTemplate,
+                    @Nullable @Format({ConversionCategory.GENERAL, ConversionCategory.GENERAL}) String errorMessageTemplate,
             @Nullable Object p1,
             @Nullable Object p2) {
         if (obj == null) {
@@ -1566,7 +1755,12 @@ public final class Preconditions {
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj,
-            @Nullable String errorMessageTemplate,
+                    @Nullable @Format({
+                        ConversionCategory.GENERAL,
+                        ConversionCategory.GENERAL,
+                        ConversionCategory.GENERAL
+                    })
+                    String errorMessageTemplate,
             @Nullable Object p1,
             @Nullable Object p2,
             @Nullable Object p3) {
@@ -1594,7 +1788,13 @@ public final class Preconditions {
      */
     public static <T extends @NonNull Object> T checkNotNull(
             T obj,
-            @Nullable String errorMessageTemplate,
+                    @Nullable @Format({
+                        ConversionCategory.GENERAL,
+                        ConversionCategory.GENERAL,
+                        ConversionCategory.GENERAL,
+                        ConversionCategory.GENERAL
+                    })
+                    String errorMessageTemplate,
             @Nullable Object p1,
             @Nullable Object p2,
             @Nullable Object p3,
