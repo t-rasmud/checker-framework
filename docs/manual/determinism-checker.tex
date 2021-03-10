@@ -584,12 +584,15 @@ As an illustration, consider the following method annotated with \<@RequiresDetT
 Unless \<NewClass> has a \<toString> implementation that returns \<@Det> or \<@PolyDet>,
 the checker will report an error.
 
+% Implementation bug: @RequiresDetToString incorrectly uses 0-based indexing for formal parameters.
+% As a result, the programmer cannot specify that the receiver must have deterministic toString()
+% https://github.com/t-rasmud/checker-framework/issues/224
 A user can also specify which specific arguments the check must apply to by
 supplying annotation values to \<RequiresDetToString>.
 For example, if the user annotates a method as:
 \begin{Verbatim}
     @RequiresDetToString({0, 2})
-    @PolyDet String n(@PolyDet NewClass1 o1, @PolyDet NewClass2 o2, @PolyDet NewClass3 o3) {...}
+    static @PolyDet String n(@PolyDet NewClass1 o1, @PolyDet NewClass2 o2, @PolyDet NewClass3 o3) {...}
 \end{Verbatim}
 then the checker will enforce deterministic \<toString> checks on \<NewClass1> and \<NewClass3>,
 but not on \<NewClass2>.
