@@ -566,7 +566,7 @@ deterministic.  If it is too restrictive for your program:
 Suppose you want to ensure that your program's printed output is
 deterministic.
 It is \emph{not} enough to annotate the formal parameters of \<format> as
-\<@Det>, because the arguments' class may not have a \<toString> implementation that is deterministic.
+\<@Det>, because some argument's class class may have an implementation that is nondeterministic.
 The \<Object.toString> method is nondeterministic, so it is annotated as
 \code{@NonDet String toString(@PolyDet Object this)}.  Most subclasses
 that override \<toString> do so determiniscially:
@@ -590,7 +590,7 @@ A user can also specify which specific arguments the check must apply to by
 supplying annotation values to \<RequiresDetToString>.
 For example, if the user annotates a method as:
 \begin{Verbatim}
-    @RequiresDetToString{0, 2}
+    @RequiresDetToString({0, 2})
     @PolyDet String n(@PolyDet NewClass1 o1, @PolyDet NewClass2 o2, @PolyDet NewClass3 o3) {...}
 \end{Verbatim}
 then the checker will enforce deterministic \<toString> checks on \<NewClass1> and \<NewClass3>,
