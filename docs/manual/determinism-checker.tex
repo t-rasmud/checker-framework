@@ -563,20 +563,18 @@ deterministic.  If it is too restrictive for your program:
 
 \sectionAndLabel{Determinism of formatting routines}{determinism-formatting-routines}
 
-Suppose you want to ensure that your program's printed output is
-deterministic.
-It is \emph{not} enough to annotate the formal parameters of \<format> as
-\<@Det>, because some argument's class class may have an implementation that is nondeterministic.
 The \<Object.toString> method is nondeterministic, so it is annotated as
 \code{@NonDet String toString(@PolyDet Object this)}.  Most subclasses
-that override \<toString> do so determiniscially:
+that override \<toString> do so deterministically:
 \code{@PolyDet String toString(@PolyDet MyClass this)}.
 
-The output of \<format> is deterministic only if its arguments are
+The output of \<format> is deterministic if its arguments are
 deterministic and their types have a deterministic \<toString> implementation.
+It is \emph{not} enough to annotate the formal parameters of \<format> as
+\<@Det>, because some argument's class may have an implementation that is nondeterministic.
 The method declaration annotation
 \refqualclass{checker/determinism/qual}{@RequiresDetToString} expresses the
-latter requirement.
+requirement that the types of a method's arguments be deterministic.
 
 As an illustration, consider the following method annotated with \<@RequiresDetToString>:
 \begin{Verbatim}
