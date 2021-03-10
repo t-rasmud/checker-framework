@@ -12,14 +12,17 @@ import org.checkerframework.framework.qual.InheritedAnnotation;
 // https://checkerframework.org/manual/#java-expressions-as-arguments .
 // It ought to be changed to 1-based indexing.
 /**
- * When this annotation is written without any annotation value on a method, every parameter of that
- * method may only be passed arguments such that their class's {@code toString} method returns a
- * {@code @Det} or {@code @PolyDet} result. When one or more integers are specified as annotation
- * values, only the parameters at those indices ought to obey this restriction.
+ * When this annotation is written without any element on a method, every parameter of that method
+ * may be passed arguments such that their class's {@code toString} method returns a {@code @Det} or
+ * {@code @PolyDet} result. When one or more integers are specified as annotation values, the
+ * arguments at those indices must obey this restriction.
  *
- * <p>For example, {@code @RequiresDetToString} on its own indicates that every argument must have a
+ * <p>For example, if a method is annotated as {@code @RequiresDetToString()}, then at every call,
+ * all arguments must have {@code toString} method return a {@code @Det} or {@code @PolyDet} result.
+ *
+ * <p>{@code @RequiresDetToString} on its own indicates that every argument must have a
  * deterministic {@code toString} method. Writing {@code @RequiresDetToString({0, 2})} indicates
- * that only the first and third arguments must have deterministic {@code toString} methods.
+ * that the first and third arguments must have deterministic {@code toString} methods.
  *
  * <p>When used on an override method, the overridden method must also have
  * {@code @RequireDetToString} on the same parameters. Specifically, if the override method's
