@@ -222,6 +222,7 @@ The Determinism Checker treats Collection classes as
 invariant with respect to the determinism qualifier. That is, a
 \code{@NonDet Collection} is unrelated by subtyping to an \code{@OrderNonDet Collection}
 which is unrelated to a \code{@Det Collection}.
+
 Assume for the sake of contradiction that collections are not invariant w.r.t. type qualifiers.
 That would make the following code type-check, even though it
 non-deterministically changes a \code{@Det List}:
@@ -237,8 +238,10 @@ the same \<List> object and \<nList.addAll(nList)> mutates the \<@Det>
 reference \<dList> non-deterministically.
 
 \sectionAndLabel{Collection aliasing and safe mutation}{determinism-aliasing-mutation}
-It is possible to create \<@NonDet> aliases to \<@OrderNonDet> or \<@Det> collections.
-(For instance, by calling \<next> or \<get>.) Consider the example below:
+It is possible to create a \<@NonDet> alias to an \<@OrderNonDet> or a \<@Det> collection.
+For instance, calling \<next> or \<get> on an \code{@OrderNonDet Collection} creates a
+\<@NonDet> alias.
+Consider the example below:
 \begin{Verbatim}
   void aliasTest(@OrderNonDet Set<@Det List<@Det String>> set, @NonDet int index, @Det String str) {
     @NonDet List<@Det String> lst = set.iterator().next();
@@ -246,8 +249,8 @@ It is possible to create \<@NonDet> aliases to \<@OrderNonDet> or \<@Det> collec
   }
 \end{Verbatim}
 
-Variable \<lst> has type \code{@NonDet List<@Det String>} (as a result of set iteration)
-but an alias has type \code{@Det List<@Det String>} (as a member of set).
+Variable \<lst> has type \code{@NonDet List<@Det String>} (as a result of \<Set> iteration)
+but an alias has type \code{@Det List<@Det String>} (as a member of \<Set>).
 The call \<lst.add(...)> must not type-check because it mutates \<lst> non-deterministically,
 thereby violating the determinism guarantees provided by the \<@Det> reference.
 
