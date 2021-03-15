@@ -14,10 +14,10 @@ import org.checkerframework.framework.qual.SubtypeOf;
 import org.checkerframework.framework.qual.TypeUseLocation;
 
 /**
- * Indicates that the collection, map, or iterator not known to be a non-empty. It is the top type
- * qualifier in the {@link NonEmpty} hierarchy. It is also the default type qualifier.
+ * Indicates that the collection, map, or iterator is not known to be non-empty.
  *
- * <p>Used internally by the type system; should never be written by a programmer.
+ * <p>{@code @UnknownNonEmpty} is the top type qualifier in the {@link NonEmpty} hierarchy. It is
+ * the default type qualifier, so programmers rarely need to write it.
  *
  * @checker_framework.manual #nonempty-checker NonEmpty Checker
  */

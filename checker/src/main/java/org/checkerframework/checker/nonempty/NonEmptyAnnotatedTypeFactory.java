@@ -7,7 +7,7 @@ import org.checkerframework.framework.flow.CFAbstractAnalysis;
 import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
 import org.checkerframework.javacutil.Pair;
 
-/** The annotated type factory for the nonempty type-system. */
+/** The annotated type factory for the NonEmpty type system. */
 public class NonEmptyAnnotatedTypeFactory
         extends GenericAnnotatedTypeFactory<
                 NonEmptyValue, NonEmptyStore, NonEmptyTransfer, NonEmptyAnalysis> {

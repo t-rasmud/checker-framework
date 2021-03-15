@@ -10,7 +10,7 @@ import org.checkerframework.framework.flow.CFAbstractAnalysis;
 import org.checkerframework.framework.flow.CFAbstractValue;
 import org.checkerframework.javacutil.Pair;
 
-/** Boiler plate code to glue together all the parts of the NonEmpty dataflow classes. */
+/** Boilerplate code to glue together all the parts of the NonEmpty dataflow classes. */
 public class NonEmptyAnalysis
         extends CFAbstractAnalysis<NonEmptyValue, NonEmptyStore, NonEmptyTransfer> {
 

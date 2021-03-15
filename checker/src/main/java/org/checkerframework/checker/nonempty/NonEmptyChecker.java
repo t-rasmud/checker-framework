@@ -12,6 +12,6 @@ public class NonEmptyChecker extends BaseTypeChecker {
     public GenericAnnotatedTypeFactory<?, ?, ?, ?> getTypeFactory() {
         GenericAnnotatedTypeFactory<?, ?, ?, ?> result = super.getTypeFactory();
         result.sideEffectsUnrefineAliases = true;
-        return super.getTypeFactory();
+        return result;
     }
 }
