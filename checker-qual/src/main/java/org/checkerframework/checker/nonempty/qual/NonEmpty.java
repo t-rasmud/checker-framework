@@ -10,7 +10,8 @@ import org.checkerframework.framework.qual.TargetLocations;
 import org.checkerframework.framework.qual.TypeUseLocation;
 
 /**
- * Indicates that the collection, map, or iterator is non-empty.
+ * Indicates that the collection, map, or iterator is non-empty contains at least one element and
+ * {@code isEmpty()} returns false.
  *
  * @checker_framework.manual #nonempty-checker NonEmpty Checker
  */

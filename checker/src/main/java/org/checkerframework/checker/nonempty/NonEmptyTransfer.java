@@ -53,8 +53,7 @@ public class NonEmptyTransfer
         this.sizeMethod = TreeUtils.getMethod("java.util.Collection", "size", 0, processingEnv);
         this.isEmptyMethod =
                 TreeUtils.getMethod("java.util.Collection", "isEmpty", 0, processingEnv);
-        AnnotationBuilder builder = new AnnotationBuilder(processingEnv, NonEmpty.class);
-        NONEMPTY = builder.build();
+        NONEMPTY = new AnnotationBuilder(processingEnv, NonEmpty.class).build();
     }
 
     /**

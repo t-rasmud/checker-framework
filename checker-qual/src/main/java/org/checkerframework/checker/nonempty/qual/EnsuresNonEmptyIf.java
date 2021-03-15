@@ -19,12 +19,12 @@ import org.checkerframework.framework.qual.InheritedAnnotation;
  *   public boolean containsKey(String key) { ... }
  * </pre>
  *
- * If an invocation {@code m.containsKey(k)} returns true, then the type of {@code this} can be
+ * If an invocation {@code m.containsKey(k)} returns true, then the type of {@code m} can be
  * inferred to be {@code @NonEmpty}.
  *
  * @see NonEmpty
  * @see EnsuresNonEmpty
- * @checker_framework.manual #map-key-checker Map Key Checker
+ * @checker_framework.manual #nonempty-checker NonEmpty Checker
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -35,7 +35,7 @@ public @interface EnsuresNonEmptyIf {
     /**
      * The value the method must return, in order for the postcondition to hold.
      *
-     * @return The value the method must return, in order for the postcondition to hold
+     * @return the value the method must return, in order for the postcondition to hold
      */
     boolean result();
 

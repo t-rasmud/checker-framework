@@ -31,7 +31,7 @@ else
 fi
 
 # Clone the annotated JDK into ../jdk .
-"$PLUME_SCRIPTS/git-clone-related" typetools jdk
+"$PLUME_SCRIPTS/git-clone-related" --upstream-branch nonempty-checker t-rasmud jdk
 
 AFU="${AFU:-../annotation-tools/annotation-file-utilities}"
 # Don't use `AT=${AFU}/..` which causes a git failure.

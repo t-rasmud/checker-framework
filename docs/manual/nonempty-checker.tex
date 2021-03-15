@@ -6,19 +6,20 @@ The NonEmpty Checker ensures that a Collection, Map, or an Iterator annotated as
 
 To run the NonEmpty Checker, supply the
 \code{-processor org.checkerframework.checker.nonempty.NonEmptyChecker}
+or \code{-processor nonempty}
 command-line option to javac.
 
 \sectionAndLabel{Type Qualifiers and Hierarchy}{nonempty-hierarchy}
 The NonEmpty Checker supports the following type qualifiers:
 \begin{description}
 
+    \item[\refqualclass{checker/nonempty/qual}{NonEmpty}]
+    Indicates that a collection, map, or iterator value is non-empty.
+
     \item[\refqualclass{checker/nonempty/qual}{UnknownNonEmpty}]
     Indicates that the value assigned to the annotated variable is not known to be a non-empty
     collection, map, or iterator. It is the default type
     qualifier, so it should rarely be written by a programmer.
-
-    \item[\refqualclass{checker/nonempty/qual}{NonEmpty}]
-    Indicates that a collection, map, or iterator value is non-empty.
 
     \item[\refqualclass{checker/nonempty/qual}{PolyNonEmpty}]
     indicates qualifier polymorphism.
@@ -33,7 +34,7 @@ The NonEmpty Checker supports the following type qualifiers:
     \label{fig-nonempty-hierarchy}
 \end{figure}
 
-Figure~\ref{fig-nonempty-hierarchy} shows the qualifier hierarchy in the NonEmpty type system.
+Figure~\ref{fig-nonempty-hierarchy} shows the qualifier hierarchy of the NonEmpty type system.
 
 \subsectionAndLabel{Type-refinement rules in the NonEmpty Checker}{nonempty-type-refinement}
 

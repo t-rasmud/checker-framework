@@ -15,7 +15,7 @@ import org.checkerframework.framework.qual.PolymorphicQualifier;
  * one in which every instance of {@code @PolyNonEmpty} has been replaced by {@code @}{@link
  * NonEmpty}, for every possible combination of Collection, Map, or Iterator arguments.
  *
- * @checker_framework.manual #nonempty NonEmpty Checker
+ * @checker_framework.manual #nonempty-checker NonEmpty Checker
  * @checker_framework.manual #qualifier-polymorphism Qualifier polymorphism
  */
 @Documented
