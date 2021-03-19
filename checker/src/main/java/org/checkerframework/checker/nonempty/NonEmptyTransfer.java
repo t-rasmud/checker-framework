@@ -10,6 +10,7 @@ import org.checkerframework.dataflow.analysis.ConditionalTransferResult;
 import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
 import org.checkerframework.dataflow.cfg.node.AssignmentNode;
+import org.checkerframework.dataflow.cfg.node.BooleanLiteralNode;
 import org.checkerframework.dataflow.cfg.node.ConditionalNotNode;
 import org.checkerframework.dataflow.cfg.node.EqualToNode;
 import org.checkerframework.dataflow.cfg.node.GreaterThanNode;
@@ -197,6 +198,9 @@ public class NonEmptyTransfer
      * Collection.size(), refines the type of the {@code Collection} to {@code @NonEmpty} in the
      * else branch.
      *
+     * <p>For a conditional that checks {@code Collection.isEmpty() == true}, refines the type of
+     * the {@code Collection} to {@code @NonEmpty} in the else branch.
+     *
      * @param n EqualToNode
      * @param p TransferResult input
      * @return TransferResult with possibly refined stores
@@ -237,6 +241,18 @@ public class NonEmptyTransfer
             }
             if (rightOpInt == 0) {
                 return refineElseStore(mapVal, resultIn);
+            }
+        }
+
+        if (leftOp instanceof MethodInvocationNode) {
+            if (NodeUtils.isMethodInvocation(leftOp, isEmptyMethod, processingEnv)) {
+                if (!(rightOp instanceof BooleanLiteralNode)) {
+                    return resultIn;
+                }
+                boolean rightOpBool = ((BooleanLiteralNode) rightOp).getValue();
+                if (rightOpBool == true) {
+                    return refineElseStore(leftOp, resultIn);
+                }
             }
         }
         return resultIn;

@@ -8,4 +8,11 @@ public class IsEmptyRefinement {
             lst.iterator().next();
         }
     }
+
+    void test1(List<Integer> lst) {
+        if (lst.isEmpty() == true) {
+            return;
+        }
+        lst.iterator().next();
+    }
 }
