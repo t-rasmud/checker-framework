@@ -61,6 +61,7 @@ import org.checkerframework.framework.util.dependenttypes.DependentTypesError;
 import org.checkerframework.javacutil.AnnotationUtils;
 import org.checkerframework.javacutil.BugInCF;
 import org.checkerframework.javacutil.ElementUtils;
+import org.checkerframework.javacutil.SystemUtil;
 import org.checkerframework.javacutil.TreePathUtil;
 import org.checkerframework.javacutil.TreeUtils;
 import org.checkerframework.javacutil.TypesUtils;
@@ -610,8 +611,8 @@ public class LockVisitor extends BaseTypeVisitor<LockAnnotatedTypeFactory> {
 
             AnnotationMirror ensuresLockHeldAnno =
                     atypeFactory.getDeclAnnotation(methodElement, EnsuresLockHeld.class);
-            List<String> expressions = new ArrayList<>();
 
+            List<String> expressions = new ArrayList<>();
             if (ensuresLockHeldAnno != null) {
                 expressions.addAll(
                         AnnotationUtils.getElementValueArray(
@@ -1235,8 +1236,7 @@ public class LockVisitor extends BaseTypeVisitor<LockAnnotatedTypeFactory> {
         }
 
         TreePath currentPath = getCurrentPath();
-        List<JavaExpression> params =
-                JavaExpression.getParametersOfEnclosingMethod(atypeFactory, currentPath);
+        List<JavaExpression> params = JavaExpression.getParametersOfEnclosingMethod(currentPath);
 
         TypeMirror enclosingType = TreeUtils.typeOf(TreePathUtil.enclosingClass(currentPath));
         JavaExpression pseudoReceiver =
@@ -1247,16 +1247,14 @@ public class LockVisitor extends BaseTypeVisitor<LockAnnotatedTypeFactory> {
         if (implicitThis) {
             self = pseudoReceiver;
         } else if (TreeUtils.isExpressionTree(tree)) {
-            self = JavaExpression.fromTree(atypeFactory, (ExpressionTree) tree);
+            self = JavaExpression.fromTree((ExpressionTree) tree);
         } else {
-            self = new Unknown(TreeUtils.typeOf(tree));
+            self = new Unknown(tree);
         }
 
-        List<LockExpression> lockExpressions = new ArrayList<>();
-        for (String expression : expressions) {
-            lockExpressions.add(parseExpressionString(expression, exprContext, currentPath, self));
-        }
-        return lockExpressions;
+        return SystemUtil.mapList(
+                expression -> parseExpressionString(expression, exprContext, currentPath, self),
+                expressions);
     }
 
     /**
@@ -1307,10 +1305,7 @@ public class LockVisitor extends BaseTypeVisitor<LockAnnotatedTypeFactory> {
 
                     lockExpression.lockExpression =
                             JavaExpressionParseUtil.parse(
-                                    itself.toString() + "." + remainingExpression,
-                                    jeContext,
-                                    path,
-                                    true);
+                                    itself.toString() + "." + remainingExpression, jeContext, path);
                     if (!atypeFactory.isExpressionEffectivelyFinal(lockExpression.lockExpression)) {
                         checker.reportError(
                                 path.getLeaf(),
@@ -1321,7 +1316,7 @@ public class LockVisitor extends BaseTypeVisitor<LockAnnotatedTypeFactory> {
                 }
             } else {
                 lockExpression.lockExpression =
-                        JavaExpressionParseUtil.parse(expression, jeContext, path, true);
+                        JavaExpressionParseUtil.parse(expression, jeContext, path);
                 return lockExpression;
             }
         } catch (JavaExpressionParseException ex) {

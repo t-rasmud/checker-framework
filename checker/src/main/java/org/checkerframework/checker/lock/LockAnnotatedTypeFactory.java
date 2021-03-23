@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -103,6 +104,14 @@ public class LockAnnotatedTypeFactory
     protected final AnnotationMirror GUARDSATISFIED =
             AnnotationBuilder.fromClass(elements, GuardSatisfied.class);
 
+    /** The value() element/field of a @GuardSatisfied annotation. */
+    protected final ExecutableElement guardSatisfiedValueElement =
+            TreeUtils.getMethod(
+                    "org.checkerframework.checker.lock.qual.GuardSatisfied",
+                    "value",
+                    0,
+                    processingEnv);
+
     /** The net.jcip.annotations.GuardedBy annotation, or null if not on the classpath. */
     protected final Class<? extends Annotation> jcipGuardedBy;
 
@@ -153,7 +162,7 @@ public class LockAnnotatedTypeFactory
             protected void reportErrors(Tree errorTree, List<DependentTypesError> errors) {
                 // If the error message is NOT_EFFECTIVELY_FINAL, then report
                 // lock.expression.not.final instead of expression.unparsable.type.invalid .
-                List<DependentTypesError> superErrors = new ArrayList<>();
+                List<DependentTypesError> superErrors = new ArrayList<>(errors.size());
                 for (DependentTypesError error : errors) {
                     if (error.error.equals(NOT_EFFECTIVELY_FINAL)) {
                         checker.reportError(
@@ -167,10 +176,7 @@ public class LockAnnotatedTypeFactory
 
             @Override
             protected String standardizeString(
-                    String expression,
-                    JavaExpressionContext context,
-                    TreePath localScope,
-                    boolean useLocalScope) {
+                    String expression, JavaExpressionContext context, TreePath localVarPath) {
                 if (DependentTypesError.isExpressionError(expression)) {
                     return expression;
                 }
@@ -182,8 +188,7 @@ public class LockAnnotatedTypeFactory
 
                 try {
                     JavaExpression result =
-                            JavaExpressionParseUtil.parse(
-                                    expression, context, localScope, useLocalScope);
+                            JavaExpressionParseUtil.parse(expression, context, localVarPath);
                     if (result == null) {
                         return new DependentTypesError(expression, /*error message=*/ " ")
                                 .toString();
@@ -493,7 +498,8 @@ public class LockAnnotatedTypeFactory
     SideEffectAnnotation methodSideEffectAnnotation(
             Element element, boolean issueErrorIfMoreThanOnePresent) {
         if (element != null) {
-            List<SideEffectAnnotation> sideEffectAnnotationPresent = new ArrayList<>();
+            Set<SideEffectAnnotation> sideEffectAnnotationPresent =
+                    EnumSet.noneOf(SideEffectAnnotation.class);
             for (SideEffectAnnotation sea : SideEffectAnnotation.values()) {
                 if (getDeclAnnotationNoAliases(element, sea.getAnnotationClass()) != null) {
                     sideEffectAnnotationPresent.add(sea);
@@ -513,10 +519,10 @@ public class LockAnnotatedTypeFactory
                 // checker.reportError(element, "multiple.sideeffect.annotations");
             }
 
-            SideEffectAnnotation weakest = sideEffectAnnotationPresent.get(0);
+            SideEffectAnnotation weakest = null;
             // At least one side effect annotation was found. Return the weakest.
             for (SideEffectAnnotation sea : sideEffectAnnotationPresent) {
-                if (sea.isWeakerThan(weakest)) {
+                if (weakest == null || sea.isWeakerThan(weakest)) {
                     weakest = sea;
                 }
             }
@@ -550,7 +556,7 @@ public class LockAnnotatedTypeFactory
      */
     // package-private
     int getGuardSatisfiedIndex(AnnotationMirror am) {
-        return AnnotationUtils.getElementValue(am, "value", Integer.class, true);
+        return AnnotationUtils.getElementValueInt(am, guardSatisfiedValueElement, -1);
     }
 
     @Override
@@ -722,7 +728,7 @@ public class LockAnnotatedTypeFactory
         List<String> lockExpressions;
         if (value instanceof List) {
             lockExpressions =
-                    AnnotationUtils.getElementValueArray(anno, "value", String.class, true);
+                    AnnotationUtils.getElementValueArray(anno, "value", String.class, false);
         } else if (value instanceof String) {
             lockExpressions = Collections.singletonList((String) value);
         } else {
