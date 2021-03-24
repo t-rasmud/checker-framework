@@ -9,6 +9,7 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.nonempty.qual.NonEmpty;
+import org.checkerframework.checker.nonempty.qual.PolyNonEmpty;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
@@ -33,6 +34,9 @@ public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactor
     ExecutableElement getMethod = TreeUtils.getMethod("java.util.List", "get", 1, processingEnv);
     /** The {@literal @}{@link NonEmpty} annotation. */
     private final AnnotationMirror NONEMPTY = AnnotationBuilder.fromClass(elements, NonEmpty.class);
+    /** The {@literal @}{@link PolyNonEmpty} annotation. */
+    private final AnnotationMirror POLYNONEMPTY =
+            AnnotationBuilder.fromClass(elements, PolyNonEmpty.class);
 
     /**
      * NonEmptyVisitor constructor.
@@ -52,7 +56,7 @@ public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactor
      */
     @Override
     public boolean isValidUse(AnnotatedTypeMirror.AnnotatedPrimitiveType type, Tree tree) {
-        if (type.hasAnnotation(NONEMPTY)) {
+        if (type.hasAnnotation(NONEMPTY) || type.hasAnnotation(POLYNONEMPTY)) {
             return false;
         }
         return super.isValidUse(type, tree);
@@ -81,7 +85,7 @@ public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactor
         boolean isIterator = types.isSubtype(declarationTypeMirror, iteratorType);
         boolean isMap = types.isSubtype(declarationTypeMirror, mapType);
         if (!isCollection && !isIterator && !isMap) {
-            if (useType.hasAnnotation(NONEMPTY)) {
+            if (useType.hasAnnotation(NONEMPTY) || useType.hasAnnotation(POLYNONEMPTY)) {
                 return false;
             }
         }
