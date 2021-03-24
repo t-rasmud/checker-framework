@@ -14,6 +14,7 @@ import com.sun.source.tree.UnaryTree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.TreePath;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -39,10 +40,10 @@ import org.checkerframework.dataflow.cfg.node.ThisNode;
 import org.checkerframework.dataflow.cfg.node.UnaryOperationNode;
 import org.checkerframework.dataflow.cfg.node.ValueLiteralNode;
 import org.checkerframework.dataflow.cfg.node.WideningConversionNode;
-import org.checkerframework.dataflow.util.PurityUtils;
 import org.checkerframework.javacutil.AnnotationProvider;
 import org.checkerframework.javacutil.BugInCF;
 import org.checkerframework.javacutil.ElementUtils;
+import org.checkerframework.javacutil.SystemUtil;
 import org.checkerframework.javacutil.TreePathUtil;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -87,6 +88,27 @@ public abstract class JavaExpression {
 
     public boolean containsUnknown() {
         return containsOfClass(Unknown.class);
+    }
+
+    /**
+     * Returns true if the expression is deterministic.
+     *
+     * @param provider an annotation provider (a type factory)
+     * @return true if this expression is deterministic
+     */
+    public abstract boolean isDeterministic(AnnotationProvider provider);
+
+    /**
+     * Returns true if all the expressions in the list are deterministic.
+     *
+     * @param list the list whose elements to test
+     * @param provider an annotation provider (a type factory)
+     * @return true if all the expressions in the list are deterministic
+     */
+    @SuppressWarnings("nullness:dereference.of.nullable") // flow within a lambda
+    public static boolean listIsDeterministic(
+            List<? extends @Nullable JavaExpression> list, AnnotationProvider provider) {
+        return list.stream().allMatch(je -> je == null || je.isDeterministic(provider));
     }
 
     /**
@@ -205,17 +227,17 @@ public abstract class JavaExpression {
      * Returns the internal representation (as {@link FieldAccess}) of a {@link FieldAccessNode}.
      * The result may contain {@link Unknown} as receiver.
      *
+     * @param node the FieldAccessNode to convert to a JavaExpression
      * @return the internal representation (as {@link FieldAccess}) of a {@link FieldAccessNode}.
      *     Can contain {@link Unknown} as receiver.
      */
-    public static FieldAccess fromNodeFieldAccess(
-            AnnotationProvider provider, FieldAccessNode node) {
+    public static FieldAccess fromNodeFieldAccess(FieldAccessNode node) {
         Node receiverNode = node.getReceiver();
         JavaExpression receiver;
         if (node.isStatic()) {
             receiver = new ClassName(receiverNode.getType());
         } else {
-            receiver = fromNode(provider, receiverNode);
+            receiver = fromNode(receiverNode);
         }
         return new FieldAccess(receiver, node);
     }
@@ -224,12 +246,13 @@ public abstract class JavaExpression {
      * Returns the internal representation (as {@link FieldAccess}) of a {@link FieldAccessNode}.
      * The result may contain {@link Unknown} as receiver.
      *
+     * @param node the ArrayAccessNode to convert to a JavaExpression
      * @return the internal representation (as {@link FieldAccess}) of a {@link FieldAccessNode}.
      *     Can contain {@link Unknown} as receiver.
      */
-    public static ArrayAccess fromArrayAccess(AnnotationProvider provider, ArrayAccessNode node) {
-        JavaExpression array = fromNode(provider, node.getArray());
-        JavaExpression index = fromNode(provider, node.getIndex());
+    public static ArrayAccess fromArrayAccess(ArrayAccessNode node) {
+        JavaExpression array = fromNode(node.getArray());
+        JavaExpression index = fromNode(node.getIndex());
         return new ArrayAccess(node.getType(), array, index);
     }
 
@@ -237,20 +260,10 @@ public abstract class JavaExpression {
      * We ignore operations such as widening and narrowing when computing the internal
      * representation.
      *
-     * @return the internal representation of any {@link Node}. Might contain {@link Unknown}.
+     * @param receiverNode a node to convert to a JavaExpression
+     * @return the internal representation of the given node. Might contain {@link Unknown}.
      */
-    public static JavaExpression fromNode(AnnotationProvider provider, Node node) {
-        return fromNode(provider, node, false);
-    }
-
-    /**
-     * We ignore operations such as widening and narrowing when computing the internal
-     * representation.
-     *
-     * @return the internal representation of any {@link Node}. Might contain {@link Unknown}.
-     */
-    public static JavaExpression fromNode(
-            AnnotationProvider provider, Node receiverNode, boolean allowNonDeterministic) {
+    public static JavaExpression fromNode(Node receiverNode) {
         JavaExpression result = null;
         if (receiverNode instanceof FieldAccessNode) {
             FieldAccessNode fan = (FieldAccessNode) receiverNode;
@@ -266,7 +279,7 @@ public abstract class JavaExpression {
                 // analysis, and value stores, this is the equivalent of a ClassNameNode.
                 result = new ClassName(fan.getReceiver().getType());
             } else {
-                result = fromNodeFieldAccess(provider, fan);
+                result = fromNodeFieldAccess(fan);
             }
         } else if (receiverNode instanceof ExplicitThisNode) {
             result = new ThisReference(receiverNode.getType());
@@ -279,26 +292,23 @@ public abstract class JavaExpression {
             result = new LocalVariable(lv);
         } else if (receiverNode instanceof ArrayAccessNode) {
             ArrayAccessNode a = (ArrayAccessNode) receiverNode;
-            result = fromArrayAccess(provider, a);
+            result = fromArrayAccess(a);
         } else if (receiverNode instanceof StringConversionNode) {
             // ignore string conversion
-            return fromNode(provider, ((StringConversionNode) receiverNode).getOperand());
+            return fromNode(((StringConversionNode) receiverNode).getOperand());
         } else if (receiverNode instanceof WideningConversionNode) {
             // ignore widening
-            return fromNode(provider, ((WideningConversionNode) receiverNode).getOperand());
+            return fromNode(((WideningConversionNode) receiverNode).getOperand());
         } else if (receiverNode instanceof NarrowingConversionNode) {
             // ignore narrowing
-            return fromNode(provider, ((NarrowingConversionNode) receiverNode).getOperand());
+            return fromNode(((NarrowingConversionNode) receiverNode).getOperand());
         } else if (receiverNode instanceof UnaryOperationNode) {
             UnaryOperationNode uopn = (UnaryOperationNode) receiverNode;
-            return new UnaryOperation(
-                    uopn, fromNode(provider, uopn.getOperand(), allowNonDeterministic));
+            return new UnaryOperation(uopn, fromNode(uopn.getOperand()));
         } else if (receiverNode instanceof BinaryOperationNode) {
             BinaryOperationNode bopn = (BinaryOperationNode) receiverNode;
             return new BinaryOperation(
-                    bopn,
-                    fromNode(provider, bopn.getLeftOperand(), allowNonDeterministic),
-                    fromNode(provider, bopn.getRightOperand(), allowNonDeterministic));
+                    bopn, fromNode(bopn.getLeftOperand()), fromNode(bopn.getRightOperand()));
         } else if (receiverNode instanceof ClassNameNode) {
             ClassNameNode cn = (ClassNameNode) receiverNode;
             result = new ClassName(cn.getType());
@@ -307,14 +317,10 @@ public abstract class JavaExpression {
             result = new ValueLiteral(vn.getType(), vn);
         } else if (receiverNode instanceof ArrayCreationNode) {
             ArrayCreationNode an = (ArrayCreationNode) receiverNode;
-            List<@Nullable JavaExpression> dimensions = new ArrayList<>();
-            for (Node dimension : an.getDimensions()) {
-                dimensions.add(fromNode(provider, dimension, allowNonDeterministic));
-            }
-            List<JavaExpression> initializers = new ArrayList<>();
-            for (Node initializer : an.getInitializers()) {
-                initializers.add(fromNode(provider, initializer, allowNonDeterministic));
-            }
+            List<@Nullable JavaExpression> dimensions =
+                    SystemUtil.mapList(JavaExpression::fromNode, an.getDimensions());
+            List<JavaExpression> initializers =
+                    SystemUtil.mapList(JavaExpression::fromNode, an.getInitializers());
             result = new ArrayCreation(an.getType(), dimensions, initializers);
         } else if (receiverNode instanceof MethodInvocationNode) {
             MethodInvocationNode mn = (MethodInvocationNode) receiverNode;
@@ -325,23 +331,20 @@ public abstract class JavaExpression {
             assert TreeUtils.isUseOfElement(t) : "@AssumeAssertion(nullness): tree kind";
             ExecutableElement invokedMethod = TreeUtils.elementFromUse(t);
 
-            if (allowNonDeterministic || PurityUtils.isDeterministic(provider, invokedMethod)) {
-                List<JavaExpression> parameters = new ArrayList<>();
-                for (Node p : mn.getArguments()) {
-                    parameters.add(fromNode(provider, p));
-                }
-                JavaExpression methodReceiver;
-                if (ElementUtils.isStatic(invokedMethod)) {
-                    methodReceiver = new ClassName(mn.getTarget().getReceiver().getType());
-                } else {
-                    methodReceiver = fromNode(provider, mn.getTarget().getReceiver());
-                }
-                result = new MethodCall(mn.getType(), invokedMethod, methodReceiver, parameters);
+            // Note that the method might be nondeterministic.
+            List<JavaExpression> parameters =
+                    SystemUtil.mapList(JavaExpression::fromNode, mn.getArguments());
+            JavaExpression methodReceiver;
+            if (ElementUtils.isStatic(invokedMethod)) {
+                methodReceiver = new ClassName(mn.getTarget().getReceiver().getType());
+            } else {
+                methodReceiver = fromNode(mn.getTarget().getReceiver());
             }
+            result = new MethodCall(mn.getType(), invokedMethod, methodReceiver, parameters);
         }
 
         if (result == null) {
-            result = new Unknown(receiverNode.getType());
+            result = new Unknown(receiverNode);
         }
         return result;
     }
@@ -350,33 +353,18 @@ public abstract class JavaExpression {
      * Converts a javac {@link ExpressionTree} to a CF JavaExpression. The result might contain
      * {@link Unknown}.
      *
-     * @param provider the annotation provider (for example, an {@code AnnotatedTypeFactory})
-     * @param tree a javac tree
-     * @return a JavaExpression for the given javac tree
-     */
-    public static JavaExpression fromTree(AnnotationProvider provider, ExpressionTree tree) {
-        return fromTree(provider, tree, true);
-    }
-    /**
-     * Converts a javac {@link ExpressionTree} to a CF JavaExpression. The result might contain
-     * {@link Unknown}.
-     *
      * <p>We ignore operations such as widening and narrowing when computing the JavaExpression.
      *
-     * @param provider the annotation provider (for example, an {@code AnnotatedTypeFactory})
      * @param tree a javac tree
-     * @param allowNonDeterministic if false, convert nondeterministic method calls to {@link
-     *     org.checkerframework.dataflow.expression.Unknown}
      * @return a JavaExpression for the given javac tree
      */
-    public static JavaExpression fromTree(
-            AnnotationProvider provider, ExpressionTree tree, boolean allowNonDeterministic) {
+    public static JavaExpression fromTree(ExpressionTree tree) {
         JavaExpression result;
         switch (tree.getKind()) {
             case ARRAY_ACCESS:
                 ArrayAccessTree a = (ArrayAccessTree) tree;
-                JavaExpression arrayAccessExpression = fromTree(provider, a.getExpression());
-                JavaExpression index = fromTree(provider, a.getIndex());
+                JavaExpression arrayAccessExpression = fromTree(a.getExpression());
+                JavaExpression index = fromTree(a.getIndex());
                 result = new ArrayAccess(TreeUtils.typeOf(a), arrayAccessExpression, index);
                 break;
 
@@ -394,16 +382,22 @@ public abstract class JavaExpression {
 
             case NEW_ARRAY:
                 NewArrayTree newArrayTree = (NewArrayTree) tree;
-                List<@Nullable JavaExpression> dimensions = new ArrayList<>();
-                if (newArrayTree.getDimensions() != null) {
+                List<@Nullable JavaExpression> dimensions;
+                if (newArrayTree.getDimensions() == null) {
+                    dimensions = Collections.emptyList();
+                } else {
+                    dimensions = new ArrayList<>(newArrayTree.getDimensions().size());
                     for (ExpressionTree dimension : newArrayTree.getDimensions()) {
-                        dimensions.add(fromTree(provider, dimension, allowNonDeterministic));
+                        dimensions.add(fromTree(dimension));
                     }
                 }
-                List<JavaExpression> initializers = new ArrayList<>();
-                if (newArrayTree.getInitializers() != null) {
+                List<JavaExpression> initializers;
+                if (newArrayTree.getInitializers() == null) {
+                    initializers = Collections.emptyList();
+                } else {
+                    initializers = new ArrayList<>(newArrayTree.getInitializers().size());
                     for (ExpressionTree initializer : newArrayTree.getInitializers()) {
-                        initializers.add(fromTree(provider, initializer, allowNonDeterministic));
+                        initializers.add(fromTree(initializer));
                     }
                 }
 
@@ -414,26 +408,22 @@ public abstract class JavaExpression {
                 MethodInvocationTree mn = (MethodInvocationTree) tree;
                 assert TreeUtils.isUseOfElement(mn) : "@AssumeAssertion(nullness): tree kind";
                 ExecutableElement invokedMethod = TreeUtils.elementFromUse(mn);
-                if (PurityUtils.isDeterministic(provider, invokedMethod) || allowNonDeterministic) {
-                    List<JavaExpression> parameters = new ArrayList<>();
-                    for (ExpressionTree p : mn.getArguments()) {
-                        parameters.add(fromTree(provider, p));
-                    }
-                    JavaExpression methodReceiver;
-                    if (ElementUtils.isStatic(invokedMethod)) {
-                        methodReceiver = new ClassName(TreeUtils.typeOf(mn.getMethodSelect()));
-                    } else {
-                        methodReceiver = getReceiver(mn, provider);
-                    }
-                    TypeMirror resultType = TreeUtils.typeOf(mn);
-                    result = new MethodCall(resultType, invokedMethod, methodReceiver, parameters);
+
+                // Note that the method might be nondeterministic.
+                List<JavaExpression> parameters =
+                        SystemUtil.mapList(JavaExpression::fromTree, mn.getArguments());
+                JavaExpression methodReceiver;
+                if (ElementUtils.isStatic(invokedMethod)) {
+                    methodReceiver = new ClassName(TreeUtils.typeOf(mn.getMethodSelect()));
                 } else {
-                    result = null;
+                    methodReceiver = getReceiver(mn);
                 }
+                TypeMirror resultType = TreeUtils.typeOf(mn);
+                result = new MethodCall(resultType, invokedMethod, methodReceiver, parameters);
                 break;
 
             case MEMBER_SELECT:
-                result = fromMemberSelect(provider, (MemberSelectTree) tree);
+                result = fromMemberSelect((MemberSelectTree) tree);
                 break;
 
             case IDENTIFIER:
@@ -455,8 +445,7 @@ public abstract class JavaExpression {
                 break;
 
             case UNARY_PLUS:
-                return fromTree(
-                        provider, ((UnaryTree) tree).getExpression(), allowNonDeterministic);
+                return fromTree(((UnaryTree) tree).getExpression());
             case BITWISE_COMPLEMENT:
             case LOGICAL_COMPLEMENT:
             case POSTFIX_DECREMENT:
@@ -464,11 +453,7 @@ public abstract class JavaExpression {
             case PREFIX_DECREMENT:
             case PREFIX_INCREMENT:
             case UNARY_MINUS:
-                JavaExpression operand =
-                        fromTree(
-                                provider,
-                                ((UnaryTree) tree).getExpression(),
-                                allowNonDeterministic);
+                JavaExpression operand = fromTree(((UnaryTree) tree).getExpression());
                 return new UnaryOperation(TreeUtils.typeOf(tree), tree.getKind(), operand);
 
             case CONDITIONAL_AND:
@@ -490,10 +475,8 @@ public abstract class JavaExpression {
             case UNSIGNED_RIGHT_SHIFT:
             case XOR:
                 BinaryTree binaryTree = (BinaryTree) tree;
-                JavaExpression left =
-                        fromTree(provider, binaryTree.getLeftOperand(), allowNonDeterministic);
-                JavaExpression right =
-                        fromTree(provider, binaryTree.getRightOperand(), allowNonDeterministic);
+                JavaExpression left = fromTree(binaryTree.getLeftOperand());
+                JavaExpression right = fromTree(binaryTree.getRightOperand());
                 return new BinaryOperation(TreeUtils.typeOf(tree), tree.getKind(), left, right);
 
             default:
@@ -501,7 +484,7 @@ public abstract class JavaExpression {
         }
 
         if (result == null) {
-            result = new Unknown(TreeUtils.typeOf(tree));
+            result = new Unknown(tree);
         }
         return result;
     }
@@ -552,12 +535,10 @@ public abstract class JavaExpression {
     /**
      * Creates a JavaExpression from the {@code memberSelectTree}.
      *
-     * @param provider annotation provider
      * @param memberSelectTree tree
      * @return a JavaExpression for {@code memberSelectTree}
      */
-    private static JavaExpression fromMemberSelect(
-            AnnotationProvider provider, MemberSelectTree memberSelectTree) {
+    private static JavaExpression fromMemberSelect(MemberSelectTree memberSelectTree) {
         TypeMirror expressionType = TreeUtils.typeOf(memberSelectTree.getExpression());
         if (TreeUtils.isClassLiteral(memberSelectTree)) {
             return new ClassName(expressionType);
@@ -573,11 +554,11 @@ public abstract class JavaExpression {
         switch (ele.getKind()) {
             case METHOD:
             case CONSTRUCTOR:
-                return fromTree(provider, memberSelectTree.getExpression());
+                return fromTree(memberSelectTree.getExpression());
             case ENUM_CONSTANT:
             case FIELD:
                 TypeMirror fieldType = TreeUtils.typeOf(memberSelectTree);
-                JavaExpression je = fromTree(provider, memberSelectTree.getExpression());
+                JavaExpression je = fromTree(memberSelectTree.getExpression());
                 return new FieldAccess(je, fieldType, (VariableElement) ele);
             default:
                 throw new BugInCF("Unexpected element kind: %s element: %s", ele.getKind(), ele);
@@ -587,21 +568,17 @@ public abstract class JavaExpression {
     /**
      * Returns the formal parameters of the method in which path is enclosed.
      *
-     * @param annotationProvider annotationProvider
      * @param path TreePath that is enclosed by the method
      * @return the formal parameters of the method in which path is enclosed, {@code null} otherwise
      */
-    public static @Nullable List<JavaExpression> getParametersOfEnclosingMethod(
-            AnnotationProvider annotationProvider, TreePath path) {
+    public static @Nullable List<JavaExpression> getParametersOfEnclosingMethod(TreePath path) {
         MethodTree methodTree = TreePathUtil.enclosingMethod(path);
         if (methodTree == null) {
             return null;
         }
-        List<JavaExpression> internalArguments = new ArrayList<>();
-        for (VariableTree arg : methodTree.getParameters()) {
-            internalArguments.add(fromNode(annotationProvider, new LocalVariableNode(arg)));
-        }
-        return internalArguments;
+        return SystemUtil.mapList(
+                (VariableTree arg) -> fromNode(new LocalVariableNode(arg)),
+                methodTree.getParameters());
     }
 
     ///
@@ -609,19 +586,17 @@ public abstract class JavaExpression {
     ///
 
     /**
-     * Returns the receiver of ele, whether explicit or implicit.
+     * Returns the receiver of the given invocation
      *
      * @param accessTree method or constructor invocation
-     * @param provider an AnnotationProvider
-     * @return the receiver of ele, whether explicit or implicit
+     * @return the receiver of the given invocation
      */
-    public static JavaExpression getReceiver(
-            ExpressionTree accessTree, AnnotationProvider provider) {
+    public static JavaExpression getReceiver(ExpressionTree accessTree) {
         // TODO: Handle field accesses too?
         assert accessTree instanceof MethodInvocationTree || accessTree instanceof NewClassTree;
         ExpressionTree receiverTree = TreeUtils.getReceiverTree(accessTree);
         if (receiverTree != null) {
-            return fromTree(provider, receiverTree);
+            return fromTree(receiverTree);
         } else {
             Element ele = TreeUtils.elementFromUse(accessTree);
             if (ele == null) {
@@ -642,11 +617,11 @@ public abstract class JavaExpression {
      *     not
      */
     public static JavaExpression getImplicitReceiver(Element ele) {
-        TypeElement enclosingClass = ElementUtils.enclosingTypeElement(ele);
-        if (enclosingClass == null) {
-            throw new BugInCF("getImplicitReceiver's arg has no enclosing class: " + ele);
+        TypeElement enclosingTypeElement = ElementUtils.enclosingTypeElement(ele);
+        if (enclosingTypeElement == null) {
+            throw new BugInCF("getImplicitReceiver's arg has no enclosing type: " + ele);
         }
-        TypeMirror enclosingType = enclosingClass.asType();
+        TypeMirror enclosingType = enclosingTypeElement.asType();
         if (ElementUtils.isStatic(ele)) {
             return new ClassName(enclosingType);
         } else {
@@ -672,4 +647,15 @@ public abstract class JavaExpression {
             return new ThisReference(enclosingType);
         }
     }
+
+    /**
+     * Accept method of the visitor pattern.
+     *
+     * @param visitor the visitor to be applied to this JavaExpression
+     * @param p the parameter for this operation
+     * @param <R> result type of the operation
+     * @param <P> parameter type
+     * @return the result of visiting this
+     */
+    public abstract <R, P> R accept(JavaExpressionVisitor<R, P> visitor, P p);
 }
