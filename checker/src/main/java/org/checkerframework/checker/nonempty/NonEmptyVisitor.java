@@ -52,7 +52,9 @@ public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactor
      */
     @Override
     public boolean isValidUse(AnnotatedTypeMirror.AnnotatedPrimitiveType type, Tree tree) {
-        reportErrorOnNonEmptyType(type, tree);
+        if (type.hasAnnotation(NONEMPTY)) {
+            return false;
+        }
         return super.isValidUse(type, tree);
     }
 
@@ -79,46 +81,11 @@ public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactor
         boolean isIterator = types.isSubtype(declarationTypeMirror, iteratorType);
         boolean isMap = types.isSubtype(declarationTypeMirror, mapType);
         if (!isCollection && !isIterator && !isMap) {
-            reportErrorOnNonEmptyType(useType, tree);
+            if (useType.hasAnnotation(NONEMPTY)) {
+                return false;
+            }
         }
 
         return super.isValidUse(declarationType, useType, tree);
     }
-
-    /**
-     * Reports an error if {@code type} has the qualifier {@code @NonEmpty}.
-     *
-     * @param type AnnotatedTypeMirror
-     * @param tree Tree
-     */
-    private void reportErrorOnNonEmptyType(AnnotatedTypeMirror type, Tree tree) {
-        if (type.hasAnnotation(NONEMPTY)) {
-            checker.reportError(tree, "invalid.nonempty");
-        }
-    }
-
-    //    @Override
-    //    protected void reportMethodInvocabilityError(
-    //            MethodInvocationTree node, AnnotatedTypeMirror found, AnnotatedTypeMirror
-    // expected) {
-    //        if (TreeUtils.isMethodInvocation(node, getMethod, processingEnv)) {
-    //            ExpressionTree indexArg = node.getArguments().get(0);
-    //            GenericAnnotatedTypeFactory<?, ?, ?, ?> sizeOfATF =
-    //                    atypeFactory.getTypeFactoryOfSubchecker(SizeOfChecker.class);
-    //            AnnotatedTypeMirror indexArgAnnoMirror = sizeOfATF.getAnnotatedType(indexArg);
-    //            AnnotationMirror indexArgAnno = indexArgAnnoMirror.getAnnotation();
-    //            if (AnnotationUtils.areSameByClass(indexArgAnno, SizeOf.class)) {
-    //                List<String> elementValues =
-    //
-    // ValueCheckerUtils.getValueOfAnnotationWithStringArgument(indexArgAnno);
-    //                String methodSelect = node.getMethodSelect().toString();
-    //                String[] splitMethodSelect = methodSelect.split("\\.");
-    //                if (elementValues.size() == 1
-    //                        && elementValues.get(0).equals(splitMethodSelect[0])) {
-    //                    return;
-    //                }
-    //            }
-    //        }
-    //        super.reportMethodInvocabilityError(node, found, expected);
-    //    }
 }
