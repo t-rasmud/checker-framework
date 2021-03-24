@@ -72,12 +72,12 @@ public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactor
             Tree tree) {
         if (TreeUtils.isClassLiteral(tree)) {
             // Don't validate class literals
-            return true;
+            return super.isValidUse(declarationType, useType, tree);
         }
-        TypeMirror tm = declarationType.getUnderlyingType();
-        boolean isCollection = types.isSubtype(tm, collectionType);
-        boolean isIterator = types.isSubtype(tm, iteratorType);
-        boolean isMap = types.isSubtype(tm, mapType);
+        TypeMirror declarationTypeMirror = declarationType.getUnderlyingType();
+        boolean isCollection = types.isSubtype(declarationTypeMirror, collectionType);
+        boolean isIterator = types.isSubtype(declarationTypeMirror, iteratorType);
+        boolean isMap = types.isSubtype(declarationTypeMirror, mapType);
         if (!isCollection && !isIterator && !isMap) {
             reportErrorOnNonEmptyType(useType, tree);
         }
