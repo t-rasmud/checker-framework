@@ -348,7 +348,7 @@ public class NonEmptyTransfer
             if (NodeUtils.isMethodInvocation(n.getExpression(), sizeMethod, processingEnv)) {
                 Node rightReceiver = n.getExpression();
                 if (sizeEqMap == null) {
-                    store.createSizeEqualifiesMap();
+                    store.createSizeEqualitiesMap();
                     sizeEqMap = store.getSizeEqualitiesMap();
                 }
                 sizeEqMap.put(mapKey, rightReceiver);
