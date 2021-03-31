@@ -25,7 +25,7 @@ public class NonEmptyStore extends CFAbstractStore<NonEmptyValue, NonEmptyStore>
     }
 
     /** Creates {@code sizeEqualitiesMap}. */
-    protected void createSizeEqualifiesMap() {
+    protected void createSizeEqualitiesMap() {
         sizeEqualitiesMap = new HashMap<>();
     }
 

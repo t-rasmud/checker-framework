@@ -9,6 +9,7 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.nonempty.qual.NonEmpty;
+import org.checkerframework.checker.nonempty.qual.PolyNonEmpty;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
@@ -33,6 +34,9 @@ public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactor
     ExecutableElement getMethod = TreeUtils.getMethod("java.util.List", "get", 1, processingEnv);
     /** The {@literal @}{@link NonEmpty} annotation. */
     private final AnnotationMirror NONEMPTY = AnnotationBuilder.fromClass(elements, NonEmpty.class);
+    /** The {@literal @}{@link PolyNonEmpty} annotation. */
+    private final AnnotationMirror POLYNONEMPTY =
+            AnnotationBuilder.fromClass(elements, PolyNonEmpty.class);
 
     /**
      * NonEmptyVisitor constructor.
@@ -52,7 +56,9 @@ public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactor
      */
     @Override
     public boolean isValidUse(AnnotatedTypeMirror.AnnotatedPrimitiveType type, Tree tree) {
-        reportErrorOnNonEmptyType(type, tree);
+        if (type.hasAnnotation(NONEMPTY) || type.hasAnnotation(POLYNONEMPTY)) {
+            return false;
+        }
         return super.isValidUse(type, tree);
     }
 
@@ -72,53 +78,18 @@ public class NonEmptyVisitor extends BaseTypeVisitor<NonEmptyAnnotatedTypeFactor
             Tree tree) {
         if (TreeUtils.isClassLiteral(tree)) {
             // Don't validate class literals
-            return true;
+            return super.isValidUse(declarationType, useType, tree);
         }
-        TypeMirror tm = declarationType.getUnderlyingType();
-        boolean isCollection = types.isSubtype(tm, collectionType);
-        boolean isIterator = types.isSubtype(tm, iteratorType);
-        boolean isMap = types.isSubtype(tm, mapType);
+        TypeMirror declarationTypeMirror = declarationType.getUnderlyingType();
+        boolean isCollection = types.isSubtype(declarationTypeMirror, collectionType);
+        boolean isIterator = types.isSubtype(declarationTypeMirror, iteratorType);
+        boolean isMap = types.isSubtype(declarationTypeMirror, mapType);
         if (!isCollection && !isIterator && !isMap) {
-            reportErrorOnNonEmptyType(useType, tree);
+            if (useType.hasAnnotation(NONEMPTY) || useType.hasAnnotation(POLYNONEMPTY)) {
+                return false;
+            }
         }
 
         return super.isValidUse(declarationType, useType, tree);
     }
-
-    /**
-     * Reports an error if {@code type} has the qualifier {@code @NonEmpty}.
-     *
-     * @param type AnnotatedTypeMirror
-     * @param tree Tree
-     */
-    private void reportErrorOnNonEmptyType(AnnotatedTypeMirror type, Tree tree) {
-        if (type.hasAnnotation(NONEMPTY)) {
-            checker.reportError(tree, "invalid.nonempty");
-        }
-    }
-
-    //    @Override
-    //    protected void reportMethodInvocabilityError(
-    //            MethodInvocationTree node, AnnotatedTypeMirror found, AnnotatedTypeMirror
-    // expected) {
-    //        if (TreeUtils.isMethodInvocation(node, getMethod, processingEnv)) {
-    //            ExpressionTree indexArg = node.getArguments().get(0);
-    //            GenericAnnotatedTypeFactory<?, ?, ?, ?> sizeOfATF =
-    //                    atypeFactory.getTypeFactoryOfSubchecker(SizeOfChecker.class);
-    //            AnnotatedTypeMirror indexArgAnnoMirror = sizeOfATF.getAnnotatedType(indexArg);
-    //            AnnotationMirror indexArgAnno = indexArgAnnoMirror.getAnnotation();
-    //            if (AnnotationUtils.areSameByClass(indexArgAnno, SizeOf.class)) {
-    //                List<String> elementValues =
-    //
-    // ValueCheckerUtils.getValueOfAnnotationWithStringArgument(indexArgAnno);
-    //                String methodSelect = node.getMethodSelect().toString();
-    //                String[] splitMethodSelect = methodSelect.split("\\.");
-    //                if (elementValues.size() == 1
-    //                        && elementValues.get(0).equals(splitMethodSelect[0])) {
-    //                    return;
-    //                }
-    //            }
-    //        }
-    //        super.reportMethodInvocabilityError(node, found, expected);
-    //    }
 }
