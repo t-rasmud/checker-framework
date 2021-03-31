@@ -4,6 +4,6 @@ import java.util.Collection;
 
 public class TernaryIsEmpty {
     void test(Collection<Integer> coll) {
-        Integer i = coll.isEmpty() == true ? 0 : coll.iterator().next();
+        Integer i = coll.isEmpty() ? 0 : coll.iterator().next();
     }
 }
