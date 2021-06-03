@@ -16,14 +16,14 @@ public class TestCollectionAdd {
         a.add(5);
         m(a);
         a.remove(0);
-        // :: error: argument.type.incompatible
+        // :: error: argument
         m(a);
     }
 
     void listAdd1(List<Integer> a) {
         a.add(5);
         m(a);
-        // :: error: argument.type.incompatible
+        // :: error: argument
         m(a);
     }
 }

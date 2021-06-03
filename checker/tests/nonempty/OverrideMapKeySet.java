@@ -6,7 +6,7 @@ import org.checkerframework.checker.nonempty.qual.NonEmpty;
 
 public abstract class OverrideMapKeySet<K, V> implements Map<K, V> {
     @Override
-    // :: error: override.receiver.invalid
+    // :: error: override.receiver
     public @NonEmpty Set<K> keySet(@NonEmpty OverrideMapKeySet<K, V> this) {
         return keySet();
     }
