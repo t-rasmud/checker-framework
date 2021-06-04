@@ -7,20 +7,20 @@ import java.util.List;
 import org.checkerframework.checker.iteration.qual.HasNext;
 
 public class TestAnonymous {
-    List fields = new ArrayList();
+  List fields = new ArrayList();
 
-    class MyEnumeration implements Enumeration {
-        final Iterator iter = fields.iterator();
+  class MyEnumeration implements Enumeration {
+    final Iterator iter = fields.iterator();
 
-        @Override
-        @SuppressWarnings("contracts.conditional.postcondition.not.satisfied")
-        public boolean hasMoreElements() {
-            return iter.hasNext();
-        }
-
-        @Override
-        public Object nextElement(@HasNext MyEnumeration this) {
-            return iter.next();
-        }
+    @Override
+    @SuppressWarnings("contracts.conditional.postcondition")
+    public boolean hasMoreElements() {
+      return iter.hasNext();
     }
+
+    @Override
+    public Object nextElement(@HasNext MyEnumeration this) {
+      return iter.next();
+    }
+  }
 }

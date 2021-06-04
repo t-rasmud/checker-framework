@@ -8,10 +8,10 @@ import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
  * {@code @NonEmpty} contains at least one element.
  */
 public class NonEmptyChecker extends BaseTypeChecker {
-    @Override
-    public GenericAnnotatedTypeFactory<?, ?, ?, ?> getTypeFactory() {
-        GenericAnnotatedTypeFactory<?, ?, ?, ?> result = super.getTypeFactory();
-        result.sideEffectsUnrefineAliases = true;
-        return result;
-    }
+  @Override
+  public GenericAnnotatedTypeFactory<?, ?, ?, ?> getTypeFactory() {
+    GenericAnnotatedTypeFactory<?, ?, ?, ?> result = super.getTypeFactory();
+    result.sideEffectsUnrefineAliases = true;
+    return result;
+  }
 }

@@ -7,22 +7,22 @@ import org.junit.runners.Parameterized.Parameters;
 
 public class IterationTest extends CheckerFrameworkPerDirectoryTest {
 
-    /**
-     * Create a HasNextTest.
-     *
-     * @param testFiles the files containing test code, which will be type-checked
-     */
-    public IterationTest(List<File> testFiles) {
-        super(
-                testFiles,
-                org.checkerframework.checker.iteration.IterationChecker.class,
-                "iteration",
-                "-Anomsgtext",
-                "-AassumeAssertionsAreEnabled");
-    }
+  /**
+   * Create a HasNextTest.
+   *
+   * @param testFiles the files containing test code, which will be type-checked
+   */
+  public IterationTest(List<File> testFiles) {
+    super(
+        testFiles,
+        org.checkerframework.checker.iteration.IterationChecker.class,
+        "iteration",
+        "-Anomsgtext",
+        "-AassumeAssertionsAreEnabled");
+  }
 
-    @Parameters
-    public static String[] getTestDirs() {
-        return new String[] {"iteration", "all-systems"};
-    }
+  @Parameters
+  public static String[] getTestDirs() {
+    return new String[] {"iteration", "all-systems"};
+  }
 }

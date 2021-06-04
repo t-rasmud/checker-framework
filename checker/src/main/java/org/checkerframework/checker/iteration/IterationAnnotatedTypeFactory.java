@@ -27,111 +27,106 @@ import org.checkerframework.javacutil.TypesUtils;
 
 /** Annotated type factory for the Iteration Checker. */
 public class IterationAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
-    /** {@link HasNext}. */
-    private final AnnotationMirror HASNEXT = AnnotationBuilder.fromClass(elements, HasNext.class);
-    /** {@link UnknownHasNext}. */
-    private final AnnotationMirror UNKNOWN_HASNEXT =
-            AnnotationBuilder.fromClass(elements, UnknownHasNext.class);
-    /** The java.util.Iterator interface */
-    private final TypeMirror iteratorType =
-            types.erasure(TypesUtils.typeFromClass(Iterator.class, types, elements));
+  /** {@link HasNext}. */
+  private final AnnotationMirror HASNEXT = AnnotationBuilder.fromClass(elements, HasNext.class);
+  /** {@link UnknownHasNext}. */
+  private final AnnotationMirror UNKNOWN_HASNEXT =
+      AnnotationBuilder.fromClass(elements, UnknownHasNext.class);
+  /** The java.util.Iterator interface */
+  private final TypeMirror iteratorType =
+      types.erasure(TypesUtils.typeFromClass(Iterator.class, types, elements));
+  /**
+   * Constructor for IterationAnnotatedTypeFactory.
+   *
+   * @param checker BaseTypeChecker
+   */
+  public IterationAnnotatedTypeFactory(BaseTypeChecker checker) {
+    super(checker);
+    this.postInit();
+  }
+
+  @Override
+  public TreeAnnotator createTreeAnnotator() {
+    return new ListTreeAnnotator(super.createTreeAnnotator(), new IterationTreeAnnotator(this));
+  }
+
+  /** Tree Annotator for the Iteration Checker. */
+  protected class IterationTreeAnnotator extends TreeAnnotator {
+
     /**
-     * Constructor for IterationAnnotatedTypeFactory.
+     * Tree annotator.
      *
-     * @param checker BaseTypeChecker
+     * @param atypeFactory AnnotatedTypeFactory
      */
-    public IterationAnnotatedTypeFactory(BaseTypeChecker checker) {
-        super(checker);
-        this.postInit();
+    protected IterationTreeAnnotator(AnnotatedTypeFactory atypeFactory) {
+      super(atypeFactory);
     }
 
+    /**
+     * Annotates the return type of Collection.iterator() as {@code @HasNext} if the Collection is
+     * annotated as {@code @NonEmpty} in the NonEmpty Checker.
+     *
+     * <p>Annotates the return type of ImageIO.getImageWritersByFormatName() as {@code HasNext} if
+     * the argument to ImageIO.getImageWritersByFormatName() is jpeg.
+     *
+     * @param node MethodInvocationTree
+     * @param annotatedTypeMirror AnnotatedTypeMirror
+     * @return Void
+     */
     @Override
-    public TreeAnnotator createTreeAnnotator() {
-        return new ListTreeAnnotator(super.createTreeAnnotator(), new IterationTreeAnnotator(this));
-    }
+    public Void visitMethodInvocation(
+        MethodInvocationTree node, AnnotatedTypeMirror annotatedTypeMirror) {
 
-    /** Tree Annotator for the Iteration Checker. */
-    protected class IterationTreeAnnotator extends TreeAnnotator {
-
-        /**
-         * Tree annotator.
-         *
-         * @param atypeFactory AnnotatedTypeFactory
-         */
-        protected IterationTreeAnnotator(AnnotatedTypeFactory atypeFactory) {
-            super(atypeFactory);
+      ExecutableElement iteratorMethod =
+          TreeUtils.getMethod("java.util.Collection", "iterator", 0, processingEnv);
+      if (TreeUtils.isMethodInvocation(node, iteratorMethod, processingEnv)) {
+        AnnotatedTypeMirror receiverType =
+            getTypeFactoryOfSubchecker(NonEmptyChecker.class).getReceiverType(node);
+        if (receiverType.hasAnnotation(NonEmpty.class)) {
+          annotatedTypeMirror.replaceAnnotation(HASNEXT);
         }
+      }
 
-        /**
-         * Annotates the return type of Collection.iterator() as {@code @HasNext} if the Collection
-         * is annotated as {@code @NonEmpty} in the NonEmpty Checker.
-         *
-         * <p>Annotates the return type of ImageIO.getImageWritersByFormatName() as {@code HasNext}
-         * if the argument to ImageIO.getImageWritersByFormatName() is jpeg.
-         *
-         * @param node MethodInvocationTree
-         * @param annotatedTypeMirror AnnotatedTypeMirror
-         * @return Void
-         */
-        @Override
-        public Void visitMethodInvocation(
-                MethodInvocationTree node, AnnotatedTypeMirror annotatedTypeMirror) {
-
-            ExecutableElement iteratorMethod =
-                    TreeUtils.getMethod("java.util.Collection", "iterator", 0, processingEnv);
-            if (TreeUtils.isMethodInvocation(node, iteratorMethod, processingEnv)) {
-                AnnotatedTypeMirror receiverType =
-                        getTypeFactoryOfSubchecker(NonEmptyChecker.class).getReceiverType(node);
-                if (receiverType.hasAnnotation(NonEmpty.class)) {
-                    annotatedTypeMirror.replaceAnnotation(HASNEXT);
-                }
-            }
-
-            ExecutableElement getImageWritersMethod =
-                    TreeUtils.getMethod(
-                            "javax.imageio.ImageIO",
-                            "getImageWritersByFormatName",
-                            1,
-                            processingEnv);
-            if (TreeUtils.isMethodInvocation(node, getImageWritersMethod, processingEnv)) {
-                ExpressionTree argument = node.getArguments().get(0);
-                if (argument.toString().equals("\"jpeg\"")) {
-                    annotatedTypeMirror.replaceAnnotation(HASNEXT);
-                }
-            }
-
-            return super.visitMethodInvocation(node, annotatedTypeMirror);
+      ExecutableElement getImageWritersMethod =
+          TreeUtils.getMethod(
+              "javax.imageio.ImageIO", "getImageWritersByFormatName", 1, processingEnv);
+      if (TreeUtils.isMethodInvocation(node, getImageWritersMethod, processingEnv)) {
+        ExpressionTree argument = node.getArguments().get(0);
+        if (argument.toString().equals("\"jpeg\"")) {
+          annotatedTypeMirror.replaceAnnotation(HASNEXT);
         }
-    }
+      }
 
-    @Override
-    public void postAsMemberOf(
-            AnnotatedTypeMirror type, AnnotatedTypeMirror owner, Element element) {
-        super.postAsMemberOf(type, owner, element);
-        // For the field access of "element" whose type is "type" and whose access expression's type
-        // is "owner".
-        // A final Iterator field of a "@HasNext" object gets the type "@HasNext".
-        if (!isLHS && element.getKind() == ElementKind.FIELD && ElementUtils.isFinal(element)) {
-            boolean isIterator = types.isSubtype(type.getUnderlyingType(), iteratorType);
-            if (isIterator) {
-                AnnotationMirror expressionAnno =
-                        owner.getEffectiveAnnotationInHierarchy(UNKNOWN_HASNEXT);
-                if (AnnotationUtils.areSame(expressionAnno, HASNEXT)) {
-                    type.replaceAnnotation(HASNEXT);
-                }
-            }
+      return super.visitMethodInvocation(node, annotatedTypeMirror);
+    }
+  }
+
+  @Override
+  public void postAsMemberOf(AnnotatedTypeMirror type, AnnotatedTypeMirror owner, Element element) {
+    super.postAsMemberOf(type, owner, element);
+    // For the field access of "element" whose type is "type" and whose access expression's type
+    // is "owner".
+    // A final Iterator field of a "@HasNext" object gets the type "@HasNext".
+    if (!isLHS && element.getKind() == ElementKind.FIELD && ElementUtils.isFinal(element)) {
+      boolean isIterator = types.isSubtype(type.getUnderlyingType(), iteratorType);
+      if (isIterator) {
+        AnnotationMirror expressionAnno = owner.getEffectiveAnnotationInHierarchy(UNKNOWN_HASNEXT);
+        if (AnnotationUtils.areSame(expressionAnno, HASNEXT)) {
+          type.replaceAnnotation(HASNEXT);
         }
+      }
     }
+  }
 
-    /** Is the type of a left hand side currently being computed? */
-    private boolean isLHS = false;
+  /** Is the type of a left hand side currently being computed? */
+  private boolean isLHS = false;
 
-    @Override
-    public AnnotatedTypeMirror getAnnotatedTypeLhs(Tree lhsTree) {
-        boolean oldIsLhs = isLHS;
-        isLHS = true;
-        AnnotatedTypeMirror type = super.getAnnotatedTypeLhs(lhsTree);
-        isLHS = oldIsLhs;
-        return type;
-    }
+  @Override
+  public AnnotatedTypeMirror getAnnotatedTypeLhs(Tree lhsTree) {
+    boolean oldIsLhs = isLHS;
+    isLHS = true;
+    AnnotatedTypeMirror type = super.getAnnotatedTypeLhs(lhsTree);
+    isLHS = oldIsLhs;
+    return type;
+  }
 }

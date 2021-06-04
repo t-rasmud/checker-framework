@@ -31,12 +31,12 @@ import org.checkerframework.framework.qual.PostconditionAnnotation;
 @PostconditionAnnotation(qualifier = NonEmpty.class)
 @InheritedAnnotation
 public @interface EnsuresNonEmpty {
-    /**
-     * Java expressions that are non-empty on successful method termination.
-     *
-     * @return Java expressions that are non-empty on successful method termination
-     * @checker_framework.manual #java-expressions-as-arguments Syntax of Java expressions
-     */
-    @JavaExpression
-    String[] value();
+  /**
+   * Java expressions that are non-empty on successful method termination.
+   *
+   * @return Java expressions that are non-empty on successful method termination
+   * @checker_framework.manual #java-expressions-as-arguments Syntax of Java expressions
+   */
+  @JavaExpression
+  String[] value();
 }
