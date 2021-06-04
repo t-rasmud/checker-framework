@@ -255,7 +255,12 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
    *       kept.
    * </ol>
    *
-   * Furthermore, if the method is deterministic, we store its result {@code val} in the store.
+   * @param methodInvocationNode the type factory used to retrieve annotations on the method
+   *     invocation
+   * @param atypeFactory the method invocation node
+   * @param val the abstract value of the value assigned to {@code methodInvocationNode}
+   *     <p>Furthermore, if the method is deterministic, we store its result {@code val} in the
+   *     store.
    */
   public void updateForMethodCall(
       MethodInvocationNode methodInvocationNode, AnnotatedTypeFactory atypeFactory, V val) {
