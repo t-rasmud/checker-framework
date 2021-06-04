@@ -21,7 +21,6 @@ import org.checkerframework.dataflow.analysis.Store;
 import org.checkerframework.dataflow.cfg.node.ArrayAccessNode;
 import org.checkerframework.dataflow.cfg.node.FieldAccessNode;
 import org.checkerframework.dataflow.cfg.node.LocalVariableNode;
-import org.checkerframework.dataflow.cfg.node.MethodAccessNode;
 import org.checkerframework.dataflow.cfg.node.MethodInvocationNode;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.dataflow.cfg.node.ThisNode;
@@ -37,12 +36,12 @@ import org.checkerframework.dataflow.expression.ThisReference;
 import org.checkerframework.dataflow.qual.SideEffectFree;
 import org.checkerframework.dataflow.qual.SideEffectsOnly;
 import org.checkerframework.dataflow.util.PurityUtils;
-import org.checkerframework.framework.source.SourceChecker;
 import org.checkerframework.framework.qual.MonotonicQualifier;
+import org.checkerframework.framework.source.SourceChecker;
 import org.checkerframework.framework.type.AnnotatedTypeFactory;
 import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
-import org.checkerframework.framework.util.StringToJavaExpression;
 import org.checkerframework.framework.util.JavaExpressionParseUtil;
+import org.checkerframework.framework.util.StringToJavaExpression;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
 import org.checkerframework.javacutil.BugInCF;
@@ -148,7 +147,7 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
     classValues = new HashMap<>();
     this.sequentialSemantics = sequentialSemantics;
     sideEffectsOnlyValueElement =
-      TreeUtils.getMethod(SideEffectsOnly.class, "value", 0, analysis.env);
+        TreeUtils.getMethod(SideEffectsOnly.class, "value", 0, analysis.env);
   }
 
   /** Copy constructor. */
@@ -267,18 +266,18 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
     // or the @SideEffectsOnly is written without any annotation argument.
     List<JavaExpression> sideEffectsOnlyExpressions = new ArrayList<>();
     AnnotationMirror sefOnlyAnnotation =
-      atypeFactory.getDeclAnnotation(method, SideEffectsOnly.class);
+        atypeFactory.getDeclAnnotation(method, SideEffectsOnly.class);
     if (sefOnlyAnnotation != null) {
       SourceChecker checker = analysis.checker;
 
       List<String> sideEffectsOnlyExpressionStrings =
-        AnnotationUtils.getElementValueArray(
-          sefOnlyAnnotation, sideEffectsOnlyValueElement, String.class);
+          AnnotationUtils.getElementValueArray(
+              sefOnlyAnnotation, sideEffectsOnlyValueElement, String.class);
 
       for (String st : sideEffectsOnlyExpressionStrings) {
         try {
           JavaExpression exprJe =
-            StringToJavaExpression.atMethodInvocation(st, methodInvocationNode, checker);
+              StringToJavaExpression.atMethodInvocation(st, methodInvocationNode, checker);
           sideEffectsOnlyExpressions.add(exprJe);
         } catch (JavaExpressionParseUtil.JavaExpressionParseException ex) {
           checker.report(st, ex.getDiagMessage());
@@ -289,11 +288,11 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
 
     // case 1: remove information if necessary
     if (!(analysis.checker.hasOption("assumeSideEffectFree")
-      || analysis.checker.hasOption("assumePure")
-      || isSideEffectFree(atypeFactory, method))) {
+        || analysis.checker.hasOption("assumePure")
+        || isSideEffectFree(atypeFactory, method))) {
 
       boolean sideEffectsUnrefineAliases =
-        ((GenericAnnotatedTypeFactory) atypeFactory).sideEffectsUnrefineAliases;
+          ((GenericAnnotatedTypeFactory) atypeFactory).sideEffectsUnrefineAliases;
 
       // TODO: Also remove if any element/argument to the annotation is not
       // isUnmodifiableByOtherCode.  Example: @KeyFor("valueThatCanBeMutated").
@@ -314,32 +313,32 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
         }
       } else {
         Map<FieldAccess, V> newFieldValues =
-          new HashMap<>(CollectionsPlume.mapCapacity(fieldValues));
+            new HashMap<>(CollectionsPlume.mapCapacity(fieldValues));
         for (Map.Entry<FieldAccess, V> e : fieldValues.entrySet()) {
           FieldAccess fieldAccess = e.getKey();
           V otherVal = e.getValue();
 
           // case 3: the field has a monotonic annotation
           if (!((GenericAnnotatedTypeFactory<?, ?, ?, ?>) atypeFactory)
-            .getSupportedMonotonicTypeQualifiers()
-            .isEmpty()) {
+              .getSupportedMonotonicTypeQualifiers()
+              .isEmpty()) {
             List<Pair<AnnotationMirror, AnnotationMirror>> fieldAnnotations =
-              atypeFactory.getAnnotationWithMetaAnnotation(
-                fieldAccess.getField(), MonotonicQualifier.class);
+                atypeFactory.getAnnotationWithMetaAnnotation(
+                    fieldAccess.getField(), MonotonicQualifier.class);
             V newOtherVal = null;
             for (Pair<AnnotationMirror, AnnotationMirror> fieldAnnotation : fieldAnnotations) {
               AnnotationMirror monotonicAnnotation = fieldAnnotation.second;
               @SuppressWarnings("deprecation") // permitted for use in the framework
-                Name annotation =
-                AnnotationUtils.getElementValueClassName(monotonicAnnotation, "value", false);
+              Name annotation =
+                  AnnotationUtils.getElementValueClassName(monotonicAnnotation, "value", false);
               AnnotationMirror target =
-                AnnotationBuilder.fromName(atypeFactory.getElementUtils(), annotation);
+                  AnnotationBuilder.fromName(atypeFactory.getElementUtils(), annotation);
               // Make sure the 'target' annotation is present.
               if (AnnotationUtils.containsSame(otherVal.getAnnotations(), target)) {
                 newOtherVal =
-                  analysis
-                    .createSingleAnnotationValue(target, otherVal.getUnderlyingType())
-                    .mostSpecific(newOtherVal, null);
+                    analysis
+                        .createSingleAnnotationValue(target, otherVal.getUnderlyingType())
+                        .mostSpecific(newOtherVal, null);
               }
             }
             if (newOtherVal != null) {
