@@ -90,26 +90,11 @@ Section~\ref{determinism-polymorphism} explains polymorphic qualifiers.
 
 The (determinism) type of a collection must be a supertype or equal to
 the type of the type parameter (see Figure~\ref{fig-determinism-collections}).
-If the collection is \code{@NonDet}, then the type parameter may not be
-\code{@Det}, \code{@OrderNonDet}, or \code{@PolyDet}. Although such types could exist, they are
-disallowed to prevent the following bug:
-
-\begin{Verbatim}
-    public static void add(@NonDet List<@Det String> list, @NonDet int index, @Det String s) {
-        list.add(index, s);
-    }
-
-    public static void f(@Det List<@Det String> list, @NonDet int index, @Det String s) {
-        add(list, index, s);
-    }
-\end{Verbatim}
-
-The possibility of mutation allows us to add to the \code{@Det List} at a
-\code{@NonDet} index, which is unsound.
 
 Some examples of valid types are:
 \begin{itemize}
     \item \code{@NonDet\ \ \ \ \ \ List<@NonDet\ \ \ \ \ \ Integer>}
+    \item \code{@NonDet\ \ \ \ \ \ List<@DetDet\ \ \ \ \ \ \ \ \ Integer>}
     \item \code{@OrderNonDet List<@OrderNonDet Set<...>\relax >}
     \item \code{@OrderNonDet List<@Det String>}
     \item \code{@Det\ \ \ \ \ \ \ \ \ List<@Det\ \ \ \ \ \ \ \ \ Integer>}
@@ -117,9 +102,6 @@ Some examples of valid types are:
 
 These types are invalid:
   \begin{itemize}
-    \item \code{@NonDet\ \ \ \ \ \ List<@OrderNonDet Set<...>\relax >}
-    \item \code{@NonDet\ \ \ \ \ \ List<@Det\ \ \ \ \ \ \ \ \ Integer>}
-    \item \code{@NonDet\ \ \ \ \ \ List<T extends @Det Object>}
     \item \code{@NonDet\ \ \ \ \ \ List<@PolyDet \ \ \ \ Set<...>\relax >}
     \item \code{@OrderNonDet List<@NonDet\ \ \ \ \ \ Integer>}
     \item \code{@Det\ \ \ \ \ \ \ \ \ List<@NonDet\ \ \ \ \ \ Integer>}
@@ -129,20 +111,17 @@ These types are invalid:
 
 Similarly, the (determinism) type of an array must be a supertype or equal to
 the type of the component type (see Figure~\ref{fig-determinism-collections}).
-As with collections, \code{@NonDet} arrays of \code{@Det} or \code{@OrderNonDet}
-or \code{@PolyDet} elements are not allowed.
 
 For example, these types are valid:
 \begin{itemize}
     \item \code{@NonDet int @NonDet \ \ \ \ []}
+    \item \code{@NonDet int @Det \ \ \ \ \ \ \ []}
     \item \code{@Det \ \ \ int @Det \ \ \ \ \ \ \ []}
     \item \code{@Det \ \ \ int @OrderNonDet[] @OrderNonDet[]}
 \end{itemize}
 
 These types are invalid:
 \begin{itemize}
-    \item \code{@NonDet \ int @OrderNonDet[]}
-    \item \code{@NonDet \ int @Det \ \ \ \ \ \ \ []}
     \item \code{@Det \ \ \ \ int @NonDet \ \ \ \ []}
     \item \code{@PolyDet int @NonDet \ \ \ \ []}
 \end{itemize}
@@ -153,7 +132,7 @@ These types are invalid:
     \cline{3-5}
     \multicolumn{2}{c|}{~}  &  \multicolumn{3}{c|}{Type argument (or array component type)} \\ \cline{3-5}
     \multicolumn{2}{c|}{~}  & NonDet     & OrderNonDet & Det \\ \hline
-              & NonDet      &   valid    &  invalid    & invalid  \\ \cline{2-5}
+              & NonDet      &   valid    &  valid    & valid  \\ \cline{2-5}
 Collection (or array)   & OrderNonDet &   invalid  &  valid      & valid  \\ \cline{2-5}
               & Det         &   invalid  &  invalid    & valid      \\ \hline
   \end{tabular}
@@ -237,6 +216,56 @@ may not be annotated as \code{@OrderNonDet}.
 %         return ty
 % }
 % \end{verbatim}
+
+\sectionAndLabel{Collection invariance}{determinism-invariance}
+The Determinism Checker treats Collection classes as
+invariant with respect to the determinism qualifier. That is, a
+\code{@NonDet Collection} is unrelated by subtyping to an \code{@OrderNonDet Collection}
+which is unrelated to a \code{@Det Collection}.
+This is analogous to java's invariant treatment of Collection classes
+w.r.t their type arguments.
+
+Assume for the sake of contradiction that collections are not invariant w.r.t. type qualifiers.
+That would make the following code type-check, even though it
+non-deterministically changes a \code{@Det List}:
+\begin{Verbatim}
+  void test(@Det List<@Det String> dList, @NonDet List<@Det String> nList) {
+    @NonDet List<@Det String> ndList = dList;
+    ndList.addAll(nList);
+  }
+\end{Verbatim}
+
+The above code is unsafe because \<nList> and \<dList> are aliases to
+the same \<List> object and \<nList.addAll(nList)> mutates the \<@Det>
+reference \<dList> non-deterministically.
+
+\sectionAndLabel{Collection aliasing and safe mutation}{determinism-aliasing-mutation}
+It is possible to create a \<@NonDet> alias to an \<@OrderNonDet> or a \<@Det> collection.
+For instance, calling \<next> or \<get> on an \code{@OrderNonDet Collection} creates a
+\<@NonDet> alias.
+Consider the example below:
+\begin{Verbatim}
+  void aliasTest(@OrderNonDet Set<@Det List<@Det String>> set, @NonDet int index, @Det String str) {
+    @NonDet List<@Det String> lst = set.iterator().next();
+    lst.add(index, str);
+  }
+\end{Verbatim}
+
+Variable \<lst> has type \code{@NonDet List<@Det String>} (as a result of \<Set> iteration)
+but an alias has type \code{@Det List<@Det String>} (as a member of \<Set>).
+The call \<lst.add(...)> must not type-check because it mutates \<lst> non-deterministically,
+thereby violating the determinism guarantees provided by the \<@Det> reference.
+
+In order to prevent such unsafe behavior, the Determinism Checker must
+prevent calls to mutation methods (like \<lst.add> above) on receivers of
+type \code{@NonDet Collection<@OrderNonDet E>} or \code{@NonDet Collection<@Det E>}.
+It achieves this via a method declaration annotation
+\refqualclass{checker/determinism/qual}{CheckReceiverForMutation}.
+The receiver of a method with this annotation must satisfy the following property: if the
+receiver qualifier type is \<@NonDet>, then its type argument must be \<@NonDet>.
+We annotate \<List.add> method in the JDK with \<@CheckReceiverForMutation>.
+As a result, the checker reports an error at \code{lst.add(index, str);}
+since the receiver qualifier has type \<@NonDet> and its type argument is not \<@NonDet>.
 
 \subsectionAndLabel{HashSet and HashMap}{determinism-hash-set}
 The \code{HashSet} and \code{HashMap} classes are special. Because iteration order is
@@ -431,7 +460,6 @@ is annotated as:
 \begin{Verbatim}
 @PolyDet("down") boolean addAll(@PolyDet List<E> this, @PolyDet("use") Collection<? extends E> c)
 \end{Verbatim}
-%TODO: Rashmi create a section for invariant collections (when creating a related PR)
 We treat collections as invariant with respect to determinism type qualifiers,
 a \<@Det> collection is unrelated an \<@OrderNonDet> collection, which is unrelated
 to a \<@Det> collection. Therefore, \<@PolyDet("use")> must allow qualifiers that
@@ -534,6 +562,42 @@ deterministic.  If it is too restrictive for your program:
   (Section~\ref{stub}).
 \end{itemize}
 
+
+\sectionAndLabel{Determinism of formatting routines}{determinism-formatting-routines}
+
+The \<Object.toString> method is nondeterministic, so it is annotated as
+\code{@NonDet String toString(@PolyDet Object this)}.  Most subclasses
+that override \<toString> do so deterministically:
+\code{@PolyDet String toString(@PolyDet MyClass this)}.
+
+The output of \<format> is deterministic if its arguments are
+deterministic and their types have a deterministic \<toString> implementation.
+It is \emph{not} enough to annotate the formal parameters of \<format> as
+\<@Det>, because some argument's class may have an implementation that is nondeterministic.
+The method declaration annotation
+\refqualclass{checker/determinism/qual}{@RequiresDetToString} expresses the
+requirement that the types of a method's arguments be deterministic.
+
+As an illustration, consider the following method annotated with \<@RequiresDetToString>:
+\begin{Verbatim}
+    @RequiresDetToString
+    @PolyDet String n(@PolyDet NewClass o) {...}
+\end{Verbatim}
+Unless \<NewClass> has a \<toString> implementation that returns \<@Det> or \<@PolyDet>,
+the checker will report an error.
+
+% Implementation bug: @RequiresDetToString incorrectly uses 0-based indexing for formal parameters.
+% As a result, the programmer cannot specify that the receiver must have deterministic toString()
+% https://github.com/t-rasmud/checker-framework/issues/224
+A user can also specify which specific arguments must have deterministic \<toString> by
+supplying annotation values to \<RequiresDetToString>.
+For example, if the user annotates a method as:
+\begin{Verbatim}
+    @RequiresDetToString({0, 2})
+    static @PolyDet String n(@PolyDet NewClass1 o1, @PolyDet NewClass2 o2, @PolyDet NewClass3 o3) {...}
+\end{Verbatim}
+then the checker will report errors if the \<toString> implementations of \<NewClass1>
+and \<NewClass3> do not return a deterministic \<String>.
 
 \sectionAndLabel{Default annotations}{determinism-defaults}
 

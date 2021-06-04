@@ -86,4 +86,24 @@ public class TestRequiresDetToString {
         @RequiresDetToString(0)
         public void method4() {}
     }
+
+    @RequiresDetToString
+    @PolyDet String m(@PolyDet Object o) {
+        // :: error: (return.type.incompatible)
+        return o.toString();
+    }
+
+    @RequiresDetToString
+    @PolyDet String n(@PolyDet NewClass o) {
+        return o.toString();
+    }
+}
+
+class NewClass {
+    String str;
+
+    @Override
+    public @PolyDet String toString(@PolyDet NewClass this) {
+        return str;
+    }
 }
