@@ -30,7 +30,9 @@ public class NonEmptyTransfer
     extends CFAbstractTransfer<NonEmptyValue, NonEmptyStore, NonEmptyTransfer> {
 
   /** Collection.size() method. */
-  private final ExecutableElement sizeMethod;
+  private final ExecutableElement collSizeMethod;
+  /** Map.size() method. */
+  private final ExecutableElement mapSizeMethod;
   /** Processing environment. */
   ProcessingEnvironment processingEnv;
   /** The BaseTypeFactory. */
@@ -47,7 +49,8 @@ public class NonEmptyTransfer
     super(analysis);
     atypeFactory = analysis.getTypeFactory();
     processingEnv = atypeFactory.getProcessingEnv();
-    this.sizeMethod = TreeUtils.getMethod("java.util.Collection", "size", 0, processingEnv);
+    this.collSizeMethod = TreeUtils.getMethod("java.util.Collection", "size", 0, processingEnv);
+    this.mapSizeMethod = TreeUtils.getMethod("java.util.Map", "size", 0, processingEnv);
     NONEMPTY = new AnnotationBuilder(processingEnv, NonEmpty.class).build();
   }
 
@@ -68,7 +71,8 @@ public class NonEmptyTransfer
     Node leftOp = n.getLeftOperand();
     Node rightOp = n.getRightOperand();
     if (leftOp instanceof MethodInvocationNode) {
-      if (NodeUtils.isMethodInvocation(leftOp, sizeMethod, processingEnv)) {
+      if (NodeUtils.isMethodInvocation(leftOp, collSizeMethod, processingEnv)
+          || NodeUtils.isMethodInvocation(leftOp, mapSizeMethod, processingEnv)) {
         if (!(rightOp instanceof IntegerLiteralNode)) {
           return resultIn;
         }
@@ -99,7 +103,8 @@ public class NonEmptyTransfer
     Node leftOp = n.getLeftOperand();
     Node rightOp = n.getRightOperand();
     if (leftOp instanceof MethodInvocationNode) {
-      if (NodeUtils.isMethodInvocation(leftOp, sizeMethod, processingEnv)) {
+      if (NodeUtils.isMethodInvocation(leftOp, collSizeMethod, processingEnv)
+          || NodeUtils.isMethodInvocation(leftOp, mapSizeMethod, processingEnv)) {
         if (!(rightOp instanceof IntegerLiteralNode)) {
           return resultIn;
         }
@@ -129,7 +134,8 @@ public class NonEmptyTransfer
     Node leftOp = n.getLeftOperand();
     Node rightOp = n.getRightOperand();
     if (leftOp instanceof MethodInvocationNode) {
-      if (NodeUtils.isMethodInvocation(leftOp, sizeMethod, processingEnv)) {
+      if (NodeUtils.isMethodInvocation(leftOp, collSizeMethod, processingEnv)
+          || NodeUtils.isMethodInvocation(leftOp, mapSizeMethod, processingEnv)) {
         if (!(rightOp instanceof IntegerLiteralNode)) {
           return resultIn;
         }
@@ -162,7 +168,8 @@ public class NonEmptyTransfer
     Node leftOp = n.getLeftOperand();
     Node rightOp = n.getRightOperand();
     if (leftOp instanceof MethodInvocationNode) {
-      if (NodeUtils.isMethodInvocation(leftOp, sizeMethod, processingEnv)) {
+      if (NodeUtils.isMethodInvocation(leftOp, collSizeMethod, processingEnv)
+          || NodeUtils.isMethodInvocation(leftOp, mapSizeMethod, processingEnv)) {
         if (!(rightOp instanceof IntegerLiteralNode)) {
           return resultIn;
         }
@@ -202,7 +209,8 @@ public class NonEmptyTransfer
     Node leftOp = n.getLeftOperand();
     Node rightOp = n.getRightOperand();
     if (leftOp instanceof MethodInvocationNode) {
-      if (NodeUtils.isMethodInvocation(leftOp, sizeMethod, processingEnv)) {
+      if (NodeUtils.isMethodInvocation(leftOp, collSizeMethod, processingEnv)
+          || NodeUtils.isMethodInvocation(leftOp, mapSizeMethod, processingEnv)) {
         if (!(rightOp instanceof IntegerLiteralNode)) {
           return resultIn;
         }
@@ -299,7 +307,8 @@ public class NonEmptyTransfer
       JavaExpression leftRec = JavaExpression.fromNode(leftReceiver);
       Map<String, Node> sizeEqMap = store.getSizeEqualitiesMap();
       String mapKey = leftRec.toString();
-      if (NodeUtils.isMethodInvocation(n.getExpression(), sizeMethod, processingEnv)) {
+      if (NodeUtils.isMethodInvocation(n.getExpression(), collSizeMethod, processingEnv)
+          || NodeUtils.isMethodInvocation(n.getExpression(), mapSizeMethod, processingEnv)) {
         Node rightReceiver = n.getExpression();
         if (sizeEqMap == null) {
           store.createSizeEqualitiesMap();
