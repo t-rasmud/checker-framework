@@ -18,6 +18,13 @@ sourcesJar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
+configurations {
+  fatJar {
+    canBeConsumed = true
+    canBeResolved = false
+  }
+}
+
 dependencies {
     implementation project(':javacutil')
     implementation project(':dataflow')
@@ -40,6 +47,16 @@ dependencies {
     implementation 'org.plumelib:reflection-util:1.0.3'
     implementation 'org.plumelib:plume-util:1.5.5'
 
+    // TODO: it's a bug that annotatedlib:guava requires the error_prone_annotations dependency.
+    // Update the next two version numbers in tandem.  Get the Error Prone version from the "compile
+    // dependencies" section of https://mvnrepository.com/artifact/com.google.guava/guava/28.2-jre .
+    // (It isn't at https://mvnrepository.com/artifact/org.checkerframework.annotatedlib/guava/28.2-jre, which is the bug.)
+    implementation 'com.google.errorprone:error_prone_annotations:2.7.1'
+    implementation ('org.checkerframework.annotatedlib:guava:30.1.1-jre') {
+        // So long as Guava only uses annotations from checker-qual, excluding it should not cause problems.
+        exclude group: 'org.checkerframework'
+    }
+
     // Dependencies added to "shadow" appear as dependencies in Maven Central.
     shadow project(':checker-qual')
     shadow project(':checker-util')
@@ -61,6 +78,16 @@ dependencies {
 
     testannotationsImplementation project(':checker-qual')
 }
+
+// It's not clear why this dependencies exists, but Gradle issues the following warning:
+//   - Gradle detected a problem with the following location:
+//   '/Users/smillst/jsr308/checker-framework/.git'.
+//   Reason: Task ':checker:generateGitProperties' uses this output of task ':installGitHooks'
+//   without declaring an explicit or implicit dependency. This can lead to incorrect results being
+//   produced, depending on what order the tasks are executed. Please refer to
+//   https://docs.gradle.org/7.1/userguide/validation_problems.html#implicit_dependency for more
+//   details about this problem.
+generateGitProperties.dependsOn(':installGitHooks')
 
 jar {
     manifest {
@@ -168,6 +195,8 @@ artifacts {
     // archives allSourcesJar
     archives shadowJar
     archives checkerJar
+
+    fatJar(shadowJar)
 }
 
 clean {
