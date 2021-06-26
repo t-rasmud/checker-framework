@@ -18,6 +18,7 @@ import org.checkerframework.dataflow.cfg.node.LessThanNode;
 import org.checkerframework.dataflow.cfg.node.LessThanOrEqualNode;
 import org.checkerframework.dataflow.cfg.node.MethodInvocationNode;
 import org.checkerframework.dataflow.cfg.node.Node;
+import org.checkerframework.dataflow.cfg.node.NotEqualNode;
 import org.checkerframework.dataflow.expression.JavaExpression;
 import org.checkerframework.dataflow.util.NodeUtils;
 import org.checkerframework.framework.flow.CFAbstractTransfer;
@@ -238,6 +239,49 @@ public class NonEmptyTransfer
       }
       if (rightOpInt == 0) {
         return refineElseStore(mapVal, resultIn);
+      }
+    }
+    return resultIn;
+  }
+
+  /**
+   * For a conditional that checks {@code size != x} where {@code x == 0} and size =
+   * Collection.size(), refines the type of the {@code Collection} to {@code @NonEmpty} in the then
+   * branch.
+   *
+   * @param n NotEqualNode
+   * @param p TransferResult input
+   * @return TransferResult with possibly refined stores
+   */
+  @Override
+  public TransferResult<NonEmptyValue, NonEmptyStore> visitNotEqual(
+      NotEqualNode n, TransferInput<NonEmptyValue, NonEmptyStore> p) {
+    TransferResult<NonEmptyValue, NonEmptyStore> resultIn = super.visitNotEqual(n, p);
+    Node leftOp = n.getLeftOperand();
+    Node rightOp = n.getRightOperand();
+    if (leftOp instanceof MethodInvocationNode) {
+      if (NodeUtils.isMethodInvocation(leftOp, collSizeMethod, processingEnv)
+          || NodeUtils.isMethodInvocation(leftOp, mapSizeMethod, processingEnv)) {
+        if (!(rightOp instanceof IntegerLiteralNode)) {
+          return resultIn;
+        }
+        int rightOpInt = ((IntegerLiteralNode) rightOp).getValue();
+        if (rightOpInt == 0) {
+          return refineThenStore(leftOp, resultIn);
+        }
+      }
+    }
+    NonEmptyStore store = resultIn.getRegularStore();
+    Map<String, Node> sizeEqMap = store.getSizeEqualitiesMap();
+    String mapKey = leftOp.toString();
+    if (sizeEqMap != null && sizeEqMap.containsKey(mapKey)) {
+      Node mapVal = sizeEqMap.get(mapKey);
+      if (!(rightOp instanceof IntegerLiteralNode)) {
+        return resultIn;
+      }
+      int rightOpInt = ((IntegerLiteralNode) rightOp).getValue();
+      if (rightOpInt == 0) {
+        return refineThenStore(mapVal, resultIn);
       }
     }
     return resultIn;
