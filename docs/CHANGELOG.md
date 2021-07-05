@@ -1,12 +1,26 @@
-Version 3.15.1 (July 1, 2021)
-----------------------------
+Version 3.16.0 (July 1, 2021)
+-----------------------------
 
 **User-visible changes:**
 
 The `-Ainfer` command-line argument now outputs purity annotations even if
-neither `-AsuggestPureMethods` nor `-AcheckPurityAnnotations` is present.
+neither `-AsuggestPureMethods` nor `-AcheckPurityAnnotations` is supplied
+on the command line.
 
 **Implementation details:**
+
+Method renamings (the old methods remain but are deprecated):
+ * `AnnotationFileElementTypes.getDeclAnnotation` => `getDeclAnnotations`
+
+Method renamings in DefaultTypeHierarchy (the old methods were removed):
+ * `visitIntersectionSupertype` => `visitIntersectionSupertype`
+ * `visitIntersectionSubtype` => `visitIntersection_Type`
+ * `visitUnionSubtype` => `visitUnion_Type`
+ * `visitTypevarSubtype` => `visitTypevar_Type`
+ * `visitTypevarSupertype` => `visitType_Typevar`
+ * `visitWildcardSubtype` => `visitWildcard_Type`
+ * `visitWildcardSupertype` => `visitType_Wildcard`
+
 
 **Closed issues:**
 

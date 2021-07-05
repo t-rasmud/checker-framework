@@ -3,7 +3,6 @@ package org.checkerframework.checker.lock;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.tree.Tree;
-import com.sun.source.tree.Tree.Kind;
 import com.sun.source.tree.VariableTree;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -61,6 +60,7 @@ import org.checkerframework.framework.util.dependenttypes.DependentTypesError;
 import org.checkerframework.framework.util.dependenttypes.DependentTypesHelper;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
+import org.checkerframework.javacutil.BugInCF;
 import org.checkerframework.javacutil.ElementUtils;
 import org.checkerframework.javacutil.Pair;
 import org.checkerframework.javacutil.TreeUtils;
@@ -95,7 +95,7 @@ public class LockAnnotatedTypeFactory
   /** The @{@link GuardedByUnknown} annotation. */
   protected final AnnotationMirror GUARDEDBYUNKNOWN =
       AnnotationBuilder.fromClass(elements, GuardedByUnknown.class);
-  /** The @{@link GuardedByBottom} annotation. */
+  /** The @{@link GuardedBy} annotation. */
   protected final AnnotationMirror GUARDEDBY =
       createGuardedByAnnotationMirror(new ArrayList<String>());
   /** The @{@link GuardedByBottom} annotation. */
@@ -273,14 +273,14 @@ public class LockAnnotatedTypeFactory
   /** LockQualifierHierarchy. */
   class LockQualifierHierarchy extends MostlyNoElementQualifierHierarchy {
 
+    /** Qualifier kind for the @{@link GuardedByUnknown} annotation. */
+    private final QualifierKind GUARDEDBYUNKNOWN_KIND;
     /** Qualifier kind for the @{@link GuardedBy} annotation. */
     private final QualifierKind GUARDEDBY_KIND;
     /** Qualifier kind for the @{@link GuardSatisfied} annotation. */
     private final QualifierKind GUARDSATISFIED_KIND;
     /** Qualifier kind for the @{@link GuardedByBottom} annotation. */
     private final QualifierKind GUARDEDBYBOTTOM_KIND;
-    /** Qualifier kind for the @{@link GuardedByUnknown} annotation. */
-    private final QualifierKind GUARDEDBYUNKNOWN_KIND;
 
     /**
      * Creates a LockQualifierHierarchy.
@@ -291,10 +291,10 @@ public class LockAnnotatedTypeFactory
     public LockQualifierHierarchy(
         Collection<Class<? extends Annotation>> qualifierClasses, Elements elements) {
       super(qualifierClasses, elements);
+      GUARDEDBYUNKNOWN_KIND = getQualifierKind(GUARDEDBYUNKNOWN);
       GUARDEDBY_KIND = getQualifierKind(GUARDEDBY);
       GUARDSATISFIED_KIND = getQualifierKind(GUARDSATISFIED);
       GUARDEDBYBOTTOM_KIND = getQualifierKind(GUARDEDBYBOTTOM);
-      GUARDEDBYUNKNOWN_KIND = getQualifierKind(GUARDEDBYUNKNOWN);
     }
 
     @Override
@@ -347,7 +347,9 @@ public class LockAnnotatedTypeFactory
       } else if (qualifierKind2 == GUARDEDBYBOTTOM_KIND) {
         return a1;
       }
-      throw new RuntimeException("Unexpected");
+      throw new BugInCF(
+          "leastUpperBoundWithElements(%s, %s, %s, %s, %s)",
+          a1, qualifierKind1, a2, qualifierKind2, lubKind);
     }
 
     @Override
@@ -380,7 +382,9 @@ public class LockAnnotatedTypeFactory
       } else if (qualifierKind2 == GUARDEDBYUNKNOWN_KIND) {
         return a1;
       }
-      throw new RuntimeException("Unexpected");
+      throw new BugInCF(
+          "greatestLowerBoundWithElements(%s, %s, %s, %s, %s)",
+          a1, qualifierKind1, a2, qualifierKind2, glbKind);
     }
   }
 
@@ -558,7 +562,7 @@ public class LockAnnotatedTypeFactory
       ExpressionTree tree, ExecutableElement methodElt, AnnotatedTypeMirror receiverType) {
     ParameterizedExecutableType mType = super.methodFromUse(tree, methodElt, receiverType);
 
-    if (tree.getKind() != Kind.METHOD_INVOCATION) {
+    if (tree.getKind() != Tree.Kind.METHOD_INVOCATION) {
       return mType;
     }
 

@@ -12,7 +12,6 @@ import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.SynchronizedTree;
 import com.sun.source.tree.Tree;
-import com.sun.source.tree.Tree.Kind;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.TreePath;
 import java.lang.annotation.Annotation;
@@ -322,11 +321,12 @@ public class LockVisitor extends BaseTypeVisitor<LockAnnotatedTypeFactory> {
   @Override
   protected void checkConstructorResult(
       AnnotatedExecutableType constructorType, ExecutableElement constructorElement) {
-    // Newly created objects are guarded by nothing, so allow @GuardBy({}) on constructor results.
+    // Newly created objects are guarded by nothing, so allow @GuardedBy({}) on constructor results.
     AnnotationMirror anno =
         constructorType.getReturnType().getAnnotationInHierarchy(atypeFactory.GUARDEDBYUNKNOWN);
-    if (!AnnotationUtils.areSame(anno, atypeFactory.GUARDEDBY)) {
-      super.checkConstructorResult(constructorType, constructorElement);
+    if (AnnotationUtils.areSame(anno, atypeFactory.GUARDEDBYUNKNOWN)
+        || AnnotationUtils.areSame(anno, atypeFactory.GUARDEDBYBOTTOM)) {
+      checker.reportWarning(constructorElement, "inconsistent.constructor.type", anno, null);
     }
   }
 
@@ -338,7 +338,7 @@ public class LockVisitor extends BaseTypeVisitor<LockAnnotatedTypeFactory> {
       @CompilerMessageKey String errorKey,
       Object... extraArgs) {
 
-    Kind valueTreeKind = valueTree.getKind();
+    Tree.Kind valueTreeKind = valueTree.getKind();
 
     switch (valueTreeKind) {
       case NEW_CLASS:
@@ -1050,7 +1050,7 @@ public class LockVisitor extends BaseTypeVisitor<LockAnnotatedTypeFactory> {
       Tree parent = getCurrentPath().getParentPath().getLeaf();
       // If the parent is not a member select, or if it is and the field is the expression,
       // then the field is accessed via an implicit this.
-      if ((parent.getKind() != Kind.MEMBER_SELECT
+      if ((parent.getKind() != Tree.Kind.MEMBER_SELECT
               || ((MemberSelectTree) parent).getExpression() == tree)
           && !ElementUtils.isStatic(TreeUtils.elementFromUse(tree))) {
         AnnotationMirror guardedBy =
