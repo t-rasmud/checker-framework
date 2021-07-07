@@ -1,7 +1,10 @@
-Version 3.16.0 (July 1, 2021)
+Version 3.16.0 (July 9, 2021)
 -----------------------------
 
 **User-visible changes:**
+
+The Lock Checker supports a new type, `@NewObject`, for the result of a
+constructor invocation.
 
 The `-Ainfer` command-line argument now outputs purity annotations even if
 neither `-AsuggestPureMethods` nor `-AcheckPurityAnnotations` is supplied
@@ -12,7 +15,7 @@ on the command line.
 Method renamings (the old methods remain but are deprecated):
  * `AnnotationFileElementTypes.getDeclAnnotation` => `getDeclAnnotations`
 
-Method renamings in DefaultTypeHierarchy (the old methods were removed):
+Method renamings in `DefaultTypeHierarchy` (the old methods were removed):
  * `visitIntersectionSupertype` => `visitIntersectionSupertype`
  * `visitIntersectionSubtype` => `visitIntersection_Type`
  * `visitUnionSubtype` => `visitUnion_Type`
@@ -21,8 +24,13 @@ Method renamings in DefaultTypeHierarchy (the old methods were removed):
  * `visitWildcardSubtype` => `visitWildcard_Type`
  * `visitWildcardSupertype` => `visitType_Wildcard`
 
+Method renamings in `AnnotatedTypes` (the old methods were removed):
+ * `expandVarArgs` => `expandVarArgsParameters`
+ * `expandVarArgsFromTypes` => `expandVarArgsParametersFromTypes`
+
 
 **Closed issues:**
+
 
 Version 3.15.0 (June 18, 2021)
 ----------------------------
