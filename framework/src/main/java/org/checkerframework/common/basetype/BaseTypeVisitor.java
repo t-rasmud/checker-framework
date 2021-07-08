@@ -77,6 +77,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic.Kind;
+import main.java.org.checkerframework.dataflow.util.SideEffectsOnlyAnnoChecker;
 import org.checkerframework.checker.compilermsgs.qual.CompilerMessageKey;
 import org.checkerframework.checker.interning.qual.FindDistinct;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -93,6 +94,7 @@ import org.checkerframework.dataflow.expression.LocalVariable;
 import org.checkerframework.dataflow.qual.Deterministic;
 import org.checkerframework.dataflow.qual.Pure;
 import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
 import org.checkerframework.dataflow.util.PurityChecker;
 import org.checkerframework.dataflow.util.PurityChecker.PurityResult;
 import org.checkerframework.dataflow.util.PurityUtils;
@@ -131,6 +133,7 @@ import org.checkerframework.framework.util.Contract.Postcondition;
 import org.checkerframework.framework.util.Contract.Precondition;
 import org.checkerframework.framework.util.ContractsFromMethod;
 import org.checkerframework.framework.util.FieldInvariants;
+import org.checkerframework.framework.util.JavaExpressionParseUtil;
 import org.checkerframework.framework.util.JavaExpressionParseUtil.JavaExpressionParseException;
 import org.checkerframework.framework.util.JavaParserUtil;
 import org.checkerframework.framework.util.StringToJavaExpression;
@@ -232,6 +235,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
   /** The {@code when} element/field of the @Unused annotation. */
   protected final ExecutableElement unusedWhenElement;
 
+  ExecutableElement sideEffectsOnlyValueElement;
   /** True if "-Ashowchecks" was passed on the command line. */
   private final boolean showchecks;
   /** True if "-Ainfer" was passed on the command line. */
@@ -277,6 +281,8 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
         atypeFactory.fromElement(elements.getTypeElement(Vector.class.getCanonicalName()));
     targetValueElement = TreeUtils.getMethod(Target.class, "value", 0, env);
     unusedWhenElement = TreeUtils.getMethod(Unused.class, "when", 0, env);
+    sideEffectsOnlyValueElement =
+        TreeUtils.getMethod(SideEffectsOnly.class, "value", 0, checker.getProcessingEnvironment());
     showchecks = checker.hasOption("showchecks");
     infer = checker.hasOption("infer");
     suggestPureMethods = checker.hasOption("suggestPureMethods") || infer;
@@ -899,6 +905,7 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
       }
 
       checkPurity(node);
+      checkSideEffectsOnly(node);
 
       // Passing the whole method/constructor validates the return type
       validateTypeOf(node);
@@ -1045,6 +1052,51 @@ public class BaseTypeVisitor<Factory extends GenericAnnotatedTypeFactory<?, ?, ?
             throw new BugInCF("Unexpected purity kind in " + additionalKinds);
           }
         }
+      }
+    }
+  }
+
+  protected void checkSideEffectsOnly(MethodTree node) {
+    if (!checker.hasOption("checkSideEffectsOnlyAnnotation")) {
+      return;
+    }
+
+    TreePath body = atypeFactory.getPath(node.getBody());
+    if (body == null) {
+      return;
+    } else {
+      @Nullable Element methodDeclElem = TreeUtils.elementFromTree(node);
+      AnnotationMirror sefOnlyAnnotation =
+          atypeFactory.getDeclAnnotation(methodDeclElem, SideEffectsOnly.class);
+      if (sefOnlyAnnotation == null) {
+        return;
+      }
+      List<String> sideEffectsOnlyExpressionStrings =
+          AnnotationUtils.getElementValueArray(
+              sefOnlyAnnotation, sideEffectsOnlyValueElement, String.class);
+      List<JavaExpression> sideEffectsOnlyExpressions = new ArrayList<>();
+      for (String st : sideEffectsOnlyExpressionStrings) {
+        try {
+          JavaExpression exprJe = StringToJavaExpression.atMethodBody(st, node, checker);
+          sideEffectsOnlyExpressions.add(exprJe);
+        } catch (JavaExpressionParseUtil.JavaExpressionParseException ex) {
+          checker.report(st, ex.getDiagMessage());
+          return;
+        }
+      }
+
+      if (sideEffectsOnlyExpressions.isEmpty()) {
+        return;
+      }
+
+      SideEffectsOnlyAnnoChecker.SideEffectsOnlyResult sefOnlyResult =
+          SideEffectsOnlyAnnoChecker.checkSideEffectsOnly(
+              body, atypeFactory, sideEffectsOnlyExpressions);
+
+      List<Pair<Tree, JavaExpression>> seOnlyIncorrectExprs = sefOnlyResult.getSeOnlyResult();
+      if (!seOnlyIncorrectExprs.isEmpty()) {
+        for (Pair<Tree, JavaExpression> s : seOnlyIncorrectExprs)
+          checker.reportError(s.first, "incorrect.sideeffectsonly", s.second.toString());
       }
     }
   }

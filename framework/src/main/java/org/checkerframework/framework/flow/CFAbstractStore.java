@@ -1,5 +1,6 @@
 package org.checkerframework.framework.flow;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -32,14 +33,19 @@ import org.checkerframework.dataflow.expression.LocalVariable;
 import org.checkerframework.dataflow.expression.MethodCall;
 import org.checkerframework.dataflow.expression.ThisReference;
 import org.checkerframework.dataflow.qual.SideEffectFree;
+import org.checkerframework.dataflow.qual.SideEffectsOnly;
 import org.checkerframework.dataflow.util.PurityUtils;
 import org.checkerframework.framework.qual.MonotonicQualifier;
+import org.checkerframework.framework.source.SourceChecker;
 import org.checkerframework.framework.type.AnnotatedTypeFactory;
 import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
+import org.checkerframework.framework.util.JavaExpressionParseUtil;
+import org.checkerframework.framework.util.StringToJavaExpression;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
 import org.checkerframework.javacutil.BugInCF;
 import org.checkerframework.javacutil.Pair;
+import org.checkerframework.javacutil.TreeUtils;
 import org.plumelib.util.CollectionsPlume;
 import org.plumelib.util.ToStringComparator;
 import org.plumelib.util.UniqueId;
@@ -73,6 +79,9 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
 
   /** Information collected about fields, using the internal representation {@link FieldAccess}. */
   protected Map<FieldAccess, V> fieldValues;
+
+  /** The SideEffectsOnly.value argument/element. */
+  public ExecutableElement sideEffectsOnlyValueElement;
 
   /**
    * Returns information about fields. Clients should not side-effect the returned value, which is
@@ -136,6 +145,8 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
     arrayValues = new HashMap<>();
     classValues = new HashMap<>();
     this.sequentialSemantics = sequentialSemantics;
+    sideEffectsOnlyValueElement =
+        TreeUtils.getMethod(SideEffectsOnly.class, "value", 0, analysis.env);
   }
 
   /** Copy constructor. */
@@ -148,6 +159,7 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
     arrayValues = new HashMap<>(other.arrayValues);
     classValues = new HashMap<>(other.classValues);
     sequentialSemantics = other.sequentialSemantics;
+    sideEffectsOnlyValueElement = other.sideEffectsOnlyValueElement;
   }
 
   /**
@@ -205,10 +217,39 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
    * </ol>
    *
    * Furthermore, if the method is deterministic, we store its result {@code val} in the store.
+   *
+   * @param methodInvocationNode method whose information is being updated
+   * @param atypeFactory AnnotatedTypeFactory of the associated checker
+   * @param val abstract value of the method call
    */
   public void updateForMethodCall(
-      MethodInvocationNode n, AnnotatedTypeFactory atypeFactory, V val) {
-    ExecutableElement method = n.getTarget().getMethod();
+      MethodInvocationNode methodInvocationNode, AnnotatedTypeFactory atypeFactory, V val) {
+    ExecutableElement method = methodInvocationNode.getTarget().getMethod();
+
+    // List of expressions that this method side-effects (specified as arguments/elements of
+    // @SideEffectsOnly). If the list is empty, then either there is no @SideEffectsOnly annotation
+    // or the @SideEffectsOnly is written without any annotation argument.
+    List<JavaExpression> sideEffectsOnlyExpressions = new ArrayList<>();
+    AnnotationMirror sefOnlyAnnotation =
+        atypeFactory.getDeclAnnotation(method, SideEffectsOnly.class);
+    if (sefOnlyAnnotation != null) {
+      SourceChecker checker = analysis.checker;
+
+      List<String> sideEffectsOnlyExpressionStrings =
+          AnnotationUtils.getElementValueArray(
+              sefOnlyAnnotation, sideEffectsOnlyValueElement, String.class);
+
+      for (String st : sideEffectsOnlyExpressionStrings) {
+        try {
+          JavaExpression exprJe =
+              StringToJavaExpression.atMethodInvocation(st, methodInvocationNode, checker);
+          sideEffectsOnlyExpressions.add(exprJe);
+        } catch (JavaExpressionParseUtil.JavaExpressionParseException ex) {
+          checker.report(st, ex.getDiagMessage());
+          return;
+        }
+      }
+    }
 
     // case 1: remove information if necessary
     if (!(analysis.checker.hasOption("assumeSideEffectFree")
@@ -218,21 +259,23 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
       boolean sideEffectsUnrefineAliases =
           ((GenericAnnotatedTypeFactory) atypeFactory).sideEffectsUnrefineAliases;
 
-      // update local variables
       // TODO: Also remove if any element/argument to the annotation is not
       // isUnmodifiableByOtherCode.  Example: @KeyFor("valueThatCanBeMutated").
       if (sideEffectsUnrefineAliases) {
-        localVariableValues.entrySet().removeIf(e -> !e.getKey().isUnmodifiableByOtherCode());
-      }
-
-      // update this value
-      if (sideEffectsUnrefineAliases) {
-        thisValue = null;
-      }
-
-      // update field values
-      if (sideEffectsUnrefineAliases) {
-        fieldValues.entrySet().removeIf(e -> !e.getKey().isUnmodifiableByOtherCode());
+        if (!sideEffectsOnlyExpressions.isEmpty()) {
+          for (JavaExpression e : sideEffectsOnlyExpressions) {
+            if (!e.isUnmodifiableByOtherCode()) {
+              // update local variables
+              localVariableValues.keySet().remove(e);
+              // update field values
+              fieldValues.keySet().remove(e);
+            }
+          }
+        } else {
+          localVariableValues.keySet().removeIf(e -> !e.isUnmodifiableByOtherCode());
+          thisValue = null;
+          fieldValues.keySet().removeIf(e -> !e.isUnmodifiableByOtherCode());
+        }
       } else {
         Map<FieldAccess, V> newFieldValues =
             new HashMap<>(CollectionsPlume.mapCapacity(fieldValues));
@@ -290,7 +333,7 @@ public abstract class CFAbstractStore<V extends CFAbstractValue<V>, S extends CF
     }
 
     // store information about method call if possible
-    JavaExpression methodCall = JavaExpression.fromNode(n);
+    JavaExpression methodCall = JavaExpression.fromNode(methodInvocationNode);
     replaceValue(methodCall, val);
   }
 
